@@ -671,7 +671,7 @@ val connectDispatcher: Dispatcher = object : Dispatcher() {
                 MockResponse().setResponseCode(200).setBody(oauth2Body)
             path == "/upload-service/upload" && request.method == "POST" ->
                 MockResponse().setResponseCode(200)
-            path == "/userprofile-service/userprofile/userProfileBase" && request.method == "GET" ->
+            path == "/userprofile-service/socialProfile" && request.method == "GET" ->
                 MockResponse().setResponseCode(200).setBody(userProfileJson)
             path == "/course-service/course" && request.method == "GET" ->
                 MockResponse().setResponseCode(200).setBody(coursesJson)

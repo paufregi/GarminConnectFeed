@@ -40,7 +40,7 @@ interface GarminConnect {
     @GET("/activity-service/activity/eventTypes")
     suspend fun getEventTypes(): Response<List<EventType>>
 
-    @GET("/userprofile-service/userprofile/userProfileBase")
+    @GET("/userprofile-service/socialProfile")
     suspend fun getUserProfile(): Response<UserProfile>
 
     @PUT("/activity-service/activity/{id}")
