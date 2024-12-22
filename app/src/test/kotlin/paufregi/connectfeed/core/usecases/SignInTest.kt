@@ -35,12 +35,14 @@ class SignInTest{
         val user = User("user", "avatar")
         coEvery { repo.saveCredential(any()) } returns Unit
         coEvery { repo.fetchUser() } returns Result.Success(user)
+        coEvery { repo.saveUser(any()) } returns Unit
         val res = useCase(credential)
 
         assertThat(res).isInstanceOf(Result.Success<User>(user).javaClass)
         coVerify {
             repo.saveCredential(credential)
             repo.fetchUser()
+            repo.saveUser(user)
         }
         confirmVerified(repo)
     }
@@ -48,7 +50,6 @@ class SignInTest{
     @Test
     fun `SignIn - failure`() = runTest {
         val credential = Credential("user", "pass")
-        val user = User("user", "avatar")
         coEvery { repo.saveCredential(any()) } returns Unit
         coEvery { repo.fetchUser() } returns Result.Failure<User?>("error")
         coEvery { repo.deleteCredential() } returns Unit

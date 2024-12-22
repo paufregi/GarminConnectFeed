@@ -12,7 +12,11 @@ class SignIn @Inject constructor (private val garminRepository: GarminRepository
             garminRepository.saveCredential(credential)
 
             return when (val res = garminRepository.fetchUser()) {
-                is Result.Success -> Result.Success(res.data!!)
+                is Result.Success -> {
+                    val user = res.data!!
+                    garminRepository.saveUser(user)
+                    Result.Success(user)
+                }
                 is Result.Failure -> {
                     garminRepository.deleteCredential()
                     garminRepository.deleteTokens()
