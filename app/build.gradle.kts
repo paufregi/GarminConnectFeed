@@ -80,7 +80,6 @@ android {
 
 composeCompiler {
     reportsDestination = layout.buildDirectory.dir("compose_compiler")
-    stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
 }
 
 dependencies {
@@ -105,6 +104,8 @@ dependencies {
     implementation(libs.commons.csv)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.hilt.android)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     ksp(libs.androidx.room.compiler)
     ksp(libs.androidx.hilt.compiler)
