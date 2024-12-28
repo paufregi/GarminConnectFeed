@@ -5,7 +5,8 @@ import javax.inject.Inject
 
 class SignOut @Inject constructor (private val garminRepository: GarminRepository) {
     suspend operator fun invoke() {
-        garminRepository.deleteCredential()
         garminRepository.deleteTokens()
+        garminRepository.deleteCredential()
+        garminRepository.deleteUser()
     }
 }

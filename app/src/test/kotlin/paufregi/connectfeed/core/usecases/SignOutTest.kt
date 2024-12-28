@@ -27,11 +27,13 @@ class SignOutTest{
 
     @Test
     fun `Sign out`() = runTest {
+        coEvery { repo.deleteUser() } returns Unit
         coEvery { repo.deleteCredential() } returns Unit
         coEvery { repo.deleteTokens() } returns Unit
-        val res = useCase()
+        useCase()
 
         coVerify {
+            repo.deleteUser()
             repo.deleteCredential()
             repo.deleteTokens()
         }
