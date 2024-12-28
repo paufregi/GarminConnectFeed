@@ -77,7 +77,7 @@ class MainViewModelTest {
             var state = awaitItem()
             assertThat(state.loggedIn).isTrue()
             assertThat(state.showLogin).isNull()
-            viewModel.showLogin()
+            viewModel.hideLogin()
             state = awaitItem()
             assertThat(state.loggedIn).isTrue()
             assertThat(state.showLogin).isFalse()
