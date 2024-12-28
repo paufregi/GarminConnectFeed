@@ -53,8 +53,6 @@ class CryptoManager {
         val data = bytes.copyOfRange(cipher.blockSize, bytes.size)
         cipher.init(Cipher.DECRYPT_MODE, getKey(), IvParameterSpec(iv))
         val res = cipher.doFinal(data)
-        Log.i("CryptoManager", "decrypt size: ${res.size}")
-        Log.i("CryptoManager", "decrypt: ${res.decodeToString()}")
         return res.decodeToString()
     }
 }
