@@ -4,9 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -18,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
@@ -26,8 +31,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Loading
 import paufregi.connectfeed.presentation.ui.components.SimpleScaffold
@@ -37,28 +44,30 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun SetupScreen(onLoginComplete: () -> Unit = {}) {
+internal fun LoginScreen(
+    onLogin: () -> Unit = {}
+) {
     val viewModel = hiltViewModel<LoginViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    SimpleScaffold { SetupContent(state, viewModel::onEvent, onLoginComplete, it) }
+    SimpleScaffold { LoginContent(state, viewModel::onEvent, onLogin, it) }
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-internal fun SetupContent(
+internal fun LoginContent(
     @PreviewParameter(SetupContentStatePreview::class) state: LoginState,
     onEvent: (LoginEvent) -> Unit = {},
-    onLoginComplete: () -> Unit = {},
+    onLogin: () -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     when (state.process) {
         is ProcessState.Processing -> Loading(paddingValues)
-        is ProcessState.Success -> StatusInfo(
-            type = StatusInfoType.Success,
-            text = "Welcome ${state.process.message}",
-            actionButton = { Button(text = "Ok", onClick = { onLoginComplete() }) },
+        is ProcessState.Success -> WelcomeInfo(
+            name = state.user?.name ?: "",
+            url = state.user?.profileImageUrl ?: "",
+            actionButton = { Button(text = "Ok", onClick = onLogin) },
             paddingValues = paddingValues
         )
         is ProcessState.Failure -> StatusInfo(
@@ -67,14 +76,42 @@ internal fun SetupContent(
             actionButton = { Button(text = "Ok", onClick = { onEvent(LoginEvent.Reset) }) },
             paddingValues = paddingValues
         )
-        is ProcessState.Idle -> SetupForm(state, onEvent, paddingValues)
+        is ProcessState.Idle -> LoginForm(state, onEvent, paddingValues)
     }
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-internal fun SetupForm(
+fun WelcomeInfo(
+    name: String = "",
+    url: String = "",
+    actionButton: @Composable () -> Unit = { },
+    paddingValues: PaddingValues = PaddingValues()
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
+        AsyncImage(
+            model = url,
+            contentDescription = null,
+            modifier = Modifier.scale(2.5f).clip(CircleShape)
+        )
+        Spacer(modifier = Modifier.size(38.dp))
+        Text(text = "Welcome $name", fontSize = 24.sp)// color = MaterialTheme.colorScheme.onPrimaryContainer)
+        Spacer(modifier = Modifier.size(24.dp))
+        actionButton()
+    }
+}
+
+@Preview
+@Composable
+@ExperimentalMaterial3Api
+internal fun LoginForm(
     @PreviewParameter(SetupFormStatePreview::class) state: LoginState,
     onEvent: (LoginEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),

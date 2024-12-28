@@ -27,7 +27,7 @@ class LoginScreenTest {
     @Test
     fun `Form - empty`() {
         composeTestRule.setContent {
-            SetupContent(state = LoginState())
+            LoginContent(state = LoginState())
         }
         composeTestRule.onNodeWithText("Username").assertTextContains("")
         composeTestRule.onNodeWithText("Password").assertTextContains("")
@@ -37,7 +37,7 @@ class LoginScreenTest {
     @Test
     fun `Form - filled`() {
         composeTestRule.setContent {
-            SetupContent(state = LoginState(credential = Credential("userTest", "passTest")))
+            LoginContent(state = LoginState(credential = Credential("userTest", "passTest")))
         }
         composeTestRule.onNodeWithText("Username").assertTextContains("userTest")
         composeTestRule.onNodeWithText("Password").assertTextContains("••••••••")
@@ -47,7 +47,7 @@ class LoginScreenTest {
     @Test
     fun `Form - filled with visible password`() {
         composeTestRule.setContent {
-            SetupContent(state = LoginState(credential = Credential("userTest", "passTest"), showPassword = true))
+            LoginContent(state = LoginState(credential = Credential("userTest", "passTest"), showPassword = true))
         }
         composeTestRule.onNodeWithText("Username").assertTextContains("userTest")
         composeTestRule.onNodeWithText("Password").assertTextContains("passTest")
@@ -57,7 +57,7 @@ class LoginScreenTest {
     @Test
     fun `Loading spinning`() {
         composeTestRule.setContent {
-            SetupContent(state = LoginState(process = ProcessState.Processing))
+            LoginContent(state = LoginState(process = ProcessState.Processing))
         }
         composeTestRule.onNodeWithTag("loading").isDisplayed()
     }
@@ -65,7 +65,7 @@ class LoginScreenTest {
     @Test
     fun `Sign in - success`() {
         composeTestRule.setContent {
-            SetupContent(state = LoginState(process = ProcessState.Success("Paul")))
+            LoginContent(state = LoginState(process = ProcessState.Success("Paul")))
         }
         composeTestRule.onNodeWithText("Welcome Paul").isDisplayed()
     }
@@ -73,7 +73,7 @@ class LoginScreenTest {
     @Test
     fun `Sign in - failure`() {
         composeTestRule.setContent {
-            SetupContent(state = LoginState(process = ProcessState.Failure("error")))
+            LoginContent(state = LoginState(process = ProcessState.Failure("error")))
         }
         composeTestRule.onNodeWithText("error").isDisplayed()
     }
