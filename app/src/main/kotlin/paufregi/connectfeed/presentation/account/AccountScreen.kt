@@ -1,14 +1,13 @@
 package paufregi.connectfeed.presentation.account
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -20,7 +19,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -29,7 +29,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil3.compose.AsyncImage
 import paufregi.connectfeed.presentation.Navigation
+import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
 import paufregi.connectfeed.presentation.ui.components.Loading
@@ -78,7 +80,7 @@ internal fun AccountContent(
             items = Navigation.items,
             selectIndex = Navigation.HOME,
             nav = nav
-        ) { AccountForm(onEvent, it) }
+        ) { AccountForm(state, onEvent, nav, it) }
     }
 }
 
@@ -86,7 +88,9 @@ internal fun AccountContent(
 @Composable
 @ExperimentalMaterial3Api
 internal fun AccountForm(
+    @PreviewParameter(AccountStatePreview::class) state: AccountState = AccountState(),
     onEvent: (AccountEvent) -> Unit = {},
+    nav: NavController = rememberNavController(),
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     var signOutDialog by remember { mutableStateOf(false) }
@@ -108,23 +112,19 @@ internal fun AccountForm(
             .padding(paddingValues)
             .padding(horizontal = 20.dp)
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(bottom = 32.dp)
-        ) {
-            Image(
-                imageVector = Icons.Default.AccountCircle,
-                contentDescription = "Profile picture",
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.size(200.dp)
-            )
-            Text(text = "Paul", fontSize = 24.sp)
-        }
 
+        AsyncImage(
+            model = state.user?.profileImageUrl,
+            contentDescription = null,
+            modifier = Modifier.scale(2.5f).clip(CircleShape)
+        )
+        Spacer(modifier = Modifier.size(38.dp))
+        Text(text = state.user?.name ?: "", fontSize = 24.sp)
+
+        Spacer(modifier = Modifier.size(24.dp))
         Button(
             text = "Change password",
-            onClick = {  }
+            onClick = { nav.navigate(Route.Password) }
         )
         Button(
             text = "Refresh tokens",
