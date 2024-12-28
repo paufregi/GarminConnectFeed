@@ -19,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -96,6 +98,9 @@ internal fun ProfileForm(
     nav: NavHostController = rememberNavController(),
     paddingValues: PaddingValues = PaddingValues()
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -208,7 +213,10 @@ internal fun ProfileForm(
                 text = "Save",
                 enabled = state.profile.name.isNotBlank() &&
                         (state.profile.activityType == ActivityType.Any || state.profile.eventType != null),
-                onClick = { onEvent(ProfileEvent.Save) }
+                onClick = {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                    onEvent(ProfileEvent.Save) }
             )
         }
     }
