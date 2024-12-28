@@ -16,6 +16,6 @@ data class UserProfile(
 ) {
     fun toCore(): CoreUserProfile = CoreUserProfile(
         name = name,
-        avatarUrl = avatarUrl
+        profileImageUrl = avatarUrl
     )
 }
