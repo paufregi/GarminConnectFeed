@@ -24,6 +24,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -100,6 +102,9 @@ internal fun QuickEditForm(
     onEvent: (QuickEditEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -190,7 +195,11 @@ internal fun QuickEditForm(
             Button(
                 text = "Save",
                 enabled = state.activity != null && state.profile != null,
-                onClick = { onEvent(QuickEditEvent.Save) }
+                onClick = {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                    onEvent(QuickEditEvent.Save)
+                }
             )
         }
     }
