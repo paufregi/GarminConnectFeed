@@ -10,7 +10,6 @@ data class QuickEditState(
     val profiles: List<Profile> = emptyList(),
     val activity: Activity? = null,
     val profile: Profile? = null,
-    val water: Int? = null,
     val effort: Float? = null,
     val feel: Float? = null
 )

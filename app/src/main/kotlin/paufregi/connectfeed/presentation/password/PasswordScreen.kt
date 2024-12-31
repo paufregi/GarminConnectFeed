@@ -4,12 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -21,8 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
@@ -31,14 +26,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import coil3.compose.AsyncImage
 import paufregi.connectfeed.presentation.Navigation
-import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Loading
 import paufregi.connectfeed.presentation.ui.components.NavigationScaffold
@@ -60,7 +52,7 @@ internal fun PasswordScreen(nav: NavController = rememberNavController()) {
 @Composable
 @ExperimentalMaterial3Api
 internal fun PasswordContent(
-    @PreviewParameter(SetupContentStatePreview::class) state: PasswordState,
+    @PreviewParameter(PasswordContentStatePreview::class) state: PasswordState,
     onEvent: (PasswordEvent) -> Unit = {},
     nav: NavController = rememberNavController()
 ) {
@@ -96,7 +88,7 @@ internal fun PasswordContent(
 @Composable
 @ExperimentalMaterial3Api
 internal fun PasswordForm(
-    @PreviewParameter(SetupFormStatePreview::class) state: PasswordState,
+    @PreviewParameter(PasswordFormStatePreview::class) state: PasswordState,
     onEvent: (PasswordEvent) -> Unit = {},
     nav: NavController = rememberNavController(),
     paddingValues: PaddingValues = PaddingValues(),

@@ -3,8 +3,10 @@ package paufregi.connectfeed.presentation.main
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -36,8 +38,8 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Load data`() = runTest {
-        every { isLoggedIn.invoke() } returns flowOf(true)
+    fun `Initial state`() = runTest {
+        every { isLoggedIn() } returns flowOf(true)
 
         viewModel = MainViewModel(isLoggedIn)
 
@@ -47,41 +49,44 @@ class MainViewModelTest {
             assertThat(state.showLogin).isNull()
             cancelAndIgnoreRemainingEvents()
         }
+
+        verify { isLoggedIn() }
+        confirmVerified(isLoggedIn)
     }
 
     @Test
     fun `Show login`() = runTest {
-        every { isLoggedIn.invoke() } returns flowOf(true)
+        every { isLoggedIn() } returns flowOf(true)
 
         viewModel = MainViewModel(isLoggedIn)
+        viewModel.showLogin()
 
         viewModel.state.test {
-            var state = awaitItem()
-            assertThat(state.loggedIn).isTrue()
-            assertThat(state.showLogin).isNull()
-            viewModel.showLogin()
-            state = awaitItem()
+            val state = awaitItem()
             assertThat(state.loggedIn).isTrue()
             assertThat(state.showLogin).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
+
+        verify { isLoggedIn() }
+        confirmVerified(isLoggedIn)
     }
 
     @Test
     fun `Hide login`() = runTest {
-        every { isLoggedIn.invoke() } returns flowOf(true)
+        every { isLoggedIn() } returns flowOf(true)
 
         viewModel = MainViewModel(isLoggedIn)
+        viewModel.hideLogin()
 
         viewModel.state.test {
-            var state = awaitItem()
-            assertThat(state.loggedIn).isTrue()
-            assertThat(state.showLogin).isNull()
-            viewModel.hideLogin()
-            state = awaitItem()
+            val state = awaitItem()
             assertThat(state.loggedIn).isTrue()
             assertThat(state.showLogin).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
+
+        verify { isLoggedIn() }
+        confirmVerified(isLoggedIn)
     }
 }

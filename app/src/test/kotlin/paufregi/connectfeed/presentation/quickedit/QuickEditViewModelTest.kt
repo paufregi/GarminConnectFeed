@@ -8,6 +8,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -59,9 +60,9 @@ class QuickEditViewModelTest {
     }
 
     @Test
-    fun `Load activities and profiles`() = runTest {
-        coEvery { getActivities.invoke() } returns Result.Success(activities)
-        every { getProfiles.invoke() } returns flowOf(profiles)
+    fun `Initial state`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
@@ -70,14 +71,22 @@ class QuickEditViewModelTest {
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
             assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isNull()
+            assertThat(state.profile).isNull()
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
             cancelAndIgnoreRemainingEvents()
         }
+
+        coVerify{ getActivities() }
+        verify{ getProfiles() }
+        confirmVerified(getActivities, getProfiles, updateActivity)
     }
 
     @Test
     fun `Fails to load activities`() = runTest {
-        coEvery { getActivities.invoke() } returns Result.Failure("error")
-        every { getProfiles.invoke() } returns flowOf(profiles)
+        coEvery { getActivities() } returns Result.Failure("error")
+        every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
@@ -86,43 +95,92 @@ class QuickEditViewModelTest {
             assertThat(state.process).isEqualTo(ProcessState.Failure("error"))
             assertThat(state.activities).isEqualTo(emptyList<Activity>())
             assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isNull()
+            assertThat(state.profile).isNull()
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{ getActivities() }
+        verify{ getProfiles() }
+        confirmVerified(getActivities, getProfiles, updateActivity)
+    }
+
+    @Test
+    fun `Set profile`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        every { getProfiles() } returns flowOf(profiles)
+
+        viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
+
+        viewModel.state.test {
+            awaitItem() // skip initial state
+            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isNull()
+            assertThat(state.profile).isEqualTo(profiles[0])
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Set activity`() = runTest {
-        coEvery { getActivities.invoke() } returns Result.Success(activities)
-        every { getProfiles.invoke() } returns flowOf(profiles)
+        coEvery { getActivities() } returns Result.Success(activities)
+        every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
-            awaitItem() // Initial state
+            awaitItem() // skip initial state
             viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
             val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.profile).isNull()
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
             cancelAndIgnoreRemainingEvents()
         }
+
+        coVerify{ getActivities() }
+        verify{ getProfiles() }
+        confirmVerified(getActivities, getProfiles, updateActivity)
     }
 
     @Test
     fun `Set activity with matching profile`() = runTest {
-        coEvery { getActivities.invoke() } returns Result.Success(activities)
-        every { getProfiles.invoke() } returns flowOf(profiles)
+        coEvery { getActivities() } returns Result.Success(activities)
+        every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
-            awaitItem() // Initial state
+            awaitItem() // skip initial state
             viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
-            awaitItem() // Skip this state
+            awaitItem() // skip
             viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
             val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isEqualTo(activities[0])
             assertThat(state.profile).isEqualTo(profiles[0])
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
             cancelAndIgnoreRemainingEvents()
         }
+
+        coVerify{ getActivities() }
+        verify{ getProfiles() }
+        confirmVerified(getActivities, getProfiles, updateActivity)
     }
 
     @Test
@@ -133,13 +191,45 @@ class QuickEditViewModelTest {
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
-            awaitItem() // Initial state
+            awaitItem() // skip initial state
             viewModel.onEvent(QuickEditEvent.SetProfile(profiles[1]))
-            awaitItem() // Skip this state
+            awaitItem() // skip
             viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
             val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isEqualTo(activities[0])
             assertThat(state.profile).isNull()
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
+        }
+
+        coVerify{ getActivities() }
+        verify{ getProfiles() }
+        confirmVerified(getActivities, getProfiles, updateActivity)
+    }
+
+    @Test
+    fun `Set water`() = runTest {
+        coEvery { getActivities.invoke() } returns Result.Success(activities)
+        every { getProfiles.invoke() } returns flowOf(profiles)
+
+        viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
+
+        viewModel.state.test {
+            awaitItem() // skip initial state
+            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+            awaitItem() // skip
+            viewModel.onEvent(QuickEditEvent.SetWater(100))
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isNull()
+            assertThat(state.profile).isEqualTo(profiles[0].copy(water = 100))
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -152,10 +242,16 @@ class QuickEditViewModelTest {
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
-            awaitItem() // Initial state
+            awaitItem() // skip initial state
             viewModel.onEvent(QuickEditEvent.SetEffort(50f))
             val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isNull()
+            assertThat(state.profile).isNull()
             assertThat(state.effort).isEqualTo(50f)
+            assertThat(state.feel).isNull()
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -168,48 +264,51 @@ class QuickEditViewModelTest {
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
-            awaitItem() // Initial state
+            awaitItem() // skip initial state
             viewModel.onEvent(QuickEditEvent.SetFeel(50f))
             val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isNull()
+            assertThat(state.profile).isNull()
+            assertThat(state.effort).isNull()
             assertThat(state.feel).isEqualTo(50f)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `Set profile`() = runTest {
-        coEvery { getActivities.invoke() } returns Result.Success(activities)
-        every { getProfiles.invoke() } returns flowOf(profiles)
-
-        viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
-
-        viewModel.state.test {
-            awaitItem() // Initial state
-            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
-            val state = awaitItem()
-            assertThat(state.profile).isEqualTo(profiles[0])
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `Save activity`() = runTest {
-        coEvery { getActivities.invoke() } returns Result.Success(activities)
-        every { getProfiles.invoke() } returns flowOf(profiles)
-        coEvery { updateActivity.invoke(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { getActivities() } returns Result.Success(activities)
+        every { getProfiles() } returns flowOf(profiles)
+        coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
+            awaitItem() // skip initial state
             viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
+            awaitItem() // skip
             viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
-            viewModel.onEvent(QuickEditEvent.SetFeel(50F))
+            awaitItem() // skip
             viewModel.onEvent(QuickEditEvent.SetEffort(80f))
+            awaitItem() // skip
+            viewModel.onEvent(QuickEditEvent.SetFeel(50f))
+            awaitItem() // skip
             viewModel.onEvent(QuickEditEvent.Save)
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Success("Activity updated"))
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.profile).isEqualTo(profiles[0])
+            assertThat(state.effort).isEqualTo(80f)
+            assertThat(state.feel).isEqualTo(50f)
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { updateActivity.invoke(activities[0], profiles[0], 50f, 80f) }
+        coVerify { updateActivity(activities[0], profiles[0], 50f, 80f) }
         confirmVerified( updateActivity )
     }
 }

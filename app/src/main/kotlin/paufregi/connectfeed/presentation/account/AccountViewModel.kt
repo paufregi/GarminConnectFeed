@@ -20,9 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AccountViewModel @Inject constructor(
     getUser: GetUser,
-    val signOutUseCase: SignOut,
-    val changePasswordUseCase: ChangePassword,
     val refreshTokenUseCase: RefreshTokens,
+    val signOutUseCase: SignOut,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AccountState())
@@ -31,21 +30,9 @@ class AccountViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), AccountState())
 
     fun onEvent(event: AccountEvent) = when (event) {
-        is AccountEvent.ChangePassword -> viewModelScope.launch { changePassword() }
         is AccountEvent.RefreshTokens -> viewModelScope.launch { refreshToken() }
         is AccountEvent.SignOut -> viewModelScope.launch { signOut() }
         is AccountEvent.Reset -> _state.update { AccountState() }
-    }
-
-    private fun changePassword() = viewModelScope.launch {
-        _state.update { AccountState(ProcessState.Processing) }
-        changePasswordUseCase(state.value.password)
-        _state.update { AccountState(ProcessState.Success("Password updated")) }
-    }
-
-    private fun signOut() = viewModelScope.launch {
-        _state.update { AccountState(ProcessState.Processing) }
-        signOutUseCase()
     }
 
     private fun refreshToken() = viewModelScope.launch {
@@ -54,5 +41,10 @@ class AccountViewModel @Inject constructor(
             is Result.Failure -> _state.update { AccountState(ProcessState.Failure(res.reason)) }
             is Result.Success -> _state.update { AccountState(ProcessState.Success("Token refreshed")) }
         }
+    }
+
+    private fun signOut() = viewModelScope.launch {
+        _state.update { AccountState(ProcessState.Processing) }
+        signOutUseCase()
     }
 }

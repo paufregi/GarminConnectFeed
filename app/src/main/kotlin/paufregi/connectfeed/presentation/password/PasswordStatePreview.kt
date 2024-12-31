@@ -4,7 +4,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
-class SetupContentStatePreview : PreviewParameterProvider<PasswordState> {
+class PasswordContentStatePreview : PreviewParameterProvider<PasswordState> {
     override val values = sequenceOf(
         PasswordState(process = ProcessState.Processing),
         PasswordState(process = ProcessState.Success("Paul")),
@@ -12,11 +12,10 @@ class SetupContentStatePreview : PreviewParameterProvider<PasswordState> {
     )
 }
 
-class SetupFormStatePreview : PreviewParameterProvider<PasswordState> {
+class PasswordFormStatePreview : PreviewParameterProvider<PasswordState> {
     override val values = sequenceOf(
         PasswordState(credential = Credential("user", "pass")),
-        PasswordState(credential = Credential("user", "")),
-        PasswordState(credential = Credential("", "pass")),
         PasswordState(credential = Credential("user", "pass"), showPassword = true),
+        PasswordState(credential = Credential("user", "")),
     )
 }

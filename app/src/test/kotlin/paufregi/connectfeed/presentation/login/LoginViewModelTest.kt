@@ -39,39 +39,74 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Set username`() = runTest {
+    fun `Initial state`() = runTest {
         viewModel = LoginViewModel(signIn)
 
         viewModel.state.test {
-            assertThat(awaitItem().credential.username).isEqualTo("")
-            viewModel.onEvent(LoginEvent.SetUsername("user"))
-            assertThat(awaitItem().credential.username).isEqualTo("user")
+            var state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.credential.username).isEmpty()
+            assertThat(state.credential.password).isEmpty()
+            assertThat(state.user).isNull()
+            assertThat(state.showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
+
+        confirmVerified(signIn)
+    }
+
+    @Test
+    fun `Set username`() = runTest {
+        viewModel = LoginViewModel(signIn)
+        viewModel.onEvent(LoginEvent.SetUsername("user"))
+
+        viewModel.state.test {
+            var state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.credential.username).isEqualTo("user")
+            assertThat(state.credential.password).isEmpty()
+            assertThat(state.user).isNull()
+            assertThat(state.showPassword).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        confirmVerified(signIn)
     }
 
     @Test
     fun `Set password`() = runTest {
         viewModel = LoginViewModel(signIn)
+        viewModel.onEvent(LoginEvent.SetPassword("pass"))
 
         viewModel.state.test {
-            assertThat(awaitItem().credential.password).isEqualTo("")
-            viewModel.onEvent(LoginEvent.SetPassword("pass"))
-            assertThat(awaitItem().credential.password).isEqualTo("pass")
+            var state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.credential.username).isEmpty()
+            assertThat(state.credential.password).isEqualTo("pass")
+            assertThat(state.user).isNull()
+            assertThat(state.showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
+
+        confirmVerified(signIn)
     }
 
     @Test
     fun `Show password`() = runTest {
         viewModel = LoginViewModel(signIn)
+        viewModel.onEvent(LoginEvent.ShowPassword(true))
 
         viewModel.state.test {
-            assertThat(awaitItem().showPassword).isFalse()
-            viewModel.onEvent(LoginEvent.ShowPassword(true))
-            assertThat(awaitItem().showPassword).isTrue()
+            var state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.credential.username).isEmpty()
+            assertThat(state.credential.password).isEmpty()
+            assertThat(state.user).isNull()
+            assertThat(state.showPassword).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
+
+        confirmVerified(signIn)
     }
 
     @Test
@@ -80,19 +115,19 @@ class LoginViewModelTest {
         viewModel.onEvent(LoginEvent.SetUsername("user"))
         viewModel.onEvent(LoginEvent.SetPassword("pass"))
         viewModel.onEvent(LoginEvent.ShowPassword(true))
+        viewModel.onEvent(LoginEvent.Reset)
 
         viewModel.state.test {
             var state = awaitItem()
-            assertThat(state.credential.username).isEqualTo("user")
-            assertThat(state.credential.password).isEqualTo("pass")
-            assertThat(state.showPassword).isTrue()
-            viewModel.onEvent(LoginEvent.Reset)
-            state = awaitItem()
-            assertThat(state.credential.username).isEqualTo("")
-            assertThat(state.credential.password).isEqualTo("")
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.credential.username).isEmpty()
+            assertThat(state.credential.password).isEmpty()
+            assertThat(state.user).isNull()
             assertThat(state.showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
+
+        confirmVerified(signIn)
     }
 
     @Test
@@ -106,7 +141,12 @@ class LoginViewModelTest {
         viewModel.state.test {
             assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
             viewModel.onEvent(LoginEvent.SignIn)
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Success("user"))
+            var state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Success("user"))
+            assertThat(state.credential.username).isEqualTo("user")
+            assertThat(state.credential.password).isEqualTo("pass")
+            assertThat(state.user).isEqualTo(user)
+            assertThat(state.showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -124,7 +164,12 @@ class LoginViewModelTest {
         viewModel.state.test {
             assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
             viewModel.onEvent(LoginEvent.SignIn)
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Failure("error"))
+            var state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Failure("error"))
+            assertThat(state.credential.username).isEqualTo("user")
+            assertThat(state.credential.password).isEqualTo("pass")
+            assertThat(state.user).isNull()
+            assertThat(state.showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 

@@ -1,5 +1,6 @@
 package paufregi.connectfeed.presentation.profile
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -38,7 +39,7 @@ class ProfileViewModel @Inject constructor(
 
     val state = _state
         .onStart { load() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), ProfileState())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), ProfileState())
 
     private fun load() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
@@ -64,25 +65,23 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: ProfileEvent) {
-        when (event) {
-            is ProfileEvent.SetName -> _state.update { it.copy(profile = it.profile.copy(name = event.name)) }
-            is ProfileEvent.SetActivityType -> _state.update {
-                it.copy(
-                    profile = it.profile.copy(
-                        activityType = event.activityType,
-                        course = if (event.activityType == it.profile.course?.type) it.profile.course else null,
-                    ),
-                )
-            }
-            is ProfileEvent.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = event.eventType)) }
-            is ProfileEvent.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = event.course)) }
-            is ProfileEvent.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = event.water)) }
-            is ProfileEvent.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = event.rename)) }
-            is ProfileEvent.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = event.customWater)) }
-            is ProfileEvent.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = event.feelAndEffort)) }
-            is ProfileEvent.Save -> save()
+    fun onEvent(event: ProfileEvent) = when (event) {
+        is ProfileEvent.SetName -> _state.update { it.copy(profile = it.profile.copy(name = event.name)) }
+        is ProfileEvent.SetActivityType -> _state.update {
+            it.copy(
+                profile = it.profile.copy(
+                    activityType = event.activityType,
+                    course = if (event.activityType == it.profile.course?.type) it.profile.course else null,
+                ),
+            )
         }
+        is ProfileEvent.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = event.eventType)) }
+        is ProfileEvent.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = event.course)) }
+        is ProfileEvent.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = event.water)) }
+        is ProfileEvent.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = event.rename)) }
+        is ProfileEvent.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = event.customWater)) }
+        is ProfileEvent.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = event.feelAndEffort)) }
+        is ProfileEvent.Save -> save()
     }
 
     private fun save() = viewModelScope.launch {
