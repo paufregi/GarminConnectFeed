@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -116,7 +117,7 @@ internal fun AccountForm(
         AsyncImage(
             model = state.user?.profileImageUrl,
             contentDescription = null,
-            modifier = Modifier.scale(2.5f).clip(CircleShape)
+            modifier = Modifier.scale(2.5f).clip(CircleShape).testTag("profilePicture")
         )
         Spacer(modifier = Modifier.size(38.dp))
         Text(text = state.user?.name ?: "", fontSize = 24.sp)
