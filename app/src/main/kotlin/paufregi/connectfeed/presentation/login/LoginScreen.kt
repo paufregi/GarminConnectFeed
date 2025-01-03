@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -94,6 +95,7 @@ fun WelcomeInfo(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
+            .testTag("welcome")
     ) {
         AsyncImage(
             model = url,
@@ -118,13 +120,14 @@ internal fun LoginForm(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-Column(
+    Column(
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
             .padding(horizontal = 20.dp)
+            .testTag("login_form")
     ) {
         TextField(
             label = { Text("Username") },

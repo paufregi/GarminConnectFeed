@@ -644,7 +644,7 @@ class ProfileViewModelTest {
             awaitItem() // skip initial state
             viewModel.onEvent(ProfileEvent.Save)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Success("Profile updated"))
+            assertThat(state.process).isEqualTo(ProcessState.Success("Profile saved"))
             assertThat(state.profile).isEqualTo(Profile())
             assertThat(state.activityTypes).isEqualTo(activityTypes)
             assertThat(state.eventTypes).isEqualTo(eventTypes)

@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.navigation.NavController
@@ -77,6 +78,7 @@ fun NavigationScaffold(
                     title = { Text("Connect Feed") },
                     actions = {
                         Button(
+                            modifier = Modifier.testTag("menu"),
                             icon = Icons.Filled.Menu,
                             onClick = { scope.launch { drawerState.open() } }
                         )

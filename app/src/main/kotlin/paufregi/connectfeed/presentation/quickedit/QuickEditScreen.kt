@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -112,6 +113,7 @@ internal fun QuickEditForm(
             .fillMaxSize()
             .padding(paddingValues)
             .padding(horizontal = 20.dp)
+            .testTag("quick_edit_form")
     ) {
         val interactionSource = remember { MutableInteractionSource() }
 

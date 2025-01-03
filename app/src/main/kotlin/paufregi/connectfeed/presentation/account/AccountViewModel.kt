@@ -39,7 +39,7 @@ class AccountViewModel @Inject constructor(
         _state.update { AccountState(ProcessState.Processing) }
         when (val res = refreshTokenUseCase()) {
             is Result.Failure -> _state.update { AccountState(ProcessState.Failure(res.reason)) }
-            is Result.Success -> _state.update { AccountState(ProcessState.Success("Token refreshed")) }
+            is Result.Success -> _state.update { AccountState(ProcessState.Success("Tokens refreshed")) }
         }
     }
 

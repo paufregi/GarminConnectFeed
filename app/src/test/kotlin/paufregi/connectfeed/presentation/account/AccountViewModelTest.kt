@@ -69,7 +69,7 @@ class AccountViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Success("Token refreshed"))
+            assertThat(state.process).isEqualTo(ProcessState.Success("Tokens refreshed"))
             assertThat(state.user).isEqualTo(user)
             cancelAndIgnoreRemainingEvents()
         }

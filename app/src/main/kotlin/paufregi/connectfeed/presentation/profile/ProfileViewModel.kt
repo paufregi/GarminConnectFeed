@@ -87,7 +87,7 @@ class ProfileViewModel @Inject constructor(
     private fun save() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         when (val res = saveProfile(state.value.profile) ) {
-            is Result.Success -> _state.update { it.copy(process = ProcessState.Success("Profile updated")) }
+            is Result.Success -> _state.update { it.copy(process = ProcessState.Success("Profile saved")) }
             is Result.Failure -> _state.update { it.copy(process = ProcessState.Failure(res.reason)) }
         }
     }

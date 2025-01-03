@@ -109,6 +109,7 @@ internal fun ProfileForm(
             .padding(paddingValues)
             .padding(horizontal = 20.dp)
             .verticalScroll(rememberScrollState())
+            .testTag("profile_form")
     ) {
         TextField(
             label = { Text("Name") },

@@ -77,6 +77,7 @@ internal fun ProfilesContent(
             .padding(paddingValues)
             .padding(top = 40.dp)
             .verticalScroll(rememberScrollState())
+            .testTag("profiles_content")
     ) {
         if (state.profiles.isEmpty()) {
             Text("No profile")

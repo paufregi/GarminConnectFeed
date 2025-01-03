@@ -101,7 +101,8 @@ internal fun AccountForm(
             title = "Sign out",
             message = "Are you sure you want to sign out?",
             onConfirm = { onEvent(AccountEvent.SignOut) },
-            onDismiss = { signOutDialog = false }
+            onDismiss = { signOutDialog = false },
+            modifier = Modifier.testTag("sign_out_dialog")
         )
     }
 
@@ -112,12 +113,13 @@ internal fun AccountForm(
             .fillMaxSize()
             .padding(paddingValues)
             .padding(horizontal = 20.dp)
+            .testTag("account_form")
     ) {
 
         AsyncImage(
             model = state.user?.profileImageUrl,
             contentDescription = null,
-            modifier = Modifier.scale(2.5f).clip(CircleShape).testTag("profilePicture")
+            modifier = Modifier.scale(2.5f).clip(CircleShape).testTag("profile_picture")
         )
         Spacer(modifier = Modifier.size(38.dp))
         Text(text = state.user?.name ?: "", fontSize = 24.sp)
