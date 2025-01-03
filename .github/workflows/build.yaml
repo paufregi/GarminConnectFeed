@@ -37,6 +37,8 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Run tests
+        env: 
+          TZ: 'Pacific/Auckland'
         run: ./gradlew test
 
       - name: Run android tests
