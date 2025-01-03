@@ -14,18 +14,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set Timezone
-        uses: szenius/set-timezone@v2.0
-        with:
-          timezoneLinux: Pacific/Auckland
-          timezoneMacos: Pacific/Auckland
-          timezoneWindows: Pacific/Auckland
-
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: "17"
-          distribution: "adopt"
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -37,6 +30,8 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Run tests
+        env: 
+          TZ: 'Pacific/Auckland'
         run: ./gradlew test
 
       - name: Run android tests

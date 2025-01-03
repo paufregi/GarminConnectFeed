@@ -1,10 +1,12 @@
 package paufregi.connectfeed.data.repository
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.datastore.preferences.core.edit
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -18,19 +20,24 @@ import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Course
+import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.createOAuth2
 import paufregi.connectfeed.cred
+import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
-import paufregi.connectfeed.data.database.entities.CredentialEntity
+import paufregi.connectfeed.data.datastore.UserDataStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
 import paufregi.connectfeed.garthPort
 import paufregi.connectfeed.sslSocketFactory
 import java.io.File
+import java.util.Date
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -46,9 +53,14 @@ class GarminRepositoryTest {
     lateinit var repo: GarminRepository
 
     @Inject
+    lateinit var dataStore: UserDataStore
+
+    @Inject
     lateinit var database: GarminDatabase
 
-    private lateinit var dao: GarminDao
+    @Inject
+    lateinit var dao: GarminDao
+
 
     private val connectServer = MockWebServer()
     private val garminSSOServer = MockWebServer()
@@ -67,8 +79,6 @@ class GarminRepositoryTest {
         connectServer.dispatcher = connectDispatcher
         garthServer.dispatcher = garthDispatcher
         garminSSOServer.dispatcher = garminSSODispatcher
-
-        dao = database.garminDao()
     }
 
     @After
@@ -77,15 +87,52 @@ class GarminRepositoryTest {
         garminSSOServer.shutdown()
         garthServer.shutdown()
         database.close()
+        runBlocking{
+            dataStore.dataStore.edit { it.clear() }
+        }
+    }
+
+    @Test
+    fun `Store user`() = runTest {
+        val user1 = User("user_1", "avatar_1")
+        val user2 = User("user_2", "avatar_2")
+        repo.getUser().test{
+            assertThat(awaitItem()).isNull()
+            repo.saveUser(user1)
+            assertThat(awaitItem()).isEqualTo(user1)
+            repo.saveUser(user2)
+            assertThat(awaitItem()).isEqualTo(user2)
+            repo.deleteUser()
+            assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Fetch user`() = runTest {
+        dataStore.saveCredential(cred)
+
+        val expected = User("Paul", "https://profile.image.com/large.jpg")
+
+        val res = repo.fetchUser()
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
     }
 
     @Test
     fun `Store credential`() = runTest {
-        repo.saveCredential(cred)
-        val res = repo.getCredential()
-
-        res.test{
-            assertThat(awaitItem()).isEqualTo(cred)
+        val credential1 = Credential("user_1", "password_1")
+        val credential2 = Credential("user_2", "password_2")
+        repo.getCredential().test{
+            assertThat(awaitItem()).isNull()
+            repo.saveCredential(credential1)
+            assertThat(awaitItem()).isEqualTo(credential1)
+            repo.saveCredential(credential2)
+            assertThat(awaitItem()).isEqualTo(credential2)
+            repo.deleteCredential()
+            assertThat(awaitItem()).isNull()
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -99,9 +146,7 @@ class GarminRepositoryTest {
         repo.deleteProfile(profile)
         assertThat(repo.getProfile(profile.id)).isNull()
 
-        val res = repo.getAllProfiles()
-
-        res.test{
+        repo.getAllProfiles().test{
             assertThat(awaitItem()).isEmpty()
             repo.saveProfile(profile)
             assertThat(awaitItem()).containsExactly(profile)
@@ -110,19 +155,32 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Upload file`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+    fun `Delete tokens`() = runTest {
+        val oAuth1 = OAuth1("token", "secret")
+        val oAuth2 = createOAuth2(Date())
 
-        val testFile = File.createTempFile("test", "test")
-        testFile.deleteOnExit()
-        val res = repo.uploadFile(testFile)
+        dataStore.getOauth1().test {
+            assertThat(awaitItem()).isNull()
+            dataStore.saveOAuth1(oAuth1)
+            assertThat(awaitItem()).isEqualTo(oAuth1)
+            repo.deleteTokens()
+            assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
 
-        assertThat(res.isSuccessful).isTrue()
+        dataStore.getOauth2().test {
+            assertThat(awaitItem()).isNull()
+            dataStore.saveOAuth2(oAuth2)
+            assertThat(awaitItem()).isEqualTo(oAuth2)
+            repo.deleteTokens()
+            assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
     fun `Get latest activities`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
 
         val expected = listOf(
             CoreActivity(id = 1, name = "Activity 1", type = CoreActivityType.Cycling),
@@ -138,7 +196,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get courses`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
 
         val expected = listOf(
             CoreCourse(id = 1, name = "Course 1", type = CoreActivityType.Running),
@@ -154,7 +212,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get event types`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
 
         val expected = listOf(
             CoreEventType(id = 1, name = "Race"),
@@ -168,10 +226,9 @@ class GarminRepositoryTest {
         assertThat(res.data).isEqualTo(expected)
     }
 
-
     @Test
     fun `Update activity`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
 
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
         val profile = Profile(
@@ -184,6 +241,17 @@ class GarminRepositoryTest {
         )
 
         val res = repo.updateActivity(activity, profile, 50f, 90f)
+
+        assertThat(res.isSuccessful).isTrue()
+    }
+
+    @Test
+    fun `Upload file`() = runTest {
+        dataStore.saveCredential(cred)
+
+        val testFile = File.createTempFile("test", "test")
+        testFile.deleteOnExit()
+        val res = repo.uploadFile(testFile)
 
         assertThat(res.isSuccessful).isTrue()
     }

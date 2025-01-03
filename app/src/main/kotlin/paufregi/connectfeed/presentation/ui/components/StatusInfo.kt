@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
-import androidx.compose.material.icons.filled.Timelapse
 import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,7 +32,6 @@ sealed class StatusInfoType(
 ){
     object Success: StatusInfoType(Icons.Default.CheckCircleOutline, Color.Green)
     object Failure: StatusInfoType(Icons.Default.WarningAmber, Color.Red)
-    object Waiting: StatusInfoType(Icons.Default.Timelapse, Color.Cyan)
     object Unknown: StatusInfoType(Icons.Default.WarningAmber, Color.DarkGray)
 }
 
@@ -41,7 +39,7 @@ sealed class StatusInfoType(
 @Composable
 @ExperimentalMaterial3Api
 fun StatusInfo(
-    @PreviewParameter(StatusInfoTypePreview ::class) type: StatusInfoType,
+    @PreviewParameter(StatusInfoTypePreview::class) type: StatusInfoType,
     text: String = "",
     actionButton: @Composable () -> Unit = { },
     paddingValues: PaddingValues = PaddingValues()
@@ -70,7 +68,5 @@ private class StatusInfoTypePreview : PreviewParameterProvider<StatusInfoType> {
     override val values = sequenceOf(
         StatusInfoType.Success,
         StatusInfoType.Failure,
-        StatusInfoType.Waiting,
-        StatusInfoType.Unknown,
     )
 }

@@ -5,8 +5,10 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -48,27 +50,35 @@ class ProfilesViewModelTest {
     }
 
     @Test
-    fun `Load data`() = runTest {
-        every { getProfiles.invoke() } returns flowOf(profiles)
+    fun `Initial state`() = runTest {
+        every { getProfiles() } returns flowOf(profiles)
 
         viewModel = ProfilesViewModel(getProfiles, deleteProfile)
 
         viewModel.state.test {
-            assertThat(awaitItem().profiles).isEqualTo(profiles)
+            val state = awaitItem()
+            assertThat(state.profiles).isEqualTo(profiles)
             cancelAndIgnoreRemainingEvents()
         }
+
+        verify{ getProfiles() }
+        confirmVerified(getProfiles, deleteProfile)
     }
 
     @Test
-    fun `Load data - empty list`() = runTest {
+    fun `Initial state - empty list`() = runTest {
         every { getProfiles.invoke() } returns flowOf(emptyList())
 
         viewModel = ProfilesViewModel(getProfiles, deleteProfile)
 
         viewModel.state.test {
-            assertThat(awaitItem().profiles).isEqualTo(emptyList<Profile>())
+            val state = awaitItem()
+            assertThat(state.profiles).isEqualTo(emptyList<Profile>())
             cancelAndIgnoreRemainingEvents()
         }
+
+        verify{ getProfiles() }
+        confirmVerified(getProfiles, deleteProfile)
     }
 
     @Test
@@ -79,11 +89,14 @@ class ProfilesViewModelTest {
         viewModel = ProfilesViewModel(getProfiles, deleteProfile)
 
         viewModel.state.test {
-            assertThat(awaitItem().profiles).isEqualTo(profiles)
+            var state = awaitItem()
+            assertThat(state.profiles).isEqualTo(profiles)
             viewModel.onEvent(ProfileEvent.Delete(profiles[0]))
             cancelAndIgnoreRemainingEvents()
         }
 
+        verify{ getProfiles() }
         coVerify { deleteProfile.invoke(profiles[0]) }
+        confirmVerified(getProfiles, deleteProfile)
     }
 }

@@ -2,9 +2,10 @@ package paufregi.connectfeed.presentation.quickedit
 
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 data class QuickEditState(
-    val processing: ProcessState = ProcessState.Processing,
+    val process: ProcessState = ProcessState.Processing,
     val activities: List<Activity> = emptyList(),
     val profiles: List<Profile> = emptyList(),
     val activity: Activity? = null,
@@ -13,10 +14,3 @@ data class QuickEditState(
     val feel: Float? = null
 )
 
-sealed interface ProcessState {
-    data object Idle : ProcessState
-    data object Processing : ProcessState
-    data object Success : ProcessState
-    data object FailureLoading : ProcessState
-    data object FailureUpdating : ProcessState
-}

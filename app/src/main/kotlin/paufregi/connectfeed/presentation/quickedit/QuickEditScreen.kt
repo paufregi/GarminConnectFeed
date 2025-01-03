@@ -24,6 +24,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -31,27 +34,31 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.CustomSlider
 import paufregi.connectfeed.presentation.ui.components.Dropdown
 import paufregi.connectfeed.presentation.ui.components.IconRadioGroup
 import paufregi.connectfeed.presentation.ui.components.IconRadioItem
 import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.presentation.ui.components.NavigationScaffold
+import paufregi.connectfeed.presentation.ui.components.SimpleScaffold
 import paufregi.connectfeed.presentation.ui.components.StatusInfo
 import paufregi.connectfeed.presentation.ui.components.StatusInfoType
 import paufregi.connectfeed.presentation.ui.components.TextEffort
 import paufregi.connectfeed.presentation.ui.components.TextFeel
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun QuickEditScreen(
-    paddingValues: PaddingValues = PaddingValues(),
-) {
+internal fun QuickEditScreen(nav: NavController = rememberNavController()) {
     val viewModel = hiltViewModel<QuickEditViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    QuickEditContent(state, viewModel::onEvent, paddingValues)
+    QuickEditContent(state, viewModel::onEvent, nav)
 }
 
 @Preview
@@ -60,26 +67,31 @@ internal fun QuickEditScreen(
 internal fun QuickEditContent(
     @PreviewParameter(QuickEditStatePreview ::class) state: QuickEditState,
     onEvent: (QuickEditEvent) -> Unit = {},
-    paddingValues: PaddingValues = PaddingValues(),
+    nav: NavController = rememberNavController()
 ) {
-    when (state.processing) {
-        is ProcessState.Processing -> Loading(paddingValues)
-        is ProcessState.FailureLoading -> StatusInfo(
-            type = StatusInfoType.Failure,
-            text = "Couldn't load activities",
-            actionButton = { Button(text = "Retry", onClick = { onEvent(QuickEditEvent.Restart) }) } ,
-            paddingValues = paddingValues)
-        is ProcessState.FailureUpdating -> StatusInfo(
-            type = StatusInfoType.Failure,
-            text = "Couldn't update activity",
-            actionButton = { Button(text = "Ok", onClick = { onEvent(QuickEditEvent.Restart) }) } ,
-            paddingValues = paddingValues)
-        is ProcessState.Success -> StatusInfo(
-            type = StatusInfoType.Success,
-            text = "Activity updated",
-            actionButton = { Button(text = "Ok", onClick = { onEvent(QuickEditEvent.Restart) }) } ,
-            paddingValues = paddingValues)
-        else -> QuickEditForm(state, onEvent, paddingValues)
+    when (state.process) {
+        is ProcessState.Processing -> SimpleScaffold { Loading(it) }
+        is ProcessState.Success -> SimpleScaffold {
+            StatusInfo(
+                type = StatusInfoType.Success,
+                text = state.process.message,
+                actionButton = { Button(text = "Ok", onClick = { onEvent(QuickEditEvent.Restart) }) },
+                paddingValues = it
+            )
+        }
+        is ProcessState.Failure -> SimpleScaffold {
+            StatusInfo(
+                type = StatusInfoType.Failure,
+                text = state.process.reason,
+                actionButton = { Button(text = "Ok", onClick = { onEvent(QuickEditEvent.Restart) }) },
+                paddingValues = it
+            )
+        }
+        is ProcessState.Idle -> NavigationScaffold(
+            items = Navigation.items,
+            selectIndex = Navigation.HOME,
+            nav = nav
+        ) { QuickEditForm(state, onEvent, it) }
     }
 }
 
@@ -91,6 +103,9 @@ internal fun QuickEditForm(
     onEvent: (QuickEditEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -98,6 +113,7 @@ internal fun QuickEditForm(
             .fillMaxSize()
             .padding(paddingValues)
             .padding(horizontal = 20.dp)
+            .testTag("quick_edit_form")
     ) {
         val interactionSource = remember { MutableInteractionSource() }
 
@@ -181,9 +197,12 @@ internal fun QuickEditForm(
             Button(
                 text = "Save",
                 enabled = state.activity != null && state.profile != null,
-                onClick = { onEvent(QuickEditEvent.Save) }
+                onClick = {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                    onEvent(QuickEditEvent.Save)
+                }
             )
         }
     }
 }
-
