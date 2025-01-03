@@ -9,6 +9,7 @@ import okhttp3.mockwebserver.RecordedRequest
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
 import paufregi.connectfeed.core.models.Credential
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuth2
 import paufregi.connectfeed.data.api.models.OAuthConsumer
@@ -30,6 +31,7 @@ fun createOAuth2(expiresAt: Date) = OAuth2(
 val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
 
 val cred = Credential(username = "user", password = "pass")
+val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
 val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 val consumerBody = """{"consumer_key":"${consumer.key}","consumer_secret":"${consumer.secret}"}"""
 val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
