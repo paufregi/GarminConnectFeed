@@ -119,9 +119,9 @@ internal fun AccountForm(
         AsyncImage(
             model = state.user?.profileImageUrl,
             contentDescription = null,
-            modifier = Modifier.scale(2.5f).clip(CircleShape).testTag("profile_picture")
+            modifier = Modifier.scale(2f).clip(CircleShape).testTag("profile_picture")
         )
-        Spacer(modifier = Modifier.size(38.dp))
+        Spacer(modifier = Modifier.size(42.dp))
         Text(text = state.user?.name ?: "", fontSize = 24.sp)
 
         Spacer(modifier = Modifier.size(24.dp))
