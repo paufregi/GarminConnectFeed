@@ -25,6 +25,7 @@
         </activity>
         <activity
             android:name=".presentation.syncweight.SyncWeightActivity"
+            android:theme="@android:style/Theme.NoTitleBar"
             android:exported="true"
             android:noHistory="true">
             <intent-filter>
