@@ -28,94 +28,48 @@ class UserDataStore (
         private val OAUTH2 = byteArrayPreferencesKey("oauth2")
     }
 
-    fun getUser(): Flow<User?> =
+    private inline fun <reified T>getValue(key: Preferences.Key<ByteArray>): Flow<T?> =
         dataStore.data.map { preferences ->
-            preferences[USER]?.let { Json.decodeFromString<User>(crypto.decrypt(it)) }
+            preferences[key]?.let { crypto.decrypt(it) }?.let { Json.decodeFromString<T>(it) }
         }
 
-    fun getCredential(): Flow<Credential?> =
-        dataStore.data.map { preferences ->
-            preferences[CREDENTIAL]?.let { Json.decodeFromString<Credential>(crypto.decrypt(it)) }
-        }
-
-    fun getOAuthConsumer(): Flow<OAuthConsumer?> =
-        dataStore.data.map { preferences ->
-            preferences[OAUTH_CONSUMER]?.let { Json.decodeFromString<OAuthConsumer>(crypto.decrypt(it)) }
-        }
-
-    fun getOauth1(): Flow<OAuth1?> =
-        dataStore.data.map { preferences ->
-            preferences[OAUTH1]?.let { Json.decodeFromString<OAuth1>(crypto.decrypt(it)) }
-        }
-
-    fun getOauth2(): Flow<OAuth2?> =
-        dataStore.data.map { preferences ->
-            preferences[OAUTH2]?.let { Json.decodeFromString<OAuth2>(crypto.decrypt(it)) }
-        }
-
-    suspend fun saveUser(user: User) {
+    private suspend inline fun <reified T>storeValue(value: T, key: Preferences.Key<ByteArray>) {
         dataStore.edit { preferences ->
-            preferences[USER] = crypto.encrypt(Json.encodeToString(user))
+            preferences[key] = crypto.encrypt(Json.encodeToString(value))
         }
     }
 
-    suspend fun saveCredential(credential: Credential) {
-        dataStore.edit { preferences ->
-            preferences[CREDENTIAL] = crypto.encrypt(Json.encodeToString(credential))
-        }
+    private suspend inline fun removeValue(key: Preferences.Key<ByteArray>) {
+        dataStore.edit { preferences -> preferences.remove(key) }
     }
 
-    suspend fun saveOAuthConsumer(consumer: OAuthConsumer) {
-        dataStore.edit { preferences ->
-            preferences[OAUTH_CONSUMER] = crypto.encrypt(
-                Json.encodeToString(consumer)
-            )
-        }
-    }
+    fun getUser(): Flow<User?> = getValue<User>(USER)
 
-    suspend fun saveOAuth1(oauth1: OAuth1) {
-        dataStore.edit { preferences ->
-            preferences[OAUTH1] = crypto.encrypt(
-                Json.encodeToString(oauth1)
-            )
-        }
-    }
+    fun getCredential(): Flow<Credential?> = getValue<Credential>(CREDENTIAL)
 
-    suspend fun saveOAuth2(oauth2: OAuth2) {
-        dataStore.edit { preferences ->
-            preferences[OAUTH2] = crypto.encrypt(
-                Json.encodeToString(oauth2)
-            )
-        }
-    }
+    fun getOAuthConsumer(): Flow<OAuthConsumer?> = getValue<OAuthConsumer>(OAUTH_CONSUMER)
 
-    suspend fun deleteUser() {
-        dataStore.edit { preferences ->
-            preferences.remove(USER)
-        }
-    }
+    fun getOauth1(): Flow<OAuth1?> = getValue<OAuth1>(OAUTH1)
 
-    suspend fun deleteCredential() {
-        dataStore.edit { preferences ->
-            preferences.remove(CREDENTIAL)
-        }
-    }
+    fun getOauth2(): Flow<OAuth2?> = getValue<OAuth2>(OAUTH2)
 
-    suspend fun deleteOAuthConsumer() {
-        dataStore.edit { preferences ->
-            preferences.remove(OAUTH_CONSUMER)
-        }
-    }
+    suspend fun saveUser(user: User) = storeValue(user, USER)
 
-    suspend fun deleteOAuth1() {
-        dataStore.edit { preferences ->
-            preferences.remove(OAUTH1)
-        }
-    }
+    suspend fun saveCredential(credential: Credential) = storeValue(credential, CREDENTIAL)
 
-    suspend fun deleteOAuth2() {
-        dataStore.edit { preferences ->
-            preferences.remove(OAUTH2)
-        }
-    }
+    suspend fun saveOAuthConsumer(consumer: OAuthConsumer) = storeValue(consumer, OAUTH_CONSUMER)
+
+    suspend fun saveOAuth1(oauth1: OAuth1) = storeValue(oauth1, OAUTH1)
+
+    suspend fun saveOAuth2(oauth2: OAuth2) = storeValue(oauth2, OAUTH2)
+
+    suspend fun deleteUser() = removeValue(USER)
+
+    suspend fun deleteCredential() = removeValue(CREDENTIAL)
+
+    suspend fun deleteOAuthConsumer() = removeValue(OAUTH_CONSUMER)
+
+    suspend fun deleteOAuth1() = removeValue(OAUTH1)
+
+    suspend fun deleteOAuth2() = removeValue(OAUTH2)
 }
