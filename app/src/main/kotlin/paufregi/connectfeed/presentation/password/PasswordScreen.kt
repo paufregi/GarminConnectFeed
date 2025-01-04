@@ -77,7 +77,7 @@ internal fun PasswordContent(
         }
         is ProcessState.Idle -> NavigationScaffold(
             items = Navigation.items,
-            selectIndex = Navigation.ACCOUNT,
+            selectedIndex = Navigation.ACCOUNT,
             nav = nav
         ) {
             PasswordForm(state, onEvent, nav, it)

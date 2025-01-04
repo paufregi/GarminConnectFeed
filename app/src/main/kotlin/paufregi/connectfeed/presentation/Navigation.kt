@@ -42,7 +42,6 @@ sealed interface Route {
 object Navigation {
     const val HOME = 0
     const val PROFILES = 1
-    const val PROFILE = 1
     const val ACCOUNT = 2
 
     val items  = listOf(

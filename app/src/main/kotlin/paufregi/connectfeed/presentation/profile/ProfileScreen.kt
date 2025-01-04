@@ -83,7 +83,7 @@ internal fun ProfileContent(
         }
         is ProcessState.Idle -> NavigationScaffold(
             items = Navigation.items,
-            selectIndex = Navigation.PROFILE,
+            selectedIndex = Navigation.PROFILES,
             nav = nav
         ) { ProfileForm(state, onEvent, nav, it) }
     }

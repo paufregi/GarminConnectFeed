@@ -40,7 +40,7 @@ data class NavigationItem (
 @ExperimentalMaterial3Api
 fun NavigationScaffold(
     items: List<NavigationItem> = emptyList<NavigationItem>(),
-    selectIndex: Int = 0,
+    selectedIndex: Int = 0,
     nav: NavController = rememberNavController(),
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
@@ -59,7 +59,7 @@ fun NavigationScaffold(
                     NavigationDrawerItem(
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                         label = { Text(item.label) },
-                        selected = index == selectIndex,
+                        selected = index == selectedIndex,
                         onClick = {
                             scope.launch { drawerState.close() }
                             nav.navigate(item.route)
