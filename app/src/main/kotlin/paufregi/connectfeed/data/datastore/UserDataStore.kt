@@ -29,29 +29,20 @@ class UserDataStore (
         private val OAUTH1 = byteArrayPreferencesKey("oauth1")
         private val OAUTH2 = byteArrayPreferencesKey("oauth2")
     }
-    private val mutex = Mutex()
-
-    private suspend fun <T> withLock(block: suspend () -> T): T = mutex.withLock { block() }
 
     private suspend inline fun <reified T>getValue(key: Preferences.Key<ByteArray>): Flow<T?> =
-        withLock {
-            dataStore.data.conflate().map { preferences ->
-                preferences[key]?.let { crypto.decrypt(it) }?.let { Json.decodeFromString<T>(it) }
-            }
+        dataStore.data.conflate().map { preferences ->
+            preferences[key]?.let { crypto.decrypt(it) }?.let { Json.decodeFromString<T>(it) }
         }
 
     private suspend inline fun <reified T>storeValue(value: T, key: Preferences.Key<ByteArray>) {
-        withLock {
-            dataStore.edit { preferences ->
-                preferences[key] = crypto.encrypt(Json.encodeToString(value))
-            }
+        dataStore.edit { preferences ->
+            preferences[key] = crypto.encrypt(Json.encodeToString(value))
         }
     }
 
     private suspend inline fun removeValue(key: Preferences.Key<ByteArray>) {
-        withLock {
-            dataStore.edit { preferences -> preferences.remove(key) }
-        }
+        dataStore.edit { preferences -> preferences.remove(key) }
     }
 
     suspend fun getUser(): Flow<User?> = getValue<User>(USER)

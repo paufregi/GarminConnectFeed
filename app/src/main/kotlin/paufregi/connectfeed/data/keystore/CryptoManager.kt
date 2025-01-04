@@ -2,6 +2,8 @@ package paufregi.connectfeed.data.keystore
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -22,6 +24,10 @@ class CryptoManager {
         private const val TRANSFORMATION = "$ALGORITHM/$BLOCK_MODE/$PADDING"
     }
 
+    private val mutex = Mutex()
+
+    private suspend fun <T> withLock(block: suspend () -> T): T = mutex.withLock { block() }
+
     private fun getKey(): SecretKey {
         val existingKey = keyStore.getEntry(ALIAS, null) as? KeyStore.SecretKeyEntry
         return existingKey?.secretKey ?: createKey()
@@ -40,18 +46,18 @@ class CryptoManager {
         }.generateKey()
     }
 
-    fun encrypt(data: String): ByteArray {
+    suspend fun encrypt(data: String): ByteArray = withLock {
         cipher.init(Cipher.ENCRYPT_MODE, getKey())
         val iv = cipher.iv
         val encrypted = cipher.doFinal(data.encodeToByteArray())
-        return iv + encrypted
+        iv + encrypted
     }
 
-    fun decrypt(bytes: ByteArray): String {
+    suspend fun decrypt(bytes: ByteArray): String = withLock {
         val iv = bytes.copyOfRange(0, cipher.blockSize)
         val data = bytes.copyOfRange(cipher.blockSize, bytes.size)
         cipher.init(Cipher.DECRYPT_MODE, getKey(), IvParameterSpec(iv))
         val res = cipher.doFinal(data)
-        return res.decodeToString()
+        res.decodeToString()
     }
 }
