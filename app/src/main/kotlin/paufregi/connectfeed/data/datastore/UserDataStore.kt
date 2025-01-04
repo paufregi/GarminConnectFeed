@@ -5,7 +5,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.byteArrayPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import paufregi.connectfeed.core.models.Credential
@@ -19,7 +22,6 @@ class UserDataStore (
     val dataStore: DataStore<Preferences>,
     val crypto: CryptoManager
 ) {
-
     companion object {
         private val USER = byteArrayPreferencesKey("user")
         private val CREDENTIAL = byteArrayPreferencesKey("credential")
@@ -27,20 +29,27 @@ class UserDataStore (
         private val OAUTH1 = byteArrayPreferencesKey("oauth1")
         private val OAUTH2 = byteArrayPreferencesKey("oauth2")
     }
+    private val mutex = Mutex()
+
+    private suspend fun <T> withLock(block: suspend () -> T): T = mutex.withLock { block() }
 
     private inline fun <reified T>getValue(key: Preferences.Key<ByteArray>): Flow<T?> =
-        dataStore.data.map { preferences ->
+        dataStore.data.conflate().map { preferences ->
             preferences[key]?.let { crypto.decrypt(it) }?.let { Json.decodeFromString<T>(it) }
         }
 
     private suspend inline fun <reified T>storeValue(value: T, key: Preferences.Key<ByteArray>) {
-        dataStore.edit { preferences ->
-            preferences[key] = crypto.encrypt(Json.encodeToString(value))
+        withLock {
+            dataStore.edit { preferences ->
+                preferences[key] = crypto.encrypt(Json.encodeToString(value))
+            }
         }
     }
 
     private suspend inline fun removeValue(key: Preferences.Key<ByteArray>) {
-        dataStore.edit { preferences -> preferences.remove(key) }
+        withLock {
+            dataStore.edit { preferences -> preferences.remove(key) }
+        }
     }
 
     fun getUser(): Flow<User?> = getValue<User>(USER)
