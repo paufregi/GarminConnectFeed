@@ -33,9 +33,11 @@ class UserDataStore (
 
     private suspend fun <T> withLock(block: suspend () -> T): T = mutex.withLock { block() }
 
-    private inline fun <reified T>getValue(key: Preferences.Key<ByteArray>): Flow<T?> =
-        dataStore.data.conflate().map { preferences ->
-            preferences[key]?.let { crypto.decrypt(it) }?.let { Json.decodeFromString<T>(it) }
+    private suspend inline fun <reified T>getValue(key: Preferences.Key<ByteArray>): Flow<T?> =
+        withLock {
+            dataStore.data.conflate().map { preferences ->
+                preferences[key]?.let { crypto.decrypt(it) }?.let { Json.decodeFromString<T>(it) }
+            }
         }
 
     private suspend inline fun <reified T>storeValue(value: T, key: Preferences.Key<ByteArray>) {
@@ -52,15 +54,15 @@ class UserDataStore (
         }
     }
 
-    fun getUser(): Flow<User?> = getValue<User>(USER)
+    suspend fun getUser(): Flow<User?> = getValue<User>(USER)
 
-    fun getCredential(): Flow<Credential?> = getValue<Credential>(CREDENTIAL)
+    suspend fun getCredential(): Flow<Credential?> = getValue<Credential>(CREDENTIAL)
 
-    fun getOAuthConsumer(): Flow<OAuthConsumer?> = getValue<OAuthConsumer>(OAUTH_CONSUMER)
+    suspend fun getOAuthConsumer(): Flow<OAuthConsumer?> = getValue<OAuthConsumer>(OAUTH_CONSUMER)
 
-    fun getOauth1(): Flow<OAuth1?> = getValue<OAuth1>(OAUTH1)
+    suspend fun getOauth1(): Flow<OAuth1?> = getValue<OAuth1>(OAUTH1)
 
-    fun getOauth2(): Flow<OAuth2?> = getValue<OAuth2>(OAUTH2)
+    suspend fun getOauth2(): Flow<OAuth2?> = getValue<OAuth2>(OAUTH2)
 
     suspend fun saveUser(user: User) = storeValue(user, USER)
 
