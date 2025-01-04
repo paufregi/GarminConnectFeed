@@ -89,7 +89,7 @@ internal fun QuickEditContent(
         }
         is ProcessState.Idle -> NavigationScaffold(
             items = Navigation.items,
-            selectIndex = Navigation.HOME,
+            selectedIndex = Navigation.HOME,
             nav = nav
         ) { QuickEditForm(state, onEvent, it) }
     }

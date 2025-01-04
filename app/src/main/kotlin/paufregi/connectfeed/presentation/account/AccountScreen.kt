@@ -79,7 +79,7 @@ internal fun AccountContent(
         }
         is ProcessState.Idle -> NavigationScaffold(
             items = Navigation.items,
-            selectIndex = Navigation.HOME,
+            selectedIndex = Navigation.ACCOUNT,
             nav = nav
         ) { AccountForm(state, onEvent, nav, it) }
     }

@@ -48,7 +48,7 @@ internal fun ProfilesScreen(
 
     NavigationScaffold(
         items = Navigation.items,
-        selectIndex = Navigation.HOME,
+        selectedIndex = Navigation.PROFILES,
         nav = nav,
         floatingActionButton = {
             FloatingActionButton(
