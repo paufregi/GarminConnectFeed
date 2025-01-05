@@ -33,7 +33,8 @@ class ClearTokensTest{
 
         val res = useCase()
 
-        assertThat(res).isInstanceOf(Result.Success(Unit).javaClass)
+        assertThat(res).isEqualTo(Unit)
+
         coVerify {
             repo.deleteTokens()
         }
