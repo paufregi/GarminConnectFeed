@@ -18,6 +18,7 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.usecases.GetUser
 import paufregi.connectfeed.core.usecases.ClearTokens
+import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
@@ -26,6 +27,7 @@ import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 class AccountViewModelTest {
 
     private val getUser = mockk<GetUser>()
+    private val refreshUser = mockk<RefreshUser>()
     private val clearTokens = mockk<ClearTokens>()
     private val signOut = mockk<SignOut>()
 
@@ -48,7 +50,7 @@ class AccountViewModelTest {
 
     @Test
     fun `Initial state`() = runTest {
-        viewModel = AccountViewModel(getUser, clearTokens, signOut)
+        viewModel = AccountViewModel(getUser, refreshUser, clearTokens, signOut)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -62,9 +64,28 @@ class AccountViewModelTest {
     }
 
     @Test
+    fun `Refresh user`() = runTest {
+        coEvery { clearTokens() } returns Unit
+        viewModel = AccountViewModel(getUser, refreshUser, clearTokens, signOut)
+        viewModel.onEvent(AccountEvent.RefreshUser)
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Success("User data refreshed"))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{
+            getUser()
+            clearTokens()
+        }
+        confirmVerified(getUser, clearTokens, signOut)
+    }
+
+    @Test
     fun `Clear tokens`() = runTest {
         coEvery { clearTokens() } returns Unit
-        viewModel = AccountViewModel(getUser, clearTokens, signOut)
+        viewModel = AccountViewModel(getUser, refreshUser, clearTokens, signOut)
         viewModel.onEvent(AccountEvent.ClearTokens)
 
         viewModel.state.test {
@@ -83,7 +104,7 @@ class AccountViewModelTest {
     @Test
     fun `Sign out`() = runTest {
         coEvery { signOut() } returns Unit
-        viewModel = AccountViewModel(getUser, clearTokens, signOut)
+        viewModel = AccountViewModel(getUser, refreshUser, clearTokens, signOut)
         viewModel.onEvent(AccountEvent.SignOut)
 
         viewModel.state.test {

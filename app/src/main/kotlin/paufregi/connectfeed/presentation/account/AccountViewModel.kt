@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetUser
 import paufregi.connectfeed.core.usecases.ClearTokens
+import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
@@ -19,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AccountViewModel @Inject constructor(
     getUser: GetUser,
+    val refreshUserUseCase: RefreshUser,
     val clearTokensUseCase: ClearTokens,
     val signOutUseCase: SignOut,
 ) : ViewModel() {
@@ -29,9 +31,18 @@ class AccountViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), AccountState())
 
     fun onEvent(event: AccountEvent) = when (event) {
+        is AccountEvent.RefreshUser -> viewModelScope.launch { refreshUser() }
         is AccountEvent.ClearTokens -> viewModelScope.launch { clearTokens() }
         is AccountEvent.SignOut -> viewModelScope.launch { signOut() }
         is AccountEvent.Reset -> _state.update { AccountState() }
+    }
+
+    private fun refreshUser() = viewModelScope.launch {
+        _state.update { AccountState(ProcessState.Processing) }
+        when (val result = refreshUserUseCase()) {
+            is Result.Success -> _state.update { AccountState(ProcessState.Success("User data refreshed")) }
+            is Result.Failure -> _state.update { AccountState(ProcessState.Failure(result.reason)) }
+        }
     }
 
     private fun clearTokens() = viewModelScope.launch {

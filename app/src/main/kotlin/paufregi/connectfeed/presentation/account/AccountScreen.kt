@@ -130,6 +130,10 @@ internal fun AccountForm(
             onClick = { nav.navigate(Route.Password) }
         )
         Button(
+            text = "Refresh user",
+            onClick = { onEvent(AccountEvent.RefreshUser) }
+        )
+        Button(
             text = "Clear tokens",
             onClick = { onEvent(AccountEvent.ClearTokens) }
         )
