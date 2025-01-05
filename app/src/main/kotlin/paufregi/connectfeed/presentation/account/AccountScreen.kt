@@ -130,8 +130,8 @@ internal fun AccountForm(
             onClick = { nav.navigate(Route.Password) }
         )
         Button(
-            text = "Refresh tokens",
-            onClick = { onEvent(AccountEvent.RefreshTokens) }
+            text = "Clear tokens",
+            onClick = { onEvent(AccountEvent.ClearTokens) }
         )
         Button(
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
