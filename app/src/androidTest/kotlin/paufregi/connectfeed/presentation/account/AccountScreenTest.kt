@@ -28,6 +28,7 @@ class AccountScreenTest {
         }
         composeTestRule.onNodeWithTag("profilePicture").isDisplayed()
         composeTestRule.onNodeWithText("Change password").isDisplayed()
+        composeTestRule.onNodeWithText("Refresh user").isDisplayed()
         composeTestRule.onNodeWithText("Refresh tokens").isDisplayed()
         composeTestRule.onNodeWithText("Sign out").isDisplayed()
     }

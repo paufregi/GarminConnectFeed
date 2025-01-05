@@ -147,7 +147,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Refresh tokens`() = runTest {
+    fun `Clear tokens`() = runTest {
         dataStore.saveCredential(cred)
         dataStore.saveUser(user)
 
@@ -156,8 +156,22 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("menu").performClick()
         composeTestRule.onNodeWithText("Account").performClick()
         composeTestRule.waitUntil(conditionDescription = "account_form") { composeTestRule.onNodeWithTag("account_form").isDisplayed() }
-        composeTestRule.onNodeWithText("Refresh tokens").performClick()
-        composeTestRule.waitUntil(conditionDescription = "Tokens refreshed") { composeTestRule.onNodeWithText("Tokens refreshed").isDisplayed() }
+        composeTestRule.onNodeWithText("Clear tokens").performClick()
+        composeTestRule.waitUntil(conditionDescription = "Tokens cleared") { composeTestRule.onNodeWithText("Tokens cleared").isDisplayed() }
+    }
+
+    @Test
+    fun `Refresh user`() = runTest {
+        dataStore.saveCredential(cred)
+        dataStore.saveUser(user)
+
+        ActivityScenario.launch(MainActivity::class.java)
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.onNodeWithTag("menu").performClick()
+        composeTestRule.onNodeWithText("Account").performClick()
+        composeTestRule.waitUntil(conditionDescription = "account_form") { composeTestRule.onNodeWithTag("account_form").isDisplayed() }
+        composeTestRule.onNodeWithText("Refresh user").performClick()
+        composeTestRule.waitUntil(conditionDescription = "User data refreshed") { composeTestRule.onNodeWithText("User data refreshed").isDisplayed() }
     }
 
     @Test

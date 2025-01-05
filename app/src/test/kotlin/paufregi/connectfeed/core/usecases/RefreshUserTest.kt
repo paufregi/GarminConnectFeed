@@ -14,13 +14,13 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class RefreshTokensTest{
+class RefreshUserTest{
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: RefreshTokens
+    private lateinit var useCase: RefreshUser
 
     @Before
     fun setup(){
-        useCase = RefreshTokens(repo)
+        useCase = RefreshUser(repo)
     }
 
     @After
@@ -29,32 +29,31 @@ class RefreshTokensTest{
     }
 
     @Test
-    fun `Refresh token`() = runTest {
-        val user = User("user", "avatar")
-        coEvery { repo.deleteTokens() } returns Unit
+    fun `Refresh user - success`() = runTest {
+        val user = User("user", "profileImage")
+
         coEvery { repo.fetchUser() } returns Result.Success(user)
+        coEvery { repo.saveUser(any()) } returns Unit
 
         val res = useCase()
 
-        assertThat(res).isInstanceOf(Result.Success(Unit).javaClass)
+        assertThat(res).isInstanceOf(Result.Success<Unit>(Unit).javaClass)
+
         coVerify {
-            repo.deleteTokens()
             repo.fetchUser()
+            repo.saveUser(user)
         }
         confirmVerified(repo)
     }
 
     @Test
-    fun `Refresh tokens - failure`() = runTest {
-        coEvery { repo.deleteTokens() } returns Unit
-        coEvery { repo.fetchUser() } returns Result.Failure<User?>("Error")
+    fun `Refresh user - failure`() = runTest {
+        coEvery { repo.fetchUser() } returns Result.Failure("error")
+
         val res = useCase()
 
-        assertThat(res).isInstanceOf(Result.Failure<Unit>("Error").javaClass)
-        coVerify {
-            repo.deleteTokens()
-            repo.fetchUser()
-        }
+        assertThat(res).isInstanceOf(Result.Failure<Unit>("error").javaClass)
+        coVerify { repo.fetchUser() }
         confirmVerified(repo)
     }
 }
