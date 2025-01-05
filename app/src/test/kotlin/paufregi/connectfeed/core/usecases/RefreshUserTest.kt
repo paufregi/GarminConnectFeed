@@ -33,12 +33,16 @@ class RefreshUserTest{
         val user = User("user", "profileImage")
 
         coEvery { repo.fetchUser() } returns Result.Success(user)
+        coEvery { repo.saveUser(any()) } returns Unit
 
         val res = useCase()
 
         assertThat(res).isInstanceOf(Result.Success<Unit>(Unit).javaClass)
 
-        coVerify { repo.getUser() }
+        coVerify {
+            repo.fetchUser()
+            repo.saveUser(user)
+        }
         confirmVerified(repo)
     }
 
@@ -49,7 +53,7 @@ class RefreshUserTest{
         val res = useCase()
 
         assertThat(res).isInstanceOf(Result.Failure<Unit>("error").javaClass)
-        coVerify { repo.getUser() }
+        coVerify { repo.fetchUser() }
         confirmVerified(repo)
     }
 }

@@ -64,20 +64,39 @@ class AccountViewModelTest {
     }
 
     @Test
-    fun `Refresh user`() = runTest {
-        coEvery { clearTokens() } returns Unit
+    fun `Refresh user - success`() = runTest {
+        coEvery { refreshUser() } returns Result.Success(Unit)
         viewModel = AccountViewModel(getUser, refreshUser, clearTokens, signOut)
         viewModel.onEvent(AccountEvent.RefreshUser)
 
         viewModel.state.test {
-            val state = awaitItem()
+            var state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Success("User data refreshed"))
             cancelAndIgnoreRemainingEvents()
         }
 
         coVerify{
             getUser()
-            clearTokens()
+            refreshUser()
+        }
+        confirmVerified(getUser, clearTokens, signOut)
+    }
+
+    @Test
+    fun `Refresh user - failure`() = runTest {
+        coEvery { refreshUser() } returns Result.Failure("error")
+        viewModel = AccountViewModel(getUser, refreshUser, clearTokens, signOut)
+        viewModel.onEvent(AccountEvent.RefreshUser)
+
+        viewModel.state.test {
+            var state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Failure("error"))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{
+            getUser()
+            refreshUser()
         }
         confirmVerified(getUser, clearTokens, signOut)
     }
