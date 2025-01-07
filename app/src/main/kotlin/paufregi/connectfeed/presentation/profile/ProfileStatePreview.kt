@@ -17,7 +17,7 @@ class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
                 name = "Profile running",
                 activityType = ActivityType.Running,
                 eventType = EventType(1, "EventType 1"),
-                course = Course(1, "Course 1", ActivityType.Running),
+                course = Course(1, "Course 1", 10.0, ActivityType.Running),
                 water = 200,
                 rename = true,
                 customWater = true,

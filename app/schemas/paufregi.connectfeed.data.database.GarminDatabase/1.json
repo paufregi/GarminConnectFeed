@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c1c13ad70305dac337d06157dca32f44",
+    "identityHash": "5e5b5d23e706a71c7ef3182250868fa3",
     "entities": [
       {
         "tableName": "profiles",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `activityType` TEXT NOT NULL, `water` INTEGER, `rename` INTEGER NOT NULL, `customWater` INTEGER NOT NULL, `feelAndEffort` INTEGER NOT NULL, `event_id` INTEGER, `event_name` TEXT, `course_id` INTEGER, `course_name` TEXT, `course_type` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `activityType` TEXT NOT NULL, `water` INTEGER, `rename` INTEGER NOT NULL, `customWater` INTEGER NOT NULL, `feelAndEffort` INTEGER NOT NULL, `event_id` INTEGER, `event_name` TEXT, `course_id` INTEGER, `course_name` TEXT, `course_distance` REAL, `course_type` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -75,6 +75,12 @@
             "notNull": false
           },
           {
+            "fieldPath": "course.distance",
+            "columnName": "course_distance",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
             "fieldPath": "course.type",
             "columnName": "course_type",
             "affinity": "TEXT",
@@ -94,7 +100,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c1c13ad70305dac337d06157dca32f44')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5e5b5d23e706a71c7ef3182250868fa3')"
     ]
   }
 }
