@@ -12,12 +12,14 @@ class ActivityTest {
         val activity = Activity(
             id = 1,
             name = "name",
+            distance = 15007.59,
             type = ActivityType(id = 1, key = "running")
         )
 
         val coreActivity = CoreActivity(
             id = 1,
             name = "name",
+            distance = 15008.00,
             type = CoreActivityType.Running
         )
 

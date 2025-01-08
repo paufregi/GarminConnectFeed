@@ -69,7 +69,7 @@ class ProfileScreenTest {
                     name = "Profile 1",
                     activityType = ActivityType.Running,
                     eventType = EventType(id = 1, name = "Event 1"),
-                    course = Course(id = 1, name = "Course 1", type = ActivityType.Running),
+                    course = Course(id = 1, name = "Course 1", distance = 10234.00, type = ActivityType.Running),
                     water = 10,
                     rename = true,
                     customWater = true,
@@ -98,7 +98,7 @@ class ProfileScreenTest {
                     name = "",
                     activityType = ActivityType.Running,
                     eventType = EventType(id = 1, name = "Event 1"),
-                    course = Course(id = 1, name = "Course 1", type = ActivityType.Running),
+                    course = Course(id = 1, name = "Course 1", distance = 10234.00, type = ActivityType.Running),
                 )
             ))
         }

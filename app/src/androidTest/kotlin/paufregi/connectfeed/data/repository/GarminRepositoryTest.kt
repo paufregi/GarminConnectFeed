@@ -184,8 +184,8 @@ class GarminRepositoryTest {
         dataStore.saveCredential(cred)
 
         val expected = listOf(
-            CoreActivity(id = 1, name = "Activity 1", type = CoreActivityType.Cycling),
-            CoreActivity(id = 2, name = "Activity 2", type = CoreActivityType.Cycling)
+            CoreActivity(id = 1, name = "Activity 1", distance = 17804.00, type = CoreActivityType.Cycling),
+            CoreActivity(id = 2, name = "Activity 2", distance = 17760.00, type = CoreActivityType.Cycling)
         )
 
         val res = repo.getLatestActivities(5)
@@ -200,8 +200,8 @@ class GarminRepositoryTest {
         dataStore.saveCredential(cred)
 
         val expected = listOf(
-            CoreCourse(id = 1, name = "Course 1", type = CoreActivityType.Running),
-            CoreCourse(id = 2, name = "Course 2", type = CoreActivityType.Cycling),
+            CoreCourse(id = 1, name = "Course 1", distance = 10235.00, type = CoreActivityType.Running),
+            CoreCourse(id = 2, name = "Course 2", distance = 15008.00, type = CoreActivityType.Cycling),
         )
 
         val res = repo.getCourses()
@@ -231,13 +231,13 @@ class GarminRepositoryTest {
     fun `Update activity`() = runTest {
         dataStore.saveCredential(cred)
 
-        val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
+        val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, type = CoreActivityType.Cycling)
         val profile = Profile(
             name = "newName",
             rename = true,
             eventType = EventType(id = 1, name = "event1"),
             activityType = CoreActivityType.Cycling,
-            course = Course(id = 1, name = "course1", type = CoreActivityType.Cycling),
+            course = Course(id = 1, name = "course1", distance = 10234.00, type = CoreActivityType.Cycling),
             water = 1
         )
 

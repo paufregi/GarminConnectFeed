@@ -32,7 +32,7 @@ class GetLatestActivitiesTest{
     @Test
     fun `Get latest activities`() = runTest {
         val activities = listOf(
-            Activity(id = 1, name = "name", type = ActivityType.Running)
+            Activity(id = 1, name = "name", distance = 10234.00, type = ActivityType.Running)
         )
         coEvery { repo.getLatestActivities(any()) } returns Result.Success(activities)
         val res = useCase()

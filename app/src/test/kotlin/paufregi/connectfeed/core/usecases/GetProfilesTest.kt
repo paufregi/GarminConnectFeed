@@ -41,7 +41,7 @@ class GetProfilesTest{
                 rename = true,
                 eventType = EventType(id = 1, name = "event 1"),
                 activityType = ActivityType.Cycling,
-                course = Course(id = 1, name = "course 1", type = ActivityType.Cycling),
+                course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
                 water = 550),
             Profile(
                 id = 2,
@@ -49,7 +49,7 @@ class GetProfilesTest{
                 rename = true,
                 eventType = EventType(id = 1, name = "event 2"),
                 activityType = ActivityType.Running,
-                course = Course(id = 2, name = "course 2", type = ActivityType.Running)),
+                course = Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType.Running)),
         )
 
         coEvery { repo.getAllProfiles() } returns flowOf(profiles)

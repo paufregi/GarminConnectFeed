@@ -39,7 +39,7 @@ class SaveProfileTest{
             rename = true,
             eventType = EventType(id = 1, name = "event 1"),
             activityType = ActivityType.Cycling,
-            course = Course(id = 1, name = "course 1", type = ActivityType.Cycling),
+            course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
         coEvery { repo.saveProfile(any()) } returns Unit
@@ -59,7 +59,7 @@ class SaveProfileTest{
             rename = true,
             eventType = EventType(id = 1, name = "event 1"),
             activityType = ActivityType.Cycling,
-            course = Course(id = 1, name = "course 1", type = ActivityType.Cycling),
+            course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
 
@@ -76,7 +76,7 @@ class SaveProfileTest{
             rename = true,
             eventType = EventType(id = 1, name = "event 1"),
             activityType = ActivityType.Strength,
-            course = Course(id = 1, name = "course 1", type = ActivityType.Cycling),
+            course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
 
@@ -93,7 +93,7 @@ class SaveProfileTest{
             rename = true,
             eventType = EventType(id = 1, name = "event 1"),
             activityType = ActivityType.Running,
-            course = Course(id = 1, name = "course 1", type = ActivityType.Cycling),
+            course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
 

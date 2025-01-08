@@ -33,8 +33,8 @@ class GetCoursesTest {
     @Test
     fun `Get courses`() = runTest {
         val courses = listOf(
-            Course(id = 1, name = "course 1", type = ActivityType.Running),
-            Course(id = 2, name = "course 2", type = ActivityType.Cycling),
+            Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
+            Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType.Cycling),
         )
         coEvery { repo.getCourses() } returns Result.Success(courses)
         val res = useCase()

@@ -123,9 +123,15 @@ class GarminConnectTest {
             Activity(
                 id = 1,
                 name = "Activity 1",
+                distance = 17803.69921875,
                 type = ActivityType(id = 10, key = "road_biking")
             ),
-            Activity(id = 2, name = "Activity 2", type = ActivityType(id = 10, key = "road_biking"))
+            Activity(
+                id = 2,
+                name = "Activity 2",
+                distance = 17759.779296875,
+                type = ActivityType(id = 10, key = "road_biking")
+            )
         )
 
         assertThat(res.isSuccessful).isTrue()
@@ -203,8 +209,8 @@ class GarminConnectTest {
         val res = api.getCourses()
 
         val expected = listOf(
-            Course(id = 1, name = "Course 1", type = ActivityType(id = 1, key = "running")),
-            Course(id = 2, name = "Course 2", type = ActivityType(id = 10, key = "road_biking"))
+            Course(id = 1, name = "Course 1", distance = 10234.81, type = ActivityType(id = 1, key = "running")),
+            Course(id = 2, name = "Course 2", distance = 15007.59, type = ActivityType(id = 10, key = "road_biking"))
         )
 
         assertThat(res.isSuccessful).isTrue()
