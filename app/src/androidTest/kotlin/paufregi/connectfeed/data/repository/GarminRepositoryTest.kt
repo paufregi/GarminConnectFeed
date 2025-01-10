@@ -6,6 +6,7 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockWebServer
@@ -87,7 +88,7 @@ class GarminRepositoryTest {
         garminSSOServer.shutdown()
         garthServer.shutdown()
         database.close()
-        runBlocking{
+        runBlocking(Dispatchers.IO){
             dataStore.dataStore.edit { it.clear() }
         }
     }

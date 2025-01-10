@@ -1,5 +1,6 @@
 package paufregi.connectfeed.data.api.utils
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -29,9 +30,9 @@ class AuthInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
-        var oAuth2 = runBlocking { userDataStore.getOauth2().firstOrNull() }
+        var oAuth2 = runBlocking(Dispatchers.IO) { userDataStore.getOauth2().firstOrNull() }
         if (oAuth2 == null || oAuth2.isExpired()) {
-            val resOAuth2 = runBlocking { authenticate() }
+            val resOAuth2 = runBlocking(Dispatchers.IO) { authenticate() }
             when (resOAuth2) {
                 is Result.Failure -> return failedResponse(request, resOAuth2.reason)
                 is Result.Success -> oAuth2 = resOAuth2.data
