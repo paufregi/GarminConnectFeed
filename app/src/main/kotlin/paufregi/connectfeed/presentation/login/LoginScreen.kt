@@ -100,10 +100,10 @@ fun WelcomeInfo(
         AsyncImage(
             model = url,
             contentDescription = null,
-            modifier = Modifier.scale(2.5f).clip(CircleShape)
+            modifier = Modifier.scale(2f).clip(CircleShape)
         )
-        Spacer(modifier = Modifier.size(38.dp))
-        Text(text = "Welcome $name", fontSize = 24.sp)// color = MaterialTheme.colorScheme.onPrimaryContainer)
+        Spacer(modifier = Modifier.size(42.dp))
+        Text(text = "Welcome $name", fontSize = 24.sp)
         Spacer(modifier = Modifier.size(24.dp))
         actionButton()
     }

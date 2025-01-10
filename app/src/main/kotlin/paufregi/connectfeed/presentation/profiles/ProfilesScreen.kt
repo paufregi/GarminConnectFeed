@@ -92,7 +92,7 @@ internal fun ProfilesContent(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.padding(10.dp),
                 ) {
                     ActivityIcon(it.activityType)
