@@ -1,4 +1,4 @@
-package paufregi.connectfeed.core.utils
+package paufregi.connectfeed.data.utils
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
@@ -32,25 +32,22 @@ object Crypto {
                     KeyGenParameterSpec.Builder(ALIAS, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
                         .setBlockModes(BLOCK_MODE)
                         .setEncryptionPaddings(PADDING)
-                        .setRandomizedEncryptionRequired(true)
-                        .setUserAuthenticationRequired(false)
                         .build()
                 )
             }.generateKey()
     }
 
-    fun encrypt(data: String): ByteArray {
+    fun encrypt(data: ByteArray): ByteArray {
         cipher.init(Cipher.ENCRYPT_MODE, getKey())
         val iv = cipher.iv
-        val encrypted = cipher.doFinal(data.encodeToByteArray())
+        val encrypted = cipher.doFinal(data)
         return iv + encrypted
     }
 
-    fun decrypt(bytes: ByteArray): String {
+    fun decrypt(bytes: ByteArray): ByteArray {
         val iv = bytes.copyOfRange(0, cipher.blockSize)
         val data = bytes.copyOfRange(cipher.blockSize, bytes.size)
         cipher.init(Cipher.DECRYPT_MODE, getKey(), IvParameterSpec(iv))
-        val res = cipher.doFinal(data)
-        return res.decodeToString()
+        return cipher.doFinal(data)
     }
 }

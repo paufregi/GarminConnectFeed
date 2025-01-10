@@ -19,7 +19,6 @@ import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuthConsumer
 import paufregi.connectfeed.data.api.utils.AuthInterceptor
 import paufregi.connectfeed.data.datastore.UserDataStore
-import paufregi.connectfeed.data.keystore.CryptoManager
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
@@ -32,18 +31,10 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideCryptoManager(): CryptoManager =
-        CryptoManager()
-
-    @Provides
-    @Singleton
     fun provideUserDataStore(
         @ApplicationContext context: Context,
-        cryptoManager: CryptoManager,
     ): UserDataStore =
-        UserDataStore(
-            dataStore = context.dataStore,
-            crypto = cryptoManager)
+        UserDataStore(dataStore = context.dataStore)
 
     @Provides
     @Singleton
