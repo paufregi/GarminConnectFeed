@@ -123,7 +123,6 @@ internal fun AccountForm(
         )
         Spacer(modifier = Modifier.size(42.dp))
         Text(text = state.user?.name ?: "", fontSize = 24.sp)
-
         Spacer(modifier = Modifier.size(24.dp))
         Button(
             text = "Change password",

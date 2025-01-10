@@ -35,27 +35,19 @@ import kotlin.String
 
 sealed interface DropdownItem {
     val text: String
-    val leadingIcon: @Composable (() -> Unit)?
+    val activityType: ActivityType?
     val onClick: () -> Unit
 
     data class TextDropdownItem(
         override val text: String,
-        override val leadingIcon: @Composable (() -> Unit)? = null,
+        override val activityType: ActivityType? = null,
         override val onClick: () -> Unit
     ) : DropdownItem
 
     data class DistanceDropdownItem(
         override val text: String,
         val distance: String?,
-        override val leadingIcon: @Composable (() -> Unit)? = null,
-        override val onClick: () -> Unit
-    ) : DropdownItem
-
-    data class ProfileDropdownItem(
-        override val text: String,
-        val distance: String?,
-        val water: Boolean,
-        override val leadingIcon: @Composable (() -> Unit)? = null,
+        override val activityType: ActivityType? = null,
         override val onClick: () -> Unit
     ) : DropdownItem
 }
@@ -64,15 +56,15 @@ sealed interface DropdownItem {
 @ExperimentalMaterial3Api
 fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem.DistanceDropdownItem(
     text = name,
-    distance = if (distance != null) Formatter.distance(distance) else null,
-    leadingIcon = { ActivityIcon(this.type) },
+    distance = distance?.let { Formatter.distance(it) },
+    activityType = type,
     onClick = onClick
 )
 
 @ExperimentalMaterial3Api
 fun ActivityType.toDropdownItem(onClick: () -> Unit) = DropdownItem.TextDropdownItem(
     text = name,
-    leadingIcon = { ActivityIcon(this) },
+    activityType = this,
     onClick = onClick
 )
 
@@ -87,17 +79,16 @@ fun EventType.toDropdownItem(onClick: () -> Unit) = DropdownItem.TextDropdownIte
 fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem.DistanceDropdownItem(
     text = name,
     distance = Formatter.distance(distance),
-    leadingIcon = { ActivityIcon(type) },
+    activityType = type,
     onClick = onClick
 )
 
 @SuppressLint("DefaultLocale")
 @ExperimentalMaterial3Api
-fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem.ProfileDropdownItem(
+fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem.DistanceDropdownItem(
     text = this.name,
-    distance = if (course != null) Formatter.distance(course.distance) else null,
-    water = water != null,
-    leadingIcon = { ActivityIcon(activityType) },
+    distance = course?.let { Formatter.distance(it.distance) },
+    activityType = course?.type,
     onClick = onClick
 )
 
@@ -121,7 +112,8 @@ fun Dropdown(
             modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
             label = label,
             value = selected?.text ?: "",
-            leadingIcon = selected?.leadingIcon,
+            suffix = { Suffix(selected) },
+            leadingIcon = { ActivityIcon(selected?.activityType) },
             onValueChange = {},
             readOnly = true,
             singleLine = true,
@@ -136,7 +128,7 @@ fun Dropdown(
             items.forEach{
                 DropdownMenuItem(
                     text = { TextDropdownMenuItem(it) },
-                    leadingIcon = it.leadingIcon,
+                    leadingIcon = { ActivityIcon(it.activityType) },
                     onClick = {
                         it.onClick()
                         expanded = false
@@ -144,6 +136,16 @@ fun Dropdown(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun Suffix(
+    item: DropdownItem?
+) {
+    when (item) {
+        is DropdownItem.DistanceDropdownItem -> item.distance?.let { Text(text = "$it km", fontSize = 10.sp) }
+        else -> null
     }
 }
 
@@ -161,39 +163,6 @@ fun TextDropdownMenuItem(
         ) {
             Text(item.text)
             if (item.distance != null) Text(text = "${item.distance} km", fontSize = 10.sp)
-        }
-
-        is DropdownItem.ProfileDropdownItem -> Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(item.text)
-            Row {
-                if (item.water) { Icon(modifier = Modifier.scale(0.7f), imageVector = Icons.Default.LocalDrink, contentDescription = null) }
-                if (item.distance != null) Text(text = "${item.distance} km", fontSize = 10.sp)
-            }
-//            Column(horizontalAlignment = Alignment.End) {
-//                Row {
-//                    if (item.water) {
-//                        Icon(
-//                            modifier = Modifier.scale(0.8f),
-//                            imageVector = Icons.Default.LocalDrink,
-//                            contentDescription = null,
-//                        )
-//                    }
-//                    if (item.distance != null) {
-//                        Icon(
-//                            modifier = Modifier.scale(0.8f),
-//                            imageVector = Icons.Default.LocationOn,
-//                            contentDescription = null,
-//                        )
-//                    }
-//                }
-//                if (item.distance != null) {
-//                    Text(text = "${item.distance} km", fontSize = 10.sp)
-//                }
-//            }
         }
     }
 }
