@@ -12,11 +12,11 @@ class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
         QuickEditState(ProcessState.Success("Activity updates")),
         QuickEditState(ProcessState.Failure("Failed to update activity")),
         QuickEditState(
-            activity = Activity(id = 1, name = "activity", type = ActivityType.Running),
+            activity = Activity(id = 1, name = "activity", type = ActivityType.Running, distance = 12345.0),
             profile = Profile(name = "name", activityType = ActivityType.Running)
         ),
         QuickEditState(
-            activity = Activity(id = 2, name = "activity", type = ActivityType.Cycling),
+            activity = Activity(id = 2, name = "activity", type = ActivityType.Cycling, distance = 12345.0),
             profile = Profile(name = "name", activityType = ActivityType.Cycling),
             feel = 50f,
             effort = 50f,

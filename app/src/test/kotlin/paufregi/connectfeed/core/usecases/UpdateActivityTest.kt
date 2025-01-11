@@ -22,12 +22,12 @@ class UpdateActivityTest{
     private val repo = mockk<GarminRepository>()
     private lateinit var useCase: UpdateActivity
 
-    val activity = Activity(id = 1, name = "name", type = ActivityType.Running)
+    val activity = Activity(id = 1, name = "name", distance = 10234.00, type = ActivityType.Running)
     val profile = Profile(
         name = "newName",
         eventType = EventType(id = 1, name = "event 1"),
         activityType = ActivityType.Running,
-        course = Course(id = 1, name = "course 1", type = ActivityType.Running),
+        course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
         water = 500
     )
 

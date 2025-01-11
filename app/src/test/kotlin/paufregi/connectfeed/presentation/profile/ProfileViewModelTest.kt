@@ -62,7 +62,7 @@ class ProfileViewModelTest {
         val profile = Profile(id = 1, name = "profile")
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns profile
@@ -98,7 +98,7 @@ class ProfileViewModelTest {
     fun `Initial state - new profile`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
@@ -133,7 +133,7 @@ class ProfileViewModelTest {
     @Test
     fun `Fails to load event types`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
@@ -238,7 +238,7 @@ class ProfileViewModelTest {
     fun `Set name`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
@@ -276,7 +276,7 @@ class ProfileViewModelTest {
     fun `Set activity type`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
@@ -312,11 +312,11 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set activity type - with course`() = runTest {
-        val course = Course(id = 1, name = "course", type = ActivityType.Running)
+        val course = Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running)
         val profile = Profile(id = 1, name = "profile", course = course)
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns profile
@@ -353,11 +353,11 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set activity type - unset course`() = runTest {
-        val course = Course(id = 1, name = "course", type = ActivityType.Running)
+        val course = Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running)
         val profile = Profile(id = 1, name = "profile", course = course)
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns profile
@@ -396,7 +396,7 @@ class ProfileViewModelTest {
     fun `Set event type`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
         val eventType = EventType(id = 1, name = "event")
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
@@ -435,8 +435,8 @@ class ProfileViewModelTest {
     fun `Set course`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
-        val course = Course(id = 1, name = "course", type = ActivityType.Running)
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
+        val course = Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running)
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
@@ -474,7 +474,7 @@ class ProfileViewModelTest {
     fun `Set water`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
@@ -512,7 +512,7 @@ class ProfileViewModelTest {
     fun `Set rename`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
@@ -550,7 +550,7 @@ class ProfileViewModelTest {
     fun `Set custom water`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
@@ -588,7 +588,7 @@ class ProfileViewModelTest {
     fun `Set feel and effort`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
@@ -628,7 +628,7 @@ class ProfileViewModelTest {
     fun `Save profile`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
@@ -669,7 +669,7 @@ class ProfileViewModelTest {
     fun `Save profile - failure`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
-        val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null

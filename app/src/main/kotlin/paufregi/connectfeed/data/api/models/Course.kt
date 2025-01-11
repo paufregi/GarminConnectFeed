@@ -3,6 +3,7 @@ package paufregi.connectfeed.data.api.models
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
+import kotlin.math.round
 import paufregi.connectfeed.core.models.Course as CoreCourse
 
 @Keep
@@ -12,6 +13,8 @@ data class Course(
     val id: Long,
     @SerializedName("courseName")
     val name: String,
+    @SerializedName("distanceInMeters")
+    val distance: Double,
     @SerializedName("activityType")
     val type: ActivityType
 ) {
@@ -19,6 +22,7 @@ data class Course(
         CoreCourse(
             id = this.id,
             name = this.name,
+            distance = round(this.distance),
             type = this.type.toCore()
         )
 }

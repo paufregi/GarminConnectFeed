@@ -6,7 +6,7 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 data class LoginState(
     val process: ProcessState = ProcessState.Idle,
-    val credential: Credential = Credential(), //Credential("paulfrancis.ellis@gmail.com", "FqkB${'$'}Te3F!#q"),
+    val credential: Credential = Credential(),
     val user: User? = null,
     val showPassword: Boolean = false,
 )
