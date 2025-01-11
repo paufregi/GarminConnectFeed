@@ -77,16 +77,14 @@ internal fun ProfilesContent(
             .fillMaxSize()
             .padding(paddingValues)
             .padding(top = 40.dp)
+            .padding(horizontal = 20.dp)
             .verticalScroll(rememberScrollState())
             .testTag("profiles_content")
     ) {
-        if (state.profiles.isEmpty()) {
-            Text("No profile")
-        }
+        if (state.profiles.isEmpty()) { Text("No profile") }
         state.profiles.fastForEachIndexed { index, it ->
             Card(
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
                     .height(50.dp)
                     .clickable(onClick = { nav.navigate(Route.Profile(it.id)) })
             ) {
