@@ -91,7 +91,7 @@ fun Dropdown(
             modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
             label = label,
             value = selected?.text ?: "",
-            suffix = { DistanceText(selected?.distance) },
+            supportingText = { DistanceText(selected?.distance) },
             leadingIcon = { ActivityIcon(selected?.activityType) },
             onValueChange = {},
             readOnly = true,
@@ -125,6 +125,6 @@ private fun DistanceText(
     distance: String?
 ) {
     if (distance != null) {
-        Text(text = "$distance km", fontSize = 10.sp)
+        Text(text = "$distance km", fontSize = 11.sp)
     }
 }
