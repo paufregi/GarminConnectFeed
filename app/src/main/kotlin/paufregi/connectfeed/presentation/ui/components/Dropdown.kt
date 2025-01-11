@@ -1,18 +1,11 @@
 package paufregi.connectfeed.presentation.ui.components
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocalDrink
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -21,9 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.sp
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
@@ -33,28 +24,16 @@ import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.utils.Formatter
 import kotlin.String
 
-sealed interface DropdownItem {
-    val text: String
-    val activityType: ActivityType?
+data class DropdownItem(
+    val text: String,
+    val distance: String? = null,
+    val activityType: ActivityType? = null,
     val onClick: () -> Unit
-
-    data class TextDropdownItem(
-        override val text: String,
-        override val activityType: ActivityType? = null,
-        override val onClick: () -> Unit
-    ) : DropdownItem
-
-    data class DistanceDropdownItem(
-        override val text: String,
-        val distance: String?,
-        override val activityType: ActivityType? = null,
-        override val onClick: () -> Unit
-    ) : DropdownItem
-}
+)
 
 @SuppressLint("DefaultLocale")
 @ExperimentalMaterial3Api
-fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem.DistanceDropdownItem(
+fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
     distance = distance?.let { Formatter.distance(it) },
     activityType = type,
@@ -62,21 +41,21 @@ fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem.DistanceDropdown
 )
 
 @ExperimentalMaterial3Api
-fun ActivityType.toDropdownItem(onClick: () -> Unit) = DropdownItem.TextDropdownItem(
+fun ActivityType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
     activityType = this,
     onClick = onClick
 )
 
 @ExperimentalMaterial3Api
-fun EventType.toDropdownItem(onClick: () -> Unit) = DropdownItem.TextDropdownItem(
+fun EventType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
     onClick = onClick
 )
 
 @SuppressLint("DefaultLocale")
 @ExperimentalMaterial3Api
-fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem.DistanceDropdownItem(
+fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
     distance = Formatter.distance(distance),
     activityType = type,
@@ -85,7 +64,7 @@ fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem.DistanceDropdownIt
 
 @SuppressLint("DefaultLocale")
 @ExperimentalMaterial3Api
-fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem.DistanceDropdownItem(
+fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = this.name,
     distance = course?.let { Formatter.distance(it.distance) },
     activityType = course?.type,
@@ -112,7 +91,7 @@ fun Dropdown(
             modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
             label = label,
             value = selected?.text ?: "",
-            suffix = { Suffix(selected) },
+            suffix = { DistanceText(selected?.distance) },
             leadingIcon = { ActivityIcon(selected?.activityType) },
             onValueChange = {},
             readOnly = true,
@@ -127,8 +106,10 @@ fun Dropdown(
         ){
             items.forEach{
                 DropdownMenuItem(
-                    text = { TextDropdownMenuItem(it) },
+                    text = { Text(it.text) },
                     leadingIcon = { ActivityIcon(it.activityType) },
+                    trailingIcon = { DistanceText(it.distance) },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     onClick = {
                         it.onClick()
                         expanded = false
@@ -140,29 +121,10 @@ fun Dropdown(
 }
 
 @Composable
-fun Suffix(
-    item: DropdownItem?
+private fun DistanceText(
+    distance: String?
 ) {
-    when (item) {
-        is DropdownItem.DistanceDropdownItem -> item.distance?.let { Text(text = "$it km", fontSize = 10.sp) }
-        else -> null
-    }
-}
-
-@Composable
-fun TextDropdownMenuItem(
-    item: DropdownItem
-) {
-    when (item) {
-        is DropdownItem.TextDropdownItem -> Text(item.text)
-
-        is DropdownItem.DistanceDropdownItem -> Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(item.text)
-            if (item.distance != null) Text(text = "${item.distance} km", fontSize = 10.sp)
-        }
+    if (distance != null) {
+        Text(text = "$distance km", fontSize = 10.sp)
     }
 }
