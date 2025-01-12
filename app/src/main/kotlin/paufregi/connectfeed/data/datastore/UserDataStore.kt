@@ -36,7 +36,7 @@ class UserDataStore (val dataStore: DataStore<Preferences>) {
 
     private suspend inline fun <reified T>store(value: T, key: Preferences.Key<ByteArray>) {
         dataStore.edit {
-            it[key] = Json.encodeToString(value).toByteArray()
+            it[key] = Json.encodeToString(value).toByteArray(Charsets.UTF_8)
                 .let { Crypto.encrypt(it) }
                 .let { Base64.getEncoder().encode(it) }
         }
