@@ -13,7 +13,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest

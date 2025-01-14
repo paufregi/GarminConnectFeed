@@ -12,7 +12,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class GetCredentialTest{

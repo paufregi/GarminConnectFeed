@@ -131,16 +131,16 @@ internal fun LoginForm(
     ) {
         TextField(
             label = { Text("Username") },
-            value = state.credential.username,
+            value = state.username,
             modifier = Modifier.fillMaxWidth(),
             onValueChange = { onEvent(LoginEvent.SetUsername(it)) },
-            isError = state.credential.username.isBlank(),
+            isError = state.username.isBlank(),
         )
         TextField(
             label = { Text("Password") },
-            value = state.credential.password,
+            value = state.password,
             onValueChange =  { onEvent(LoginEvent.SetPassword(it)) },
-            isError = state.credential.password.isBlank(),
+            isError = state.password.isBlank(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
@@ -158,7 +158,7 @@ internal fun LoginForm(
         ) {
             Button(
                 text = "Sign in",
-                enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
+                enabled = state.username.isNotBlank() && state.password.isNotBlank(),
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()

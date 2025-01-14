@@ -25,8 +25,8 @@ class LoginViewModel @Inject constructor(
 
     fun onEvent(event: LoginEvent) {
         when (event) {
-            is LoginEvent.SetUsername -> _state.update { it.copy(credential = it.credential.copy(username = event.username)) }
-            is LoginEvent.SetPassword -> _state.update { it.copy(credential = it.credential.copy(password = event.password)) }
+            is LoginEvent.SetUsername -> _state.update { it.copy(username = event.username) }
+            is LoginEvent.SetPassword -> _state.update { it.copy(password = event.password) }
             is LoginEvent.ShowPassword -> _state.update{ it.copy(showPassword = event.showPassword) }
             is LoginEvent.Reset -> _state.update { LoginState() }
             is LoginEvent.SignIn -> signIn()
@@ -35,12 +35,12 @@ class LoginViewModel @Inject constructor(
 
     private fun signIn() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
-        when (val res = signInUseCase(state.value.credential) ) {
-            is Result.Success -> _state.update { it.copy(
-                process = ProcessState.Success(res.data.name),
-                user = res.data
-            ) }
-            is Result.Failure -> _state.update { it.copy(process = ProcessState.Failure(res.reason)) }
-        }
+        signInUseCase(state.value.username, state.value.password)
+            .onSuccess { data ->
+                _state.update { it.copy(
+                    process = ProcessState.Success(data.name),
+                    user = data
+                ) } }
+            .onFailure { err -> _state.update { it.copy(process = ProcessState.Failure(err)) } }
     }
 }

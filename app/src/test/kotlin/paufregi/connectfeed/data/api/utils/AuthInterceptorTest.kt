@@ -17,7 +17,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.createOAuth2
 import paufregi.connectfeed.data.api.GarminAuth1
 import paufregi.connectfeed.data.api.GarminAuth2
