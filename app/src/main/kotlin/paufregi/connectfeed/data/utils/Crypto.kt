@@ -38,17 +38,17 @@ object Crypto {
             }.generateKey()
     }
 
-    fun encrypt(data: ByteArray): ByteArray {
+    fun encrypt(data: String): ByteArray {
         cipher.init(Cipher.ENCRYPT_MODE, getKey())
         val iv = cipher.iv
-        val encrypted = cipher.doFinal(data)
+        val encrypted = cipher.doFinal(data.encodeToByteArray())
         return iv + encrypted
     }
 
-    fun decrypt(bytes: ByteArray): ByteArray {
+    fun decrypt(bytes: ByteArray): String {
         val iv = bytes.copyOfRange(0, cipher.blockSize)
         val data = bytes.copyOfRange(cipher.blockSize, bytes.size)
         cipher.init(Cipher.DECRYPT_MODE, getKey(), IvParameterSpec(iv))
-        return cipher.doFinal(data)
+        return cipher.doFinal(data).decodeToString()
     }
 }

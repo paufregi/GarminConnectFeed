@@ -28,7 +28,7 @@ class UserDataStoreTest {
     var hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var dataStore: UserDataStore
+    lateinit var dataStore: UserStore
 
     @Before
     fun setup() {

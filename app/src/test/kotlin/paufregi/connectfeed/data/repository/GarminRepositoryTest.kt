@@ -37,7 +37,7 @@ import paufregi.connectfeed.data.api.models.UpdateActivity
 import paufregi.connectfeed.data.api.models.UserProfile
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.ProfileEntity
-import paufregi.connectfeed.data.datastore.UserDataStore
+import paufregi.connectfeed.data.datastore.UserStore
 import retrofit2.Response
 import java.io.File
 
@@ -46,11 +46,11 @@ class GarminRepositoryTest {
     private lateinit var repo: GarminRepository
     private val garminDao = mockk<GarminDao>()
     private val garminConnect = mockk<GarminConnect>()
-    private val userDataStore = mockk<UserDataStore>()
+    private val userStore = mockk<UserStore>()
 
     @Before
     fun setup(){
-        repo = GarminRepository(garminDao, garminConnect, userDataStore)
+        repo = GarminRepository(garminDao, garminConnect, userStore)
         mockkStatic(Log::class)
         every { Log.i(any(), any()) } returns 0
         every { Log.e(any(), any()) } returns 0
@@ -66,36 +66,36 @@ class GarminRepositoryTest {
     @Test
     fun `Get user`() = runTest {
         val user = User("user", "url")
-        coEvery { userDataStore.getUser() } returns flowOf(user)
+        coEvery { userStore.getUser() } returns flowOf(user)
 
         repo.getUser().test {
             assertThat(awaitItem()).isEqualTo(user)
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { userDataStore.getUser() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        coVerify { userStore.getUser() }
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
     fun `Save user`() = runTest {
         val user = User("user", "url")
-        coEvery { userDataStore.saveUser(any()) } returns Unit
+        coEvery { userStore.saveUser(any()) } returns Unit
 
         repo.saveUser(user)
 
-        coVerify { userDataStore.saveUser(user) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        coVerify { userStore.saveUser(user) }
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
     fun `Delete user`() = runTest {
-        coEvery { userDataStore.deleteUser() } returns Unit
+        coEvery { userStore.deleteUser() } returns Unit
 
         repo.deleteUser()
 
-        coVerify { userDataStore.deleteUser() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        coVerify { userStore.deleteUser() }
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -111,7 +111,7 @@ class GarminRepositoryTest {
         assertThat(res.data).isEqualTo(user)
 
         coVerify { garminConnect.getUserProfile() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -125,7 +125,7 @@ class GarminRepositoryTest {
         assertThat(res.data).isNull()
 
         coVerify { garminConnect.getUserProfile() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -138,13 +138,13 @@ class GarminRepositoryTest {
         res as Result.Failure
 
         coVerify { garminConnect.getUserProfile() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
     fun `Get credential`() = runTest {
         val cred = Credential(username = "user", password = "pass")
-        coEvery { userDataStore.getCredential() } returns flowOf(cred)
+        coEvery { userStore.getCredential() } returns flowOf(cred)
 
         val res = repo.getCredential()
 
@@ -153,30 +153,30 @@ class GarminRepositoryTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { userDataStore.getCredential() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        coVerify { userStore.getCredential() }
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
     fun `Save credential`() = runTest {
         val cred = Credential(username = "user", password = "pass")
 
-        coEvery { userDataStore.saveCredential(any()) } returns Unit
+        coEvery { userStore.saveCredential(any()) } returns Unit
 
         repo.saveCredential(cred)
 
-        coVerify { userDataStore.saveCredential(cred) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        coVerify { userStore.saveCredential(cred) }
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
     fun `Delete credential`() = runTest {
-        coEvery { userDataStore.deleteCredential() } returns Unit
+        coEvery { userStore.deleteCredential() } returns Unit
 
         repo.deleteCredential()
 
-        coVerify { userDataStore.deleteCredential() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        coVerify { userStore.deleteCredential() }
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -188,7 +188,7 @@ class GarminRepositoryTest {
         assertThat(res).isNull()
 
         coVerify { garminDao.getProfile(1) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -238,7 +238,7 @@ class GarminRepositoryTest {
         }
 
         coVerify { garminDao.getAllProfiles() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -253,7 +253,7 @@ class GarminRepositoryTest {
         }
 
         coVerify { garminDao.getAllProfiles() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -282,7 +282,7 @@ class GarminRepositoryTest {
         assertThat(res).isEqualTo(profile)
 
         coVerify { garminDao.getProfile(1) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -308,7 +308,7 @@ class GarminRepositoryTest {
         repo.saveProfile(profile)
 
         coVerify { garminDao.saveProfile(profileEntity) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -334,19 +334,19 @@ class GarminRepositoryTest {
         repo.deleteProfile(profile)
 
         coVerify { garminDao.deleteProfile(profileEntity) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
     fun `Delete tokens`() = runTest {
-        coEvery { userDataStore.deleteOAuth1() } returns Unit
-        coEvery { userDataStore.deleteOAuth2() } returns Unit
+        coEvery { userStore.deleteOAuth1() } returns Unit
+        coEvery { userStore.deleteOAuth2() } returns Unit
 
         repo.deleteTokens()
 
-        coVerify { userDataStore.deleteOAuth1() }
-        coVerify { userDataStore.deleteOAuth2() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        coVerify { userStore.deleteOAuth1() }
+        coVerify { userStore.deleteOAuth2() }
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -365,7 +365,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
         coVerify { garminConnect.getLatestActivity(5) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -378,7 +378,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
         coVerify { garminConnect.getLatestActivity(5) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -391,7 +391,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
         coVerify { garminConnect.getLatestActivity(5) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -402,7 +402,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { garminConnect.getLatestActivity(5) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -424,7 +424,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
         coVerify { garminConnect.getCourses() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -437,7 +437,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreCourse>())
         coVerify { garminConnect.getCourses() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -450,7 +450,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreCourse>())
         coVerify { garminConnect.getCourses() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -461,7 +461,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { garminConnect.getCourses() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -483,7 +483,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
         coVerify { garminConnect.getEventTypes() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -496,7 +496,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreEventType>())
         coVerify { garminConnect.getEventTypes() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -509,7 +509,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreEventType>())
         coVerify { garminConnect.getEventTypes() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -520,7 +520,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { garminConnect.getEventTypes() }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -547,7 +547,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isTrue()
         coVerify { garminConnect.updateActivity(1, expectedRequest) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -574,7 +574,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { garminConnect.updateActivity(1, expectedRequest) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -587,7 +587,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isTrue()
         coVerify { garminConnect.uploadFile(any()) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -600,6 +600,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { garminConnect.uploadFile(any()) }
-        confirmVerified(garminDao, garminConnect, userDataStore)
+        confirmVerified(garminDao, garminConnect, userStore)
     }
 }

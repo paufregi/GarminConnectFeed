@@ -27,14 +27,12 @@ import org.junit.runner.RunWith
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.cred
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.database.entities.ProfileEntity
-import paufregi.connectfeed.data.datastore.UserDataStore
-import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.datastore.UserStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
@@ -55,7 +53,7 @@ class MainActivityTest {
     val composeTestRule = createComposeRule()
 
     @Inject
-    lateinit var dataStore: UserDataStore
+    lateinit var dataStore: UserStore
 
     @Inject
     lateinit var database: GarminDatabase

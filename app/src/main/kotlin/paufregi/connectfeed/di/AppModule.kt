@@ -11,19 +11,23 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import paufregi.connectfeed.data.api.GarminConnect
-import paufregi.connectfeed.data.api.GarminConnectOAuth1
-import paufregi.connectfeed.data.api.GarminConnectOAuth2
+import paufregi.connectfeed.data.api.GarminAuth1
+import paufregi.connectfeed.data.api.GarminAuth2
 import paufregi.connectfeed.data.api.GarminSSO
 import paufregi.connectfeed.data.api.Garth
 import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuthConsumer
 import paufregi.connectfeed.data.api.utils.AuthInterceptor
-import paufregi.connectfeed.data.datastore.UserDataStore
+import paufregi.connectfeed.data.datastore.UserStore
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "data_store")
+val Context.garminDataStore by dataStore(
+    fileName = "garmin_data_store",
+    serializer = OAuthConsumer.serializer()
+)
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -33,23 +37,23 @@ class AppModule {
     @Singleton
     fun provideUserDataStore(
         @ApplicationContext context: Context,
-    ): UserDataStore =
-        UserDataStore(dataStore = context.dataStore)
+    ): UserStore =
+        UserStore(dataStore = context.dataStore)
 
     @Provides
     @Singleton
     fun provideAuthInterceptor(
         garth: Garth,
         garminSSO: GarminSSO,
-        userDataStore: UserDataStore,
+        userStore: UserStore,
         @Named("GarminConnectOAuth1Url") garminConnectOAuth1Url: String,
         @Named("GarminConnectOAuth2Url") garminConnectOAuth2Url: String
     ): AuthInterceptor = AuthInterceptor(
         garth = garth,
         garminSSO = garminSSO,
-        userDataStore = userDataStore,
-        createConnectOAuth1 = { oauthConsumer: OAuthConsumer -> GarminConnectOAuth1.client(oauthConsumer, garminConnectOAuth1Url) },
-        createConnectOAuth2 = { oauthConsumer: OAuthConsumer, oauth: OAuth1 -> GarminConnectOAuth2.client(oauthConsumer, oauth, garminConnectOAuth2Url) }
+        userDataStore = userStore,
+        createConnectOAuth1 = { oauthConsumer: OAuthConsumer -> GarminAuth1.client(oauthConsumer, garminConnectOAuth1Url) },
+        createConnectOAuth2 = { oauthConsumer: OAuthConsumer, oauth: OAuth1 -> GarminAuth2.client(oauthConsumer, oauth, garminConnectOAuth2Url) }
     )
 
     @Provides

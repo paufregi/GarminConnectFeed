@@ -31,7 +31,7 @@ import paufregi.connectfeed.cred
 import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
-import paufregi.connectfeed.data.datastore.UserDataStore
+import paufregi.connectfeed.data.datastore.UserStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
@@ -54,7 +54,7 @@ class GarminRepositoryTest {
     lateinit var repo: GarminRepository
 
     @Inject
-    lateinit var dataStore: UserDataStore
+    lateinit var dataStore: UserStore
 
     @Inject
     lateinit var database: GarminDatabase
