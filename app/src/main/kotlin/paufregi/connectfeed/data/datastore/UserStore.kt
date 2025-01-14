@@ -29,5 +29,5 @@ class UserStore (val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun delete() = dataStore.edit { it.clear() }
+    suspend fun delete() { dataStore.edit { it.clear() } }
 }

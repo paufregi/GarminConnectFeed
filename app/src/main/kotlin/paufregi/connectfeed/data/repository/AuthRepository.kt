@@ -16,25 +16,24 @@ class AuthRepository @Inject constructor(
     private val garth: Garth,
     private val garminSSO: GarminSSO,
     private val authDatastore: AuthStore,
-    private val garminDatastore: AuthStore,
     private val makeGarminAuth1: (consumer: OAuthConsumer) -> GarminAuth1,
     private val makeGarminAuth2: (consumer: OAuthConsumer, oauth: OAuth1) -> GarminAuth2,
 ) {
-    suspend fun getOAuth1() = authDatastore.getOAuth1().firstOrNull()
+    fun getOAuth1() = authDatastore.getOAuth1()
 
     suspend fun saveOAuth1(token: OAuth1) = authDatastore.saveOAuth1(token)
 
-    suspend fun getOAuth2() = authDatastore.getOAuth2().firstOrNull()
+    fun getOAuth2() = authDatastore.getOAuth2()
 
     suspend fun saveOAuth2(token: OAuth2) = authDatastore.saveOAuth2(token)
 
-    suspend fun wipeAll() = authDatastore.clear()
+    suspend fun clear() = authDatastore.clear()
 
     suspend fun getOrFetchConsumer(): OAuthConsumer? {
-        var consumer = garminDatastore.getConsumer().firstOrNull()
+        var consumer = authDatastore.getConsumer().firstOrNull()
         if (consumer == null) {
             consumer = garth.getOAuthConsumer().body()!!
-            garminDatastore.saveConsumer(consumer)
+            authDatastore.saveConsumer(consumer)
         }
 
         return consumer
@@ -51,8 +50,10 @@ class AuthRepository @Inject constructor(
 
         val connect = makeGarminAuth1(consumer)
         val resOAuth1 = connect.getOauth1(ticket)
-        if (!resOAuth1.isSuccessful) return Result.Failure("Couldn't get OAuth1 token")
-        return Result.Success(resOAuth1.body()!!)
+        return when (resOAuth1.isSuccessful) {
+            true -> Result.Success(resOAuth1.body()!!)
+            false -> Result.Failure("Couldn't get OAuth1 token")
+        }
     }
 
     suspend fun exchange(consumer: OAuthConsumer, oauth: OAuth1): Result<OAuth2> {

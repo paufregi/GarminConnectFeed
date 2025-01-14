@@ -5,5 +5,5 @@ import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
 class DeleteProfile @Inject constructor (private val garminRepository: GarminRepository) {
-    suspend operator fun invoke(profile: Profile): Unit = garminRepository.deleteProfile(profile)
+    suspend operator fun invoke(profile: Profile) = garminRepository.deleteProfile(profile)
 }

@@ -17,16 +17,13 @@ class SignIn @Inject constructor (
             ?: return Result.Failure("Couldn't get OAuth Consumer")
 
         val resOAuth1 = authRepository.authorize(username, password, consumer)
-        when (resOAuth1) {
-            is Result.Success -> authRepository.saveOAuth1(resOAuth1.data)
-            is Result.Failure -> return Result.Failure(resOAuth1.reason)
-        }
+            .onSuccess { suspend { authRepository.saveOAuth1(it) } }
+            .onFailure { suspend { authRepository.clear() } }
+        if (resOAuth1 is Result.Failure) return Result.Failure(resOAuth1.reason)
 
         val resUser = garminRepository.fetchUser()
-        when (resUser) {
-            is Result.Success -> garminRepository.saveUser(resUser.data)
-            is Result.Failure -> authRepository.deleteOAuth1()
-        }
+            .onSuccess { suspend { garminRepository.saveUser(it) } }
+            .onFailure { suspend { authRepository.clear() }}
 
         return resUser
     }

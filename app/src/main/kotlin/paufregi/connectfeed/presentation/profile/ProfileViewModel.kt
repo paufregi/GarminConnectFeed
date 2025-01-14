@@ -50,14 +50,13 @@ class ProfileViewModel @Inject constructor(
             activityTypes = getActivityTypes()
         ) }
 
-        when (val res = getEventTypes()) {
-            is Result.Success -> _state.update { it.copy(eventTypes = res.data) }
-            is Result.Failure -> errors.add("event types")
-        }
-        when (val res = getCourses()) {
-            is Result.Success -> _state.update { it.copy(courses = res.data) }
-            is Result.Failure -> errors.add("courses")
-        }
+        getEventTypes()
+            .onSuccess { data -> _state.update { it.copy(eventTypes = data) } }
+            .onFailure { errors.add("event types") }
+
+        getCourses()
+            .onSuccess { data -> _state.update { it.copy(courses = data) } }
+            .onFailure { errors.add("courses") }
 
         when (errors.isNotEmpty()) {
             true -> _state.update { it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}")) }

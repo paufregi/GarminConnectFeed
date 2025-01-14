@@ -26,9 +26,8 @@ class SyncWeightViewModel @Inject constructor(
             _state.update { SyncWeightState.Failure }
             return@launch
         }
-        when (syncWeightUseCase(inputStream)) {
-            is Result.Success -> _state.update { SyncWeightState.Success }
-            is Result.Failure -> _state.update { SyncWeightState.Failure }
-        }
+        syncWeightUseCase(inputStream)
+            .onSuccess { _state.update { SyncWeightState.Success } }
+            .onFailure { _state.update { SyncWeightState.Failure }}
     }
 }

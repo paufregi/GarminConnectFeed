@@ -1,6 +1,7 @@
 package paufregi.connectfeed.data.api.utils
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Protocol
@@ -27,14 +28,14 @@ class AuthInterceptor @Inject constructor(
     }
 
     private suspend fun getOrFetchOAuth2(): Result<OAuth2> {
-        val oAuth2 = authRepository.getOAuth2()
+        val oAuth2 = authRepository.getOAuth2().firstOrNull()
         if (oAuth2 != null && !oAuth2.isExpired()) return Result.Success(oAuth2)
 
         val consumer = authRepository.getOrFetchConsumer() ?: return Result.Failure("Could not get OAuth Consumer")
-        val oAuth1 = authRepository.getOAuth1() ?: return Result.Failure("No OAuth1 token found")
+        val oAuth1 = authRepository.getOAuth1().firstOrNull() ?: return Result.Failure("No OAuth1 token found")
 
         val resOAuth2 = authRepository.exchange(consumer, oAuth1)
-        if (resOAuth2 is Result.Success) authRepository.saveOAuth2(resOAuth2.data)
+            .onSuccess { suspend { authRepository.saveOAuth2(it) } }
 
         return resOAuth2
     }

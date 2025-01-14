@@ -26,10 +26,9 @@ class SyncWeight @Inject constructor (
         val res = garminRepository.uploadFile(file)
         file.delete()
 
-        return when (res) {
-            is Result.Success -> Result.Success(Unit)
-            is Result.Failure -> Result.Failure("Failed to upload file")
-        }
-
+        return res.fold(
+            onSuccess = { },
+            onFailure = { "Failed to upload file" }
+        )
     }
 }
