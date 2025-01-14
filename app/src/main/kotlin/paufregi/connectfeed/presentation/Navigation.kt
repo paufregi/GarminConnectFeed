@@ -27,13 +27,7 @@ sealed interface Route {
     data object ProfileList: Route
 
     @Serializable
-    data object Settings: Route
-
-    @Serializable
     data object Account: Route
-
-    @Serializable
-    data object Password: Route
 
     @Serializable
     data class Profile(val id: Long = 0L) : Route
@@ -47,6 +41,6 @@ object Navigation {
     val items  = listOf(
         NavigationItem("Home", Icons.Filled.Home, Route.Home),
         NavigationItem("Profiles", Icons.Filled.Tune, Route.Profiles),
-        NavigationItem("Account", Icons.Filled.AccountCircle, Route.Settings),
+        NavigationItem("Account", Icons.Filled.AccountCircle, Route.Account),
     )
 }

@@ -17,7 +17,6 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.core.usecases.GetCredential
 import paufregi.connectfeed.core.usecases.SignIn
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
