@@ -51,6 +51,16 @@ class CallApiTest {
     }
 
     @Test
+    fun `Failed call - no body`() = runTest {
+        val result = callApi(
+            { Response.error<String>(200, "".toResponseBody()) },
+            { res -> res.body() }
+        )
+
+        assertThat(result.isSuccessful).isFalse()
+    }
+
+    @Test
     fun `Thrown exception`() = runTest {
         val result = callApi<String, String>(
             { throw IllegalArgumentException("ops") },
