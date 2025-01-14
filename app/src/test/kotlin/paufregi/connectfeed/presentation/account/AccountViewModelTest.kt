@@ -17,7 +17,6 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.usecases.GetUser
-import paufregi.connectfeed.core.usecases.ClearTokens
 import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
 import paufregi.connectfeed.presentation.ui.models.ProcessState
