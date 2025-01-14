@@ -71,7 +71,7 @@ class GarminRepository @Inject constructor(
     suspend fun getCourses(): Result<List<Course>> =
         callApi (
             { garminConnect.getCourses() },
-            { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
+            { res -> res.body()?.fastMap { it.toCore() }?: emptyList() }
         )
 
     suspend fun getEventTypes(): Result<List<EventType>> =
@@ -95,7 +95,7 @@ class GarminRepository @Inject constructor(
         )
         return callApi(
             { garminConnect.updateActivity(activity.id, request) },
-            { _ -> Result.Success(Unit) }
+            { }
         )
     }
 
@@ -103,7 +103,7 @@ class GarminRepository @Inject constructor(
         val multipartBody = MultipartBody.Part.createFormData("fit", file.name, file.asRequestBody())
         return callApi(
             { garminConnect.uploadFile(multipartBody) },
-            { _ -> Result.Success(Unit)}
+            { }
         )
     }
 }
