@@ -1,7 +1,6 @@
 package paufregi.connectfeed.presentation.main
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,7 +17,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.account.AccountScreen
 import paufregi.connectfeed.presentation.login.LoginScreen
-import paufregi.connectfeed.presentation.password.PasswordScreen
 import paufregi.connectfeed.presentation.profile.ProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
@@ -51,10 +49,7 @@ class MainActivity : ComponentActivity() {
                     }
                     navigation<Route.Home>(startDestination = Route.QuickEdit) {
                         composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }
-                        navigation<Route.Settings>(startDestination = Route.Account) {
-                            composable<Route.Account> { AccountScreen(nav = nav) }
-                            composable<Route.Password> { PasswordScreen(nav = nav) }
-                        }
+                        composable<Route.Account> { AccountScreen(nav = nav) }
                         navigation<Route.Profiles>(startDestination = Route.ProfileList) {
                             composable<Route.ProfileList> { ProfilesScreen(nav = nav) }
                             composable<Route.Profile> { ProfileScreen(nav = nav) }

@@ -9,82 +9,35 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.data.api.GarminConnectOAuth1
-import paufregi.connectfeed.data.api.GarminConnectOAuth2
-import paufregi.connectfeed.data.api.GarminSSO
-import paufregi.connectfeed.data.api.Garth
-import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuth2
-import paufregi.connectfeed.data.api.models.OAuthConsumer
-import paufregi.connectfeed.data.datastore.UserDataStore
+import paufregi.connectfeed.data.repository.AuthRepository
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(
-    private val garth: Garth,
-    private val garminSSO: GarminSSO,
-    private val userDataStore: UserDataStore,
-    private val createConnectOAuth1: (oauthConsumer: OAuthConsumer) -> GarminConnectOAuth1,
-    private val createConnectOAuth2: (oauthConsumer: OAuthConsumer, oauth: OAuth1) -> GarminConnectOAuth2,
+    private val authRepository: AuthRepository
 ): Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
-        var oAuth2 = runBlocking(Dispatchers.IO) { userDataStore.getOauth2().firstOrNull() }
-        if (oAuth2 == null || oAuth2.isExpired()) {
-            val resOAuth2 = runBlocking(Dispatchers.IO) { authenticate() }
-            when (resOAuth2) {
-                is Result.Failure -> return failedResponse(request, resOAuth2.reason)
-                is Result.Success -> oAuth2 = resOAuth2.data
-            }
+        val resOAuth2 = runBlocking(Dispatchers.IO) { getOrFetchOAuth2() }
+        return when (resOAuth2) {
+            is Result.Failure -> failedResponse(request, resOAuth2.reason)
+            is Result.Success -> chain.proceed(authRequest(request, resOAuth2.data.accessToken))
         }
-
-        return chain.proceed(authRequest(request, oAuth2.accessToken))
     }
 
-    private suspend fun login(consumer: OAuthConsumer): Result<OAuth1> {
-        val credential = userDataStore.getCredential().firstOrNull()
-        if (credential == null) return Result.Failure("No credential found")
+    private suspend fun getOrFetchOAuth2(): Result<OAuth2> {
+        val oAuth2 = authRepository.getOAuth2().firstOrNull()
+        if (oAuth2 != null && !oAuth2.isExpired()) return Result.Success(oAuth2)
 
-        val resCSRF = garminSSO.getCSRF()
-        if (!resCSRF.isSuccessful) return Result.Failure("Problem with the login page")
-        val csrf = resCSRF.body()!!
+        val consumer = authRepository.getOrFetchConsumer() ?: return Result.Failure("Could not get OAuth Consumer")
+        val oAuth1 = authRepository.getOAuth1().firstOrNull() ?: return Result.Failure("No OAuth1 token found")
 
-        val resLogin = garminSSO.login(username = credential.username, password = credential.password, csrf = csrf)
-        if (!resLogin.isSuccessful) return Result.Failure("Couldn't login")
-        val ticket = resLogin.body()!!
+        val resOAuth2 = authRepository.exchange(consumer, oAuth1)
+            .onSuccess { authRepository.saveOAuth2(it) }
 
-        val connect = createConnectOAuth1(consumer)
-        val resOAuth1 = connect.getOauth1(ticket)
-        if (!resOAuth1.isSuccessful) return Result.Failure("Couldn't get OAuth1 token")
-        return Result.Success(resOAuth1.body()!!)
-    }
-
-    private suspend fun authenticate(): Result<OAuth2> {
-        var consumer: OAuthConsumer? = userDataStore.getOAuthConsumer().firstOrNull()
-        if (consumer == null) {
-            val resConsumer = garth.getOAuthConsumer()
-            if (!resConsumer.isSuccessful) return Result.Failure("Couldn't get OAuth Consumer")
-            consumer = resConsumer.body()!!
-            userDataStore.saveOAuthConsumer(consumer)
-        }
-
-        var oauth1 = userDataStore.getOauth1().firstOrNull()
-        if (oauth1 == null) {
-            val resOAuth1 = login(consumer)
-            when (resOAuth1) {
-                is Result.Failure -> return Result.Failure(resOAuth1.reason)
-                is Result.Success -> oauth1 = resOAuth1.data
-            }
-            userDataStore.saveOAuth1(resOAuth1.data)
-        }
-
-        val connect = createConnectOAuth2(consumer, oauth1)
-        val resOAuth2 = connect.getOauth2()
-        if (!resOAuth2.isSuccessful) return Result.Failure("Couldn't get OAuth2 token")
-        val oauth2 = resOAuth2.body()!!
-        userDataStore.saveOAuth2(oauth2)
-        return Result.Success(oauth2)
+        return resOAuth2
     }
 
     private fun authRequest(request: Request, accessToken: String?): Request =

@@ -16,29 +16,27 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
+import paufregi.connectfeed.consumer
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Course
-import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.createOAuth2
-import paufregi.connectfeed.cred
-import paufregi.connectfeed.data.api.models.OAuth1
-import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
-import paufregi.connectfeed.data.datastore.UserDataStore
+import paufregi.connectfeed.data.datastore.AuthStore
+import paufregi.connectfeed.data.datastore.UserStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
 import paufregi.connectfeed.garthPort
+import paufregi.connectfeed.oauth1
+import paufregi.connectfeed.oauth2
 import paufregi.connectfeed.sslSocketFactory
 import java.io.File
-import java.util.Date
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -54,14 +52,13 @@ class GarminRepositoryTest {
     lateinit var repo: GarminRepository
 
     @Inject
-    lateinit var dataStore: UserDataStore
+    lateinit var userStore: UserStore
+
+    @Inject
+    lateinit var authStore: AuthStore
 
     @Inject
     lateinit var database: GarminDatabase
-
-    @Inject
-    lateinit var dao: GarminDao
-
 
     private val connectServer = MockWebServer()
     private val garminSSOServer = MockWebServer()
@@ -89,7 +86,8 @@ class GarminRepositoryTest {
         garthServer.shutdown()
         database.close()
         runBlocking(Dispatchers.IO){
-            dataStore.dataStore.edit { it.clear() }
+            userStore.dataStore.edit { it.clear() }
+            authStore.dataStore.edit { it.clear() }
         }
     }
 
@@ -111,7 +109,9 @@ class GarminRepositoryTest {
 
     @Test
     fun `Fetch user`() = runTest {
-        dataStore.saveCredential(cred)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
 
         val expected = User("Paul", "https://profile.image.com/large.jpg")
 
@@ -120,22 +120,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
-    }
-
-    @Test
-    fun `Store credential`() = runTest {
-        val credential1 = Credential("user_1", "password_1")
-        val credential2 = Credential("user_2", "password_2")
-        repo.getCredential().test{
-            assertThat(awaitItem()).isNull()
-            repo.saveCredential(credential1)
-            assertThat(awaitItem()).isEqualTo(credential1)
-            repo.saveCredential(credential2)
-            assertThat(awaitItem()).isEqualTo(credential2)
-            repo.deleteCredential()
-            assertThat(awaitItem()).isNull()
-            cancelAndIgnoreRemainingEvents()
-        }
     }
 
     @Test
@@ -156,32 +140,10 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Delete tokens`() = runTest {
-        val oAuth1 = OAuth1("token", "secret")
-        val oAuth2 = createOAuth2(Date())
-
-        dataStore.getOauth1().test {
-            assertThat(awaitItem()).isNull()
-            dataStore.saveOAuth1(oAuth1)
-            assertThat(awaitItem()).isEqualTo(oAuth1)
-            repo.deleteTokens()
-            assertThat(awaitItem()).isNull()
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        dataStore.getOauth2().test {
-            assertThat(awaitItem()).isNull()
-            dataStore.saveOAuth2(oAuth2)
-            assertThat(awaitItem()).isEqualTo(oAuth2)
-            repo.deleteTokens()
-            assertThat(awaitItem()).isNull()
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `Get latest activities`() = runTest {
-        dataStore.saveCredential(cred)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
 
         val expected = listOf(
             CoreActivity(id = 1, name = "Activity 1", distance = 17804.00, type = CoreActivityType.Cycling),
@@ -197,7 +159,9 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get courses`() = runTest {
-        dataStore.saveCredential(cred)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
 
         val expected = listOf(
             CoreCourse(id = 1, name = "Course 1", distance = 10235.00, type = CoreActivityType.Running),
@@ -213,7 +177,9 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get event types`() = runTest {
-        dataStore.saveCredential(cred)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
 
         val expected = listOf(
             CoreEventType(id = 1, name = "Race"),
@@ -229,7 +195,9 @@ class GarminRepositoryTest {
 
     @Test
     fun `Update activity`() = runTest {
-        dataStore.saveCredential(cred)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
 
         val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, type = CoreActivityType.Cycling)
         val profile = Profile(
@@ -248,7 +216,9 @@ class GarminRepositoryTest {
 
     @Test
     fun `Upload file`() = runTest {
-        dataStore.saveCredential(cred)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
 
         val testFile = File.createTempFile("test", "test")
         testFile.deleteOnExit()

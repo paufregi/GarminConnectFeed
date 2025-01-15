@@ -13,7 +13,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
@@ -37,7 +36,7 @@ class LoginScreenTest {
     @Test
     fun `Form - filled`() {
         composeTestRule.setContent {
-            LoginContent(state = LoginState(credential = Credential("userTest", "passTest")))
+            LoginContent(state = LoginState(username = "userTest", password = "passTest"))
         }
         composeTestRule.onNodeWithText("Username").assertTextContains("userTest")
         composeTestRule.onNodeWithText("Password").assertTextContains("••••••••")
@@ -47,7 +46,7 @@ class LoginScreenTest {
     @Test
     fun `Form - filled with visible password`() {
         composeTestRule.setContent {
-            LoginContent(state = LoginState(credential = Credential("userTest", "passTest"), showPassword = true))
+            LoginContent(state = LoginState(username = "userTest", password = "passTest", showPassword = true))
         }
         composeTestRule.onNodeWithText("Username").assertTextContains("userTest")
         composeTestRule.onNodeWithText("Password").assertTextContains("passTest")

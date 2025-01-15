@@ -11,16 +11,16 @@ import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuthConsumer
 import paufregi.connectfeed.data.api.models.Ticket
 
-class GarminConnectOAuth1Test {
+class GarminAuth1Test {
 
     private var server: MockWebServer = MockWebServer()
-    private lateinit var api: GarminConnectOAuth1
+    private lateinit var api: GarminAuth1
     private val consumer = OAuthConsumer("KEY", "SECRET")
 
     @Before
     fun setup() {
         server.start()
-        api = GarminConnectOAuth1.client(consumer, server.url("/").toString())
+        api = GarminAuth1.client(consumer, server.url("/").toString())
     }
 
     @After

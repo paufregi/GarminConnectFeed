@@ -26,10 +26,8 @@ class AccountScreenTest {
         composeTestRule.setContent {
             AccountContent(state = AccountState(user = User("Paul", "url")))
         }
-        composeTestRule.onNodeWithTag("profilePicture").isDisplayed()
-        composeTestRule.onNodeWithText("Change password").isDisplayed()
+        composeTestRule.onNodeWithTag("profileImage").isDisplayed()
         composeTestRule.onNodeWithText("Refresh user").isDisplayed()
-        composeTestRule.onNodeWithText("Refresh tokens").isDisplayed()
         composeTestRule.onNodeWithText("Sign out").isDisplayed()
     }
 

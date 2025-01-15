@@ -64,7 +64,7 @@ internal fun AccountContent(
         is ProcessState.Success -> SimpleScaffold {
             StatusInfo(
                 type = StatusInfoType.Success,
-                text = state.process.message,
+                text = state.process.message ?: "All done",
                 actionButton = { Button(text = "Ok", onClick = { onEvent(AccountEvent.Reset) }) },
                 paddingValues = it
             )
@@ -81,7 +81,7 @@ internal fun AccountContent(
             items = Navigation.items,
             selectedIndex = Navigation.ACCOUNT,
             nav = nav
-        ) { AccountForm(state, onEvent, nav, it) }
+        ) { AccountForm(state, onEvent, it) }
     }
 }
 
@@ -91,7 +91,6 @@ internal fun AccountContent(
 internal fun AccountForm(
     @PreviewParameter(AccountStatePreview::class) state: AccountState = AccountState(),
     onEvent: (AccountEvent) -> Unit = {},
-    nav: NavController = rememberNavController(),
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     var signOutDialog by remember { mutableStateOf(false) }
@@ -119,22 +118,14 @@ internal fun AccountForm(
         AsyncImage(
             model = state.user?.profileImageUrl,
             contentDescription = null,
-            modifier = Modifier.scale(2f).clip(CircleShape).testTag("profile_picture")
+            modifier = Modifier.scale(2f).clip(CircleShape).testTag("profileImage")
         )
         Spacer(modifier = Modifier.size(42.dp))
         Text(text = state.user?.name ?: "", fontSize = 24.sp)
         Spacer(modifier = Modifier.size(24.dp))
         Button(
-            text = "Change password",
-            onClick = { nav.navigate(Route.Password) }
-        )
-        Button(
             text = "Refresh user",
             onClick = { onEvent(AccountEvent.RefreshUser) }
-        )
-        Button(
-            text = "Clear tokens",
-            onClick = { onEvent(AccountEvent.ClearTokens) }
         )
         Button(
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),

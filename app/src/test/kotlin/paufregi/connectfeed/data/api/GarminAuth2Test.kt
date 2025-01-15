@@ -10,18 +10,20 @@ import org.junit.Test
 import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuth2
 import paufregi.connectfeed.data.api.models.OAuthConsumer
+import paufregi.connectfeed.oauth2
+import paufregi.connectfeed.oauth2Body
 
-class GarminConnectOAuth2Test {
+class GarminAuth2Test {
 
     private var server: MockWebServer = MockWebServer()
-    private lateinit var api: GarminConnectOAuth2
+    private lateinit var api: GarminAuth2
     private val consumer = OAuthConsumer("KEY", "SECRET")
     private val oauth = OAuth1("TOKEN", "SECRET")
 
     @Before
     fun setup() {
         server.start()
-        api = GarminConnectOAuth2.client(consumer, oauth, server.url("/").toString())
+        api = GarminAuth2.client(consumer, oauth, server.url("/").toString())
     }
 
     @After
@@ -33,21 +35,12 @@ class GarminConnectOAuth2Test {
     fun `Get OAuth2 token`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
-            .setBody("""{"scope": "SCOPE","jti": "JTI","access_token": "ACCESS_TOKEN","token_type": "TOKEN_TYPE","refresh_token": "REFRESH","expires_in": 1704020400,"refresh_token_expires_in": 1704020400}""")
+            .setBody(oauth2Body)
         server.enqueue(response)
 
         val res = api.getOauth2()
 
         val request = server.takeRequest()
-        val expected = OAuth2(
-            scope =  "SCOPE",
-            jti = "JTI",
-            accessToken = "ACCESS_TOKEN",
-            tokenType = "TOKEN_TYPE",
-            refreshToken = "REFRESH",
-            expiresIn = 1704020400,
-            refreshTokenExpiresIn = 1704020400
-        )
 
         assertThat(request.method).isEqualTo("POST")
         assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/oauth-service/oauth/exchange/user/2.0")
@@ -58,7 +51,7 @@ class GarminConnectOAuth2Test {
         assertThat(request.headers["authorization"]).contains("""oauth_signature""")
         assertThat(request.headers["authorization"]).contains("""oauth_version="1.0"""")
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(expected)
+        assertThat(res.body()).isEqualTo(oauth2)
     }
 
     @Test

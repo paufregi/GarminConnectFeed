@@ -7,7 +7,7 @@ class CryptoTest {
 
     @Test
     fun `Encrypt and decrypt data`() {
-        val data = "ConnectFeed".toByteArray()
+        val data = "ConnectFeed"
         val encrypted = Crypto.encrypt(data)
         val decrypted = Crypto.decrypt(encrypted)
         assertThat(decrypted).isEqualTo(data)

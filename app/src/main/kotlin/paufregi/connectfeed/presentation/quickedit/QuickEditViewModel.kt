@@ -48,26 +48,26 @@ class QuickEditViewModel @Inject constructor(
 
     private fun load() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
-        when (val res = getLatestActivities()) {
-            is Result.Success -> _state.update { it.copy(
-                process = ProcessState.Idle,
-                activities = res.data
-            ) }
-            is Result.Failure -> _state.update { it.copy(process = ProcessState.Failure(res.reason)) }
+        getLatestActivities()
+            .onSuccess { data ->
+                _state.update { it.copy(
+                    process = ProcessState.Idle,
+                    activities = data
+                ) }
+            }
+            .onFailure { err -> _state.update { it.copy(process = ProcessState.Failure(err)) }
         }
     }
 
     private fun saveActivity() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
-        val res = updateActivity(
+        updateActivity(
             activity = state.value.activity,
             profile = state.value.profile,
             feel = state.value.feel,
             effort = state.value.effort
         )
-        when (res) {
-            is Result.Success -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
-            is Result.Failure -> _state.update { it.copy(process = ProcessState.Failure(res.reason)) }
-        }
+            .onSuccess { _state.update { it.copy(process = ProcessState.Success("Activity updated")) } }
+            .onFailure { err -> _state.update { it.copy(process = ProcessState.Failure(err)) } }
     }
 }

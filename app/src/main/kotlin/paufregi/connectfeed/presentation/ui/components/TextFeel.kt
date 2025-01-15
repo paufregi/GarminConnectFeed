@@ -10,7 +10,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 @Preview
 @Composable
 fun TextFeel(
-    @PreviewParameter(FeePreview::class) feel: Float?, modifier: Modifier = Modifier) {
+    @PreviewParameter(FeePreview::class) feel: Float?,
+    modifier: Modifier = Modifier
+) {
     val label = when(feel) {
         0f -> "Very weak"
         25f -> "Weak"

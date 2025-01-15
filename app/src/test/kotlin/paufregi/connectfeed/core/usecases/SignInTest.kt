@@ -10,18 +10,21 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.core.models.Credential
+import paufregi.connectfeed.consumer
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.oauth1
+import paufregi.connectfeed.user
 
 class SignInTest{
-    private val repo = mockk<GarminRepository>()
+    private val garminRepo = mockk<GarminRepository>()
+    private val authRepo = mockk<AuthRepository>()
     private lateinit var useCase: SignIn
 
     @Before
     fun setup(){
-        useCase = SignIn(repo)
+        useCase = SignIn(authRepo, garminRepo)
     }
 
     @After
@@ -31,65 +34,113 @@ class SignInTest{
 
     @Test
     fun `SignIn - success`() = runTest {
-        val credential = Credential("user", "pass")
-        val user = User("user", "avatar")
-        coEvery { repo.saveCredential(any()) } returns Unit
-        coEvery { repo.fetchUser() } returns Result.Success(user)
-        coEvery { repo.saveUser(any()) } returns Unit
-        val res = useCase(credential)
+        coEvery { authRepo.getOrFetchConsumer() } returns consumer
+        coEvery { authRepo.authorize(any(), any(), any()) } returns Result.Success(oauth1)
+        coEvery { authRepo.saveOAuth1(any()) } returns Unit
+        coEvery { garminRepo.fetchUser() } returns Result.Success(user)
+        coEvery { garminRepo.saveUser(any()) } returns Unit
 
-        assertThat(res).isInstanceOf(Result.Success<User>(user).javaClass)
+        val res = useCase("user", "pass")
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(user)
+
         coVerify {
-            repo.saveCredential(credential)
-            repo.fetchUser()
-            repo.saveUser(user)
+            authRepo.getOrFetchConsumer()
+            authRepo.authorize("user", "pass", consumer)
+            authRepo.saveOAuth1(oauth1)
+            garminRepo.fetchUser()
+            garminRepo.saveUser(user)
         }
-        confirmVerified(repo)
+        confirmVerified(authRepo, garminRepo)
     }
 
     @Test
-    fun `SignIn - failure`() = runTest {
-        val credential = Credential("user", "pass")
-        coEvery { repo.saveCredential(any()) } returns Unit
-        coEvery { repo.fetchUser() } returns Result.Failure<User?>("error")
-        coEvery { repo.deleteCredential() } returns Unit
-        coEvery { repo.deleteTokens() } returns Unit
-        val res = useCase(credential)
+    fun `Validation fail - no user`() = runTest {
+        val res = useCase("", "pass")
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Validation error")
 
-        assertThat(res).isInstanceOf(Result.Failure<String>("error").javaClass)
+        confirmVerified(authRepo, garminRepo)
+    }
+
+    @Test
+    fun `Validation fail - no pass`() = runTest {
+        val res = useCase("user", "")
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Validation error")
+
+        confirmVerified(authRepo, garminRepo)
+    }
+
+    @Test
+    fun `Validation fail - no user and pass`() = runTest {
+        val res = useCase("", "")
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Validation error")
+
+        confirmVerified(authRepo, garminRepo)
+    }
+
+    @Test
+    fun `Failure - no consumer`() = runTest {
+        coEvery { authRepo.getOrFetchConsumer() } returns null
+
+        val res = useCase("user", "pass")
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Couldn't get OAuth Consumer")
+
         coVerify {
-            repo.saveCredential(credential)
-            repo.fetchUser()
-            repo.deleteCredential()
-            repo.deleteTokens()
+            authRepo.getOrFetchConsumer()
         }
-        confirmVerified(repo)
+        confirmVerified(authRepo, garminRepo)
     }
 
     @Test
-    fun `Invalid - No username`() = runTest {
-        val credential = Credential("", "pass")
-        val res = useCase(credential)
+    fun `Failure - authorize`() = runTest {
+        coEvery { authRepo.getOrFetchConsumer() } returns consumer
+        coEvery { authRepo.authorize(any(), any(), any()) } returns Result.Failure("Couldn't authorize")
+        coEvery { authRepo.clear() } returns Unit
 
-        assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
-        confirmVerified(repo)
+        val res = useCase("user", "pass")
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Couldn't authorize")
+
+        coVerify {
+            authRepo.getOrFetchConsumer()
+            authRepo.authorize("user", "pass", consumer)
+            authRepo.clear()
+        }
+        confirmVerified(authRepo, garminRepo)
     }
 
     @Test
-    fun `Invalid - No pass`() = runTest {
-        val credential = Credential("user", "")
-        val res = useCase(credential)
+    fun `Failure - fetch user`() = runTest {
+        coEvery { authRepo.getOrFetchConsumer() } returns consumer
+        coEvery { authRepo.authorize(any(), any(), any()) } returns Result.Success(oauth1)
+        coEvery { authRepo.saveOAuth1(any()) } returns Unit
+        coEvery { garminRepo.fetchUser() } returns Result.Failure("Couldn't fetch user")
+        coEvery { authRepo.clear() } returns Unit
 
-        assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
-        confirmVerified(repo)
+        val res = useCase("user", "pass")
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Couldn't fetch user")
+
+        coVerify {
+            authRepo.getOrFetchConsumer()
+            authRepo.authorize("user", "pass", consumer)
+            authRepo.saveOAuth1(oauth1)
+            garminRepo.fetchUser()
+            authRepo.clear()
+        }
+        confirmVerified(authRepo, garminRepo)
     }
 
-    @Test
-    fun `Invalid - all blank`() = runTest {
-        val credential = Credential("", "")
-        val res = useCase(credential)
 
-        assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
-        confirmVerified(repo)
-    }
 }

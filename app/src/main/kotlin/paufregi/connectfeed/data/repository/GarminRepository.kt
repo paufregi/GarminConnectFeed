@@ -7,7 +7,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Course
-import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
@@ -21,7 +20,7 @@ import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
-import paufregi.connectfeed.data.datastore.UserDataStore
+import paufregi.connectfeed.data.datastore.UserStore
 import java.io.File
 import javax.inject.Inject
 import kotlin.Int
@@ -29,31 +28,22 @@ import kotlin.Int
 class GarminRepository @Inject constructor(
     private val garminDao: GarminDao,
     private val garminConnect: GarminConnect,
-    private val userDataStore: UserDataStore
+    private val userStore: UserStore,
 ) {
     fun getUser(): Flow<User?> =
-        userDataStore.getUser()
+        userStore.get()
 
     suspend fun saveUser(user: User) =
-        userDataStore.saveUser(user)
+        userStore.save(user)
 
     suspend fun deleteUser() =
-        userDataStore.deleteUser()
+        userStore.delete()
 
-    suspend fun fetchUser(): Result<User?> =
+    suspend fun fetchUser(): Result<User> =
         callApi (
             { garminConnect.getUserProfile() },
-            { res -> res.body()?.toCore() }
+            { res -> res.body()!!.toCore() }
         )
-
-    fun getCredential(): Flow<Credential?> =
-        userDataStore.getCredential()
-
-    suspend fun saveCredential(credential: Credential) =
-        userDataStore.saveCredential(credential)
-
-    suspend fun deleteCredential() =
-        userDataStore.deleteCredential()
 
     fun getAllProfiles(): Flow<List<Profile>> =
         garminDao.getAllProfiles().map { it.fastMap { it.toCore() } }
@@ -67,11 +57,6 @@ class GarminRepository @Inject constructor(
     suspend fun deleteProfile(profile: Profile) =
         garminDao.deleteProfile(profile.toEntity())
 
-    suspend fun deleteTokens() {
-        userDataStore.deleteOAuth1()
-        userDataStore.deleteOAuth2()
-    }
-
     suspend fun getLatestActivities(limit: Int): Result<List<Activity>> =
         callApi (
             { garminConnect.getLatestActivity(limit) },
@@ -81,7 +66,7 @@ class GarminRepository @Inject constructor(
     suspend fun getCourses(): Result<List<Course>> =
         callApi (
             { garminConnect.getCourses() },
-            { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
+            { res -> res.body()?.fastMap { it.toCore() }?: emptyList() }
         )
 
     suspend fun getEventTypes(): Result<List<EventType>> =
@@ -105,7 +90,7 @@ class GarminRepository @Inject constructor(
         )
         return callApi(
             { garminConnect.updateActivity(activity.id, request) },
-            { _ -> Result.Success(Unit) }
+            { }
         )
     }
 
@@ -113,7 +98,7 @@ class GarminRepository @Inject constructor(
         val multipartBody = MultipartBody.Part.createFormData("fit", file.name, file.asRequestBody())
         return callApi(
             { garminConnect.uploadFile(multipartBody) },
-            { _ -> Result.Success(Unit)}
+            { }
         )
     }
 }

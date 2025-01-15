@@ -14,7 +14,7 @@ import se.akerfeldt.okhttp.signpost.OkHttpOAuthConsumer
 import se.akerfeldt.okhttp.signpost.SigningInterceptor
 
 
-interface GarminConnectOAuth2 {
+interface GarminAuth2 {
 
     @POST("/oauth-service/oauth/exchange/user/2.0")
     @Headers(
@@ -26,7 +26,7 @@ interface GarminConnectOAuth2 {
     companion object {
         const val BASE_URL = "https://connectapi.garmin.com"
 
-        fun client(oauthConsumer: OAuthConsumer, oauth: OAuth1, url: String): GarminConnectOAuth2 {
+        fun client(oauthConsumer: OAuthConsumer, oauth: OAuth1, url: String): GarminAuth2 {
             val consumer = OkHttpOAuthConsumer(oauthConsumer.key, oauthConsumer.secret)
             consumer.setTokenWithSecret(oauth.token, oauth.secret)
 
@@ -39,7 +39,7 @@ interface GarminConnectOAuth2 {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client.build())
                 .build()
-                .create(GarminConnectOAuth2::class.java)
+                .create(GarminAuth2::class.java)
         }
     }
 }

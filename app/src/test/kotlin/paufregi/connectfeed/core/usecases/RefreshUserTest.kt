@@ -13,6 +13,7 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.user
 
 class RefreshUserTest{
     private val repo = mockk<GarminRepository>()
@@ -30,14 +31,12 @@ class RefreshUserTest{
 
     @Test
     fun `Refresh user - success`() = runTest {
-        val user = User("user", "profileImage")
-
         coEvery { repo.fetchUser() } returns Result.Success(user)
         coEvery { repo.saveUser(any()) } returns Unit
 
         val res = useCase()
 
-        assertThat(res).isInstanceOf(Result.Success<Unit>(Unit).javaClass)
+        assertThat(res.isSuccessful).isTrue()
 
         coVerify {
             repo.fetchUser()
@@ -52,7 +51,8 @@ class RefreshUserTest{
 
         val res = useCase()
 
-        assertThat(res).isInstanceOf(Result.Failure<Unit>("error").javaClass)
+        assertThat(res.isSuccessful).isFalse()
+
         coVerify { repo.fetchUser() }
         confirmVerified(repo)
     }
