@@ -7,8 +7,8 @@ import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
 class SignIn @Inject constructor (
+    private val garminRepository: GarminRepository,
     private val authRepository: AuthRepository,
-    private val garminRepository: GarminRepository
 ) {
     suspend operator fun invoke(username: String, password: String): Result<User> {
         if (username.isBlank() || password.isBlank()) return Result.Failure("Validation error")
@@ -22,7 +22,7 @@ class SignIn @Inject constructor (
         if (resOAuth1 is Result.Failure) return Result.Failure(resOAuth1.reason)
 
         val resUser = garminRepository.fetchUser()
-            .onSuccess { garminRepository.saveUser(it) }
+            .onSuccess { authRepository.saveUser(it) }
             .onFailure { authRepository.clear() }
 
         return resUser

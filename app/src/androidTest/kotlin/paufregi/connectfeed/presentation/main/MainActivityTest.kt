@@ -34,7 +34,6 @@ import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.data.datastore.AuthStore
-import paufregi.connectfeed.data.datastore.UserStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
@@ -55,9 +54,6 @@ class MainActivityTest {
 
     @get:Rule(order = 1)
     val composeTestRule = createComposeRule()
-
-    @Inject
-    lateinit var userStore: UserStore
 
     @Inject
     lateinit var authStore: AuthStore
@@ -94,7 +90,6 @@ class MainActivityTest {
         garthServer.shutdown()
         database.close()
         runBlocking(Dispatchers.IO){
-            userStore.dataStore.edit { it.clear() }
             authStore.dataStore.edit { it.clear() }
         }
 
@@ -115,7 +110,7 @@ class MainActivityTest {
 
     @Test
     fun `Sign out`() = runTest {
-        userStore.save(user)
+        authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
         authStore.saveOAuth2(oauth2)
@@ -133,7 +128,7 @@ class MainActivityTest {
 
     @Test
     fun `Refresh user`() = runTest {
-        userStore.save(user)
+        authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
         authStore.saveOAuth2(oauth2)
@@ -149,7 +144,7 @@ class MainActivityTest {
 
     @Test
     fun `Create profile`() = runTest {
-        userStore.save(user)
+        authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
         authStore.saveOAuth2(oauth2)
@@ -177,7 +172,7 @@ class MainActivityTest {
 
     @Test
     fun `Update profile`() = runTest {
-        userStore.save(user)
+        authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
         authStore.saveOAuth2(oauth2)
@@ -208,7 +203,7 @@ class MainActivityTest {
 
     @Test
     fun `Delete profile`() = runTest {
-        userStore.save(user)
+        authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
         authStore.saveOAuth2(oauth2)
@@ -226,7 +221,7 @@ class MainActivityTest {
 
     @Test
     fun `Update activity`() = runTest {
-        userStore.save(user)
+        authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
         authStore.saveOAuth2(oauth2)

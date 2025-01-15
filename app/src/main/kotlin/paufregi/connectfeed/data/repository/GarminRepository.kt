@@ -20,7 +20,7 @@ import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
-import paufregi.connectfeed.data.datastore.UserStore
+import paufregi.connectfeed.data.datastore.AuthStore
 import java.io.File
 import javax.inject.Inject
 import kotlin.Int
@@ -28,17 +28,7 @@ import kotlin.Int
 class GarminRepository @Inject constructor(
     private val garminDao: GarminDao,
     private val garminConnect: GarminConnect,
-    private val userStore: UserStore,
 ) {
-    fun getUser(): Flow<User?> =
-        userStore.get()
-
-    suspend fun saveUser(user: User) =
-        userStore.save(user)
-
-    suspend fun deleteUser() =
-        userStore.delete()
-
     suspend fun fetchUser(): Result<User> =
         callApi (
             { garminConnect.getUserProfile() },

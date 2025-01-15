@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.byteArrayPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.map
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuth2
 import paufregi.connectfeed.data.api.models.OAuthConsumer
@@ -19,6 +20,8 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
         private val OAUTH1_TOKEN = byteArrayPreferencesKey("oauth1Token")
         private val OAUTH1_SECRET = byteArrayPreferencesKey("oauth1Secret")
         private val OAUTH2_TOKEN = byteArrayPreferencesKey("oauth2Token")
+        private val USER_NAME = stringPreferencesKey("userName")
+        private val USER_PROFILE_IMAGE_URL = stringPreferencesKey("userProfileImageUrl")
     }
 
     fun getConsumer() = dataStore.data.map {
@@ -59,6 +62,21 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
     suspend fun saveOAuth2(token: OAuth2) {
         dataStore.edit { preferences ->
             preferences[OAUTH2_TOKEN] = Crypto.encrypt(token.accessToken)
+        }
+    }
+
+    fun getUser() = dataStore.data.map {
+        it[USER_NAME]?.let { name ->
+            it[USER_PROFILE_IMAGE_URL]?.let { profileImageUrl ->
+                User(name = name, profileImageUrl = profileImageUrl)
+            }
+        }
+    }
+
+    suspend fun saveUser(user: User) {
+        dataStore.edit { preferences ->
+            preferences[USER_NAME] = user.name
+            preferences[USER_PROFILE_IMAGE_URL] = user.profileImageUrl
         }
     }
 

@@ -28,7 +28,6 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.datastore.AuthStore
-import paufregi.connectfeed.data.datastore.UserStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
@@ -50,9 +49,6 @@ class GarminRepositoryTest {
 
     @Inject
     lateinit var repo: GarminRepository
-
-    @Inject
-    lateinit var userStore: UserStore
 
     @Inject
     lateinit var authStore: AuthStore
@@ -86,26 +82,10 @@ class GarminRepositoryTest {
         garthServer.shutdown()
         database.close()
         runBlocking(Dispatchers.IO){
-            userStore.dataStore.edit { it.clear() }
             authStore.dataStore.edit { it.clear() }
         }
     }
 
-    @Test
-    fun `Store user`() = runTest {
-        val user1 = User("user_1", "avatar_1")
-        val user2 = User("user_2", "avatar_2")
-        repo.getUser().test{
-            assertThat(awaitItem()).isNull()
-            repo.saveUser(user1)
-            assertThat(awaitItem()).isEqualTo(user1)
-            repo.saveUser(user2)
-            assertThat(awaitItem()).isEqualTo(user2)
-            repo.deleteUser()
-            assertThat(awaitItem()).isNull()
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
 
     @Test
     fun `Fetch user`() = runTest {

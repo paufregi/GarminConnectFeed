@@ -19,7 +19,6 @@ import paufregi.connectfeed.data.api.models.OAuthConsumer
 import paufregi.connectfeed.data.api.utils.AuthInterceptor
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.datastore.AuthStore
-import paufregi.connectfeed.data.datastore.UserStore
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import java.io.File
@@ -27,18 +26,10 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 val Context.authStore: DataStore<Preferences> by preferencesDataStore(name = "authStore")
-val Context.userStore: DataStore<Preferences> by preferencesDataStore(name = "userStore")
 
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
-
-    @Provides
-    @Singleton
-    fun provideUserDataStore(
-        @ApplicationContext context: Context,
-    ): UserStore =
-        UserStore(dataStore = context.userStore)
 
     @Provides
     @Singleton
@@ -68,11 +59,9 @@ class AppModule {
     fun provideGarminRepository(
         dao: GarminDao,
         connect: GarminConnect,
-        userStore: UserStore,
     ): GarminRepository = GarminRepository(
         dao,
         connect,
-        userStore,
     )
 
     @Provides

@@ -18,11 +18,11 @@ import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.consumer
 import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuth2
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.datastore.AuthStore
-import paufregi.connectfeed.data.datastore.UserStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
@@ -43,9 +43,6 @@ class AuthRepositoryTest {
 
     @Inject
     lateinit var repo: AuthRepository
-
-    @Inject
-    lateinit var userStore: UserStore
 
     @Inject
     lateinit var authStore: AuthStore
@@ -79,7 +76,6 @@ class AuthRepositoryTest {
         connectServer.shutdown()
         database.close()
         runBlocking(Dispatchers.IO){
-            userStore.dataStore.edit { it.clear() }
             authStore.dataStore.edit { it.clear() }
         }
     }

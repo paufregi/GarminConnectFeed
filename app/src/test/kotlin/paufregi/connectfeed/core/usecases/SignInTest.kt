@@ -24,7 +24,7 @@ class SignInTest{
 
     @Before
     fun setup(){
-        useCase = SignIn(authRepo, garminRepo)
+        useCase = SignIn(garminRepo, authRepo)
     }
 
     @After
@@ -38,7 +38,7 @@ class SignInTest{
         coEvery { authRepo.authorize(any(), any(), any()) } returns Result.Success(oauth1)
         coEvery { authRepo.saveOAuth1(any()) } returns Unit
         coEvery { garminRepo.fetchUser() } returns Result.Success(user)
-        coEvery { garminRepo.saveUser(any()) } returns Unit
+        coEvery { authRepo.saveUser(any()) } returns Unit
 
         val res = useCase("user", "pass")
         assertThat(res.isSuccessful).isTrue()
@@ -50,9 +50,9 @@ class SignInTest{
             authRepo.authorize("user", "pass", consumer)
             authRepo.saveOAuth1(oauth1)
             garminRepo.fetchUser()
-            garminRepo.saveUser(user)
+            authRepo.saveUser(user)
         }
-        confirmVerified(authRepo, garminRepo)
+        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
@@ -62,7 +62,7 @@ class SignInTest{
         res as Result.Failure
         assertThat(res.reason).isEqualTo("Validation error")
 
-        confirmVerified(authRepo, garminRepo)
+        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
@@ -72,7 +72,7 @@ class SignInTest{
         res as Result.Failure
         assertThat(res.reason).isEqualTo("Validation error")
 
-        confirmVerified(authRepo, garminRepo)
+        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
@@ -82,7 +82,7 @@ class SignInTest{
         res as Result.Failure
         assertThat(res.reason).isEqualTo("Validation error")
 
-        confirmVerified(authRepo, garminRepo)
+        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
@@ -97,7 +97,7 @@ class SignInTest{
         coVerify {
             authRepo.getOrFetchConsumer()
         }
-        confirmVerified(authRepo, garminRepo)
+        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
@@ -116,7 +116,7 @@ class SignInTest{
             authRepo.authorize("user", "pass", consumer)
             authRepo.clear()
         }
-        confirmVerified(authRepo, garminRepo)
+        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
@@ -139,7 +139,7 @@ class SignInTest{
             garminRepo.fetchUser()
             authRepo.clear()
         }
-        confirmVerified(authRepo, garminRepo)
+        confirmVerified(garminRepo, authRepo)
     }
 
 

@@ -13,13 +13,12 @@ import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class SignOutTest{
-    private val garminRepo = mockk<GarminRepository>()
     private val authRepo = mockk<AuthRepository>()
     private lateinit var useCase: SignOut
 
     @Before
     fun setup(){
-        useCase = SignOut(authRepo, garminRepo)
+        useCase = SignOut(authRepo)
     }
 
     @After
@@ -30,13 +29,9 @@ class SignOutTest{
     @Test
     fun `Sign out`() = runTest {
         coEvery { authRepo.clear() } returns Unit
-        coEvery { garminRepo.deleteUser() } returns Unit
         useCase()
 
-        coVerify {
-            authRepo.clear()
-            garminRepo.deleteUser()
-        }
-        confirmVerified(authRepo, garminRepo)
+        coVerify { authRepo.clear() }
+        confirmVerified(authRepo)
     }
 }

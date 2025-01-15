@@ -27,6 +27,7 @@ import paufregi.connectfeed.data.api.models.Ticket
 import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.oauth1
 import paufregi.connectfeed.oauth2
+import paufregi.connectfeed.user
 import retrofit2.Response
 
 class AuthRepositoryTest {
@@ -97,6 +98,29 @@ class AuthRepositoryTest {
         repo.saveOAuth2(oauth2)
 
         coVerify { authDatastore.saveOAuth2(oauth2) }
+        confirmVerified(garth, garminSSO, authDatastore)
+    }
+
+    @Test
+    fun `Get user`() = runTest {
+        every { authDatastore.getUser() } returns flowOf(user)
+
+        repo.getUser().test {
+            assertThat(awaitItem()).isEqualTo(user)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { authDatastore.getUser() }
+        confirmVerified(garth, garminSSO, authDatastore)
+    }
+
+    @Test
+    fun `Save user`() = runTest {
+        coEvery { authDatastore.saveUser(any()) } returns Unit
+
+        repo.saveUser(user)
+
+        coVerify { authDatastore.saveUser(user) }
         confirmVerified(garth, garminSSO, authDatastore)
     }
 
