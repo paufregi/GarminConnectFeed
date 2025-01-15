@@ -74,7 +74,7 @@ internal fun QuickEditContent(
         is ProcessState.Success -> SimpleScaffold {
             StatusInfo(
                 type = StatusInfoType.Success,
-                text = state.process.message,
+                text = state.process.message ?: "All done",
                 actionButton = { Button(text = "Ok", onClick = { onEvent(QuickEditEvent.Restart) }) },
                 paddingValues = it
             )

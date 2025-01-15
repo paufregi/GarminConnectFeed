@@ -38,7 +38,7 @@ class LoginViewModel @Inject constructor(
         signInUseCase(state.value.username, state.value.password)
             .onSuccess { data ->
                 _state.update { it.copy(
-                    process = ProcessState.Success(data.name),
+                    process = ProcessState.Success(),
                     user = data
                 ) } }
             .onFailure { err -> _state.update { it.copy(process = ProcessState.Failure(err)) } }

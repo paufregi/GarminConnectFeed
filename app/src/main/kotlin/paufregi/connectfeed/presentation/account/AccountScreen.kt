@@ -64,7 +64,7 @@ internal fun AccountContent(
         is ProcessState.Success -> SimpleScaffold {
             StatusInfo(
                 type = StatusInfoType.Success,
-                text = state.process.message,
+                text = state.process.message ?: "All done",
                 actionButton = { Button(text = "Ok", onClick = { onEvent(AccountEvent.Reset) }) },
                 paddingValues = it
             )
@@ -118,7 +118,7 @@ internal fun AccountForm(
         AsyncImage(
             model = state.user?.profileImageUrl,
             contentDescription = null,
-            modifier = Modifier.scale(2f).clip(CircleShape).testTag("profile_picture")
+            modifier = Modifier.scale(2f).clip(CircleShape).testTag("profileImage")
         )
         Spacer(modifier = Modifier.size(42.dp))
         Text(text = state.user?.name ?: "", fontSize = 24.sp)
