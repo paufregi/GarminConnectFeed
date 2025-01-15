@@ -37,7 +37,7 @@ class AuthRepository @Inject constructor(
         val res = callApi(
             { garth.getOAuthConsumer() },
             { res -> res.body()!! }
-        )
+        ).onSuccess { authDatastore.saveConsumer(it) }
 
         return when (res) {
             is Result.Success -> res.data

@@ -46,7 +46,8 @@ class SaveProfileTest{
 
         val res = useCase(profile)
 
-        assertThat(res).isInstanceOf(Result.Success(Unit).javaClass)
+        assertThat(res.isSuccessful).isTrue()
+
         coVerify { repo.saveProfile(profile) }
         confirmVerified(repo)
     }
@@ -65,14 +66,16 @@ class SaveProfileTest{
 
         val res = useCase(profile)
 
-        assertThat(res).isInstanceOf(Result.Failure<Unit>("Name cannot be empty").javaClass)
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Name cannot be empty")
     }
 
     @Test
     fun `Invalid - Strength profile with course`() = runTest {
         val profile = Profile(
             id = 1,
-            name = "",
+            name = "Test",
             rename = true,
             eventType = EventType(id = 1, name = "event 1"),
             activityType = ActivityType.Strength,
@@ -82,14 +85,35 @@ class SaveProfileTest{
 
         val res = useCase(profile)
 
-        assertThat(res).isInstanceOf(Result.Failure<Unit>("Course must match activity type").javaClass)
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Can't have course for strength activity")
+    }
+
+    @Test
+    fun `Invalid - Any profile with course`() = runTest {
+        val profile = Profile(
+            id = 1,
+            name = "Test",
+            rename = true,
+            eventType = EventType(id = 1, name = "event 1"),
+            activityType = ActivityType.Any,
+            course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
+            water = 550
+        )
+
+        val res = useCase(profile)
+
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Can't have course for strength activity")
     }
 
     @Test
     fun `Invalid - Course not matching activity type`() = runTest {
         val profile = Profile(
             id = 1,
-            name = "",
+            name = "Test",
             rename = true,
             eventType = EventType(id = 1, name = "event 1"),
             activityType = ActivityType.Running,
@@ -99,6 +123,8 @@ class SaveProfileTest{
 
         val res = useCase(profile)
 
-        assertThat(res).isInstanceOf(Result.Failure<Unit>("Course must match activity type").javaClass)
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Course must match activity type")
     }
 }
