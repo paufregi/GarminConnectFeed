@@ -9,6 +9,7 @@ import paufregi.connectfeed.data.api.Garth
 import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuth2
 import paufregi.connectfeed.data.api.models.OAuthConsumer
+import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.datastore.AuthStore
 import javax.inject.Inject
 
@@ -31,12 +32,17 @@ class AuthRepository @Inject constructor(
 
     suspend fun getOrFetchConsumer(): OAuthConsumer? {
         var consumer = authDatastore.getConsumer().firstOrNull()
-        if (consumer == null) {
-            consumer = garth.getOAuthConsumer().body()!!
-            authDatastore.saveConsumer(consumer)
-        }
+        if (consumer != null) return consumer
 
-        return consumer
+        val res = callApi(
+                { garth.getOAuthConsumer() },
+                { res -> res.body() }
+            ).onSuccess { it?.let { authDatastore.saveConsumer(it) } }
+
+        return when (res) {
+            is Result.Success -> res.data
+            is Result.Failure -> null
+        }
     }
 
     suspend fun authorize(username: String, password: String, consumer: OAuthConsumer): Result<OAuth1> {
