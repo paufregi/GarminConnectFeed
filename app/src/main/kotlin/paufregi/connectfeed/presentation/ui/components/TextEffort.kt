@@ -11,7 +11,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 @Composable
 fun TextEffort(
     @PreviewParameter(EffortPreview::class) effort: Float,
-    modifier: Modifier = Modifier) {
+    modifier: Modifier = Modifier
+) {
     val score = (effort/10).toInt()
     val label = when(score) {
         0 -> "None selected"

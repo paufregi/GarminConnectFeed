@@ -11,13 +11,9 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.GarminAuth1
-import paufregi.connectfeed.data.api.GarminAuth2
 import paufregi.connectfeed.data.api.GarminConnect
 import paufregi.connectfeed.data.api.models.EventType as DataEventType
 import paufregi.connectfeed.data.api.models.Metadata
-import paufregi.connectfeed.data.api.models.OAuth1
-import paufregi.connectfeed.data.api.models.OAuthConsumer
 import paufregi.connectfeed.data.api.models.Summary
 import paufregi.connectfeed.data.api.models.UpdateActivity
 import paufregi.connectfeed.data.api.utils.callApi
