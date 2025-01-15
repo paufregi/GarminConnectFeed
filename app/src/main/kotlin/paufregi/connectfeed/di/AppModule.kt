@@ -2,7 +2,6 @@ package paufregi.connectfeed.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.Module
@@ -54,14 +53,14 @@ class AppModule {
         garth: Garth,
         garminSSO: GarminSSO,
         authDatastore: AuthStore,
-        makeGarminAuth1: (consumer: OAuthConsumer) -> GarminAuth1,
-        makeGarminAuth2: (consumer: OAuthConsumer, oauth: OAuth1) -> GarminAuth2,
+        @Named("GarminConnectOAuth1Url") garminConnectOAuth1Url: String,
+        @Named("GarminConnectOAuth2Url") garminConnectOAuth2Url: String,
     ): AuthRepository = AuthRepository(
         garth,
         garminSSO,
         authDatastore,
-        makeGarminAuth1,
-        makeGarminAuth2
+        makeGarminAuth1 = { oauthConsumer: OAuthConsumer -> GarminAuth1.client(oauthConsumer, garminConnectOAuth1Url) },
+        makeGarminAuth2 = { oauthConsumer: OAuthConsumer, oauth: OAuth1 -> GarminAuth2.client(oauthConsumer, oauth, garminConnectOAuth2Url) }
     )
 
     @Provides
