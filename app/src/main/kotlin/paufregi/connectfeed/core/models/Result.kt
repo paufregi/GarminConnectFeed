@@ -13,12 +13,12 @@ sealed interface Result<T> {
 
     fun <R>map(transform: (data: T) -> R) = fold(transform) { it }
 
-    suspend fun onSuccess(action: (data: T) -> Unit): Result<T> {
+    suspend fun onSuccess(action: suspend (data: T) -> Unit): Result<T> {
         if (this is Success) action(data)
         return this
     }
 
-    fun onFailure(action: (reason: String) -> Unit): Result<T> {
+    suspend fun onFailure(action: suspend (reason: String) -> Unit): Result<T> {
         if (this is Failure) action(reason)
         return this
     }
