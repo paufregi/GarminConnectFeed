@@ -46,7 +46,7 @@ class UpdateActivityTest{
         coEvery { repo.updateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
         val res = useCase(activity, profile, 50f, 90f)
 
-        assertThat(res).isInstanceOf(Result.Success(Unit).javaClass)
+        assertThat(res.isSuccessful).isTrue()
         coVerify { repo.updateActivity(activity, profile, 50f, 90f) }
         confirmVerified(repo)
     }
@@ -55,20 +55,32 @@ class UpdateActivityTest{
     fun `Invalid - no activity`() = runTest {
         val res = useCase(null, profile, null, null)
 
-        assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Validation error")
+
+        confirmVerified(repo)
     }
 
     @Test
     fun `Invalid - no profile`() = runTest {
         val res = useCase(activity, null, null, null)
 
-        assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Validation error")
+
+        confirmVerified(repo)
     }
 
     @Test
     fun `Invalid - both null`() = runTest {
         val res = useCase(null, null, null, null)
 
-        assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Validation error")
+
+        confirmVerified(repo)
     }
 }

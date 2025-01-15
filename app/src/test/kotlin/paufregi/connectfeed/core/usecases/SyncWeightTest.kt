@@ -79,10 +79,9 @@ class SyncWeightTest {
         every { FitWriter.weights(any(), any()) } returns Unit
         coEvery { repo.uploadFile(any()) } returns Result.Success(Unit)
 
-        coEvery { repo.saveCredential(any()) } returns Unit
         val res = useCase(stubInputStream)
 
-        assertThat(res).isInstanceOf(Result.Success(Unit).javaClass)
+        assertThat(res.isSuccessful).isTrue()
         verify {
             RenphoReader.read(stubInputStream)
             Formatter.dateTimeForFilename(any()).format(any())
@@ -103,10 +102,9 @@ class SyncWeightTest {
         every { FitWriter.weights(any(), any()) } returns Unit
         coEvery { repo.uploadFile(any()) } returns Result.Success(Unit)
 
-        coEvery { repo.saveCredential(any()) } returns Unit
         val res = useCase(stubInputStream)
 
-        assertThat(res).isInstanceOf(Result.Success(Unit).javaClass)
+        assertThat(res.isSuccessful).isTrue()
         verify {
             RenphoReader.read(stubInputStream)
             Formatter.dateTimeForFilename(any()).format(any())
@@ -117,7 +115,7 @@ class SyncWeightTest {
     }
 
     @Test
-    fun `Failed upload use-case`() = runTest {
+    fun `Failed upload`() = runTest {
         val csvText = ""
 
         val stubInputStream = IOUtils.toInputStream(csvText, "UTF-8")
@@ -127,10 +125,11 @@ class SyncWeightTest {
         every { FitWriter.weights(any(), any()) } returns Unit
         coEvery { repo.uploadFile(any()) } returns Result.Failure("Failed to upload file")
 
-        coEvery { repo.saveCredential(any()) } returns Unit
         val res = useCase(stubInputStream)
 
-        assertThat(res).isInstanceOf(Result.Failure<Unit>("Failed to upload file").javaClass)
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Failed to upload file")
         verify {
             RenphoReader.read(stubInputStream)
             Formatter.dateTimeForFilename(any()).format(any())

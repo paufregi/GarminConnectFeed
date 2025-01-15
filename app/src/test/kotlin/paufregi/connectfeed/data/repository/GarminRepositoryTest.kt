@@ -1,16 +1,14 @@
 package paufregi.connectfeed.data.repository
 
-import android.util.Log
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
-import io.mockk.clearStaticMockk
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.verify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
@@ -50,50 +48,45 @@ class GarminRepositoryTest {
     @Before
     fun setup(){
         repo = GarminRepository(garminDao, garminConnect, userStore)
-        mockkStatic(Log::class)
-        every { Log.i(any(), any()) } returns 0
-        every { Log.e(any(), any()) } returns 0
-        every { Log.e(any(), any(), any()) } returns 0
     }
 
     @After
     fun tearDown(){
         clearAllMocks()
-        clearStaticMockk(Log::class)
     }
 
     @Test
     fun `Get user`() = runTest {
         val user = User("user", "url")
-        coEvery { userStore.getUser() } returns flowOf(user)
+        every { userStore.get() } returns flowOf(user)
 
         repo.getUser().test {
             assertThat(awaitItem()).isEqualTo(user)
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { userStore.getUser() }
+        verify { userStore.get() }
         confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
     fun `Save user`() = runTest {
         val user = User("user", "url")
-        coEvery { userStore.saveUser(any()) } returns Unit
+        coEvery { userStore.save(any()) } returns Unit
 
         repo.saveUser(user)
 
-        coVerify { userStore.saveUser(user) }
+        coVerify { userStore.save(user) }
         confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
     fun `Delete user`() = runTest {
-        coEvery { userStore.deleteUser() } returns Unit
+        coEvery { userStore.delete() } returns Unit
 
         repo.deleteUser()
 
-        coVerify { userStore.deleteUser() }
+        coVerify { userStore.delete() }
         confirmVerified(garminDao, garminConnect, userStore)
     }
 
@@ -114,20 +107,6 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Fetch user - null`() = runTest {
-        coEvery { garminConnect.getUserProfile() } returns Response.success(null)
-
-        val res = repo.fetchUser()
-
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isNull()
-
-        coVerify { garminConnect.getUserProfile() }
-        confirmVerified(garminDao, garminConnect, userStore)
-    }
-
-    @Test
     fun `Fetch user - failure`() = runTest {
         coEvery { garminConnect.getUserProfile() } returns Response.error<UserProfile>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
@@ -137,44 +116,6 @@ class GarminRepositoryTest {
         res as Result.Failure
 
         coVerify { garminConnect.getUserProfile() }
-        confirmVerified(garminDao, garminConnect, userStore)
-    }
-
-    @Test
-    fun `Get credential`() = runTest {
-        val cred = Credential(username = "user", password = "pass")
-        coEvery { userStore.getCredential() } returns flowOf(cred)
-
-        val res = repo.getCredential()
-
-        res.test {
-            assertThat(awaitItem()).isEqualTo(cred)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify { userStore.getCredential() }
-        confirmVerified(garminDao, garminConnect, userStore)
-    }
-
-    @Test
-    fun `Save credential`() = runTest {
-        val cred = Credential(username = "user", password = "pass")
-
-        coEvery { userStore.saveCredential(any()) } returns Unit
-
-        repo.saveCredential(cred)
-
-        coVerify { userStore.saveCredential(cred) }
-        confirmVerified(garminDao, garminConnect, userStore)
-    }
-
-    @Test
-    fun `Delete credential`() = runTest {
-        coEvery { userStore.deleteCredential() } returns Unit
-
-        repo.deleteCredential()
-
-        coVerify { userStore.deleteCredential() }
         confirmVerified(garminDao, garminConnect, userStore)
     }
 
@@ -333,18 +274,6 @@ class GarminRepositoryTest {
         repo.deleteProfile(profile)
 
         coVerify { garminDao.deleteProfile(profileEntity) }
-        confirmVerified(garminDao, garminConnect, userStore)
-    }
-
-    @Test
-    fun `Delete tokens`() = runTest {
-        coEvery { userStore.deleteOAuth1() } returns Unit
-        coEvery { userStore.deleteOAuth2() } returns Unit
-
-        repo.deleteTokens()
-
-        coVerify { userStore.deleteOAuth1() }
-        coVerify { userStore.deleteOAuth2() }
         confirmVerified(garminDao, garminConnect, userStore)
     }
 

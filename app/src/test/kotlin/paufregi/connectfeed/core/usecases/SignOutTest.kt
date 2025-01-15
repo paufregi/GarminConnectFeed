@@ -9,15 +9,17 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class SignOutTest{
-    private val repo = mockk<GarminRepository>()
+    private val garminRepo = mockk<GarminRepository>()
+    private val authRepo = mockk<AuthRepository>()
     private lateinit var useCase: SignOut
 
     @Before
     fun setup(){
-        useCase = SignOut(repo)
+        useCase = SignOut(authRepo, garminRepo)
     }
 
     @After
@@ -27,16 +29,14 @@ class SignOutTest{
 
     @Test
     fun `Sign out`() = runTest {
-        coEvery { repo.deleteUser() } returns Unit
-        coEvery { repo.deleteCredential() } returns Unit
-        coEvery { repo.deleteTokens() } returns Unit
+        coEvery { authRepo.clear() } returns Unit
+        coEvery { garminRepo.deleteUser() } returns Unit
         useCase()
 
         coVerify {
-            repo.deleteUser()
-            repo.deleteCredential()
-            repo.deleteTokens()
+            authRepo.clear()
+            garminRepo.deleteUser()
         }
-        confirmVerified(repo)
+        confirmVerified(authRepo, garminRepo)
     }
 }

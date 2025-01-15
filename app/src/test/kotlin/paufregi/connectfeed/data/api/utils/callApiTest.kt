@@ -1,32 +1,13 @@
 package paufregi.connectfeed.data.api.utils
 
-import android.util.Log
 import com.google.common.truth.Truth.assertThat
-import io.mockk.clearAllMocks
-import io.mockk.clearStaticMockk
-import io.mockk.every
-import io.mockk.mockkStatic
 import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Result
 import retrofit2.Response
 
 class CallApiTest {
-    @Before
-    fun setup(){
-        mockkStatic(Log::class)
-        every { Log.e(any(), any()) } returns 0
-        every { Log.e(any(), any(), any()) } returns 0
-    }
-
-    @After
-    fun tearDown(){
-        clearAllMocks()
-        clearStaticMockk(Log::class)
-    }
 
     @Test
     fun `Successful call`() = runTest {

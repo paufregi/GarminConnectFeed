@@ -13,15 +13,20 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.data.api.models.OAuth1
+import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.oauth1
+import paufregi.connectfeed.user
 
 class IsLoggedInTest{
-    private val repo = mockk<GarminRepository>()
+    private val garminRepo = mockk<GarminRepository>()
+    private val authRepo = mockk<AuthRepository>()
     private lateinit var useCase: IsLoggedIn
 
     @Before
     fun setup(){
-        useCase = IsLoggedIn(repo)
+        useCase = IsLoggedIn(garminRepo, authRepo)
     }
 
     @After
@@ -31,10 +36,8 @@ class IsLoggedInTest{
 
     @Test
     fun `Logged In`() = runTest {
-        val user = User("user", "avatar")
-        val cred = Credential("user", "pass")
-        coEvery { repo.getUser() } returns flowOf(user)
-        coEvery { repo.getCredential() } returns flowOf(cred)
+        coEvery { garminRepo.getUser() } returns flowOf(user)
+        coEvery { authRepo.getOAuth1() } returns flowOf(oauth1)
         val res = useCase()
 
         res.test {
@@ -42,17 +45,16 @@ class IsLoggedInTest{
             cancelAndIgnoreRemainingEvents()
         }
         coVerify {
-            repo.getUser()
-            repo.getCredential()
+            garminRepo.getUser()
+            authRepo.getOAuth1()
         }
-        confirmVerified(repo)
+        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
     fun `Not logged In - no user`() = runTest {
-        val cred = Credential("user", "pass")
-        coEvery { repo.getUser() } returns flowOf(null)
-        coEvery { repo.getCredential() } returns flowOf(cred)
+        coEvery { garminRepo.getUser() } returns flowOf(null)
+        coEvery { authRepo.getOAuth1() } returns flowOf(oauth1)
         val res = useCase()
 
         res.test {
@@ -60,17 +62,16 @@ class IsLoggedInTest{
             cancelAndIgnoreRemainingEvents()
         }
         coVerify {
-            repo.getUser()
-            repo.getCredential()
+            garminRepo.getUser()
+            authRepo.getOAuth1()
         }
-        confirmVerified(repo)
+        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
-    fun `Not logged In - no credential`() = runTest {
-        val user = User("user", "avatar")
-        coEvery { repo.getUser() } returns flowOf(user)
-        coEvery { repo.getCredential() } returns flowOf(null)
+    fun `Not logged In - no token`() = runTest {
+        coEvery { garminRepo.getUser() } returns flowOf(user)
+        coEvery { authRepo.getOAuth1() } returns flowOf(null)
         val res = useCase()
 
         res.test {
@@ -78,18 +79,16 @@ class IsLoggedInTest{
             cancelAndIgnoreRemainingEvents()
         }
         coVerify {
-            repo.getUser()
-            repo.getCredential()
+            garminRepo.getUser()
+            authRepo.getOAuth1()
         }
-        confirmVerified(repo)
+        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
-    fun `Not logged In - blank user in credential`() = runTest {
-        val user = User("user", "avatar")
-        val cred = Credential("", "pass")
-        coEvery { repo.getUser() } returns flowOf(user)
-        coEvery { repo.getCredential() } returns flowOf(cred)
+    fun `Not logged In - invalid token`() = runTest {
+        coEvery { garminRepo.getUser() } returns flowOf(user)
+        coEvery { authRepo.getOAuth1() } returns flowOf(OAuth1("", ""))
         val res = useCase()
 
         res.test {
@@ -97,28 +96,9 @@ class IsLoggedInTest{
             cancelAndIgnoreRemainingEvents()
         }
         coVerify {
-            repo.getUser()
-            repo.getCredential()
+            garminRepo.getUser()
+            authRepo.getOAuth1()
         }
-        confirmVerified(repo)
-    }
-
-    @Test
-    fun `Not logged In - blank password in credential`() = runTest {
-        val user = User("user", "avatar")
-        val cred = Credential("user", "")
-        coEvery { repo.getUser() } returns flowOf(user)
-        coEvery { repo.getCredential() } returns flowOf(cred)
-        val res = useCase()
-
-        res.test {
-            assertThat(awaitItem()).isFalse()
-            cancelAndIgnoreRemainingEvents()
-        }
-        coVerify {
-            repo.getUser()
-            repo.getCredential()
-        }
-        confirmVerified(repo)
+        confirmVerified(garminRepo, authRepo)
     }
 }
