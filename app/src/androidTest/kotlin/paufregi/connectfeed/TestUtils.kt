@@ -17,26 +17,19 @@ import java.util.Date
 
 
 fun createOAuth2(expiresAt: Date) = OAuth2(
-    scope = "SCOPE",
-    jti = "JTI",
     accessToken = JWT.create().withExpiresAt(expiresAt).sign(Algorithm.none()),
-    tokenType = "TOKEN_TYPE",
-    refreshToken = "REFRESH_TOKEN",
-    expiresIn = 0,
-    refreshTokenExpiresIn = 0
 )
 
 //1 Day  : 1000 * 60 * 60 * 24 milliseconds
 val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
 
-val cred = Credential(username = "user", password = "pass")
 val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
 val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 val consumerBody = """{"consumer_key":"${consumer.key}","consumer_secret":"${consumer.secret}"}"""
 val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
 val oauth1Body = "oauth_token=${oauth1.token}&oauth_token_secret=${oauth1.secret}"
 val oauth2 = createOAuth2(tomorrow)
-val oauth2Body = """{"scope": "${oauth2.scope}","jti": "${oauth2.jti}","access_token": "${oauth2.accessToken}","token_type": "${oauth2.tokenType}","refresh_token": "${oauth2.refreshToken}","expires_in": ${oauth2.expiresIn},"refresh_token_expires_in": ${oauth2.refreshTokenExpiresIn}}"""
+val oauth2Body = """{"scope": "SCOPE","jti": "JTI","access_token": "${oauth2.accessToken}","token_type": "TOKEN_TYPE","refresh_token": "REFRESH_TOKEN","expires_in": 0,"refresh_token_expires_in": 0}"""
 
 val htmlForCSRF = """
         <!DOCTYPE html>

@@ -2,21 +2,25 @@ package paufregi.connectfeed
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuth2
+import paufregi.connectfeed.data.api.models.OAuthConsumer
 import java.util.Date
 
 fun createOAuth2(expiresAt: Date) = OAuth2(
-    scope = "SCOPE",
-    jti = "JTI",
     accessToken = JWT.create().withExpiresAt(expiresAt).sign(Algorithm.none()),
-    tokenType = "TOKEN_TYPE",
-    refreshToken = "REFRESH_TOKEN",
-    expiresIn = 0,
-    refreshTokenExpiresIn = 0
 )
 
 //1 Day  : 1000 * 60 * 60 * 24 milliseconds
 val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
+val yesterday = Date(Date().time - (1000 * 60 * 60 * 24))
+
+val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
+val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
+val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
+val oauth2 = createOAuth2(tomorrow)
+val oauth2Body = """{"scope": "SCOPE","jti": "JTI","access_token": "${oauth2.accessToken}","token_type": "TOKEN_TYPE","refresh_token": "REFRESH_TOKEN","expires_in": 0,"refresh_token_expires_in": 0}"""
 
 val htmlForCSRF = """
         <!DOCTYPE html>
