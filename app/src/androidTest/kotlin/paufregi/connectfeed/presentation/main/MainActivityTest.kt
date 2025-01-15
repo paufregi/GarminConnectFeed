@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import androidx.datastore.preferences.core.edit
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -26,17 +27,20 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
+import paufregi.connectfeed.consumer
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.cred
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.database.entities.ProfileEntity
+import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.data.datastore.UserStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
 import paufregi.connectfeed.garthPort
+import paufregi.connectfeed.oauth1
+import paufregi.connectfeed.oauth2
 import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.user
 import javax.inject.Inject
@@ -53,7 +57,10 @@ class MainActivityTest {
     val composeTestRule = createComposeRule()
 
     @Inject
-    lateinit var dataStore: UserStore
+    lateinit var userStore: UserStore
+
+    @Inject
+    lateinit var authStore: AuthStore
 
     @Inject
     lateinit var database: GarminDatabase
@@ -87,11 +94,8 @@ class MainActivityTest {
         garthServer.shutdown()
         database.close()
         runBlocking(Dispatchers.IO){
-            dataStore.deleteCredential()
-            dataStore.deleteUser()
-            dataStore.deleteOAuthConsumer()
-            dataStore.deleteOAuth1()
-            dataStore.deleteOAuth2()
+            userStore.dataStore.edit { it.clear() }
+            authStore.dataStore.edit { it.clear() }
         }
 
     }
@@ -101,8 +105,8 @@ class MainActivityTest {
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.onNodeWithTag("login_form").assertIsDisplayed()
 
-        composeTestRule.onNodeWithText("Username").performTextInput(cred.username)
-        composeTestRule.onNodeWithText("Password").performTextInput(cred.password)
+        composeTestRule.onNodeWithText("Username").performTextInput("user")
+        composeTestRule.onNodeWithText("Password").performTextInput("pass")
         composeTestRule.onNodeWithText("Sign in").performClick()
         composeTestRule.waitUntil(conditionDescription = "welcome") { composeTestRule.onNodeWithTag("welcome").isDisplayed() }
         composeTestRule.onNodeWithText("Ok").performClick()
@@ -111,8 +115,10 @@ class MainActivityTest {
 
     @Test
     fun `Sign out`() = runTest {
-        dataStore.saveCredential(cred)
-        dataStore.saveUser(user)
+        userStore.save(user)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
@@ -126,41 +132,11 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Change password`() = runTest {
-        dataStore.saveCredential(cred)
-        dataStore.saveUser(user)
-
-        ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
-        composeTestRule.onNodeWithTag("menu").performClick()
-        composeTestRule.onNodeWithText("Account").performClick()
-        composeTestRule.waitUntil(conditionDescription = "account_form") { composeTestRule.onNodeWithTag("account_form").isDisplayed() }
-        composeTestRule.onNodeWithText("Change password").performClick()
-        composeTestRule.waitUntil(conditionDescription = "password_form") { composeTestRule.onNodeWithTag("password_form").isDisplayed() }
-        composeTestRule.onNodeWithText("Password").performTextClearance()
-        composeTestRule.onNodeWithText("Password").performTextInput(cred.password)
-        composeTestRule.onNodeWithText("Save").performClick()
-        composeTestRule.waitUntil(conditionDescription = "Password changed") { composeTestRule.onNodeWithText("Password changed").isDisplayed() }
-    }
-
-    @Test
-    fun `Clear tokens`() = runTest {
-        dataStore.saveCredential(cred)
-        dataStore.saveUser(user)
-
-        ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
-        composeTestRule.onNodeWithTag("menu").performClick()
-        composeTestRule.onNodeWithText("Account").performClick()
-        composeTestRule.waitUntil(conditionDescription = "account_form") { composeTestRule.onNodeWithTag("account_form").isDisplayed() }
-        composeTestRule.onNodeWithText("Clear tokens").performClick()
-        composeTestRule.waitUntil(conditionDescription = "Tokens cleared") { composeTestRule.onNodeWithText("Tokens cleared").isDisplayed() }
-    }
-
-    @Test
     fun `Refresh user`() = runTest {
-        dataStore.saveCredential(cred)
-        dataStore.saveUser(user)
+        userStore.save(user)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
@@ -173,8 +149,10 @@ class MainActivityTest {
 
     @Test
     fun `Create profile`() = runTest {
-        dataStore.saveCredential(cred)
-        dataStore.saveUser(user)
+        userStore.save(user)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
@@ -199,8 +177,10 @@ class MainActivityTest {
 
     @Test
     fun `Update profile`() = runTest {
-        dataStore.saveCredential(cred)
-        dataStore.saveUser(user)
+        userStore.save(user)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
         dao.saveProfile(ProfileEntity(id = 5, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType(id = 1, name = "Race")))
 
         ActivityScenario.launch(MainActivity::class.java)
@@ -228,8 +208,10 @@ class MainActivityTest {
 
     @Test
     fun `Delete profile`() = runTest {
-        dataStore.saveCredential(cred)
-        dataStore.saveUser(user)
+        userStore.save(user)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
         dao.saveProfile(ProfileEntity(id = 10, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType(id = 1, name = "Race")))
 
         ActivityScenario.launch(MainActivity::class.java)
@@ -244,8 +226,10 @@ class MainActivityTest {
 
     @Test
     fun `Update activity`() = runTest {
-        dataStore.saveCredential(cred)
-        dataStore.saveUser(user)
+        userStore.save(user)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
         dao.saveProfile(ProfileEntity(name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType(id = 1, name = "Race")))
 
         ActivityScenario.launch(MainActivity::class.java)
