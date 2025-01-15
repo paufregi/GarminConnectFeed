@@ -9,7 +9,7 @@ object RenphoReader {
     fun read(inputStream: InputStream): List<Weight> {
         return CSVFormat.Builder.create(CSVFormat.DEFAULT).apply {
             setIgnoreSurroundingSpaces(true)
-        }.build().parse(inputStream.reader())
+        }.get().parse(inputStream.reader())
             .drop(1)
             .mapNotNull { record ->
                 val timestamp = Formatter.dateTimeForImport(Locale.getDefault()).parse(record[0])

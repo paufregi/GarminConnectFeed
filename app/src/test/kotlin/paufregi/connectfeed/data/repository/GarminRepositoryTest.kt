@@ -5,9 +5,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.verify
 import io.mockk.confirmVerified
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -34,7 +32,6 @@ import paufregi.connectfeed.data.api.models.UpdateActivity
 import paufregi.connectfeed.data.api.models.UserProfile
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.ProfileEntity
-import paufregi.connectfeed.data.datastore.UserStore
 import retrofit2.Response
 import java.io.File
 
@@ -43,51 +40,15 @@ class GarminRepositoryTest {
     private lateinit var repo: GarminRepository
     private val garminDao = mockk<GarminDao>()
     private val garminConnect = mockk<GarminConnect>()
-    private val userStore = mockk<UserStore>()
 
     @Before
     fun setup(){
-        repo = GarminRepository(garminDao, garminConnect, userStore)
+        repo = GarminRepository(garminDao, garminConnect)
     }
 
     @After
     fun tearDown(){
         clearAllMocks()
-    }
-
-    @Test
-    fun `Get user`() = runTest {
-        val user = User("user", "url")
-        every { userStore.get() } returns flowOf(user)
-
-        repo.getUser().test {
-            assertThat(awaitItem()).isEqualTo(user)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        verify { userStore.get() }
-        confirmVerified(garminDao, garminConnect, userStore)
-    }
-
-    @Test
-    fun `Save user`() = runTest {
-        val user = User("user", "url")
-        coEvery { userStore.save(any()) } returns Unit
-
-        repo.saveUser(user)
-
-        coVerify { userStore.save(user) }
-        confirmVerified(garminDao, garminConnect, userStore)
-    }
-
-    @Test
-    fun `Delete user`() = runTest {
-        coEvery { userStore.delete() } returns Unit
-
-        repo.deleteUser()
-
-        coVerify { userStore.delete() }
-        confirmVerified(garminDao, garminConnect, userStore)
     }
 
     @Test
@@ -103,7 +64,7 @@ class GarminRepositoryTest {
         assertThat(res.data).isEqualTo(user)
 
         coVerify { garminConnect.getUserProfile() }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -116,7 +77,7 @@ class GarminRepositoryTest {
         res as Result.Failure
 
         coVerify { garminConnect.getUserProfile() }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -128,7 +89,7 @@ class GarminRepositoryTest {
         assertThat(res).isNull()
 
         coVerify { garminDao.getProfile(1) }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -178,7 +139,7 @@ class GarminRepositoryTest {
         }
 
         coVerify { garminDao.getAllProfiles() }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -193,7 +154,7 @@ class GarminRepositoryTest {
         }
 
         coVerify { garminDao.getAllProfiles() }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -222,7 +183,7 @@ class GarminRepositoryTest {
         assertThat(res).isEqualTo(profile)
 
         coVerify { garminDao.getProfile(1) }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -248,7 +209,7 @@ class GarminRepositoryTest {
         repo.saveProfile(profile)
 
         coVerify { garminDao.saveProfile(profileEntity) }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -274,7 +235,7 @@ class GarminRepositoryTest {
         repo.deleteProfile(profile)
 
         coVerify { garminDao.deleteProfile(profileEntity) }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -293,7 +254,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
         coVerify { garminConnect.getLatestActivity(5) }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -306,7 +267,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
         coVerify { garminConnect.getLatestActivity(5) }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -319,7 +280,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
         coVerify { garminConnect.getLatestActivity(5) }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -330,7 +291,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { garminConnect.getLatestActivity(5) }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -352,7 +313,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
         coVerify { garminConnect.getCourses() }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -365,7 +326,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreCourse>())
         coVerify { garminConnect.getCourses() }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -378,7 +339,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreCourse>())
         coVerify { garminConnect.getCourses() }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -389,7 +350,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { garminConnect.getCourses() }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -411,7 +372,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
         coVerify { garminConnect.getEventTypes() }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -424,7 +385,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreEventType>())
         coVerify { garminConnect.getEventTypes() }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -437,7 +398,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreEventType>())
         coVerify { garminConnect.getEventTypes() }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -448,7 +409,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { garminConnect.getEventTypes() }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -475,7 +436,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isTrue()
         coVerify { garminConnect.updateActivity(1, expectedRequest) }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -502,7 +463,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { garminConnect.updateActivity(1, expectedRequest) }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -515,7 +476,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isTrue()
         coVerify { garminConnect.uploadFile(any()) }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 
     @Test
@@ -528,6 +489,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { garminConnect.uploadFile(any()) }
-        confirmVerified(garminDao, garminConnect, userStore)
+        confirmVerified(garminDao, garminConnect)
     }
 }

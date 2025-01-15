@@ -18,10 +18,11 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class GetUserTest{
-    private val repo = mockk<GarminRepository>()
+    private val repo = mockk<AuthRepository>()
     private lateinit var useCase: GetUser
 
     @Before

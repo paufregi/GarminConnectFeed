@@ -19,6 +19,7 @@ import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuth2
 import paufregi.connectfeed.data.api.models.OAuthConsumer
 import javax.inject.Inject
+import kotlin.text.get
 
 @HiltAndroidTest
 @ExperimentalCoroutinesApi
@@ -86,6 +87,21 @@ class AuthStoreTest {
             assertThat(awaitItem()).isEqualTo(token1)
             dataStore.saveOAuth2(token2)
             assertThat(awaitItem()).isEqualTo(token2)
+            dataStore.clear()
+            assertThat(awaitItem()).isNull()
+        }
+    }
+
+    @Test
+    fun `Save retrieve and delete User`() = runTest {
+        val user1 = User("user_1", "avatar_1")
+        val user2 = User("user_2", "avatar_2")
+        dataStore.getUser().test {
+            assertThat(awaitItem()).isNull()
+            dataStore.saveUser(user1)
+            assertThat(awaitItem()).isEqualTo(user1)
+            dataStore.saveUser(user2)
+            assertThat(awaitItem()).isEqualTo(user2)
             dataStore.clear()
             assertThat(awaitItem()).isNull()
         }

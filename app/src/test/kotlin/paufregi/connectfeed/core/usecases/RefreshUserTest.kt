@@ -12,16 +12,18 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.user
 
 class RefreshUserTest{
-    private val repo = mockk<GarminRepository>()
+    private val garminRepo = mockk<GarminRepository>()
+    private val authRepo = mockk<AuthRepository>()
     private lateinit var useCase: RefreshUser
 
     @Before
     fun setup(){
-        useCase = RefreshUser(repo)
+        useCase = RefreshUser(garminRepo, authRepo)
     }
 
     @After
@@ -31,29 +33,29 @@ class RefreshUserTest{
 
     @Test
     fun `Refresh user - success`() = runTest {
-        coEvery { repo.fetchUser() } returns Result.Success(user)
-        coEvery { repo.saveUser(any()) } returns Unit
+        coEvery { garminRepo.fetchUser() } returns Result.Success(user)
+        coEvery { authRepo.saveUser(any()) } returns Unit
 
         val res = useCase()
 
         assertThat(res.isSuccessful).isTrue()
 
         coVerify {
-            repo.fetchUser()
-            repo.saveUser(user)
+            garminRepo.fetchUser()
+            authRepo.saveUser(user)
         }
-        confirmVerified(repo)
+        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
     fun `Refresh user - failure`() = runTest {
-        coEvery { repo.fetchUser() } returns Result.Failure("error")
+        coEvery { garminRepo.fetchUser() } returns Result.Failure("error")
 
         val res = useCase()
 
         assertThat(res.isSuccessful).isFalse()
 
-        coVerify { repo.fetchUser() }
-        confirmVerified(repo)
+        coVerify { garminRepo.fetchUser() }
+        confirmVerified(garminRepo, authRepo)
     }
 }

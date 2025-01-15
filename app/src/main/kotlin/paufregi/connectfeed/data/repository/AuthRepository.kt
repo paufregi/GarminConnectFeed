@@ -1,9 +1,12 @@
 package paufregi.connectfeed.data.repository
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.GarminAuth1
 import paufregi.connectfeed.data.api.GarminAuth2
+import paufregi.connectfeed.data.api.GarminConnect
 import paufregi.connectfeed.data.api.GarminSSO
 import paufregi.connectfeed.data.api.Garth
 import paufregi.connectfeed.data.api.models.OAuth1
@@ -16,28 +19,34 @@ import javax.inject.Inject
 class AuthRepository @Inject constructor(
     private val garth: Garth,
     private val garminSSO: GarminSSO,
-    private val authDatastore: AuthStore,
+    private val authStore: AuthStore,
     private val makeGarminAuth1: (consumer: OAuthConsumer) -> GarminAuth1,
     private val makeGarminAuth2: (consumer: OAuthConsumer, oauth: OAuth1) -> GarminAuth2,
 ) {
-    fun getOAuth1() = authDatastore.getOAuth1()
+    fun getOAuth1() = authStore.getOAuth1()
 
-    suspend fun saveOAuth1(token: OAuth1) = authDatastore.saveOAuth1(token)
+    suspend fun saveOAuth1(token: OAuth1) = authStore.saveOAuth1(token)
 
-    fun getOAuth2() = authDatastore.getOAuth2()
+    fun getOAuth2() = authStore.getOAuth2()
 
-    suspend fun saveOAuth2(token: OAuth2) = authDatastore.saveOAuth2(token)
+    suspend fun saveOAuth2(token: OAuth2) = authStore.saveOAuth2(token)
 
-    suspend fun clear() = authDatastore.clear()
+    fun getUser(): Flow<User?> =
+        authStore.getUser()
+
+    suspend fun saveUser(user: User) =
+        authStore.saveUser(user)
+
+    suspend fun clear() = authStore.clear()
 
     suspend fun getOrFetchConsumer(): OAuthConsumer? {
-        var consumer = authDatastore.getConsumer().firstOrNull()
+        var consumer = authStore.getConsumer().firstOrNull()
         if (consumer != null) return consumer
 
         val res = callApi(
             { garth.getOAuthConsumer() },
             { res -> res.body()!! }
-        ).onSuccess { authDatastore.saveConsumer(it) }
+        ).onSuccess { authStore.saveConsumer(it) }
 
         return when (res) {
             is Result.Success -> res.data
@@ -67,7 +76,7 @@ class AuthRepository @Inject constructor(
         val resOAuth2 = connect.getOauth2()
         if (!resOAuth2.isSuccessful) return Result.Failure("Couldn't get OAuth2 token")
         val oAuth2 = resOAuth2.body()!!
-        authDatastore.saveOAuth2(oAuth2)
+        authStore.saveOAuth2(oAuth2)
         return Result.Success(oAuth2)
     }
 }
