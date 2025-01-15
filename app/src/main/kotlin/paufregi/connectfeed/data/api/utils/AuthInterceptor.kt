@@ -35,7 +35,7 @@ class AuthInterceptor @Inject constructor(
         val oAuth1 = authRepository.getOAuth1().firstOrNull() ?: return Result.Failure("No OAuth1 token found")
 
         val resOAuth2 = authRepository.exchange(consumer, oAuth1)
-            .onSuccess { suspend { authRepository.saveOAuth2(it) } }
+            .onSuccess { authRepository.saveOAuth2(it) }
 
         return resOAuth2
     }

@@ -7,6 +7,6 @@ import javax.inject.Inject
 class RefreshUser @Inject constructor (private val garminRepository: GarminRepository) {
     suspend operator fun invoke(): Result<Unit> =
         garminRepository.fetchUser()
-            .onSuccess { suspend { garminRepository.saveUser(it) } }
+            .onSuccess { garminRepository.saveUser(it) }
             .map {  }
 }
