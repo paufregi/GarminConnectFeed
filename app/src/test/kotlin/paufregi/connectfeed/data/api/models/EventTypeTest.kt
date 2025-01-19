@@ -2,6 +2,7 @@ package paufregi.connectfeed.data.api.models
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import paufregi.connectfeed.data.api.garmin.models.EventType
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 
 class EventTypeTest {

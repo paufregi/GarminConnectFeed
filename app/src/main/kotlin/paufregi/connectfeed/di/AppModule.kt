@@ -9,18 +9,19 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import paufregi.connectfeed.data.api.GarminConnect
-import paufregi.connectfeed.data.api.GarminAuth1
-import paufregi.connectfeed.data.api.GarminAuth2
-import paufregi.connectfeed.data.api.GarminSSO
-import paufregi.connectfeed.data.api.Garth
-import paufregi.connectfeed.data.api.models.OAuth1
-import paufregi.connectfeed.data.api.models.OAuthConsumer
-import paufregi.connectfeed.data.api.utils.AuthInterceptor
+import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.GarminAuth1
+import paufregi.connectfeed.data.api.garmin.GarminAuth2
+import paufregi.connectfeed.data.api.garmin.GarminSSO
+import paufregi.connectfeed.data.api.garmin.Garth
+import paufregi.connectfeed.data.api.garmin.models.OAuth1
+import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.StravaAuthRepository
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
@@ -52,6 +53,14 @@ class AppModule {
         authDatastore,
         makeGarminAuth1 = { oauthConsumer: OAuthConsumer -> GarminAuth1.client(oauthConsumer, garminConnectOAuth1Url) },
         makeGarminAuth2 = { oauthConsumer: OAuthConsumer, oauth: OAuth1 -> GarminAuth2.client(oauthConsumer, oauth, garminConnectOAuth2Url) }
+    )
+
+    @Provides
+    @Singleton
+    fun provideStravaAuthRepository(
+        authDatastore: AuthStore,
+    ): StravaAuthRepository = StravaAuthRepository(
+        authDatastore,
     )
 
     @Provides

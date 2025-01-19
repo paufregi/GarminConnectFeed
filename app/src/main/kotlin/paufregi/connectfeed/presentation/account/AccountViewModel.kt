@@ -1,5 +1,10 @@
 package paufregi.connectfeed.presentation.account
 
+import android.content.Intent
+import android.net.Uri
+import android.app.Activity as AppActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,7 +14,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetUser
 import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
@@ -29,8 +33,8 @@ class AccountViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), AccountState())
 
     fun onEvent(event: AccountEvent) = when (event) {
-        is AccountEvent.RefreshUser -> viewModelScope.launch { refreshUser() }
-        is AccountEvent.SignOut -> viewModelScope.launch { signOut() }
+        is AccountEvent.RefreshUser -> refreshUser()
+        is AccountEvent.SignOut -> signOut()
         is AccountEvent.Reset -> _state.update { AccountState() }
     }
 

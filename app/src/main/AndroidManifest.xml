@@ -34,6 +34,17 @@
                 <data android:mimeType="application/vnd.ms-excel" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".presentation.strava.StravaActivity"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="paufregi.connectfeed" android:host="strava" />
+            </intent-filter>
+        </activity>
 
     </application>
 
