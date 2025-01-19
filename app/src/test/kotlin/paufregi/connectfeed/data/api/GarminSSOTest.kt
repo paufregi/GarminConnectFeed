@@ -7,8 +7,9 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.data.api.models.CSRF
-import paufregi.connectfeed.data.api.models.Ticket
+import paufregi.connectfeed.data.api.garmin.GarminSSO
+import paufregi.connectfeed.data.api.garmin.models.CSRF
+import paufregi.connectfeed.data.api.garmin.models.Ticket
 import paufregi.connectfeed.htmlForCSRF
 import paufregi.connectfeed.htmlForTicket
 
@@ -20,7 +21,7 @@ class GarminSSOTest {
     @Before
     fun setup() {
         server.start()
-        api = GarminSSO.client(server.url("/").toString())
+        api = GarminSSO.Companion.client(server.url("/").toString())
     }
 
     @After

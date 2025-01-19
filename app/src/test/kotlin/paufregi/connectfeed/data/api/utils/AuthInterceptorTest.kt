@@ -11,7 +11,6 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -20,10 +19,7 @@ import org.junit.Test
 import paufregi.connectfeed.consumer
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.createOAuth2
-import paufregi.connectfeed.data.api.models.CSRF
-import paufregi.connectfeed.data.api.models.OAuth1
-import paufregi.connectfeed.data.api.models.OAuthConsumer
-import paufregi.connectfeed.data.api.models.Ticket
+import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.oauth1
 import paufregi.connectfeed.tomorrow

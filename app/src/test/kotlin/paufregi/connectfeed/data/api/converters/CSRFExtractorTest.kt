@@ -6,7 +6,8 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
 
 import org.junit.Test
-import paufregi.connectfeed.data.api.models.CSRF
+import paufregi.connectfeed.data.api.garmin.converters.CSRFExtractor
+import paufregi.connectfeed.data.api.garmin.models.CSRF
 import paufregi.connectfeed.htmlForCSRF
 
 class CSRFExtractorTest {

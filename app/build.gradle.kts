@@ -106,6 +106,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation("androidx.appcompat:appcompat:1.3.1")
 
     ksp(libs.androidx.room.compiler)
     ksp(libs.androidx.hilt.compiler)
