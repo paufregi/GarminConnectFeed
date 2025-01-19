@@ -11,16 +11,16 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.GarminConnect
-import paufregi.connectfeed.data.api.models.EventType as DataEventType
-import paufregi.connectfeed.data.api.models.Metadata
-import paufregi.connectfeed.data.api.models.Summary
-import paufregi.connectfeed.data.api.models.UpdateActivity
+import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.models.UserProfile
+import paufregi.connectfeed.data.api.garmin.models.EventType as DataEventType
+import paufregi.connectfeed.data.api.garmin.models.Metadata
+import paufregi.connectfeed.data.api.garmin.models.Summary
+import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
-import paufregi.connectfeed.data.datastore.AuthStore
 import java.io.File
 import javax.inject.Inject
 import kotlin.Int
@@ -32,7 +32,7 @@ class GarminRepository @Inject constructor(
     suspend fun fetchUser(): Result<User> =
         callApi (
             { garminConnect.getUserProfile() },
-            { res -> res.body()!!.toCore() }
+            { res -> UserProfile.toCore() }
         )
 
     fun getAllProfiles(): Flow<List<Profile>> =
@@ -62,7 +62,7 @@ class GarminRepository @Inject constructor(
     suspend fun getEventTypes(): Result<List<EventType>> =
         callApi (
             { garminConnect.getEventTypes() },
-            { res -> res.body()?.fastMap { it.toCore() }?.filterNotNull() ?: emptyList() }
+            { res -> res.body()?.fastMap { DataEventType.toCore() }?.filterNotNull() ?: emptyList() }
         )
 
     suspend fun updateActivity(

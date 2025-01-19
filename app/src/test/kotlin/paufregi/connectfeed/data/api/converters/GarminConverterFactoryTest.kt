@@ -4,9 +4,15 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
 
 import org.junit.Test
-import paufregi.connectfeed.data.api.models.CSRF
-import paufregi.connectfeed.data.api.models.OAuth1
-import paufregi.connectfeed.data.api.models.Ticket
+import paufregi.connectfeed.data.api.garmin.converters.CSRFExtractor
+import paufregi.connectfeed.data.api.garmin.converters.CSRFStringConverter
+import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
+import paufregi.connectfeed.data.api.garmin.converters.Oauth1Extractor
+import paufregi.connectfeed.data.api.garmin.converters.TicketExtractor
+import paufregi.connectfeed.data.api.garmin.converters.TicketStringConverter
+import paufregi.connectfeed.data.api.garmin.models.CSRF
+import paufregi.connectfeed.data.api.garmin.models.OAuth1
+import paufregi.connectfeed.data.api.garmin.models.Ticket
 import retrofit2.Retrofit
 
 class GarminConverterFactoryTest {

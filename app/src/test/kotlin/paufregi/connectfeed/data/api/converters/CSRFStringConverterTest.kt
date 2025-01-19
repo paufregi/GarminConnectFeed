@@ -2,7 +2,8 @@ package paufregi.connectfeed.data.api.converters
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import paufregi.connectfeed.data.api.models.CSRF
+import paufregi.connectfeed.data.api.garmin.converters.CSRFStringConverter
+import paufregi.connectfeed.data.api.garmin.models.CSRF
 
 class CSRFStringConverterTest {
 

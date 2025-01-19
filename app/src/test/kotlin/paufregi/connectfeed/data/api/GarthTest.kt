@@ -7,7 +7,8 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.data.api.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.Garth
+import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
 
 class GarthTest {
 
@@ -17,7 +18,7 @@ class GarthTest {
     @Before
     fun setup() {
         server.start()
-        api = Garth.client(server.url("/").toString())
+        api = Garth.Companion.client(server.url("/").toString())
         print(server.url("/").toString())
     }
 

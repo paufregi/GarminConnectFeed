@@ -7,9 +7,10 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.data.api.models.OAuth1
-import paufregi.connectfeed.data.api.models.OAuthConsumer
-import paufregi.connectfeed.data.api.models.Ticket
+import paufregi.connectfeed.data.api.garmin.GarminAuth1
+import paufregi.connectfeed.data.api.garmin.models.OAuth1
+import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.Ticket
 
 class GarminAuth1Test {
 
@@ -20,7 +21,7 @@ class GarminAuth1Test {
     @Before
     fun setup() {
         server.start()
-        api = GarminAuth1.client(consumer, server.url("/").toString())
+        api = GarminAuth1.Companion.client(consumer, server.url("/").toString())
     }
 
     @After

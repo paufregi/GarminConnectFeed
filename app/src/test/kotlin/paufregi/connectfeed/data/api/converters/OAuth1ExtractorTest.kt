@@ -6,7 +6,8 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
 
 import org.junit.Test
-import paufregi.connectfeed.data.api.models.OAuth1
+import paufregi.connectfeed.data.api.garmin.converters.Oauth1Extractor
+import paufregi.connectfeed.data.api.garmin.models.OAuth1
 
 class OAuth1ExtractorTest {
 

@@ -5,7 +5,8 @@ import com.google.common.truth.Truth.assertThat
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Test
-import paufregi.connectfeed.data.api.models.Ticket
+import paufregi.connectfeed.data.api.garmin.converters.TicketExtractor
+import paufregi.connectfeed.data.api.garmin.models.Ticket
 import paufregi.connectfeed.htmlForTicket
 
 class TicketExtractorTest {

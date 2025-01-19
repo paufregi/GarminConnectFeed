@@ -2,7 +2,8 @@ package paufregi.connectfeed.data.api.converters
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import paufregi.connectfeed.data.api.models.Ticket
+import paufregi.connectfeed.data.api.garmin.converters.TicketStringConverter
+import paufregi.connectfeed.data.api.garmin.models.Ticket
 
 class TicketStringConverterTest {
 

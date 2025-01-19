@@ -15,11 +15,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.models.OAuth1
-import paufregi.connectfeed.data.api.models.OAuth2
-import paufregi.connectfeed.data.api.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.OAuth1
+import paufregi.connectfeed.data.api.garmin.models.OAuth2
+import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
 import javax.inject.Inject
-import kotlin.text.get
 
 @HiltAndroidTest
 @ExperimentalCoroutinesApi

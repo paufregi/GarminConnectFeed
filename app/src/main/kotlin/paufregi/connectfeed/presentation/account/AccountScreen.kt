@@ -1,5 +1,11 @@
 package paufregi.connectfeed.presentation.account
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,12 +27,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -93,7 +101,17 @@ internal fun AccountForm(
     onEvent: (AccountEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
+    val context = LocalContext.current
     var signOutDialog by remember { mutableStateOf(false) }
+
+    val stravaAuthUri = Uri.parse("https://www.strava.com/oauth/mobile/authorize")
+        .buildUpon()
+        .appendQueryParameter("client_id", "136333")
+        .appendQueryParameter("redirect_uri", "paufregi.connectfeed://strava/auth") // Replace with your app's redirect URI
+        .appendQueryParameter("response_type", "code")
+        .appendQueryParameter("approval_prompt", "auto")
+        .appendQueryParameter("scope", "activity:write,read")
+        .build()
 
     if (signOutDialog == true) {
         ConfirmationDialog(
@@ -126,6 +144,10 @@ internal fun AccountForm(
         Button(
             text = "Refresh user",
             onClick = { onEvent(AccountEvent.RefreshUser) }
+        )
+        Button(
+            text = "Connect with Strava",
+            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, stravaAuthUri)) }
         )
         Button(
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),

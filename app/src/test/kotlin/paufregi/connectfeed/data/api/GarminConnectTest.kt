@@ -17,15 +17,16 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.coursesJson
-import paufregi.connectfeed.data.api.models.Activity
-import paufregi.connectfeed.data.api.models.ActivityType
-import paufregi.connectfeed.data.api.models.Course
-import paufregi.connectfeed.data.api.models.EventType
-import paufregi.connectfeed.data.api.models.Metadata
-import paufregi.connectfeed.data.api.models.Summary
-import paufregi.connectfeed.data.api.models.UpdateActivity
-import paufregi.connectfeed.data.api.models.UserProfile
-import paufregi.connectfeed.data.api.utils.AuthInterceptor
+import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.models.Activity
+import paufregi.connectfeed.data.api.garmin.models.ActivityType
+import paufregi.connectfeed.data.api.garmin.models.Course
+import paufregi.connectfeed.data.api.garmin.models.EventType
+import paufregi.connectfeed.data.api.garmin.models.Metadata
+import paufregi.connectfeed.data.api.garmin.models.Summary
+import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
+import paufregi.connectfeed.data.api.garmin.models.UserProfile
+import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.eventTypesJson
 import paufregi.connectfeed.latestActivitiesJson
 import paufregi.connectfeed.userProfileJson
@@ -46,7 +47,7 @@ class GarminConnectTest {
     @Before
     fun setup() {
         server.start()
-        api = GarminConnect.client(authInterceptor, server.url("/").toString())
+        api = GarminConnect.Companion.client(authInterceptor, server.url("/").toString())
         every {
             authInterceptor.intercept(capture(chain))
         } answers {
