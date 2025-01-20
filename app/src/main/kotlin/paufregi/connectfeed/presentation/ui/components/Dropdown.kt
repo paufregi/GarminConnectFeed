@@ -67,7 +67,7 @@ fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = this.name,
     distance = course?.let { Formatter.distance(it.distance) },
-    activityType = course?.type,
+    activityType = activityType,
     onClick = onClick
 )
 
