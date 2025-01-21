@@ -6,15 +6,16 @@ import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
-import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.GCMParameterSpec
 
 object Crypto {
     private const val ALIAS = "ConnectFeedKey"
     private const val ANDROID_KEY_STORE = "AndroidKeyStore"
     private const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
-    private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_CBC
-    private const val PADDING = KeyProperties.ENCRYPTION_PADDING_PKCS7
+    private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
+    private const val PADDING = KeyProperties.ENCRYPTION_PADDING_NONE
     private const val TRANSFORMATION = "$ALGORITHM/$BLOCK_MODE/$PADDING"
+    private const val IV_SIZE = 12
 
     private val cipher = Cipher.getInstance(TRANSFORMATION)
     private val keyStore = KeyStore
@@ -46,9 +47,10 @@ object Crypto {
     }
 
     fun decrypt(bytes: ByteArray): String {
-        val iv = bytes.copyOfRange(0, cipher.blockSize)
-        val data = bytes.copyOfRange(cipher.blockSize, bytes.size)
-        cipher.init(Cipher.DECRYPT_MODE, getKey(), IvParameterSpec(iv))
+        val iv = bytes.copyOfRange(0, IV_SIZE)
+        val data = bytes.copyOfRange(IV_SIZE, bytes.size)
+
+        cipher.init(Cipher.DECRYPT_MODE, getKey(), GCMParameterSpec(128, iv))
         return cipher.doFinal(data).decodeToString()
     }
 }
