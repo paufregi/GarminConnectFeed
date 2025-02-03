@@ -17,6 +17,8 @@ class StravaAuthRepository(
 
     suspend fun saveToken(token: Token) = stravaStore.saveToken(token)
 
+    suspend fun clear() = stravaStore.clear()
+
     suspend fun exchange(clientId: String, clientSecret: String, code: String) =
         callApi(
             { stravaAuth.exchange(clientId, clientSecret, code) },
