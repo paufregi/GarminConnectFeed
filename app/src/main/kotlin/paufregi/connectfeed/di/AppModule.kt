@@ -17,8 +17,10 @@ import paufregi.connectfeed.data.api.garmin.Garth
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
+import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.datastore.AuthStore
+import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaAuthRepository
@@ -27,6 +29,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 val Context.authStore: DataStore<Preferences> by preferencesDataStore(name = "authStore")
+val Context.stravaStore: DataStore<Preferences> by preferencesDataStore(name = "stravaStore")
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -34,10 +37,17 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthDataStore(
+    fun provideAuthStore(
         @ApplicationContext context: Context,
     ): AuthStore =
         AuthStore(dataStore = context.authStore)
+
+    @Provides
+    @Singleton
+    fun provideStravaStore(
+        @ApplicationContext context: Context,
+    ): StravaStore =
+        StravaStore(dataStore = context.stravaStore)
 
     @Provides
     @Singleton
@@ -58,9 +68,11 @@ class AppModule {
     @Provides
     @Singleton
     fun provideStravaAuthRepository(
-        authDatastore: AuthStore,
+        stravaStore: StravaStore,
+        stravaAuth: StravaAuth,
     ): StravaAuthRepository = StravaAuthRepository(
-        authDatastore,
+        stravaStore,
+        stravaAuth
     )
 
     @Provides
@@ -97,6 +109,12 @@ class AppModule {
     fun provideGarth(
         @Named("GarthUrl") url: String
     ): Garth = Garth.client(url)
+
+    @Provides
+    @Singleton
+    fun provideStravaAuth(
+        @Named("StravaAuthUrl") url: String
+    ): StravaAuth = StravaAuth.client(url)
 
     @Provides
     @Singleton
