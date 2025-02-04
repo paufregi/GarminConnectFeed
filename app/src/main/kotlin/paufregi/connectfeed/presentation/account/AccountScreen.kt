@@ -1,11 +1,7 @@
 package paufregi.connectfeed.presentation.account
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,13 +30,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import paufregi.connectfeed.presentation.Navigation
-import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
 import paufregi.connectfeed.presentation.ui.components.Loading
@@ -145,10 +139,17 @@ internal fun AccountForm(
             text = "Refresh user",
             onClick = { onEvent(AccountEvent.RefreshUser) }
         )
-        Button(
-            text = "Connect with Strava",
-            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, stravaAuthUri)) }
-        )
+        if (state.hasStrava == true) {
+            Button(
+                text = "Disconnect Strava",
+                onClick = { onEvent(AccountEvent.StravaDisconnect) }
+            )
+        } else {
+            Button(
+                text = "Connect Strava",
+                onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, stravaAuthUri)) }
+            )
+        }
         Button(
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             text = "Sign out",
