@@ -29,7 +29,7 @@ class AuthInterceptor @Inject constructor(
 
     private suspend fun getOrFetchOAuth2(): Result<OAuth2> {
         val oAuth2 = authRepository.getOAuth2().firstOrNull()
-        if (oAuth2 != null && !OAuth2.isExpired()) return Result.Success(oAuth2)
+        if (oAuth2 != null && !oAuth2.isExpired()) return Result.Success(oAuth2)
 
         val consumer = authRepository.getOrFetchConsumer() ?: return Result.Failure("Could not get OAuth Consumer")
         val oAuth1 = authRepository.getOAuth1().firstOrNull() ?: return Result.Failure("No OAuth1 token found")

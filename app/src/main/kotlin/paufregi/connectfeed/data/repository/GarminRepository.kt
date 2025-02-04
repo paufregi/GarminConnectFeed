@@ -32,7 +32,7 @@ class GarminRepository @Inject constructor(
     suspend fun fetchUser(): Result<User> =
         callApi (
             { garminConnect.getUserProfile() },
-            { res -> UserProfile.toCore() }
+            { res -> res.body()!!.toCore() }
         )
 
     fun getAllProfiles(): Flow<List<Profile>> =
@@ -62,7 +62,7 @@ class GarminRepository @Inject constructor(
     suspend fun getEventTypes(): Result<List<EventType>> =
         callApi (
             { garminConnect.getEventTypes() },
-            { res -> res.body()?.fastMap { DataEventType.toCore() }?.filterNotNull() ?: emptyList() }
+            { res -> res.body()?.fastMap { it.toCore() }?.filterNotNull() ?: emptyList() }
         )
 
     suspend fun updateActivity(
