@@ -48,7 +48,7 @@ class AccountViewModelTest {
 
     @Test
     fun `Initial state`() = runTest {
-        viewModel = AccountViewModel(getUser, refreshUser, signOut)
+        viewModel = AccountViewModel(getUser, refreshUser, isStravaLoggedIn, signOut)
 
         viewModel.state.test {
             val state = awaitItem()
