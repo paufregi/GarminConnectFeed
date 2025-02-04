@@ -9,6 +9,7 @@ import paufregi.connectfeed.data.api.garmin.GarminAuth1
 import paufregi.connectfeed.data.api.garmin.GarminAuth2
 import paufregi.connectfeed.data.api.garmin.GarminSSO
 import paufregi.connectfeed.data.api.garmin.Garth
+import paufregi.connectfeed.data.api.strava.StravaAuth
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -40,4 +41,9 @@ class UrlModule {
     @Singleton
     @Named("GarthUrl")
     fun provideGarthUrl(): String = Garth.BASE_URL
+
+    @Provides
+    @Singleton
+    @Named("StravaAuthUrl")
+    fun provideStravaAuthUrl(): String = StravaAuth.BASE_URL
 }
