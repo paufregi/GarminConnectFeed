@@ -22,8 +22,6 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
         private val OAUTH2_TOKEN = byteArrayPreferencesKey("oauth2Token")
         private val USER_NAME = stringPreferencesKey("userName")
         private val USER_PROFILE_IMAGE_URL = stringPreferencesKey("userProfileImageUrl")
-
-        private val STRAVA_CODE = byteArrayPreferencesKey("stravaCode")
     }
 
     fun getConsumer() = dataStore.data.map {
