@@ -150,7 +150,7 @@ internal fun QuickEditForm(
                 label = { Text("Water") },
                 value = state.profile.water?.toString() ?: "",
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = { if (it.isDigitsOnly()) onEvent(QuickEditEvent.SetWater(it.toInt())) },
+                onValueChange = { onEvent(QuickEditEvent.SetWater(it.toIntOrNull()))},
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
         }
