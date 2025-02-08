@@ -153,7 +153,7 @@ internal fun ProfileForm(
         TextField(
             label = { Text("Water") },
             value = state.profile.water?.toString() ?: "",
-            onValueChange = { if (it.isDigitsOnly()) onEvent(ProfileEvent.SetWater(it.toInt())) },
+            onValueChange = { onEvent(ProfileEvent.SetWater(it.toIntOrNull()))   },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
         )
