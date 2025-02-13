@@ -647,6 +647,7 @@ val eventTypesJson = """
 const val connectPort = 8081
 const val garminSSOPort = 8082
 const val garthPort = 8083
+const val stravaPort = 8084
 
 fun loadRes(res: Int): String =
     getInstrumentation().context.resources.openRawResource(res).bufferedReader().use { it.readText() }
