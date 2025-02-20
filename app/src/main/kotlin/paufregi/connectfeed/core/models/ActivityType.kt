@@ -6,7 +6,7 @@ sealed class ActivityType(val name: String, val order: Int) {
     data object TrailRunning : ActivityType("Trail Running", 3)
     data object TreadmillRunning : ActivityType("Treadmill Running", 4)
     data object Cycling : ActivityType("Cycling", 5)
-    data object IndoorCycling : ActivityType("Cycling", 6)
+    data object IndoorCycling : ActivityType("Indoor Cycling", 6)
     data object EBiking : ActivityType("eBiking", 7)
     data object Swimming : ActivityType("Swimming", 8)
     data object OpenWaterSwimming : ActivityType("Open Water Swimming", 9)

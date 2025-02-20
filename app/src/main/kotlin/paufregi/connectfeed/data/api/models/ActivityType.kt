@@ -22,9 +22,9 @@ data class ActivityType(
         9L -> CoreActivityType.Walking
         13L -> CoreActivityType.Strength
         18L -> CoreActivityType.TreadmillRunning
+        25L -> CoreActivityType.IndoorCycling
         26L,27L -> CoreActivityType.Swimming
         28L -> CoreActivityType.OpenWaterSwimming
-        25L -> CoreActivityType.IndoorCycling
         176L -> CoreActivityType.EBiking
         163L -> CoreActivityType.Yoga
         164L -> CoreActivityType.Breathwork
