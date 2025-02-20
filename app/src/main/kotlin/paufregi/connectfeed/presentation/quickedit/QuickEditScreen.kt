@@ -10,11 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Mood
-import androidx.compose.material.icons.filled.MoodBad
-import androidx.compose.material.icons.filled.SentimentNeutral
-import androidx.compose.material.icons.filled.SentimentSatisfiedAlt
-import androidx.compose.material.icons.filled.SentimentVeryDissatisfied
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -31,7 +26,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -50,6 +44,12 @@ import paufregi.connectfeed.presentation.ui.components.StatusInfoType
 import paufregi.connectfeed.presentation.ui.components.TextEffort
 import paufregi.connectfeed.presentation.ui.components.TextFeel
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
+import paufregi.connectfeed.presentation.ui.icons.Connect
+import paufregi.connectfeed.presentation.ui.icons.FaceHappy
+import paufregi.connectfeed.presentation.ui.icons.FaceNormal
+import paufregi.connectfeed.presentation.ui.icons.FaceSad
+import paufregi.connectfeed.presentation.ui.icons.FaceVeryHappy
+import paufregi.connectfeed.presentation.ui.icons.FaceVerySad
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
@@ -158,11 +158,11 @@ internal fun QuickEditForm(
             Column {
                 IconRadioGroup(
                     options = listOf(
-                        IconRadioItem(0f, Icons.Filled.MoodBad),
-                        IconRadioItem(25f, Icons.Filled.SentimentVeryDissatisfied),
-                        IconRadioItem(50f, Icons.Filled.SentimentNeutral),
-                        IconRadioItem(75f, Icons.Filled.SentimentSatisfiedAlt),
-                        IconRadioItem(100f, Icons.Filled.Mood),
+                        IconRadioItem(0f, Icons.Connect.FaceVerySad),
+                        IconRadioItem(25f, Icons.Connect.FaceSad),
+                        IconRadioItem(50f, Icons.Connect.FaceNormal),
+                        IconRadioItem(75f, Icons.Connect.FaceHappy),
+                        IconRadioItem(100f, Icons.Connect.FaceVeryHappy),
                     ),
                     selected = state.feel,
                     onClick = { onEvent(QuickEditEvent.SetFeel(it)) }

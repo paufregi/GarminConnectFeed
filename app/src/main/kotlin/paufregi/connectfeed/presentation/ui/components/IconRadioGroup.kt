@@ -10,10 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Mood
-import androidx.compose.material.icons.filled.MoodBad
-import androidx.compose.material.icons.filled.SentimentNeutral
-import androidx.compose.material.icons.filled.SentimentVeryDissatisfied
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -26,6 +22,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import paufregi.connectfeed.presentation.ui.icons.Connect
+import paufregi.connectfeed.presentation.ui.icons.FaceHappy
+import paufregi.connectfeed.presentation.ui.icons.FaceNormal
+import paufregi.connectfeed.presentation.ui.icons.FaceSad
 
 data class IconRadioItem<T>(
     val value: T,
@@ -72,9 +72,9 @@ fun <T>IconRadioGroup(
 private class IconRadioItemList : PreviewParameterProvider<List<IconRadioItem<Int>>> {
     override val values = sequenceOf(
         listOf(
-            IconRadioItem(1, Icons.Default.MoodBad),
-            IconRadioItem(2, Icons.Default.SentimentNeutral),
-            IconRadioItem(3, Icons.Default.Mood)
+            IconRadioItem(1, Icons.Connect.FaceSad),
+            IconRadioItem(2, Icons.Connect.FaceNormal),
+            IconRadioItem(3, Icons.Connect.FaceHappy)
         )
     )
 }
