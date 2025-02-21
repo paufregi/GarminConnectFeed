@@ -20,9 +20,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AccountViewModel @Inject constructor(
     getUser: GetUser,
+    isStravaLoggedIn: IsStravaLoggedIn,
     val refreshUserUseCase: RefreshUser,
     val signOutUseCase: SignOut,
-    val isStravaLoggedIn: IsStravaLoggedIn,
     val disconnectStrava: DisconnectStrava,
 ) : ViewModel() {
 
