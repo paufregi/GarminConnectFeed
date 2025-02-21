@@ -1,6 +1,5 @@
 package paufregi.connectfeed.data.api.strava
 
-import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
 import paufregi.connectfeed.data.api.strava.models.Token
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -34,7 +33,9 @@ interface StravaAuth {
 
     @FormUrlEncoded
     @POST("/oauth/deauthorize")
-    suspend fun deauthorization(): Response<Unit>
+    suspend fun deauthorization(
+        @Field("access_token") accessToken: String
+    ): Response<Unit>
 
     companion object {
         const val BASE_URL = "https://www.strava.com"
@@ -42,7 +43,6 @@ interface StravaAuth {
         fun client(url: String): StravaAuth  {
             return Retrofit.Builder()
                 .baseUrl(url)
-                .addConverterFactory(GarminConverterFactory())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(StravaAuth::class.java)
