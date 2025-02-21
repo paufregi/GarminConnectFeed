@@ -1,9 +1,7 @@
-package paufregi.connectfeed.data.api.models
+package paufregi.connectfeed.data.api.garmin.models
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import paufregi.connectfeed.data.api.garmin.models.Activity
-import paufregi.connectfeed.data.api.garmin.models.ActivityType
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 

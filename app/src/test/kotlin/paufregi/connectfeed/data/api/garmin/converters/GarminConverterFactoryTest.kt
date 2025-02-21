@@ -1,15 +1,9 @@
-package paufregi.connectfeed.data.api.converters
+package paufregi.connectfeed.data.api.garmin.converters
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
 
 import org.junit.Test
-import paufregi.connectfeed.data.api.garmin.converters.CSRFExtractor
-import paufregi.connectfeed.data.api.garmin.converters.CSRFStringConverter
-import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
-import paufregi.connectfeed.data.api.garmin.converters.Oauth1Extractor
-import paufregi.connectfeed.data.api.garmin.converters.TicketExtractor
-import paufregi.connectfeed.data.api.garmin.converters.TicketStringConverter
 import paufregi.connectfeed.data.api.garmin.models.CSRF
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.Ticket
