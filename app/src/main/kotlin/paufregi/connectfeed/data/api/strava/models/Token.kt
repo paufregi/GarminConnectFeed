@@ -2,6 +2,7 @@ package paufregi.connectfeed.data.api.strava.models
 
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
+import java.time.Instant
 
 @Keep
 data class Token(
@@ -12,7 +13,7 @@ data class Token(
     @SerializedName("expires_at")
     val expiresAt: Long,
 ) {
-    fun isExpired(date: Long = System.currentTimeMillis()): Boolean {
+    fun isExpired(date: Long = Instant.now().epochSecond): Boolean {
         return expiresAt < date
     }
 }
