@@ -1,17 +1,11 @@
 package paufregi.connectfeed.data.api.strava
 
 import okhttp3.OkHttpClient
-import paufregi.connectfeed.data.api.garmin.GarminConnect
-import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
-import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
-import paufregi.connectfeed.data.api.strava.models.Token
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
-import retrofit2.http.Headers
 import retrofit2.http.POST
 
 interface Strava {
@@ -28,7 +22,6 @@ interface Strava {
 
             return Retrofit.Builder()
                 .baseUrl(url)
-                .addConverterFactory(GarminConverterFactory())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client.build())
                 .build()
