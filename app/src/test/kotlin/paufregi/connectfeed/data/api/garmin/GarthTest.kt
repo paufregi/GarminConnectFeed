@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.api
+package paufregi.connectfeed.data.api.garmin
 
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
@@ -7,7 +7,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.data.api.garmin.Garth
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
 
 class GarthTest {
@@ -18,8 +17,7 @@ class GarthTest {
     @Before
     fun setup() {
         server.start()
-        api = Garth.Companion.client(server.url("/").toString())
-        print(server.url("/").toString())
+        api = Garth.client(server.url("/").toString())
     }
 
     @After

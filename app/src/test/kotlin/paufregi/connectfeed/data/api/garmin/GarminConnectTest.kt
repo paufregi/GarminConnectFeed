@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.api
+package paufregi.connectfeed.data.api.garmin
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
@@ -17,7 +17,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.coursesJson
-import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.ActivityType
 import paufregi.connectfeed.data.api.garmin.models.Course
@@ -47,7 +46,7 @@ class GarminConnectTest {
     @Before
     fun setup() {
         server.start()
-        api = GarminConnect.Companion.client(authInterceptor, server.url("/").toString())
+        api = GarminConnect.client(authInterceptor, server.url("/").toString())
         every {
             authInterceptor.intercept(capture(chain))
         } answers {
