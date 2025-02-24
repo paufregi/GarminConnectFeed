@@ -87,11 +87,10 @@ internal fun AccountContent(
     }
 }
 
-@Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun AccountForm(
-    @PreviewParameter(AccountStatePreview::class) state: AccountState = AccountState(),
+    state: AccountState = AccountState(),
     onEvent: (AccountEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
