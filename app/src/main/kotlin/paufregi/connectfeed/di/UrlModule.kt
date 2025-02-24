@@ -41,9 +41,4 @@ class UrlModule {
     @Singleton
     @Named("GarthUrl")
     fun provideGarthUrl(): String = Garth.BASE_URL
-
-    @Provides
-    @Singleton
-    @Named("StravaAuthUrl")
-    fun provideStravaAuthUrl(): String = StravaAuth.BASE_URL
 }
