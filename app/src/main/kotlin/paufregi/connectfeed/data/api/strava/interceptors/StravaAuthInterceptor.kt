@@ -9,15 +9,15 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.data.api.garmin.models.OAuth2
 import paufregi.connectfeed.data.api.strava.models.Token
 import paufregi.connectfeed.data.repository.StravaAuthRepository
 import javax.inject.Inject
+import javax.inject.Named
 
 class StravaAuthInterceptor @Inject constructor(
     private val stravaRepo: StravaAuthRepository,
-    private val clientId: String,
-    private val clientSecret: String,
+    @Named("stravaClientId") val clientId: String,
+    @Named("stravaClientSecret") val clientSecret: String,
 ): Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {

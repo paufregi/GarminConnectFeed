@@ -17,7 +17,9 @@ import paufregi.connectfeed.data.api.garmin.Garth
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
+import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.StravaAuth
+import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.data.datastore.StravaStore
@@ -115,6 +117,21 @@ class AppModule {
     fun provideStravaAuth(
         @Named("StravaAuthUrl") url: String
     ): StravaAuth = StravaAuth.client(url)
+
+    @Provides
+    @Singleton
+    fun provideStravaAuthInterceptor(
+        authRepo: StravaAuthRepository,
+        @Named("stravaClientId") clientId: String,
+        @Named("stravaClientSecret") clientSecret: String,
+    ): StravaAuthInterceptor = StravaAuthInterceptor(authRepo, clientId, clientSecret)
+
+    @Provides
+    @Singleton
+    fun provideStrava(
+        authInterceptor: StravaAuthInterceptor,
+        @Named("StravaUrl") url: String,
+    ): Strava = Strava.client(authInterceptor, url)
 
     @Provides
     @Singleton

@@ -5,10 +5,8 @@ import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import paufregi.connectfeed.connectPort
-import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthPort
-import paufregi.connectfeed.stravaPort
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -42,9 +40,4 @@ class TestUrlModule {
     @Singleton
     @Named("GarthUrl")
     fun provideGarthUrl(): String = "https://localhost:${garthPort}/"
-
-    @Provides
-    @Singleton
-    @Named("StravaAuthUrl")
-    fun provideStravaAuthUrl(): String = "https://localhost:${stravaPort}/"
 }
