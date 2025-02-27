@@ -46,18 +46,22 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun AccountScreen(nav: NavController = rememberNavController()) {
+internal fun AccountScreen(
+    stravaAuthUri: Uri,
+    nav: NavController = rememberNavController()
+) {
     val viewModel = hiltViewModel<AccountViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    AccountContent(state, viewModel::onEvent, nav)
+    AccountContent(state, stravaAuthUri, viewModel::onEvent, nav)
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun AccountContent(
-    @PreviewParameter(AccountStatePreview::class) state: AccountState = AccountState(),
+    @PreviewParameter(AccountStatePreview::class) state: AccountState,
+    stravaAuthUri: Uri = Uri.EMPTY,
     onEvent: (AccountEvent) -> Unit = {},
     nav: NavController = rememberNavController()
 ) {
@@ -83,28 +87,21 @@ internal fun AccountContent(
             items = Navigation.items,
             selectedIndex = Navigation.ACCOUNT,
             nav = nav
-        ) { AccountForm(state, onEvent, it) }
+        ) { AccountForm(state, stravaAuthUri, onEvent, it) }
     }
 }
+
 
 @Composable
 @ExperimentalMaterial3Api
 internal fun AccountForm(
-    state: AccountState = AccountState(),
+    state: AccountState,
+    stravaAuthUri: Uri,
     onEvent: (AccountEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     val context = LocalContext.current
     var signOutDialog by remember { mutableStateOf(false) }
-
-    val stravaAuthUri = Uri.parse("https://www.strava.com/oauth/mobile/authorize")
-        .buildUpon()
-        .appendQueryParameter("client_id", "136333")
-        .appendQueryParameter("redirect_uri", "paufregi.connectfeed://strava/auth") // Replace with your app's redirect URI
-        .appendQueryParameter("response_type", "code")
-        .appendQueryParameter("approval_prompt", "auto")
-        .appendQueryParameter("scope", "activity:write,read")
-        .build()
 
     if (signOutDialog == true) {
         ConfirmationDialog(
