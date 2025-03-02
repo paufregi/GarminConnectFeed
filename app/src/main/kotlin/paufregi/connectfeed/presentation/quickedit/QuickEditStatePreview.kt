@@ -13,6 +13,11 @@ class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
         QuickEditState(ProcessState.Failure("Failed to update activity")),
         QuickEditState(
             activity = Activity(id = 1, name = "activity", type = ActivityType.Running, distance = 12345.0),
+            profile = Profile(name = "name", activityType = ActivityType.Running),
+            hasStrava = true
+        ),
+        QuickEditState(
+            activity = Activity(id = 1, name = "activity", type = ActivityType.Running, distance = 12345.0),
             profile = Profile(name = "name", activityType = ActivityType.Running)
         ),
         QuickEditState(
