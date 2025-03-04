@@ -121,28 +121,36 @@ internal fun QuickEditForm(
             label = { Text("Activity") },
             selected = state.activity?.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
-            items = state.activities.map {
+            items = state.activities
+                .filter { state.stravaActivity?.type == null || it.type == state.stravaActivity.type }
+                .map {
                 it.toDropdownItem {
-                    onEvent(
-                        QuickEditEvent.SetActivity(
-                            it
-                        )
-                    )
+                    onEvent(QuickEditEvent.SetActivity(it))
                 }
             }
         )
+        if (state.stravaActivities.isNotEmpty()) {
+            Dropdown(
+                label = { Text("Strava Activity") },
+                selected = state.stravaActivity?.toDropdownItem { },
+                modifier = Modifier.fillMaxWidth(),
+                items = state.stravaActivities
+                    .filter { state.activity?.type == null || it.type == state.activity.type }
+                    .map {
+                    it.toDropdownItem {
+                        onEvent(QuickEditEvent.SetStravaActivity(it))
+                    }
+                }
+            )
+        }
         Dropdown(
             label = { Text("Profile") },
             selected = state.profile?.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
-            items = state.profiles.filter { state.activity?.type == null || it.activityType == state.activity.type } .map {
-                it.toDropdownItem {
-                    onEvent(
-                        QuickEditEvent.SetProfile(
-                            it
-                        )
-                    )
-                }
+            items = state.profiles
+                .filter { (state.activity?.type == null || it.activityType == state.activity.type) &&
+                        (state.stravaActivity?.type == null || it.activityType == state.stravaActivity.type) }
+                .map { it.toDropdownItem { onEvent(QuickEditEvent.SetProfile(it)) }
             }
         )
         if (state.profile?.customWater == true) {
