@@ -21,6 +21,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetLatestActivities
+import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.IsStravaLoggedIn
 import paufregi.connectfeed.core.usecases.UpdateActivity
@@ -31,6 +32,7 @@ import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 class QuickEditViewModelTest {
 
     private val getActivities = mockk<GetLatestActivities>()
+    private val getStravaActivities = mockk<GetLatestStravaActivities>()
     private val getProfiles = mockk<GetProfiles>()
     private val updateActivity = mockk<UpdateActivity>()
     private val isStravaLoggedIn = mockk<IsStravaLoggedIn>()
@@ -66,7 +68,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities() } returns Result.Success(activities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, isStravaLoggedIn, updateActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, isStravaLoggedIn, updateActivity)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -82,7 +84,7 @@ class QuickEditViewModelTest {
 
         coVerify{ getActivities() }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getProfiles, updateActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity)
     }
 
     @Test
@@ -90,7 +92,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities() } returns Result.Failure("error")
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, isStravaLoggedIn, updateActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, isStravaLoggedIn, updateActivity)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -114,7 +116,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities() } returns Result.Success(activities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, isStravaLoggedIn, updateActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, isStravaLoggedIn, updateActivity)
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -136,7 +138,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities() } returns Result.Success(activities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, isStravaLoggedIn, updateActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, isStravaLoggedIn, updateActivity)
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -162,7 +164,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities() } returns Result.Success(activities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, isStravaLoggedIn, updateActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, isStravaLoggedIn, updateActivity)
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -190,7 +192,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities.invoke() } returns Result.Success(activities)
         every { getProfiles.invoke() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, isStravaLoggedIn, updateActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, isStravaLoggedIn, updateActivity)
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -217,7 +219,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities.invoke() } returns Result.Success(activities)
         every { getProfiles.invoke() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, isStravaLoggedIn, updateActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, isStravaLoggedIn, updateActivity)
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -241,7 +243,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities.invoke() } returns Result.Success(activities)
         every { getProfiles.invoke() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, isStravaLoggedIn, updateActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, isStravaLoggedIn, updateActivity)
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -263,7 +265,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities.invoke() } returns Result.Success(activities)
         every { getProfiles.invoke() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, isStravaLoggedIn, updateActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, isStravaLoggedIn, updateActivity)
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -286,7 +288,7 @@ class QuickEditViewModelTest {
         every { getProfiles() } returns flowOf(profiles)
         coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, isStravaLoggedIn, updateActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, isStravaLoggedIn, updateActivity)
 
         viewModel.state.test {
             awaitItem() // skip initial state
