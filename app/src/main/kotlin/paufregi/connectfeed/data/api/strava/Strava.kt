@@ -6,23 +6,21 @@ import paufregi.connectfeed.data.api.strava.models.Activity
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface Strava {
 
-    @FormUrlEncoded
-    @GET("/athlete/activities")
-    suspend fun getActivities(
-        @Query("before") before: Long?,
-        @Query("after") after: Long?,
-        @Query("page") page: Int?,
-        @Query("per_page") perPage: Int?,
+    @GET("athlete/activities")
+    suspend fun getLatestActivities(
+        @Query("before") before: Long? = null,
+        @Query("after") after: Long? = null,
+        @Query("page") page: Int? = 1,
+        @Query("per_page") perPage: Int,
     ): Response<List<Activity>>
 
     companion object {
-        const val BASE_URL = "https://www.strava.com/api/v3"
+        const val BASE_URL = "https://www.strava.com/api/v3/"
 
         fun client(authInterceptor: StravaAuthInterceptor, url: String): Strava  {
             val client = OkHttpClient.Builder().addInterceptor(authInterceptor)
