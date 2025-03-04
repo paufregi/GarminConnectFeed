@@ -9,5 +9,5 @@ class IsStravaLoggedIn @Inject constructor (
     private val authRepository: StravaAuthRepository
 ) {
     operator fun invoke(): Flow<Boolean> =
-        authRepository.getCode().map { it != null }
+        authRepository.getToken().map { it != null }
 }

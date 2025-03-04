@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.connectfeed.data.api.strava.models.Token
 import paufregi.connectfeed.data.repository.StravaAuthRepository
 
 class IsStravaLoggedInTest{
@@ -30,27 +31,27 @@ class IsStravaLoggedInTest{
 
     @Test
     fun `Logged In`() = runTest {
-        every { repo.getCode() } returns flowOf("code")
+        every { repo.getToken() } returns flowOf(Token(accessToken = "ACEESS", refreshToken = "REFRESH", expiresAt = 0))
         val res = useCase()
 
         res.test {
             assertThat(awaitItem()).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
-        verify { repo.getCode() }
+        verify { repo.getToken() }
         confirmVerified(repo)
     }
 
     @Test
     fun `Not logged In - no code`() = runTest {
-        every { repo.getCode() } returns flowOf(null)
+        every { repo.getToken() } returns flowOf(null)
         val res = useCase()
 
         res.test {
             assertThat(awaitItem()).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
-        verify { repo.getCode() }
+        verify { repo.getToken() }
         confirmVerified(repo)
     }
 }
