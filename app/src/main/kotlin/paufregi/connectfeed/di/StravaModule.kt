@@ -17,8 +17,8 @@ class StravaModule {
 
     @Provides
     @Singleton
-    @Named("StravaClientID")
-    fun provideStravaClientID(): String = BuildConfig.STRAVA_CLIENT_ID
+    @Named("StravaClientId")
+    fun provideStravaClientId(): String = BuildConfig.STRAVA_CLIENT_ID
 
     @Provides
     @Singleton
@@ -39,13 +39,13 @@ class StravaModule {
     @Singleton
     @Named("StravaAuthUri")
     fun provideStravaUri(
-        @Named("StravaClientID") clientId: String,
+        @Named("StravaClientId") clientId: String,
     ): Uri = Uri.parse("https://www.strava.com/oauth/mobile/authorize")
         .buildUpon()
         .appendQueryParameter("client_id", clientId)
         .appendQueryParameter("redirect_uri", "paufregi.connectfeed://strava/auth")
         .appendQueryParameter("response_type", "code")
         .appendQueryParameter("approval_prompt", "auto")
-        .appendQueryParameter("scope", "activity:write,read")
+        .appendQueryParameter("scope", "activity:read_all,activity:write")
         .build()
 }
