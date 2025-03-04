@@ -11,22 +11,9 @@ import paufregi.connectfeed.data.utils.Crypto
 class StravaStore(val dataStore: DataStore<Preferences>) {
 
     companion object {
-        private val CODE = byteArrayPreferencesKey("code")
         private val ACCESS_TOKEN = byteArrayPreferencesKey("accessToken")
         private val REFRESH_TOKEN = byteArrayPreferencesKey("refreshToken")
         private val EXPIRE_AT = byteArrayPreferencesKey("expire_at")
-    }
-
-    fun getCode() = dataStore.data.map {
-        it[CODE]?.let { code ->
-            Crypto.decrypt(code)
-        }
-    }
-
-    suspend fun saveCode(code: String) {
-        dataStore.edit {
-            it[CODE] = Crypto.encrypt(code)
-        }
     }
 
     fun getToken() = dataStore.data.map {

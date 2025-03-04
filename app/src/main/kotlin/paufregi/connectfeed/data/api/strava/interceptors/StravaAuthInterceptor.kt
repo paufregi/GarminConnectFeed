@@ -16,32 +16,29 @@ import javax.inject.Named
 
 class StravaAuthInterceptor @Inject constructor(
     private val stravaRepo: StravaAuthRepository,
-    @Named("stravaClientId") val clientId: String,
-    @Named("stravaClientSecret") val clientSecret: String,
+    @Named("StravaClientId") val clientId: String,
+    @Named("StravaClientSecret") val clientSecret: String,
 ): Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
-        val res = runBlocking(Dispatchers.IO) { getOrAccessToken() }
+        val res = runBlocking(Dispatchers.IO) { getOrRefreshToken() }
+
         return when (res) {
             is Result.Failure -> failedResponse(request, res.reason)
             is Result.Success -> chain.proceed(authRequest(request, res.data.accessToken))
         }
     }
 
-
-    private suspend fun getOrAccessToken(): Result<Token> {
+    private suspend fun getOrRefreshToken(): Result<Token> {
         val token = stravaRepo.getToken().firstOrNull()
 
-        if (token != null && !token.isExpired()) return Result.Success(token)
+        if (token == null) return Result.Failure("No token found")
+        if (!token.isExpired()) return Result.Success(token)
 
-        val code = stravaRepo.getCode().firstOrNull() ?: return Result.Failure("No code found")
-
-        return when (token) {
-            null -> stravaRepo.exchange(clientId, clientSecret, code)
-            else -> stravaRepo.refreshAccessToken(clientId, clientSecret, token.refreshToken)
-        }.onSuccess { stravaRepo.saveToken(it) }
+        return stravaRepo.refreshAccessToken(clientId, clientSecret, token.refreshToken)
+            .onSuccess { stravaRepo.saveToken(it) }
     }
 
     private fun authRequest(request: Request, accessToken: String?): Request =
