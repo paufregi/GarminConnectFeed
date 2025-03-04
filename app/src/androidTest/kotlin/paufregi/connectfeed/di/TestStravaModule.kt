@@ -18,8 +18,8 @@ class TestStravaModule {
 
     @Provides
     @Singleton
-    @Named("StravaClientID")
-    fun provideStravaClientID(): String = "123456"
+    @Named("StravaClientId")
+    fun provideStravaClientId(): String = "123456"
 
     @Provides
     @Singleton
@@ -40,7 +40,7 @@ class TestStravaModule {
     @Singleton
     @Named("StravaAuthUri")
     fun provideStravaUri(
-        @Named("StravaClientID") clientId: String,
+        @Named("StravaClientId") clientId: String,
     ): Uri = Uri.parse("https://localhost:${stravaPort}/oauth/mobile/authorize")
         .buildUpon()
         .appendQueryParameter("client_id", clientId)

@@ -82,10 +82,8 @@ class AppModule {
     fun provideGarminRepository(
         dao: GarminDao,
         connect: GarminConnect,
-    ): GarminRepository = GarminRepository(
-        dao,
-        connect,
-    )
+        strava: Strava,
+    ): GarminRepository = GarminRepository(dao, connect, strava)
 
     @Provides
     @Singleton
@@ -122,8 +120,8 @@ class AppModule {
     @Singleton
     fun provideStravaAuthInterceptor(
         authRepo: StravaAuthRepository,
-        @Named("stravaClientId") clientId: String,
-        @Named("stravaClientSecret") clientSecret: String,
+        @Named("StravaClientId") clientId: String,
+        @Named("StravaClientSecret") clientSecret: String,
     ): StravaAuthInterceptor = StravaAuthInterceptor(authRepo, clientId, clientSecret)
 
     @Provides
