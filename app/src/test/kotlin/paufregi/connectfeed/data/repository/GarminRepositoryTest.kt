@@ -30,6 +30,7 @@ import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
+import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import retrofit2.Response
@@ -38,12 +39,13 @@ import java.io.File
 class GarminRepositoryTest {
 
     private lateinit var repo: GarminRepository
-    private val garminDao = mockk<GarminDao>()
-    private val garminConnect = mockk<GarminConnect>()
+    private val dao = mockk<GarminDao>()
+    private val connect = mockk<GarminConnect>()
+    private val strava = mockk<Strava>()
 
     @Before
     fun setup(){
-        repo = GarminRepository(garminDao, garminConnect)
+        repo = GarminRepository(dao, connect, strava)
     }
 
     @After
@@ -55,7 +57,7 @@ class GarminRepositoryTest {
     fun `Fetch user`() = runTest {
         val userProfile = UserProfile("user", "url")
         val user = User("user", "url")
-        coEvery { garminConnect.getUserProfile() } returns Response.success(userProfile)
+        coEvery { connect.getUserProfile() } returns Response.success(userProfile)
 
         val res = repo.fetchUser()
 
@@ -63,33 +65,33 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(user)
 
-        coVerify { garminConnect.getUserProfile() }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getUserProfile() }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Fetch user - failure`() = runTest {
-        coEvery { garminConnect.getUserProfile() } returns Response.error<UserProfile>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.getUserProfile() } returns Response.error<UserProfile>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.fetchUser()
 
         assertThat(res.isSuccessful).isFalse()
         res as Result.Failure
 
-        coVerify { garminConnect.getUserProfile() }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getUserProfile() }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Get all profile - no result`() = runTest {
-        coEvery { garminDao.getProfile(any()) } returns null
+        coEvery { dao.getProfile(any()) } returns null
 
         val res = repo.getProfile(1)
 
         assertThat(res).isNull()
 
-        coVerify { garminDao.getProfile(1) }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { dao.getProfile(1) }
+        confirmVerified(dao, connect)
     }
 
     @Test
@@ -129,7 +131,7 @@ class GarminRepositoryTest {
             )
         )
 
-        coEvery { garminDao.getAllProfiles() } returns flowOf(profileEntities)
+        coEvery { dao.getAllProfiles() } returns flowOf(profileEntities)
 
         val res = repo.getAllProfiles()
 
@@ -138,13 +140,13 @@ class GarminRepositoryTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { garminDao.getAllProfiles() }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { dao.getAllProfiles() }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Get all profiles - empty list`() = runTest {
-        coEvery { garminDao.getAllProfiles() } returns flowOf(emptyList<ProfileEntity>())
+        coEvery { dao.getAllProfiles() } returns flowOf(emptyList<ProfileEntity>())
 
         val res = repo.getAllProfiles()
 
@@ -153,8 +155,8 @@ class GarminRepositoryTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { garminDao.getAllProfiles() }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { dao.getAllProfiles() }
+        confirmVerified(dao, connect)
     }
 
     @Test
@@ -176,14 +178,14 @@ class GarminRepositoryTest {
             water = 2
         )
 
-        coEvery { garminDao.getProfile(any()) } returns profileEntity
+        coEvery { dao.getProfile(any()) } returns profileEntity
 
         val res = repo.getProfile(1)
 
         assertThat(res).isEqualTo(profile)
 
-        coVerify { garminDao.getProfile(1) }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { dao.getProfile(1) }
+        confirmVerified(dao, connect)
     }
 
     @Test
@@ -204,12 +206,12 @@ class GarminRepositoryTest {
             water = 2
         )
 
-        coEvery { garminDao.saveProfile(any()) } returns Unit
+        coEvery { dao.saveProfile(any()) } returns Unit
 
         repo.saveProfile(profile)
 
-        coVerify { garminDao.saveProfile(profileEntity) }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { dao.saveProfile(profileEntity) }
+        confirmVerified(dao, connect)
     }
 
     @Test
@@ -230,12 +232,12 @@ class GarminRepositoryTest {
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
         )
 
-        coEvery { garminDao.deleteProfile(any()) } returns Unit
+        coEvery { dao.deleteProfile(any()) } returns Unit
 
         repo.deleteProfile(profile)
 
-        coVerify { garminDao.deleteProfile(profileEntity) }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { dao.deleteProfile(profileEntity) }
+        confirmVerified(dao, connect)
     }
 
     @Test
@@ -244,7 +246,7 @@ class GarminRepositoryTest {
             Activity(id = 1, name = "activity_1", distance = 10234.00,type = ActivityType(id = 1, key = "running")),
             Activity(id = 2, name = "activity_2", distance = 17759.00, type = ActivityType(id = 10, key = "road_biking"))
         )
-        coEvery { garminConnect.getLatestActivity(any()) } returns Response.success(activities)
+        coEvery { connect.getLatestActivity(any()) } returns Response.success(activities)
 
         val expected = activities.map { it.toCore() }
 
@@ -253,45 +255,45 @@ class GarminRepositoryTest {
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
-        coVerify { garminConnect.getLatestActivity(5) }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getLatestActivity(5) }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Get latest activities - empty list`() = runTest {
-        coEvery { garminConnect.getLatestActivity(any()) } returns Response.success(emptyList<Activity>())
+        coEvery { connect.getLatestActivity(any()) } returns Response.success(emptyList<Activity>())
 
         val res = repo.getLatestActivities(limit = 5)
 
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
-        coVerify { garminConnect.getLatestActivity(5) }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getLatestActivity(5) }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Get latest activities - null`() = runTest {
-        coEvery { garminConnect.getLatestActivity(any()) } returns Response.success(null)
+        coEvery { connect.getLatestActivity(any()) } returns Response.success(null)
 
         val res = repo.getLatestActivities(limit = 5)
 
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
-        coVerify { garminConnect.getLatestActivity(5) }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getLatestActivity(5) }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Get latest activities - failure`() = runTest {
-        coEvery { garminConnect.getLatestActivity(any()) } returns Response.error<List<Activity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.getLatestActivity(any()) } returns Response.error<List<Activity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getLatestActivities(limit = 5)
 
         assertThat(res.isSuccessful).isFalse()
-        coVerify { garminConnect.getLatestActivity(5) }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getLatestActivity(5) }
+        confirmVerified(dao, connect)
     }
 
     @Test
@@ -300,7 +302,7 @@ class GarminRepositoryTest {
             Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType(id = 1, key = "running")),
             Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType(id = 10, key = "road_biking"))
         )
-        coEvery { garminConnect.getCourses() } returns Response.success(courses)
+        coEvery { connect.getCourses() } returns Response.success(courses)
 
         val expected = listOf(
             CoreCourse(id = 1, name = "course 1", distance = 10234.00, type = CoreActivityType.Running),
@@ -312,45 +314,45 @@ class GarminRepositoryTest {
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
-        coVerify { garminConnect.getCourses() }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getCourses() }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Get courses - empty list`() = runTest {
-        coEvery { garminConnect.getCourses() } returns Response.success(emptyList())
+        coEvery { connect.getCourses() } returns Response.success(emptyList())
 
         val res = repo.getCourses()
 
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreCourse>())
-        coVerify { garminConnect.getCourses() }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getCourses() }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Get courses - null`() = runTest {
-        coEvery { garminConnect.getCourses() } returns Response.success(null)
+        coEvery { connect.getCourses() } returns Response.success(null)
 
         val res = repo.getCourses()
 
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreCourse>())
-        coVerify { garminConnect.getCourses() }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getCourses() }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Get courses - failure`() = runTest {
-        coEvery { garminConnect.getCourses() } returns Response.error<List<Course>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.getCourses() } returns Response.error<List<Course>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getCourses()
 
         assertThat(res.isSuccessful).isFalse()
-        coVerify { garminConnect.getCourses() }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getCourses() }
+        confirmVerified(dao, connect)
     }
 
     @Test
@@ -359,7 +361,7 @@ class GarminRepositoryTest {
             EventType(id = 1, key = "race"),
             EventType(id = 2, key = "training")
         )
-        coEvery { garminConnect.getEventTypes() } returns Response.success(eventTypes)
+        coEvery { connect.getEventTypes() } returns Response.success(eventTypes)
 
         val expected = listOf(
             CoreEventType(id = 1, name = "Race"),
@@ -371,50 +373,50 @@ class GarminRepositoryTest {
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
-        coVerify { garminConnect.getEventTypes() }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getEventTypes() }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Get event types - empty list`() = runTest {
-        coEvery { garminConnect.getEventTypes() } returns Response.success(emptyList())
+        coEvery { connect.getEventTypes() } returns Response.success(emptyList())
 
         val res = repo.getEventTypes()
 
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreEventType>())
-        coVerify { garminConnect.getEventTypes() }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getEventTypes() }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Get event types - null`() = runTest {
-        coEvery { garminConnect.getEventTypes() } returns Response.success(null)
+        coEvery { connect.getEventTypes() } returns Response.success(null)
 
         val res = repo.getEventTypes()
 
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreEventType>())
-        coVerify { garminConnect.getEventTypes() }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getEventTypes() }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Get event types - failure`() = runTest {
-        coEvery { garminConnect.getEventTypes() } returns Response.error<List<EventType>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.getEventTypes() } returns Response.error<List<EventType>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getEventTypes()
 
         assertThat(res.isSuccessful).isFalse()
-        coVerify { garminConnect.getEventTypes() }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.getEventTypes() }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { garminConnect.updateActivity(any(), any()) } returns Response.success(Unit)
+        coEvery { connect.updateActivity(any(), any()) } returns Response.success(Unit)
         val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, type = CoreActivityType.Cycling)
         val profile = Profile(
             name = "newName",
@@ -435,13 +437,13 @@ class GarminRepositoryTest {
         val res = repo.updateActivity(activity, profile, 50f, 80f)
 
         assertThat(res.isSuccessful).isTrue()
-        coVerify { garminConnect.updateActivity(1, expectedRequest) }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.updateActivity(1, expectedRequest) }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Update activity - failure`() = runTest {
-        coEvery { garminConnect.updateActivity(any(), any()) } returns Response.error<Unit>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.updateActivity(any(), any()) } returns Response.error<Unit>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
         val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, type = CoreActivityType.Cycling)
         val profile = Profile(
             name = "newName",
@@ -462,33 +464,33 @@ class GarminRepositoryTest {
         val res = repo.updateActivity(activity, profile, null, null)
 
         assertThat(res.isSuccessful).isFalse()
-        coVerify { garminConnect.updateActivity(1, expectedRequest) }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.updateActivity(1, expectedRequest) }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Upload file`() = runTest {
         val testFile = File.createTempFile("test", "test")
 
-        coEvery { garminConnect.uploadFile(any()) } returns Response.success(Unit)
+        coEvery { connect.uploadFile(any()) } returns Response.success(Unit)
 
         val res = repo.uploadFile(testFile)
 
         assertThat(res.isSuccessful).isTrue()
-        coVerify { garminConnect.uploadFile(any()) }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.uploadFile(any()) }
+        confirmVerified(dao, connect)
     }
 
     @Test
     fun `Upload file - failure`() = runTest {
         val testFile = File.createTempFile("test", "test")
 
-        coEvery { garminConnect.uploadFile(any()) } returns Response.error<Unit?>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.uploadFile(any()) } returns Response.error<Unit?>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.uploadFile(testFile)
 
         assertThat(res.isSuccessful).isFalse()
-        coVerify { garminConnect.uploadFile(any()) }
-        confirmVerified(garminDao, garminConnect)
+        coVerify { connect.uploadFile(any()) }
+        confirmVerified(dao, connect)
     }
 }
