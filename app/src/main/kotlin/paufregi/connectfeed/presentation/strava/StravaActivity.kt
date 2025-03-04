@@ -1,7 +1,6 @@
 package paufregi.connectfeed.presentation.strava
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,11 +20,10 @@ class StravaActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         val code = intent.data?.getQueryParameter("code")
 
-        Log.i("StravaActivity", "code: $code")
-
-        code?.let { viewModel.saveCode(it) }
+        code?.let { viewModel.exchangeToken(it) }
 
         setContent {
             val state by viewModel.state.collectAsStateWithLifecycle()
