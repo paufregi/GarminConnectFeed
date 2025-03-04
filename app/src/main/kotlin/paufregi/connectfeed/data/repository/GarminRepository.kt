@@ -1,6 +1,5 @@
 package paufregi.connectfeed.data.repository
 
-import android.util.Log
 import androidx.compose.ui.util.fastMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
