@@ -1,5 +1,6 @@
 package paufregi.connectfeed.data.repository
 
+import android.util.Log
 import androidx.compose.ui.util.fastMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -12,11 +13,11 @@ import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.GarminConnect
-import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import paufregi.connectfeed.data.api.garmin.models.EventType as DataEventType
 import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
+import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
@@ -28,6 +29,7 @@ import kotlin.Int
 class GarminRepository @Inject constructor(
     private val garminDao: GarminDao,
     private val garminConnect: GarminConnect,
+    private val strava: Strava,
 ) {
     suspend fun fetchUser(): Result<User> =
         callApi (
@@ -50,6 +52,12 @@ class GarminRepository @Inject constructor(
     suspend fun getLatestActivities(limit: Int): Result<List<Activity>> =
         callApi (
             { garminConnect.getLatestActivity(limit) },
+            { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
+        )
+
+    suspend fun getLatestStravaActivities(limit: Int): Result<List<Activity>> =
+        callApi (
+            { strava.getLatestActivities(perPage = limit) },
             { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
         )
 
