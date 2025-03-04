@@ -12,27 +12,27 @@ import retrofit2.http.POST
 interface StravaAuth {
 
     @FormUrlEncoded
-    @POST("/oauth/token")
+    @POST("api/v3/oauth/token")
     @Headers("Content-Type: application/x-www-form-urlencoded")
     suspend fun exchange(
         @Field("client_id") clientId: String,
         @Field("client_secret") clientSecret: String,
         @Field("code") code: String,
-        @Field("grant_type") grantType: String = "activity:write,read"
+        @Field("grant_type") grantType: String = "authorization_code"
     ): Response<Token>
 
     @FormUrlEncoded
-    @POST("/oauth/token")
+    @POST("api/v3/oauth/token")
     @Headers("Content-Type: application/x-www-form-urlencoded")
     suspend fun refreshAccessToken(
         @Field("client_id") clientId: String,
         @Field("client_secret") clientSecret: String,
-        @Field("refresh_token") code: String,
-        @Field("grant_type") grantType: String = "activity:write,read"
+        @Field("refresh_token") refreshToken: String,
+        @Field("grant_type") grantType: String = "refresh_token"
     ): Response<Token>
 
     @FormUrlEncoded
-    @POST("/oauth/deauthorize")
+    @POST("oauth/deauthorize")
     suspend fun deauthorization(
         @Field("access_token") accessToken: String
     ): Response<Unit>
