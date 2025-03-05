@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 import paufregi.connectfeed.data.api.strava.converters.SportTypeConverter
+import kotlin.math.round
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 
 @Keep
@@ -21,7 +22,7 @@ data class Activity(
     fun toCore(): CoreActivity = CoreActivity(
         id = id,
         name = name,
-        distance = distance,
+        distance = round(this.distance),
         type = SportTypeConverter.toActivityType(sportType),
     )
 }

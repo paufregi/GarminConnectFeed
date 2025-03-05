@@ -309,7 +309,7 @@ class SportTypeConverterTest {
     @Test
     fun `To Core activity - unknown`() {
         val activityType = SportTypeConverter.toActivityType("Unknown")
-        assertThat(activityType).isEqualTo(ActivityType.Yoga)
+        assertThat(activityType).isEqualTo(ActivityType.Unknown)
     }
 
 }
