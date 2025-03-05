@@ -20,7 +20,17 @@ val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/larg
 val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
 val oauth2 = createOAuth2(tomorrow)
-val oauth2Body = """{"scope": "SCOPE","jti": "JTI","access_token": "${oauth2.accessToken}","token_type": "TOKEN_TYPE","refresh_token": "REFRESH_TOKEN","expires_in": 0,"refresh_token_expires_in": 0}"""
+val oauth2Body = """
+    {
+        "scope": "SCOPE",
+        "jti": "JTI",
+        "access_token": "${oauth2.accessToken}",
+        "token_type": "TOKEN_TYPE",
+        "refresh_token": "REFRESH_TOKEN",
+        "expires_in": 0,
+        "refresh_token_expires_in": 0
+    }
+    """.trimIndent()
 
 val htmlForCSRF = """
         <!DOCTYPE html>
@@ -633,4 +643,33 @@ val eventTypesJson = """
             "sortOrder": 4
         }
     ]
-""".trimIndent()
+    """.trimIndent()
+
+val stravaExchangeTokenJson = """
+    {
+        "token_type": "Bearer",
+        "expires_at": 1704067200,
+        "expires_in": 21600,
+        "refresh_token": "REFRESH_TOKEN",
+        "access_token": "ACCESS_TOKEN",
+        "athlete": {
+            "id": 1,
+        }
+    }
+    """.trimIndent()
+
+val stravaRefreshTokenJson = """
+    {
+        "token_type": "Bearer",
+        "expires_at": 1704067200,
+        "expires_in": 21600,
+        "refresh_token": "REFRESH_TOKEN",
+        "access_token": "REFRESHED_ACCESS_TOKEN",
+    }
+    """.trimIndent()
+
+val stravaDeauthorizationJson = """
+    {
+        "access_token": "REVOKED_ACCESS_TOKEN",
+    }
+    """.trimIndent()

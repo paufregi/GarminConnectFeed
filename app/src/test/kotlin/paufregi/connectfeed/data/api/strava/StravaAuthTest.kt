@@ -8,6 +8,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.data.api.strava.models.Token
+import paufregi.connectfeed.stravaDeauthorizationJson
+import paufregi.connectfeed.stravaExchangeTokenJson
+import paufregi.connectfeed.stravaRefreshTokenJson
 
 class StravaAuthTest {
 
@@ -29,7 +32,7 @@ class StravaAuthTest {
     fun `Exchange token`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
-            .setBody("""{"token_type": "Bearer","expires_at": 1704067200,"expires_in": 21600,"refresh_token": "REFRESH_TOKEN","access_token": "ACCESS_TOKEN"}""")
+            .setBody(stravaExchangeTokenJson)
         server.enqueue(response)
 
         val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
@@ -58,7 +61,7 @@ class StravaAuthTest {
     fun `Refresh token`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
-            .setBody("""{"token_type": "Bearer","expires_at": 1704067200,"expires_in": 21600,"refresh_token": "REFRESH_TOKEN","access_token": "ACCESS_TOKEN"}""")
+            .setBody(stravaRefreshTokenJson)
         server.enqueue(response)
 
         val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "TOKEN")
@@ -87,7 +90,7 @@ class StravaAuthTest {
     fun `Remove authorization`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
-            .setBody("""{"token_type": "Bearer","expires_at": 1704067200,"expires_in": 21600,"refresh_token": "REFRESH_TOKEN","access_token": "ACCESS_TOKEN"}""")
+            .setBody(stravaDeauthorizationJson)
         server.enqueue(response)
 
         val res = api.deauthorization("TOKEN")
