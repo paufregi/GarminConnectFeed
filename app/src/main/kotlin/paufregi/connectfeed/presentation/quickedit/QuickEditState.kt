@@ -6,7 +6,6 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 data class QuickEditState(
     val process: ProcessState = ProcessState.Processing,
-    val hasStrava: Boolean? = null,
     val activities: List<Activity> = emptyList(),
     val stravaActivities: List<Activity> = emptyList(),
     val profiles: List<Profile> = emptyList(),

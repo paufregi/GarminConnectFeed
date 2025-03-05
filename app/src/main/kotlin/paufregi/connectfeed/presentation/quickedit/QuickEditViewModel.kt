@@ -11,11 +11,9 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.usecases.GetLatestActivities
 import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
-import paufregi.connectfeed.core.usecases.IsStravaLoggedIn
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
@@ -25,11 +23,10 @@ class QuickEditViewModel @Inject constructor(
     val getLatestActivities: GetLatestActivities,
     val getLatestStravaActivities: GetLatestStravaActivities,
     getProfiles: GetProfiles,
-    isStravaLoggedIn: IsStravaLoggedIn,
     val updateActivity: UpdateActivity
 ) : ViewModel() {
     private val _state = MutableStateFlow(QuickEditState())
-    val state = combine(_state, getProfiles(), isStravaLoggedIn()) { state, profiles, strava -> state.copy(profiles = profiles, hasStrava = strava) }
+    val state = combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles) }
         .onStart { load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), QuickEditState())
 
