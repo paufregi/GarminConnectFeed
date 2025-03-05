@@ -13,7 +13,7 @@ class ActivityTest {
             id = 1,
             name = "name",
             distance = 15007.59123,
-            sportType = "running"
+            sportType = "Run"
         )
 
         val coreActivity = CoreActivity(
