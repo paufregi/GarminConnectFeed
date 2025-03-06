@@ -6,10 +6,17 @@ import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.OAuth2
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.strava.models.Token
 import java.util.Date
 
 fun createOAuth2(expiresAt: Date) = OAuth2(
     accessToken = JWT.create().withExpiresAt(expiresAt).sign(Algorithm.none()),
+)
+
+fun createStravaToken(expiresAt: Date) = Token(
+    accessToken = "ACCCESS_TOKEN",
+    refreshToken = "REFRESH_TOKEN",
+    expiresAt = expiresAt.time / 1000
 )
 
 //1 Day  : 1000 * 60 * 60 * 24 milliseconds
@@ -31,6 +38,7 @@ val oauth2Body = """
         "refresh_token_expires_in": 0
     }
     """.trimIndent()
+
 
 val htmlForCSRF = """
         <!DOCTYPE html>
@@ -653,7 +661,7 @@ val stravaExchangeTokenJson = """
         "refresh_token": "REFRESH_TOKEN",
         "access_token": "ACCESS_TOKEN",
         "athlete": {
-            "id": 1,
+            "id": 1
         }
     }
     """.trimIndent()
@@ -664,7 +672,7 @@ val stravaRefreshTokenJson = """
         "expires_at": 1704067200,
         "expires_in": 21600,
         "refresh_token": "REFRESH_TOKEN",
-        "access_token": "REFRESHED_ACCESS_TOKEN",
+        "access_token": "REFRESHED_ACCESS_TOKEN"
     }
     """.trimIndent()
 
@@ -673,3 +681,123 @@ val stravaDeauthorizationJson = """
         "access_token": "REVOKED_ACCESS_TOKEN",
     }
     """.trimIndent()
+
+val stravaLatestActivitiesJson = """
+    [ {
+      "resource_state" : 2,
+      "athlete" : {
+        "id" : 134815,
+        "resource_state" : 1
+      },
+      "name" : "Happy Friday",
+      "distance" : 7803.6,
+      "moving_time" : 4500,
+      "elapsed_time" : 4500,
+      "total_elevation_gain" : 0,
+      "type" : "Run",
+      "sport_type" : "Run",
+      "workout_type" : null,
+      "id" : 1,
+      "external_id" : "garmin_push_12345678987654321",
+      "upload_id" : 987654321234567891234,
+      "start_date" : "2018-05-02T12:15:09Z",
+      "start_date_local" : "2018-05-02T05:15:09Z",
+      "timezone" : "(GMT-08:00) America/Los_Angeles",
+      "utc_offset" : -25200,
+      "start_latlng" : null,
+      "end_latlng" : null,
+      "location_city" : null,
+      "location_state" : null,
+      "location_country" : "United States",
+      "achievement_count" : 0,
+      "kudos_count" : 3,
+      "comment_count" : 1,
+      "athlete_count" : 1,
+      "photo_count" : 0,
+      "map" : {
+        "id" : "a12345678987654321",
+        "summary_polyline" : null,
+        "resource_state" : 2
+      },
+      "trainer" : true,
+      "commute" : false,
+      "manual" : false,
+      "private" : false,
+      "flagged" : false,
+      "gear_id" : "b12345678987654321",
+      "from_accepted_tag" : false,
+      "average_speed" : 5.54,
+      "max_speed" : 11,
+      "average_cadence" : 67.1,
+      "average_watts" : 175.3,
+      "weighted_average_watts" : 210,
+      "kilojoules" : 788.7,
+      "device_watts" : true,
+      "has_heartrate" : true,
+      "average_heartrate" : 140.3,
+      "max_heartrate" : 178,
+      "max_watts" : 406,
+      "pr_count" : 0,
+      "total_photo_count" : 1,
+      "has_kudoed" : false,
+      "suffer_score" : 82
+    }, {
+      "resource_state" : 2,
+      "athlete" : {
+        "id" : 167560,
+        "resource_state" : 1
+      },
+      "name" : "Bondcliff",
+      "distance" : 23676.5,
+      "moving_time" : 5400,
+      "elapsed_time" : 5400,
+      "total_elevation_gain" : 0,
+      "type" : "Ride",
+      "sport_type" : "Ride",
+      "workout_type" : null,
+      "id" : 2,
+      "external_id" : "garmin_push_12345678987654321",
+      "upload_id" : 1234567819,
+      "start_date" : "2018-04-30T12:35:51Z",
+      "start_date_local" : "2018-04-30T05:35:51Z",
+      "timezone" : "(GMT-08:00) America/Los_Angeles",
+      "utc_offset" : -25200,
+      "start_latlng" : null,
+      "end_latlng" : null,
+      "location_city" : null,
+      "location_state" : null,
+      "location_country" : "United States",
+      "achievement_count" : 0,
+      "kudos_count" : 4,
+      "comment_count" : 0,
+      "athlete_count" : 1,
+      "photo_count" : 0,
+      "map" : {
+        "id" : "a12345689",
+        "summary_polyline" : null,
+        "resource_state" : 2
+      },
+      "trainer" : true,
+      "commute" : false,
+      "manual" : false,
+      "private" : false,
+      "flagged" : false,
+      "gear_id" : "b12345678912343",
+      "from_accepted_tag" : false,
+      "average_speed" : 4.385,
+      "max_speed" : 8.8,
+      "average_cadence" : 69.8,
+      "average_watts" : 200,
+      "weighted_average_watts" : 214,
+      "kilojoules" : 1080,
+      "device_watts" : true,
+      "has_heartrate" : true,
+      "average_heartrate" : 152.4,
+      "max_heartrate" : 183,
+      "max_watts" : 403,
+      "pr_count" : 0,
+      "total_photo_count" : 1,
+      "has_kudoed" : false,
+      "suffer_score" : 162
+    } ]
+""".trimIndent()

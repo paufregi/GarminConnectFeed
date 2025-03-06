@@ -31,6 +31,7 @@ import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import paufregi.connectfeed.data.api.strava.Strava
+import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import retrofit2.Response
@@ -66,7 +67,7 @@ class GarminRepositoryTest {
         assertThat(res.data).isEqualTo(user)
 
         coVerify { connect.getUserProfile() }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -79,7 +80,7 @@ class GarminRepositoryTest {
         res as Result.Failure
 
         coVerify { connect.getUserProfile() }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -91,7 +92,7 @@ class GarminRepositoryTest {
         assertThat(res).isNull()
 
         coVerify { dao.getProfile(1) }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -141,7 +142,7 @@ class GarminRepositoryTest {
         }
 
         coVerify { dao.getAllProfiles() }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -156,7 +157,7 @@ class GarminRepositoryTest {
         }
 
         coVerify { dao.getAllProfiles() }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -185,7 +186,7 @@ class GarminRepositoryTest {
         assertThat(res).isEqualTo(profile)
 
         coVerify { dao.getProfile(1) }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -211,7 +212,7 @@ class GarminRepositoryTest {
         repo.saveProfile(profile)
 
         coVerify { dao.saveProfile(profileEntity) }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -237,63 +238,119 @@ class GarminRepositoryTest {
         repo.deleteProfile(profile)
 
         coVerify { dao.deleteProfile(profileEntity) }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
     fun `Get latest activities`() = runTest {
-        val activities = listOf(
-            Activity(id = 1, name = "activity_1", distance = 10234.00,type = ActivityType(id = 1, key = "running")),
-            Activity(id = 2, name = "activity_2", distance = 17759.00, type = ActivityType(id = 10, key = "road_biking"))
-        )
-        coEvery { connect.getLatestActivity(any()) } returns Response.success(activities)
+            val activities = listOf(
+                Activity(id = 1, name = "activity_1", distance = 10234.00,type = ActivityType(id = 1, key = "running")),
+                Activity(id = 2, name = "activity_2", distance = 17759.00, type = ActivityType(id = 10, key = "road_biking"))
+            )
+            coEvery { connect.getLatestActivities(any()) } returns Response.success(activities)
 
-        val expected = activities.map { it.toCore() }
+            val expected = activities.map { it.toCore() }
 
-        val res = repo.getLatestActivities(limit = 5)
+            val res = repo.getLatestActivities(limit = 5)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(expected)
-        coVerify { connect.getLatestActivity(5) }
-        confirmVerified(dao, connect)
-    }
+            assertThat(res.isSuccessful).isTrue()
+            res as Result.Success
+            assertThat(res.data).isEqualTo(expected)
+            coVerify { connect.getLatestActivities(5) }
+            confirmVerified(dao, connect, strava)
+        }
 
     @Test
     fun `Get latest activities - empty list`() = runTest {
-        coEvery { connect.getLatestActivity(any()) } returns Response.success(emptyList<Activity>())
+        coEvery { connect.getLatestActivities(any()) } returns Response.success(emptyList<Activity>())
 
         val res = repo.getLatestActivities(limit = 5)
 
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
-        coVerify { connect.getLatestActivity(5) }
-        confirmVerified(dao, connect)
+        coVerify { connect.getLatestActivities(5) }
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
     fun `Get latest activities - null`() = runTest {
-        coEvery { connect.getLatestActivity(any()) } returns Response.success(null)
+        coEvery { connect.getLatestActivities(any()) } returns Response.success(null)
 
         val res = repo.getLatestActivities(limit = 5)
 
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
-        coVerify { connect.getLatestActivity(5) }
-        confirmVerified(dao, connect)
+        coVerify { connect.getLatestActivities(5) }
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
     fun `Get latest activities - failure`() = runTest {
-        coEvery { connect.getLatestActivity(any()) } returns Response.error<List<Activity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.getLatestActivities(any()) } returns Response.error<List<Activity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getLatestActivities(limit = 5)
 
         assertThat(res.isSuccessful).isFalse()
-        coVerify { connect.getLatestActivity(5) }
-        confirmVerified(dao, connect)
+        coVerify { connect.getLatestActivities(5) }
+        confirmVerified(dao, connect, strava)
+    }
+
+    @Test
+    fun `Get latest Strava activities`() = runTest {
+        val activities = listOf(
+            StravaActivity(id = 1, name = "activity_1", distance = 10234.00, sportType = "Run"),
+            StravaActivity(id = 2, name = "activity_2", distance = 17759.00, sportType = "Ride")
+        )
+        coEvery { strava.getLatestActivities(perPage = any()) } returns Response.success(activities)
+
+        val expected = activities.map { it.toCore() }
+
+        val res = repo.getLatestStravaActivities(limit = 5)
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
+        coVerify { strava.getLatestActivities(perPage = 5) }
+        confirmVerified(dao, connect, strava)
+    }
+
+    @Test
+    fun `Get latest Strava activities - empty list`() = runTest {
+        coEvery { strava.getLatestActivities(perPage = any()) } returns Response.success(emptyList<StravaActivity>())
+
+        val res = repo.getLatestStravaActivities(limit = 5)
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
+        coVerify { strava.getLatestActivities(perPage = 5) }
+        confirmVerified(dao, connect, strava)
+    }
+
+    @Test
+    fun `Get latest Strava activities - null`() = runTest {
+        coEvery { strava.getLatestActivities(perPage = any()) } returns Response.success(null)
+
+        val res = repo.getLatestStravaActivities(limit = 5)
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
+        coVerify { strava.getLatestActivities(perPage = 5) }
+        confirmVerified(dao, connect, strava)
+    }
+
+    @Test
+    fun `Get latest Strava activities - failure`() = runTest {
+        coEvery { strava.getLatestActivities(perPage = any()) } returns Response.error<List<StravaActivity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.getLatestStravaActivities(limit = 5)
+
+        assertThat(res.isSuccessful).isFalse()
+        coVerify { strava.getLatestActivities(perPage = 5) }
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -315,7 +372,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
         coVerify { connect.getCourses() }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -328,7 +385,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreCourse>())
         coVerify { connect.getCourses() }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -341,7 +398,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreCourse>())
         coVerify { connect.getCourses() }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -352,7 +409,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { connect.getCourses() }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -374,7 +431,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
         coVerify { connect.getEventTypes() }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -387,7 +444,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreEventType>())
         coVerify { connect.getEventTypes() }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -400,7 +457,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(emptyList<CoreEventType>())
         coVerify { connect.getEventTypes() }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -411,7 +468,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { connect.getEventTypes() }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -438,7 +495,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isTrue()
         coVerify { connect.updateActivity(1, expectedRequest) }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -465,7 +522,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { connect.updateActivity(1, expectedRequest) }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -478,7 +535,7 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isTrue()
         coVerify { connect.uploadFile(any()) }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -491,6 +548,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { connect.uploadFile(any()) }
-        confirmVerified(dao, connect)
+        confirmVerified(dao, connect, strava)
     }
 }
