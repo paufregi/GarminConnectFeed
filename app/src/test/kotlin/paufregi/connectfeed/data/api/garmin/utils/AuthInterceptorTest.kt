@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.api.utils
+package paufregi.connectfeed.data.api.garmin.utils
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks

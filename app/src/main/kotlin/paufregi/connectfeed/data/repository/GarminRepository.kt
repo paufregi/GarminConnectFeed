@@ -50,7 +50,7 @@ class GarminRepository @Inject constructor(
 
     suspend fun getLatestActivities(limit: Int): Result<List<Activity>> =
         callApi (
-            { garminConnect.getLatestActivity(limit) },
+            { garminConnect.getLatestActivities(limit) },
             { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
         )
 

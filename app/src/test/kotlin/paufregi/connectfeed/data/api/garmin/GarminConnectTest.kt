@@ -117,7 +117,7 @@ class GarminConnectTest {
         val response = MockResponse().setResponseCode(200).setBody(latestActivitiesJson)
         server.enqueue(response)
 
-        val res = api.getLatestActivity(limit = 3)
+        val res = api.getLatestActivities(limit = 3)
 
         val expected = listOf(
             Activity(
@@ -145,7 +145,7 @@ class GarminConnectTest {
         val response = MockResponse().setResponseCode(200).setBody("[]")
         server.enqueue(response)
 
-        val res = api.getLatestActivity(limit = 3)
+        val res = api.getLatestActivities(limit = 3)
 
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(emptyList<Activity>())
@@ -158,7 +158,7 @@ class GarminConnectTest {
         val response = MockResponse().setResponseCode(400)
         server.enqueue(response)
 
-        val res = api.getLatestActivity(limit = 3)
+        val res = api.getLatestActivities(limit = 3)
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
