@@ -82,7 +82,7 @@ class StravaAuthInterceptorTest {
         val validToken = createStravaToken(yesterday)
 
         every { authRepo.getToken() } returns flowOf(expiredToken)
-        coEvery { authRepo.refreshAccessToken(any(), any(), any()) } returns Result.Success(validToken)
+        coEvery { authRepo.refresh(any(), any(), any()) } returns Result.Success(validToken)
         coEvery { authRepo.saveToken(any()) } returns Unit
 
         api.test()
@@ -92,7 +92,7 @@ class StravaAuthInterceptorTest {
 
         verify { authRepo.getToken() }
         coVerify {
-            authRepo.refreshAccessToken("CLIENT_ID", "CLIENT_SECRET", expiredToken.refreshToken)
+            authRepo.refresh("CLIENT_ID", "CLIENT_SECRET", expiredToken.refreshToken)
             authRepo.saveToken(validToken)
         }
         confirmVerified(authRepo)
@@ -115,7 +115,7 @@ class StravaAuthInterceptorTest {
         val expiredToken = createStravaToken(yesterday)
 
         every { authRepo.getToken() } returns flowOf(expiredToken)
-        coEvery { authRepo.refreshAccessToken(any(), any(), any()) } returns Result.Failure("error")
+        coEvery { authRepo.refresh(any(), any(), any()) } returns Result.Failure("error")
 
         val res = api.test()
 
@@ -123,7 +123,7 @@ class StravaAuthInterceptorTest {
 
 
         verify { authRepo.getToken() }
-        coVerify { authRepo.refreshAccessToken("CLIENT_ID", "CLIENT_SECRET", expiredToken.refreshToken) }
+        coVerify { authRepo.refresh("CLIENT_ID", "CLIENT_SECRET", expiredToken.refreshToken) }
         confirmVerified(authRepo)
     }
 }

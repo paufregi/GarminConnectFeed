@@ -28,6 +28,7 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.datastore.AuthStore
+import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
@@ -35,6 +36,9 @@ import paufregi.connectfeed.garthPort
 import paufregi.connectfeed.oauth1
 import paufregi.connectfeed.oauth2
 import paufregi.connectfeed.sslSocketFactory
+import paufregi.connectfeed.stravaDispatcher
+import paufregi.connectfeed.stravaPort
+import paufregi.connectfeed.stravaToken
 import java.io.File
 import javax.inject.Inject
 
@@ -54,11 +58,15 @@ class GarminRepositoryTest {
     lateinit var authStore: AuthStore
 
     @Inject
+    lateinit var stravaStore: StravaStore
+
+    @Inject
     lateinit var database: GarminDatabase
 
     private val connectServer = MockWebServer()
     private val garminSSOServer = MockWebServer()
     private val garthServer = MockWebServer()
+    private val stravaServer = MockWebServer()
 
     @Before
     fun setup() {
@@ -69,10 +77,13 @@ class GarminRepositoryTest {
         garminSSOServer.start(garminSSOPort)
         garthServer.useHttps(sslSocketFactory, false)
         garthServer.start(garthPort)
+        stravaServer.useHttps(sslSocketFactory, false)
+        stravaServer.start(stravaPort)
 
         connectServer.dispatcher = connectDispatcher
         garthServer.dispatcher = garthDispatcher
         garminSSOServer.dispatcher = garminSSODispatcher
+        stravaServer.dispatcher = stravaDispatcher
     }
 
     @After
@@ -80,6 +91,7 @@ class GarminRepositoryTest {
         connectServer.shutdown()
         garminSSOServer.shutdown()
         garthServer.shutdown()
+        stravaServer.shutdown()
         database.close()
         runBlocking(Dispatchers.IO){
             authStore.dataStore.edit { it.clear() }
@@ -131,6 +143,22 @@ class GarminRepositoryTest {
         )
 
         val res = repo.getLatestActivities(5)
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
+    }
+
+    @Test
+    fun `Get latest Strava activities`() = runTest {
+        stravaStore.saveToken(stravaToken)
+
+        val expected = listOf(
+            CoreActivity(id = 1, name = "Happy Friday", distance = 7804.0, type = CoreActivityType.Running),
+            CoreActivity(id = 2, name = "Bondcliff", distance = 23676.0, type = CoreActivityType.Cycling)
+        )
+
+        val res = repo.getLatestStravaActivities(5)
 
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
