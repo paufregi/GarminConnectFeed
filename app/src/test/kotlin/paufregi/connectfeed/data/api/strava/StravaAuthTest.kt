@@ -40,7 +40,7 @@ class StravaAuthTest {
         val request = server.takeRequest()
 
         assertThat(request.method).isEqualTo("POST")
-        assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/oauth/token")
+        assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/api/v3/oauth/token")
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(Token(accessToken = "ACCESS_TOKEN", refreshToken = "REFRESH_TOKEN", expiresAt = 1704067200))
     }
@@ -69,9 +69,9 @@ class StravaAuthTest {
         val request = server.takeRequest()
 
         assertThat(request.method).isEqualTo("POST")
-        assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/oauth/token")
+        assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/api/v3/oauth/token")
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(Token(accessToken = "ACCESS_TOKEN", refreshToken = "REFRESH_TOKEN", expiresAt = 1704067200))
+        assertThat(res.body()).isEqualTo(Token(accessToken = "NEW_ACCESS_TOKEN", refreshToken = "NEW_REFRESH_TOKEN", expiresAt = 1704067200))
     }
 
     @Test

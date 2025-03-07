@@ -59,10 +59,7 @@ class QuickEditViewModel @Inject constructor(
             .onFailure { errors.add("activities") }
 
         getLatestStravaActivities()
-            .onSuccess { data ->
-                Log.i("QuickEditViewModel", "Strava activities: $data")
-                _state.update { it.copy(stravaActivities = data) }
-            }
+            .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
             .onFailure { errors.add("Strava activities") }
 
         when (errors.isNotEmpty()) {

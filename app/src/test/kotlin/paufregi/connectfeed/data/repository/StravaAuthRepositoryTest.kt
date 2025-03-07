@@ -106,7 +106,7 @@ class StravaAuthRepositoryTest {
         val token = createStravaToken(tomorrow)
         coEvery { auth.refreshAccessToken(any(), any(), any()) } returns Response.success(token)
 
-        val res = repo.refreshAccessToken("CLIENT_ID", "CLIENT_SECRET", "CODE")
+        val res = repo.refresh("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
@@ -120,7 +120,7 @@ class StravaAuthRepositoryTest {
     fun `Refresh token - failure`() = runTest {
         coEvery { auth.refreshAccessToken(any(), any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.refreshAccessToken("CLIENT_ID", "CLIENT_SECRET", "CODE")
+        val res = repo.refresh("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
         assertThat(res.isSuccessful).isFalse()
 

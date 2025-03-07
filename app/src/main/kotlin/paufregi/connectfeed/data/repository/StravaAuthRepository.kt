@@ -21,7 +21,7 @@ class StravaAuthRepository(
             { res -> res.body()!! }
         )
 
-    suspend fun refreshAccessToken(clientId: String, clientSecret: String, refreshToken: String) =
+    suspend fun refresh(clientId: String, clientSecret: String, refreshToken: String) =
         callApi(
             { stravaAuth.refreshAccessToken(clientId, clientSecret, refreshToken) },
             { res -> res.body()!! }

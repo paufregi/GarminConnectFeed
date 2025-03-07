@@ -37,7 +37,7 @@ class StravaAuthInterceptor @Inject constructor(
         if (token == null) return Result.Failure("No token found")
         if (!token.isExpired()) return Result.Success(token)
 
-        return stravaRepo.refreshAccessToken(clientId, clientSecret, token.refreshToken)
+        return stravaRepo.refresh(clientId, clientSecret, token.refreshToken)
             .onSuccess { stravaRepo.saveToken(it) }
     }
 

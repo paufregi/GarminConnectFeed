@@ -56,6 +56,7 @@ class AuthStoreTest {
             assertThat(awaitItem()).isEqualTo(consumer2)
             dataStore.clear()
             assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -72,6 +73,7 @@ class AuthStoreTest {
             assertThat(awaitItem()).isEqualTo(token2)
             dataStore.clear()
             assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -88,6 +90,7 @@ class AuthStoreTest {
             assertThat(awaitItem()).isEqualTo(token2)
             dataStore.clear()
             assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -103,6 +106,7 @@ class AuthStoreTest {
             assertThat(awaitItem()).isEqualTo(user2)
             dataStore.clear()
             assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }
