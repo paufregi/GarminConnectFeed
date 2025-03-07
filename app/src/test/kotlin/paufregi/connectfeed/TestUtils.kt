@@ -671,8 +671,8 @@ val stravaRefreshTokenJson = """
         "token_type": "Bearer",
         "expires_at": 1704067200,
         "expires_in": 21600,
-        "refresh_token": "REFRESH_TOKEN",
-        "access_token": "REFRESHED_ACCESS_TOKEN"
+        "refresh_token": "NEW_REFRESH_TOKEN",
+        "access_token": "NEW_ACCESS_TOKEN"
     }
     """.trimIndent()
 
