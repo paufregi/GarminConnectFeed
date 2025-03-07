@@ -10,6 +10,7 @@ import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.StravaAuth
 import javax.inject.Named
 import javax.inject.Singleton
+import androidx.core.net.toUri
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -40,7 +41,7 @@ class StravaModule {
     @Named("StravaAuthUri")
     fun provideStravaUri(
         @Named("StravaClientId") clientId: String,
-    ): Uri = Uri.parse("https://www.strava.com/oauth/mobile/authorize")
+    ): Uri = "https://www.strava.com/oauth/mobile/authorize".toUri()
         .buildUpon()
         .appendQueryParameter("client_id", clientId)
         .appendQueryParameter("redirect_uri", "paufregi.connectfeed://strava/auth")

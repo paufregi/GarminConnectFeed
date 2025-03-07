@@ -17,11 +17,9 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.api.strava.models.Token
 import paufregi.connectfeed.data.datastore.StravaStore
-import paufregi.connectfeed.oauth2
 import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
-import paufregi.connectfeed.stravaToken
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -48,6 +46,9 @@ class StravaAuthRepositoryTest {
         stravaServer.start(stravaPort)
 
         stravaServer.dispatcher = stravaDispatcher
+        runBlocking(Dispatchers.IO){
+            store.dataStore.edit { it.clear() }
+        }
     }
 
     @After
