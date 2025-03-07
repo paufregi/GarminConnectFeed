@@ -29,7 +29,6 @@ fun createStravaToken(expiresAt: Date) = Token(
 
 //1 Day  : 1000 * 60 * 60 * 24 milliseconds
 val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
-val yesterday = Date(Date().time - (1000 * 60 * 60 * 24))
 
 val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
 val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
