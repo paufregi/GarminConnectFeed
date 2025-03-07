@@ -77,7 +77,7 @@ android {
     testOptions {
         animationsDisabled = true
         managedDevices {
-            devices {
+            allDevices {
                 register("pixel9Pro", ManagedVirtualDevice::class) {
                     device = "Pixel 9 Pro"
                     apiLevel = 35
