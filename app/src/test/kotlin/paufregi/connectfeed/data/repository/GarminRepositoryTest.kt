@@ -244,8 +244,8 @@ class GarminRepositoryTest {
     @Test
     fun `Get latest activities`() = runTest {
             val activities = listOf(
-                Activity(id = 1, name = "activity_1", distance = 10234.00,type = ActivityType(id = 1, key = "running")),
-                Activity(id = 2, name = "activity_2", distance = 17759.00, type = ActivityType(id = 10, key = "road_biking"))
+                Activity(id = 1, name = "activity_1", distance = 10234.00, trainingEffectLabel = "recovery", type = ActivityType(id = 1, key = "running")),
+                Activity(id = 2, name = "activity_2", distance = 17759.00, trainingEffectLabel = "recovery", type = ActivityType(id = 10, key = "road_biking"))
             )
             coEvery { connect.getLatestActivities(any()) } returns Response.success(activities)
 

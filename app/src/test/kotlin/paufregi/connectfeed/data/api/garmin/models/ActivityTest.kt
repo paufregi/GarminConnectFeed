@@ -13,14 +13,16 @@ class ActivityTest {
             id = 1,
             name = "name",
             distance = 15007.59,
-            type = ActivityType(id = 1, key = "running")
+            type = ActivityType(id = 1, key = "running"),
+            trainingEffectLabel = "TEMPO"
         )
 
         val coreActivity = CoreActivity(
             id = 1,
             name = "name",
+            type = CoreActivityType.Running,
             distance = 15008.00,
-            type = CoreActivityType.Running
+            trainingEffect = "tempo"
         )
 
         assertThat(activity.toCore()).isEqualTo(coreActivity)

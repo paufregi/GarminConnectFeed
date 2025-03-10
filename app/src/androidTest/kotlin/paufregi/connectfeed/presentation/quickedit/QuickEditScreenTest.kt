@@ -27,8 +27,8 @@ class QuickEditScreenTest {
     val composeTestRule = createComposeRule()
 
     val activities = listOf(
-        Activity(1L, "Running", 10234.00, ActivityType.Running),
-        Activity(2L, "Cycling", 17803.00, ActivityType.Cycling)
+        Activity(1L, "Running", ActivityType.Running, 10234.00, "recovery"),
+        Activity(2L, "Cycling", ActivityType.Cycling, 17803.00, "recovery")
     )
 
     val profiles = listOf(
