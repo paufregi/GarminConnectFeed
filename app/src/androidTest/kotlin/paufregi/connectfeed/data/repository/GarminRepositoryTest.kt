@@ -138,8 +138,8 @@ class GarminRepositoryTest {
         authStore.saveOAuth2(oauth2)
 
         val expected = listOf(
-            CoreActivity(id = 1, name = "Activity 1", distance = 17804.00, type = CoreActivityType.Cycling),
-            CoreActivity(id = 2, name = "Activity 2", distance = 17760.00, type = CoreActivityType.Cycling)
+            CoreActivity(id = 1, name = "Activity 1", distance = 17804.00, trainingEffect = "recovery", type = CoreActivityType.Cycling),
+            CoreActivity(id = 2, name = "Activity 2", distance = 17760.00, trainingEffect = "recovery", type = CoreActivityType.Cycling)
         )
 
         val res = repo.getLatestActivities(5)
@@ -207,7 +207,7 @@ class GarminRepositoryTest {
         authStore.saveOAuth1(oauth1)
         authStore.saveOAuth2(oauth2)
 
-        val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, type = CoreActivityType.Cycling)
+        val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, trainingEffect = "", type = CoreActivityType.Cycling)
         val profile = Profile(
             name = "newName",
             rename = true,

@@ -41,13 +41,13 @@ class QuickEditViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     val activities = listOf(
-        Activity(1L, "Running", 10234.00, ActivityType.Running),
-        Activity(2L, "Cycling", 17803.00, ActivityType.Cycling)
+        Activity(1L, "Running", ActivityType.Running, 10234.00),
+        Activity(2L, "Cycling", ActivityType.Cycling, 17803.00)
     )
 
     val stravaActivities = listOf(
-        Activity(1L, "StravaRunning", 10234.00, ActivityType.Running),
-        Activity(2L, "StravaCycling", 17803.00, ActivityType.Cycling)
+        Activity(1L, "StravaRunning", ActivityType.Running, 10234.00),
+        Activity(2L, "StravaCycling", ActivityType.Cycling, 17803.00)
     )
 
     val profiles = listOf(

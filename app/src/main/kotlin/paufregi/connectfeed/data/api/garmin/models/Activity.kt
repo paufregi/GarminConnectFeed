@@ -17,12 +17,15 @@ data class Activity(
     val type: ActivityType,
     @SerializedName("distance")
     val distance: Double,
+    @SerializedName("trainingEffectLabel")
+    val trainingEffectLabel: String?,
 ) {
     fun toCore(): CoreActivity =
         CoreActivity(
             id = this.id,
             name = this.name,
             type = this.type.toCore(),
-            distance = round(this.distance)
+            distance = round(this.distance),
+            trainingEffect = this.trainingEffectLabel?.lowercase()
         )
 }
