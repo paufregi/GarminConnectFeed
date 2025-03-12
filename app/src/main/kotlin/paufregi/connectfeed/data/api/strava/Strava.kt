@@ -3,10 +3,14 @@ package paufregi.connectfeed.data.api.strava
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.Activity
+import paufregi.connectfeed.data.api.strava.models.UpdateActivity
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface Strava {
@@ -18,6 +22,12 @@ interface Strava {
         @Query("page") page: Int? = 1,
         @Query("per_page") perPage: Int,
     ): Response<List<Activity>>
+
+    @PUT("activities/{id}")
+    suspend fun updateActivity(
+        @Path("id") id: Long,
+        @Body updateActivity: UpdateActivity,
+    ): Response<Unit>
 
     companion object {
         const val BASE_URL = "https://www.strava.com/api/v3/"

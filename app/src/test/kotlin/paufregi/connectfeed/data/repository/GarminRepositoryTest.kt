@@ -32,6 +32,7 @@ import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
+import paufregi.connectfeed.data.api.strava.models.UpdateActivity as StravaUpdateActivity
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import retrofit2.Response
@@ -474,41 +475,56 @@ class GarminRepositoryTest {
     @Test
     fun `Update activity`() = runTest {
         coEvery { connect.updateActivity(any(), any()) } returns Response.success(Unit)
-        val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, type = CoreActivityType.Cycling)
-        val profile = Profile(
-            name = "newName",
-            eventType = CoreEventType(id = 1, name = "event"),
-            activityType = CoreActivityType.Cycling,
-            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
-            water = 2
+
+        val activity = CoreActivity(
+            id = 1,
+            name = "activity",
+            distance = 17803.00,
+            type = CoreActivityType.Cycling
         )
+        val name = "newName"
+        val eventType = CoreEventType(1, "event")
+        val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
+        val water = 2
+        val effort = 50f
+        val feel = 80f
 
         val expectedRequest = UpdateActivity(
             id = 1,
-            name = "newName",
-            eventType = EventType(id = 1, key = "event"),
-            metadata = Metadata(1),
-            summary = Summary(2, 50f, 80f)
+            name = name,
+            eventType = EventType(id = eventType.id, key = eventType.name),
+            metadata = Metadata(courseId = course.id),
+            summary = Summary(water = water, feel = feel, effort = effort)
         )
 
-        val res = repo.updateActivity(activity, profile, 50f, 80f)
+        val res = repo.updateActivity(
+            activity = activity,
+            name = name,
+            eventType = eventType,
+            course = course,
+            water = water,
+            effort = effort,
+            feel = feel
+        )
 
         assertThat(res.isSuccessful).isTrue()
-        coVerify { connect.updateActivity(1, expectedRequest) }
+        coVerify { connect.updateActivity(activity.id, expectedRequest) }
         confirmVerified(dao, connect, strava)
     }
 
     @Test
     fun `Update activity - failure`() = runTest {
         coEvery { connect.updateActivity(any(), any()) } returns Response.error<Unit>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-        val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, type = CoreActivityType.Cycling)
-        val profile = Profile(
-            name = "newName",
-            eventType = CoreEventType(id = 1, name = "event"),
-            activityType = CoreActivityType.Cycling,
-            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
-            water = 2
+        val activity = CoreActivity(
+            id = 1,
+            name = "activity",
+            distance = 17803.00,
+            type = CoreActivityType.Cycling
         )
+        val name = "newName"
+        val eventType = CoreEventType(1, "event")
+        val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
+        val water = 2
 
         val expectedRequest = UpdateActivity(
             id = 1,
@@ -518,10 +534,82 @@ class GarminRepositoryTest {
             summary = Summary(water = 2, feel = null, effort = null)
         )
 
-        val res = repo.updateActivity(activity, profile, null, null)
+        val res = repo.updateActivity(
+            activity = activity,
+            name = name,
+            eventType = eventType,
+            course = course,
+            water = water,
+            effort = null,
+            feel = null
+        )
 
         assertThat(res.isSuccessful).isFalse()
-        coVerify { connect.updateActivity(1, expectedRequest) }
+        coVerify { connect.updateActivity(activity.id, expectedRequest) }
+        confirmVerified(dao, connect, strava)
+    }
+
+    @Test
+    fun `Update strava activity`() = runTest {
+        coEvery { strava.updateActivity(any(), any()) } returns Response.success(Unit)
+
+        val activity = CoreActivity(
+            id = 1,
+            name = "activity",
+            distance = 17803.00,
+            type = CoreActivityType.Cycling
+        )
+        val name = "newName"
+        val description = "newDescription"
+        val commute = true
+
+        val expectedRequest = StravaUpdateActivity(
+            name = name,
+            description = description,
+            commute = commute
+        )
+
+        val res = repo.updateStravaActivity(
+            activity = activity,
+            name = name,
+            description = description,
+            commute = commute
+        )
+
+        assertThat(res.isSuccessful).isTrue()
+        coVerify { strava.updateActivity(activity.id, expectedRequest) }
+        confirmVerified(dao, connect, strava)
+    }
+
+    @Test
+    fun `Update strava activity - failure`() = runTest {
+        coEvery { strava.updateActivity(any(), any()) } returns Response.error<Unit>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val activity = CoreActivity(
+            id = 1,
+            name = "activity",
+            distance = 17803.00,
+            type = CoreActivityType.Cycling
+        )
+        val name = "newName"
+        val description = "newDescription"
+        val commute = true
+
+        val expectedRequest = StravaUpdateActivity(
+            name = name,
+            description = description,
+            commute = commute
+        )
+
+        val res = repo.updateStravaActivity(
+            activity = activity,
+            name = name,
+            description = description,
+            commute = commute
+        )
+
+        assertThat(res.isSuccessful).isFalse()
+        coVerify { strava.updateActivity(activity.id, expectedRequest) }
         confirmVerified(dao, connect, strava)
     }
 

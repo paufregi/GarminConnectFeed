@@ -17,6 +17,7 @@ import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.Strava
+import paufregi.connectfeed.data.api.strava.models.UpdateActivity as UpdateStravaActivity
 import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
@@ -74,19 +75,39 @@ class GarminRepository @Inject constructor(
 
     suspend fun updateActivity(
         activity: Activity,
-        profile: Profile,
-        effort: Float?,
+        name: String?,
+        eventType: EventType?,
+        course: Course?,
+        water: Int?,
         feel: Float?,
+        effort: Float?
     ): Result<Unit> {
         val request = UpdateActivity(
             id = activity.id,
-            name = if (profile.rename) profile.name else null ,
-            eventType = DataEventType(profile.eventType?.id, profile.eventType?.name?.lowercase()),
-            metadata = Metadata(profile.course?.id),
-            summary = Summary(profile.water, effort, feel)
+            name = name,
+            eventType = DataEventType(eventType?.id, eventType?.name?.lowercase()),
+            metadata = Metadata(course?.id),
+            summary = Summary(water, feel, effort)
         )
         return callApi(
             { garminConnect.updateActivity(activity.id, request) },
+            { }
+        )
+    }
+
+    suspend fun updateStravaActivity(
+        activity: Activity,
+        name: String?,
+        description: String?,
+        commute: Boolean?,
+    ): Result<Unit> {
+        val request = UpdateStravaActivity(
+            name = name,
+            description = description,
+            commute = commute
+        )
+        return callApi(
+            { strava.updateActivity(activity.id, request) },
             { }
         )
     }

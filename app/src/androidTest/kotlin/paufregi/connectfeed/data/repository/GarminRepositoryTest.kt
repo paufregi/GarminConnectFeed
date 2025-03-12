@@ -21,8 +21,6 @@ import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.EventType as CoreEventType
-import paufregi.connectfeed.core.models.Course
-import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
@@ -208,16 +206,22 @@ class GarminRepositoryTest {
         authStore.saveOAuth2(oauth2)
 
         val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, trainingEffect = "", type = CoreActivityType.Cycling)
-        val profile = Profile(
-            name = "newName",
-            rename = true,
-            eventType = EventType(id = 1, name = "event1"),
-            activityType = CoreActivityType.Cycling,
-            course = Course(id = 1, name = "course1", distance = 10234.00, type = CoreActivityType.Cycling),
-            water = 1
-        )
+        val name = "newName"
+        val eventType = CoreEventType(1, "event")
+        val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
+        val water = 2
+        val effort = 50f
+        val feel = 80f
 
-        val res = repo.updateActivity(activity, profile, 50f, 90f)
+        val res = repo.updateActivity(
+            activity = activity,
+            name = name,
+            eventType = eventType,
+            course = course,
+            water = water,
+            effort = effort,
+            feel = feel
+        )
 
         assertThat(res.isSuccessful).isTrue()
     }

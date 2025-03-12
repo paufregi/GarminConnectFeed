@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.Activity
+import paufregi.connectfeed.data.api.strava.models.UpdateActivity
 import paufregi.connectfeed.stravaLatestActivitiesJson
 
 class StravaTest {
@@ -91,6 +92,38 @@ class StravaTest {
         server.enqueue(response)
 
         val res = api.getLatestActivities(perPage = 3)
+
+        assertThat(res.isSuccessful).isFalse()
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
+    }
+
+    @Test
+    fun `Update activity`() = runTest {
+        val response = MockResponse().setResponseCode(200)
+        server.enqueue(response)
+        val updateActivity = UpdateActivity(
+            name = "newName",
+            description = "newDescription",
+            commute = true,
+        )
+        val res = api.updateActivity(id = 1, updateActivity = updateActivity)
+
+        assertThat(res.isSuccessful).isTrue()
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
+    }
+
+    @Test
+    fun `Update activity - failure`() = runTest {
+        val response = MockResponse().setResponseCode(400)
+        server.enqueue(response)
+        val updateActivity = UpdateActivity(
+            name = "newName",
+            description = "newDescription",
+            commute = true,
+        )
+        val res = api.updateActivity(id = 1, updateActivity = updateActivity)
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
