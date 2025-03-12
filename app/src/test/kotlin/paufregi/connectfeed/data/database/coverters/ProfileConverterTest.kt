@@ -19,7 +19,8 @@ class ProfileConverterTest {
         water = 550,
         rename = true,
         customWater = true,
-        feelAndEffort = true
+        feelAndEffort = true,
+        trainingEffect = true
     )
 
     val entityProfile = ProfileEntity(
@@ -31,7 +32,8 @@ class ProfileConverterTest {
         water = 550,
         rename = true,
         customWater = true,
-        feelAndEffort = true
+        feelAndEffort = true,
+        trainingEffect = true
     )
 
     @Test

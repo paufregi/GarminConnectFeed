@@ -80,6 +80,7 @@ class ProfileViewModel @Inject constructor(
         is ProfileEvent.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = event.rename)) }
         is ProfileEvent.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = event.customWater)) }
         is ProfileEvent.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = event.feelAndEffort)) }
+        is ProfileEvent.SetTrainingEffect -> _state.update { it.copy(profile = it.profile.copy(trainingEffect = event.trainingEffect)) }
         is ProfileEvent.Save -> save()
     }
 

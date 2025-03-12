@@ -202,6 +202,20 @@ internal fun ProfileForm(
             Text(text = "Feel & Effort")
         }
         Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().clickable(
+                onClick = { onEvent(ProfileEvent.SetFeelAndEffort(!state.profile.feelAndEffort)) }
+            )
+        ) {
+            Checkbox(
+                modifier = Modifier.testTag("training_effect_checkbox"),
+                checked = state.profile.trainingEffect,
+                onCheckedChange = { onEvent(ProfileEvent.SetTrainingEffect(it)) },
+            )
+            Text(text = "Training effect")
+        }
+        Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
         ) {
