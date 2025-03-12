@@ -15,6 +15,7 @@ import paufregi.connectfeed.core.usecases.GetLatestActivities
 import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.UpdateActivity
+import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
@@ -23,7 +24,8 @@ class QuickEditViewModel @Inject constructor(
     val getLatestActivities: GetLatestActivities,
     val getLatestStravaActivities: GetLatestStravaActivities,
     getProfiles: GetProfiles,
-    val updateActivity: UpdateActivity
+    val updateActivity: UpdateActivity,
+    val updateStravaActivity: UpdateStravaActivity
 ) : ViewModel() {
     private val _state = MutableStateFlow(QuickEditState())
     val state = combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles) }
@@ -38,8 +40,15 @@ class QuickEditViewModel @Inject constructor(
                 profile = if (it.profile?.activityType != event.activity.type) null else it.profile,
             )
         }
-        is QuickEditEvent.SetStravaActivity -> _state.update { it.copy(stravaActivity = event.activity) }
+        is QuickEditEvent.SetStravaActivity -> _state.update {
+            it.copy(
+                stravaActivity = event.activity,
+                activity = if (it.activity?.type != event.activity.type) null else it.activity,
+                profile = if (it.profile?.activityType != event.activity.type) null else it.profile,
+            )
+        }
         is QuickEditEvent.SetProfile -> _state.update { it.copy( profile = event.profile ) }
+        is QuickEditEvent.SetDescription -> _state.update { it.copy( description = event.description ) }
         is QuickEditEvent.SetWater -> _state.update { it.copy( profile = it.profile?.copy(water = event.water) ) }
         is QuickEditEvent.SetEffort -> _state.update { it.copy( effort = if (event.effort == 0f) null else event.effort ) }
         is QuickEditEvent.SetFeel -> _state.update { it.copy( feel = event.feel ) }
@@ -70,13 +79,24 @@ class QuickEditViewModel @Inject constructor(
 
     private fun saveActivity() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
+        val errors = mutableListOf<String>()
         updateActivity(
             activity = state.value.activity,
             profile = state.value.profile,
             feel = state.value.feel,
             effort = state.value.effort
-        )
-            .onSuccess { _state.update { it.copy(process = ProcessState.Success("Activity updated")) } }
-            .onFailure { err -> _state.update { it.copy(process = ProcessState.Failure(err)) } }
+        ).onFailure { errors.add("Garmin") }
+
+        updateStravaActivity(
+            activity = state.value.activity,
+            stravaActivity = state.value.stravaActivity,
+            profile = state.value.profile,
+            description = state.value.description,
+        ).onFailure { errors.add("Strava") }
+
+        when (errors.isNotEmpty()) {
+            false -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
+            true -> _state.update { it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")} activity")) }
+        }
     }
 }

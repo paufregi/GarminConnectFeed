@@ -21,6 +21,13 @@ class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
             profile = Profile(name = "name", activityType = ActivityType.Cycling),
             feel = 50f,
             effort = 50f,
-        )
+        ),
+        QuickEditState(
+            activity = Activity(id = 2, name = "activity", type = ActivityType.Cycling, distance = 12345.0),
+            stravaActivity = Activity(id = 2, name = "activity", type = ActivityType.Cycling, distance = 12345.0),
+            profile = Profile(name = "name", activityType = ActivityType.Cycling, water = 1, customWater = true),
+            feel = 50f,
+            effort = 50f,
+        ),
     )
 }

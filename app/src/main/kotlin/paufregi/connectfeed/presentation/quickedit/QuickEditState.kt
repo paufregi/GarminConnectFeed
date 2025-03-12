@@ -11,6 +11,7 @@ data class QuickEditState(
     val profiles: List<Profile> = emptyList(),
     val activity: Activity? = null,
     val stravaActivity: Activity? = null,
+    val description: String? = null,
     val profile: Profile? = null,
     val effort: Float? = null,
     val feel: Float? = null

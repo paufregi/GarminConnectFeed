@@ -153,6 +153,14 @@ internal fun QuickEditForm(
                 .map { it.toDropdownItem { onEvent(QuickEditEvent.SetProfile(it)) }
             }
         )
+        if (state.stravaActivity != null) {
+            TextField(
+                label = { Text("Description") },
+                value = state.description ?: "",
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = { onEvent(QuickEditEvent.SetDescription(it)) }
+            )
+        }
         if (state.profile?.customWater == true) {
             TextField(
                 label = { Text("Water") },
@@ -204,7 +212,7 @@ internal fun QuickEditForm(
         ) {
             Button(
                 text = "Save",
-                enabled = state.activity != null && state.profile != null,
+                enabled = state.activity != null && state.stravaActivity != null && state.profile != null,
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()

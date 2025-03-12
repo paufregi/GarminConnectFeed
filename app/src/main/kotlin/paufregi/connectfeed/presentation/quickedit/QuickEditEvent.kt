@@ -7,6 +7,7 @@ sealed interface QuickEditEvent {
     data class SetActivity(val activity: Activity): QuickEditEvent
     data class SetStravaActivity(val activity: Activity): QuickEditEvent
     data class SetProfile(val profile: Profile): QuickEditEvent
+    data class SetDescription(val description: String?): QuickEditEvent
     data class SetWater(val water: Int?): QuickEditEvent
     data class SetEffort(val effort: Float?): QuickEditEvent
     data class SetFeel(val feel: Float?): QuickEditEvent
