@@ -227,6 +227,25 @@ class GarminRepositoryTest {
     }
 
     @Test
+    fun `Update strava activity`() = runTest {
+        stravaStore.saveToken(stravaToken)
+
+        val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, trainingEffect = "", type = CoreActivityType.Cycling)
+        val name = "newName"
+        val description = "description"
+        val commute = true
+
+        val res = repo.updateStravaActivity(
+            activity = activity,
+            name = name,
+            description = description,
+            commute = commute
+        )
+
+        assertThat(res.isSuccessful).isTrue()
+    }
+
+    @Test
     fun `Upload file`() = runTest {
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)

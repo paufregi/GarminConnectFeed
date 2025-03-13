@@ -28,6 +28,18 @@ class AccountScreenTest {
         }
         composeTestRule.onNodeWithTag("profileImage").isDisplayed()
         composeTestRule.onNodeWithText("Refresh user").isDisplayed()
+        composeTestRule.onNodeWithText("Connect Strava").isDisplayed()
+        composeTestRule.onNodeWithText("Sign out").isDisplayed()
+    }
+
+    @Test
+    fun `Default screen - with Strava`() {
+        composeTestRule.setContent {
+            AccountContent(state = AccountState(user = User("Paul", "url"), hasStrava = true))
+        }
+        composeTestRule.onNodeWithTag("profileImage").isDisplayed()
+        composeTestRule.onNodeWithText("Refresh user").isDisplayed()
+        composeTestRule.onNodeWithText("Disconnect Strava").isDisplayed()
         composeTestRule.onNodeWithText("Sign out").isDisplayed()
     }
 

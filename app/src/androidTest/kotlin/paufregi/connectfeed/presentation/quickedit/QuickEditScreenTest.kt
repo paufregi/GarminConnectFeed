@@ -31,6 +31,11 @@ class QuickEditScreenTest {
         Activity(2L, "Cycling", ActivityType.Cycling, 17803.00, "recovery")
     )
 
+    val stravaActivities = listOf(
+        Activity(1L, "Running", ActivityType.Running, 10234.00),
+        Activity(2L, "Cycling", ActivityType.Cycling, 17803.00)
+    )
+
     val profiles = listOf(
         Profile(name = "profile1", activityType = ActivityType.Running),
         Profile(name = "profile2", activityType = ActivityType.Cycling),
@@ -52,6 +57,22 @@ class QuickEditScreenTest {
     }
 
     @Test
+    fun `Default values - with Strava`() {
+        composeTestRule.setContent {
+            QuickEditContent(state = QuickEditState(
+                process = ProcessState.Idle,
+                activities = activities,
+                stravaActivities = stravaActivities,
+                profiles = profiles,
+            ))
+        }
+        composeTestRule.onNodeWithText("Activity").isDisplayed()
+        composeTestRule.onNodeWithText("Strava").isDisplayed()
+        composeTestRule.onNodeWithText("Profile").isDisplayed()
+        composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
+    }
+
+    @Test
     fun `Loading spinner`() {
         composeTestRule.setContent {
             QuickEditContent(state = QuickEditState(
@@ -67,8 +88,10 @@ class QuickEditScreenTest {
             QuickEditContent(state = QuickEditState(
                 process = ProcessState.Idle,
                 activities = activities,
+                stravaActivities = stravaActivities,
                 profiles = profiles,
                 activity = activities[0],
+                stravaActivity = stravaActivities[0],
                 profile = profiles[0],
             ))
         }

@@ -1,5 +1,6 @@
 package paufregi.connectfeed
 
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -876,16 +877,19 @@ fun RecordedRequest.getFields(): Map<String, String> {
 val stravaDispatcher: Dispatcher = object : Dispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
         val path = request.path ?: ""
+        Log.i("Strava", path)
         val fields = request.getFields()
         return when {
             path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "authorization_code" ->
                 MockResponse().setResponseCode(200).setBody(stravaExchangeTokenJson)
             path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "refresh_token" ->
                 MockResponse().setResponseCode(200).setBody(stravaRefreshTokenJson)
-            path.startsWith("/oauth/deauthorize") && request.method == "POST" ->
+            path == "/oauth/deauthorize" && request.method == "POST" ->
                 MockResponse().setResponseCode(200).setBody(stravaDeauthorizationJson)
             path.startsWith("/athlete/activities") && request.method == "GET" ->
                 MockResponse().setResponseCode(200).setBody(stravaLatestActivitiesJson)
+            path.startsWith("/activities/") && request.method == "PUT" ->
+                MockResponse().setResponseCode(200)
             else -> MockResponse().setResponseCode(404)
         }
     }
