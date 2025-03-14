@@ -212,7 +212,8 @@ internal fun QuickEditForm(
         ) {
             Button(
                 text = "Save",
-                enabled = state.activity != null && state.stravaActivity != null && state.profile != null,
+                enabled = state.activity != null && state.profile != null && (state.stravaActivities.isEmpty() || state.stravaActivity != null),
+
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()

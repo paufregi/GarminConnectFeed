@@ -88,6 +88,22 @@ class QuickEditScreenTest {
             QuickEditContent(state = QuickEditState(
                 process = ProcessState.Idle,
                 activities = activities,
+                profiles = profiles,
+                activity = activities[0],
+                profile = profiles[0],
+            ))
+        }
+        composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
+        composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
+        composeTestRule.onNodeWithText("Save").assertIsEnabled()
+    }
+
+    @Test
+    fun `Values selected - with Strava`() {
+        composeTestRule.setContent {
+            QuickEditContent(state = QuickEditState(
+                process = ProcessState.Idle,
+                activities = activities,
                 stravaActivities = stravaActivities,
                 profiles = profiles,
                 activity = activities[0],
@@ -96,6 +112,7 @@ class QuickEditScreenTest {
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
+        composeTestRule.onNodeWithText("Strava Activity").assertTextContains(stravaActivities[0].name)
         composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
     }
