@@ -33,7 +33,7 @@ class AccountScreenTest {
     }
 
     @Test
-    fun `Default screen - with Strava`() {
+    fun `Default screen - Strava connected`() {
         composeTestRule.setContent {
             AccountContent(state = AccountState(user = User("Paul", "url"), hasStrava = true))
         }

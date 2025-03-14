@@ -102,6 +102,7 @@ internal fun AccountForm(
 ) {
     val context = LocalContext.current
     var signOutDialog by remember { mutableStateOf(false) }
+    var stravaDialog by remember { mutableStateOf(false) }
 
     if (signOutDialog == true) {
         ConfirmationDialog(
@@ -110,6 +111,16 @@ internal fun AccountForm(
             onConfirm = { onEvent(AccountEvent.SignOut) },
             onDismiss = { signOutDialog = false },
             modifier = Modifier.testTag("sign_out_dialog")
+        )
+    }
+
+    if (stravaDialog == true) {
+        ConfirmationDialog(
+            title = "Disconnect Strava",
+            message = "Are you sure you want to disconnect Strava?",
+            onConfirm = { onEvent(AccountEvent.StravaDisconnect) },
+            onDismiss = { stravaDialog = false },
+            modifier = Modifier.testTag("strava_dialog")
         )
     }
 
@@ -138,7 +149,7 @@ internal fun AccountForm(
         if (state.hasStrava == true) {
             Button(
                 text = "Disconnect Strava",
-                onClick = { onEvent(AccountEvent.StravaDisconnect) }
+                onClick = { stravaDialog = true }
             )
         } else {
             Button(
