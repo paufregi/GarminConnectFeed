@@ -653,7 +653,6 @@ val eventTypesJson = """
     ]
 """.trimIndent()
 
-
 val stravaExchangeTokenJson = """
     {
         "token_type": "Bearer",
@@ -866,7 +865,8 @@ val garminSSODispatcher: Dispatcher = object : Dispatcher() {
 
 fun RecordedRequest.getFields(): Map<String, String> {
     val body = body.readUtf8()
-    if (body.isEmpty()) return emptyMap()
+    val contentType = headers["Content-Type"] ?: ""
+    if (body.isEmpty() || contentType != "application/x-www-form-urlencoded") return emptyMap()
     val items = body.split("&")
     return items.associate {
         val (key, value) = it.split("=")
@@ -877,9 +877,10 @@ fun RecordedRequest.getFields(): Map<String, String> {
 val stravaDispatcher: Dispatcher = object : Dispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
         val path = request.path ?: ""
-        Log.i("Strava", path)
         val fields = request.getFields()
         return when {
+            path.startsWith("/oauth/mobile/authorize") ->
+                MockResponse().setResponseCode(302).setHeader("Location", "paufregi.connectfeed://strava/auth?code=123456")
             path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "authorization_code" ->
                 MockResponse().setResponseCode(200).setBody(stravaExchangeTokenJson)
             path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "refresh_token" ->
