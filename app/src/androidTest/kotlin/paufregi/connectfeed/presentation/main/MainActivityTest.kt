@@ -34,6 +34,7 @@ import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.data.datastore.AuthStore
+import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
@@ -41,6 +42,9 @@ import paufregi.connectfeed.garthPort
 import paufregi.connectfeed.oauth1
 import paufregi.connectfeed.oauth2
 import paufregi.connectfeed.sslSocketFactory
+import paufregi.connectfeed.stravaDispatcher
+import paufregi.connectfeed.stravaPort
+import paufregi.connectfeed.stravaToken
 import paufregi.connectfeed.user
 import javax.inject.Inject
 
@@ -59,6 +63,9 @@ class MainActivityTest {
     lateinit var authStore: AuthStore
 
     @Inject
+    lateinit var stravaStore: StravaStore
+
+    @Inject
     lateinit var database: GarminDatabase
 
     @Inject
@@ -67,6 +74,7 @@ class MainActivityTest {
     private val connectServer = MockWebServer()
     private val garminSSOServer = MockWebServer()
     private val garthServer = MockWebServer()
+    private val strava = MockWebServer()
 
     @Before
     fun setup() {
@@ -77,10 +85,13 @@ class MainActivityTest {
         garminSSOServer.start(garminSSOPort)
         garthServer.useHttps(sslSocketFactory, false)
         garthServer.start(garthPort)
+        strava.useHttps(sslSocketFactory, false)
+        strava.start(stravaPort)
 
         connectServer.dispatcher = connectDispatcher
         garthServer.dispatcher = garthDispatcher
         garminSSOServer.dispatcher = garminSSODispatcher
+        strava.dispatcher = stravaDispatcher
     }
 
     @After
@@ -88,9 +99,12 @@ class MainActivityTest {
         connectServer.shutdown()
         garminSSOServer.shutdown()
         garthServer.shutdown()
+        strava.shutdown()
+        strava.shutdown()
         database.close()
         runBlocking(Dispatchers.IO){
             authStore.dataStore.edit { it.clear() }
+            stravaStore.dataStore.edit { it.clear() }
         }
 
     }
@@ -124,6 +138,42 @@ class MainActivityTest {
         composeTestRule.waitUntil(conditionDescription = "sign_out_dialog") { composeTestRule.onNodeWithTag("sign_out_dialog").isDisplayed() }
         composeTestRule.onNodeWithText("Confirm").performClick()
         composeTestRule.waitUntil(conditionDescription = "login_form") { composeTestRule.onNodeWithTag("login_form").isDisplayed() }
+    }
+
+    @Test
+    fun `Connect Strava`() = runTest {
+        authStore.saveUser(user)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
+
+        ActivityScenario.launch(MainActivity::class.java)
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.onNodeWithTag("menu").performClick()
+        composeTestRule.onNodeWithText("Account").performClick()
+        composeTestRule.waitUntil(conditionDescription = "account_form") { composeTestRule.onNodeWithTag("account_form").isDisplayed() }
+        composeTestRule.onNodeWithText("Connect Strava").performClick()
+        composeTestRule.waitUntil(conditionDescription = "strava linked") { composeTestRule.onNodeWithText("Strava linked").isDisplayed() }
+    }
+
+    @Test
+    fun `Disconnect Strava`() = runTest {
+        authStore.saveUser(user)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
+        stravaStore.saveToken(stravaToken)
+
+        ActivityScenario.launch(MainActivity::class.java)
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.onNodeWithTag("menu").performClick()
+        composeTestRule.onNodeWithText("Account").performClick()
+        composeTestRule.waitUntil(conditionDescription = "account_form") { composeTestRule.onNodeWithTag("account_form").isDisplayed() }
+        composeTestRule.onNodeWithText("Disconnect Strava").performClick()
+        composeTestRule.waitUntil(conditionDescription = "strava_dialog") { composeTestRule.onNodeWithTag("strava_dialog").isDisplayed() }
+        composeTestRule.onNodeWithText("Confirm").performClick()
+        composeTestRule.waitUntil(conditionDescription = "account_form") { composeTestRule.onNodeWithTag("account_form").isDisplayed() }
+        composeTestRule.onNodeWithText("Connect Strava").isDisplayed()
     }
 
     @Test
@@ -231,6 +281,28 @@ class MainActivityTest {
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
         composeTestRule.onNodeWithText("Activity").performClick()
         composeTestRule.onNodeWithText("Activity 1").performClick()
+        composeTestRule.onNodeWithText("Profile").performClick()
+        composeTestRule.onNodeWithText("Profile 1").performClick()
+        composeTestRule.onNodeWithText("Save").performClick()
+
+        composeTestRule.waitUntil(conditionDescription = "Activity updated") { composeTestRule.onNodeWithText("Activity updated").isDisplayed() }
+    }
+
+    @Test
+    fun `Update activity - with Strava`() = runTest {
+        authStore.saveUser(user)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
+        stravaStore.saveToken(stravaToken)
+        dao.saveProfile(ProfileEntity(name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType(id = 1, name = "Race")))
+
+        ActivityScenario.launch(MainActivity::class.java)
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.onNodeWithText("Activity").performClick()
+        composeTestRule.onNodeWithText("Activity 1").performClick()
+        composeTestRule.onNodeWithText("Strava Activity").performClick()
+        composeTestRule.onNodeWithText("Bondcliff").performClick()
         composeTestRule.onNodeWithText("Profile").performClick()
         composeTestRule.onNodeWithText("Profile 1").performClick()
         composeTestRule.onNodeWithText("Save").performClick()
