@@ -8,14 +8,17 @@ import javax.inject.Inject
 
 class SaveProfile @Inject constructor (private val garminRepository: GarminRepository) {
     suspend operator fun invoke(profile: Profile):Result<Unit> {
+
+        val noCourseAllowed = sequenceOf(
+            ActivityType.Any, ActivityType.Strength
+        )
+
         if (profile.name.isBlank()) return Result.Failure("Name cannot be empty")
-        if (profile.activityType == ActivityType.Any ||
-            profile.activityType == ActivityType.Strength &&
-            profile.course != null) return Result.Failure("Can't have course for strength activity")
-        if (profile.activityType != ActivityType.Any &&
-            profile.activityType != ActivityType.Strength &&
-            profile.course != null &&
-            profile.course.type != profile.activityType) return Result.Failure("Course must match activity type")
+        if (profile.course != null) {
+            if (noCourseAllowed.contains(profile.activityType)) return Result.Failure("Can't have course for ${profile.activityType.name} activity type")
+            if (profile.course.type != profile.activityType) return Result.Failure("Course must match activity type")
+        }
+
         garminRepository.saveProfile(profile)
         return Result.Success(Unit)
     }

@@ -1,5 +1,6 @@
 package paufregi.connectfeed.presentation.main
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,11 +22,18 @@ import paufregi.connectfeed.presentation.profile.ProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
 import paufregi.connectfeed.presentation.ui.theme.Theme
+import javax.inject.Inject
+import javax.inject.Named
 import kotlin.getValue
 
 @AndroidEntryPoint
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    @Named("StravaAuthUri")
+    lateinit var stravaAuthUri: Uri
+
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +57,7 @@ class MainActivity : ComponentActivity() {
                     }
                     navigation<Route.Home>(startDestination = Route.QuickEdit) {
                         composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }
-                        composable<Route.Account> { AccountScreen(nav = nav) }
+                        composable<Route.Account> { AccountScreen(stravaAuthUri = stravaAuthUri, nav = nav) }
                         navigation<Route.Profiles>(startDestination = Route.ProfileList) {
                             composable<Route.ProfileList> { ProfilesScreen(nav = nav) }
                             composable<Route.Profile> { ProfileScreen(nav = nav) }

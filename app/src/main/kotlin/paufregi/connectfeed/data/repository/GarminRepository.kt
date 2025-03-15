@@ -11,16 +11,17 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.GarminConnect
-import paufregi.connectfeed.data.api.models.EventType as DataEventType
-import paufregi.connectfeed.data.api.models.Metadata
-import paufregi.connectfeed.data.api.models.Summary
-import paufregi.connectfeed.data.api.models.UpdateActivity
+import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.models.EventType as DataEventType
+import paufregi.connectfeed.data.api.garmin.models.Metadata
+import paufregi.connectfeed.data.api.garmin.models.Summary
+import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
+import paufregi.connectfeed.data.api.strava.Strava
+import paufregi.connectfeed.data.api.strava.models.UpdateActivity as UpdateStravaActivity
 import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
-import paufregi.connectfeed.data.datastore.AuthStore
 import java.io.File
 import javax.inject.Inject
 import kotlin.Int
@@ -28,6 +29,7 @@ import kotlin.Int
 class GarminRepository @Inject constructor(
     private val garminDao: GarminDao,
     private val garminConnect: GarminConnect,
+    private val strava: Strava,
 ) {
     suspend fun fetchUser(): Result<User> =
         callApi (
@@ -49,7 +51,13 @@ class GarminRepository @Inject constructor(
 
     suspend fun getLatestActivities(limit: Int): Result<List<Activity>> =
         callApi (
-            { garminConnect.getLatestActivity(limit) },
+            { garminConnect.getLatestActivities(limit) },
+            { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
+        )
+
+    suspend fun getLatestStravaActivities(limit: Int): Result<List<Activity>> =
+        callApi (
+            { strava.getLatestActivities(perPage = limit) },
             { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
         )
 
@@ -67,19 +75,39 @@ class GarminRepository @Inject constructor(
 
     suspend fun updateActivity(
         activity: Activity,
-        profile: Profile,
-        effort: Float?,
+        name: String?,
+        eventType: EventType?,
+        course: Course?,
+        water: Int?,
         feel: Float?,
+        effort: Float?
     ): Result<Unit> {
         val request = UpdateActivity(
             id = activity.id,
-            name = if (profile.rename) profile.name else null ,
-            eventType = DataEventType(profile.eventType?.id, profile.eventType?.name?.lowercase()),
-            metadata = Metadata(profile.course?.id),
-            summary = Summary(profile.water, effort, feel)
+            name = name,
+            eventType = DataEventType(eventType?.id, eventType?.name?.lowercase()),
+            metadata = Metadata(course?.id),
+            summary = Summary(water, feel, effort)
         )
         return callApi(
             { garminConnect.updateActivity(activity.id, request) },
+            { }
+        )
+    }
+
+    suspend fun updateStravaActivity(
+        activity: Activity,
+        name: String?,
+        description: String?,
+        commute: Boolean?,
+    ): Result<Unit> {
+        val request = UpdateStravaActivity(
+            name = name,
+            description = description,
+            commute = commute
+        )
+        return callApi(
+            { strava.updateActivity(activity.id, request) },
             { }
         )
     }

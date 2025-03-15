@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import paufregi.connectfeed.data.database.coverters.ActivityTypeConverter
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 
-@Database(entities = [ProfileEntity::class], version = 2)
+@Database(entities = [ProfileEntity::class], version = 3)
 @TypeConverters(ActivityTypeConverter::class)
 abstract class GarminDatabase : RoomDatabase() {
     abstract fun garminDao(): GarminDao

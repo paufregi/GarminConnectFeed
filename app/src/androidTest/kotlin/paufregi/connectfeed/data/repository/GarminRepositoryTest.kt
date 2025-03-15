@@ -21,13 +21,12 @@ import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.EventType as CoreEventType
-import paufregi.connectfeed.core.models.Course
-import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.datastore.AuthStore
+import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
@@ -35,6 +34,9 @@ import paufregi.connectfeed.garthPort
 import paufregi.connectfeed.oauth1
 import paufregi.connectfeed.oauth2
 import paufregi.connectfeed.sslSocketFactory
+import paufregi.connectfeed.stravaDispatcher
+import paufregi.connectfeed.stravaPort
+import paufregi.connectfeed.stravaToken
 import java.io.File
 import javax.inject.Inject
 
@@ -54,11 +56,15 @@ class GarminRepositoryTest {
     lateinit var authStore: AuthStore
 
     @Inject
+    lateinit var stravaStore: StravaStore
+
+    @Inject
     lateinit var database: GarminDatabase
 
     private val connectServer = MockWebServer()
     private val garminSSOServer = MockWebServer()
     private val garthServer = MockWebServer()
+    private val stravaServer = MockWebServer()
 
     @Before
     fun setup() {
@@ -69,10 +75,13 @@ class GarminRepositoryTest {
         garminSSOServer.start(garminSSOPort)
         garthServer.useHttps(sslSocketFactory, false)
         garthServer.start(garthPort)
+        stravaServer.useHttps(sslSocketFactory, false)
+        stravaServer.start(stravaPort)
 
         connectServer.dispatcher = connectDispatcher
         garthServer.dispatcher = garthDispatcher
         garminSSOServer.dispatcher = garminSSODispatcher
+        stravaServer.dispatcher = stravaDispatcher
     }
 
     @After
@@ -80,6 +89,7 @@ class GarminRepositoryTest {
         connectServer.shutdown()
         garminSSOServer.shutdown()
         garthServer.shutdown()
+        stravaServer.shutdown()
         database.close()
         runBlocking(Dispatchers.IO){
             authStore.dataStore.edit { it.clear() }
@@ -126,11 +136,27 @@ class GarminRepositoryTest {
         authStore.saveOAuth2(oauth2)
 
         val expected = listOf(
-            CoreActivity(id = 1, name = "Activity 1", distance = 17804.00, type = CoreActivityType.Cycling),
-            CoreActivity(id = 2, name = "Activity 2", distance = 17760.00, type = CoreActivityType.Cycling)
+            CoreActivity(id = 1, name = "Activity 1", distance = 17804.00, trainingEffect = "recovery", type = CoreActivityType.Cycling),
+            CoreActivity(id = 2, name = "Activity 2", distance = 17760.00, trainingEffect = "recovery", type = CoreActivityType.Cycling)
         )
 
         val res = repo.getLatestActivities(5)
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
+    }
+
+    @Test
+    fun `Get latest Strava activities`() = runTest {
+        stravaStore.saveToken(stravaToken)
+
+        val expected = listOf(
+            CoreActivity(id = 1, name = "Happy Friday", distance = 7804.0, type = CoreActivityType.Running),
+            CoreActivity(id = 2, name = "Bondcliff", distance = 23676.0, type = CoreActivityType.Cycling)
+        )
+
+        val res = repo.getLatestStravaActivities(5)
 
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
@@ -179,17 +205,42 @@ class GarminRepositoryTest {
         authStore.saveOAuth1(oauth1)
         authStore.saveOAuth2(oauth2)
 
-        val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, type = CoreActivityType.Cycling)
-        val profile = Profile(
-            name = "newName",
-            rename = true,
-            eventType = EventType(id = 1, name = "event1"),
-            activityType = CoreActivityType.Cycling,
-            course = Course(id = 1, name = "course1", distance = 10234.00, type = CoreActivityType.Cycling),
-            water = 1
+        val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, trainingEffect = "", type = CoreActivityType.Cycling)
+        val name = "newName"
+        val eventType = CoreEventType(1, "event")
+        val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
+        val water = 2
+        val effort = 50f
+        val feel = 80f
+
+        val res = repo.updateActivity(
+            activity = activity,
+            name = name,
+            eventType = eventType,
+            course = course,
+            water = water,
+            effort = effort,
+            feel = feel
         )
 
-        val res = repo.updateActivity(activity, profile, 50f, 90f)
+        assertThat(res.isSuccessful).isTrue()
+    }
+
+    @Test
+    fun `Update strava activity`() = runTest {
+        stravaStore.saveToken(stravaToken)
+
+        val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, trainingEffect = "", type = CoreActivityType.Cycling)
+        val name = "newName"
+        val description = "description"
+        val commute = true
+
+        val res = repo.updateStravaActivity(
+            activity = activity,
+            name = name,
+            description = description,
+            commute = commute
+        )
 
         assertThat(res.isSuccessful).isTrue()
     }

@@ -10,4 +10,5 @@ data class Profile(
     val rename: Boolean = true,
     val customWater: Boolean = false,
     val feelAndEffort: Boolean = false,
+    val trainingEffect: Boolean = false,
 )

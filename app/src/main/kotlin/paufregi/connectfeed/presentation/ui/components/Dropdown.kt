@@ -35,7 +35,7 @@ data class DropdownItem(
 @ExperimentalMaterial3Api
 fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
-    distance = distance?.let { Formatter.distance(it) },
+    distance = distance?.takeIf { it > 0 }?.let { Formatter.distance(it) },
     activityType = type,
     onClick = onClick
 )

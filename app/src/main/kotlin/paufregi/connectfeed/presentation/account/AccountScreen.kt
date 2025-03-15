@@ -1,5 +1,7 @@
 package paufregi.connectfeed.presentation.account
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -32,7 +35,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import paufregi.connectfeed.presentation.Navigation
-import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
 import paufregi.connectfeed.presentation.ui.components.Loading
@@ -44,18 +46,22 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun AccountScreen(nav: NavController = rememberNavController()) {
+internal fun AccountScreen(
+    stravaAuthUri: Uri,
+    nav: NavController = rememberNavController()
+) {
     val viewModel = hiltViewModel<AccountViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    AccountContent(state, viewModel::onEvent, nav)
+    AccountContent(state, stravaAuthUri, viewModel::onEvent, nav)
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun AccountContent(
-    @PreviewParameter(AccountStatePreview::class) state: AccountState = AccountState(),
+    @PreviewParameter(AccountStatePreview::class) state: AccountState,
+    stravaAuthUri: Uri = Uri.EMPTY,
     onEvent: (AccountEvent) -> Unit = {},
     nav: NavController = rememberNavController()
 ) {
@@ -81,19 +87,22 @@ internal fun AccountContent(
             items = Navigation.items,
             selectedIndex = Navigation.ACCOUNT,
             nav = nav
-        ) { AccountForm(state, onEvent, it) }
+        ) { AccountForm(state, stravaAuthUri, onEvent, it) }
     }
 }
 
-@Preview
+
 @Composable
 @ExperimentalMaterial3Api
 internal fun AccountForm(
-    @PreviewParameter(AccountStatePreview::class) state: AccountState = AccountState(),
+    state: AccountState,
+    stravaAuthUri: Uri,
     onEvent: (AccountEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
+    val context = LocalContext.current
     var signOutDialog by remember { mutableStateOf(false) }
+    var stravaDialog by remember { mutableStateOf(false) }
 
     if (signOutDialog == true) {
         ConfirmationDialog(
@@ -102,6 +111,16 @@ internal fun AccountForm(
             onConfirm = { onEvent(AccountEvent.SignOut) },
             onDismiss = { signOutDialog = false },
             modifier = Modifier.testTag("sign_out_dialog")
+        )
+    }
+
+    if (stravaDialog == true) {
+        ConfirmationDialog(
+            title = "Disconnect Strava",
+            message = "Are you sure you want to disconnect Strava?",
+            onConfirm = { onEvent(AccountEvent.StravaDisconnect) },
+            onDismiss = { stravaDialog = false },
+            modifier = Modifier.testTag("strava_dialog")
         )
     }
 
@@ -127,6 +146,17 @@ internal fun AccountForm(
             text = "Refresh user",
             onClick = { onEvent(AccountEvent.RefreshUser) }
         )
+        if (state.hasStrava == true) {
+            Button(
+                text = "Disconnect Strava",
+                onClick = { stravaDialog = true }
+            )
+        } else {
+            Button(
+                text = "Connect Strava",
+                onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, stravaAuthUri)) }
+            )
+        }
         Button(
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             text = "Sign out",

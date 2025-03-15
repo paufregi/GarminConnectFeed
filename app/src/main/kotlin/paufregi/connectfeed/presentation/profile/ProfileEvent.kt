@@ -14,5 +14,6 @@ sealed interface ProfileEvent {
     data class SetRename(val rename: Boolean): ProfileEvent
     data class SetCustomWater(val customWater: Boolean): ProfileEvent
     data class SetFeelAndEffort(val feelAndEffort: Boolean): ProfileEvent
+    data class SetTrainingEffect(val trainingEffect: Boolean): ProfileEvent
     data object Save: ProfileEvent
 }

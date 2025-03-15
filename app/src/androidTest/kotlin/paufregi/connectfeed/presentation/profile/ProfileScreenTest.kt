@@ -46,6 +46,8 @@ class ProfileScreenTest {
         composeTestRule.onNodeWithTag("custom_water_checkbox").assertIsOff()
         composeTestRule.onNodeWithText("Feel & Effort").isDisplayed()
         composeTestRule.onNodeWithTag("feel_and_effort_checkbox").assertIsOff()
+        composeTestRule.onNodeWithText("Training effect").isDisplayed()
+        composeTestRule.onNodeWithTag("training_effect_checkbox").assertIsOff()
         composeTestRule.onNodeWithText("Cancel").isDisplayed()
         composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
@@ -73,7 +75,8 @@ class ProfileScreenTest {
                     water = 10,
                     rename = true,
                     customWater = true,
-                    feelAndEffort = true
+                    feelAndEffort = true,
+                    trainingEffect = true
                 ))
             )
         }
@@ -85,6 +88,7 @@ class ProfileScreenTest {
         composeTestRule.onNodeWithTag("rename_checkbox").assertIsOn()
         composeTestRule.onNodeWithTag("custom_water_checkbox").assertIsOn()
         composeTestRule.onNodeWithTag("feel_and_effort_checkbox").assertIsOn()
+        composeTestRule.onNodeWithTag("training_effect_checkbox").assertIsOn()
         composeTestRule.onNodeWithText("Cancel").isDisplayed()
         composeTestRule.onNodeWithText("Save").isDisplayed()
     }

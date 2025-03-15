@@ -87,7 +87,7 @@ class SaveProfileTest{
 
         assertThat(res.isSuccessful).isFalse()
         res as Result.Failure
-        assertThat(res.reason).isEqualTo("Can't have course for strength activity")
+        assertThat(res.reason).isEqualTo("Can't have course for Strength activity type")
     }
 
     @Test
@@ -106,7 +106,7 @@ class SaveProfileTest{
 
         assertThat(res.isSuccessful).isFalse()
         res as Result.Failure
-        assertThat(res.reason).isEqualTo("Can't have course for strength activity")
+        assertThat(res.reason).isEqualTo("Can't have course for Any activity type")
     }
 
     @Test

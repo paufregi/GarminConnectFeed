@@ -623,6 +623,43 @@ class ProfileViewModelTest {
         confirmVerified(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
     }
 
+    @Test
+    fun `Set training effect`() = runTest {
+        val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
+        val eventTypes = listOf(EventType(id = 1, name = "event"))
+        val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
+
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
+        coEvery { getProfile(any()) } returns null
+        every { getActivityTypes() } returns activityTypes
+        coEvery { getEventTypes() } returns Result.Success(eventTypes)
+        coEvery { getCourses() } returns Result.Success(courses)
+
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+
+        viewModel.state.test {
+            awaitItem() // skip initial state
+            viewModel.onEvent(ProfileEvent.SetTrainingEffect(true))
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.profile).isEqualTo(Profile(trainingEffect = true))
+            assertThat(state.activityTypes).isEqualTo(activityTypes)
+            assertThat(state.eventTypes).isEqualTo(eventTypes)
+            assertThat(state.courses).isEqualTo(courses)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify{
+            savedState.toRoute<Route.Profile>()
+            getActivityTypes()
+        }
+        coVerify {
+            getProfile(0)
+            getEventTypes()
+            getCourses()
+        }
+        confirmVerified(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+    }
 
     @Test
     fun `Save profile`() = runTest {

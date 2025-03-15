@@ -8,6 +8,7 @@ class AccountStatePreview : PreviewParameterProvider<AccountState> {
         AccountState(process = ProcessState.Processing),
         AccountState(process = ProcessState.Success("Profile saved")),
         AccountState(process = ProcessState.Failure("Error saving profile")),
-        AccountState(process = ProcessState.Idle),
+        AccountState(process = ProcessState.Idle, hasStrava = false),
+        AccountState(process = ProcessState.Idle, hasStrava = true),
     )
 }

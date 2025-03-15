@@ -39,7 +39,7 @@ fun ActivityIcon(
     @PreviewParameter(ActivityTypePreview ::class) activityType: ActivityType?
 ) {
     when (activityType) {
-        is ActivityType.Any -> Icon(Icons.Connect.Activities, "any", Modifier.size(24.dp))
+        is ActivityType.Any -> Icon(Icons.Connect.Other, "any", Modifier.size(24.dp))
         is ActivityType.Running -> Icon(Icons.Connect.Running, "running", Modifier.size(24.dp))
         is ActivityType.TrailRunning -> Icon(Icons.Connect.TrailRunning, "trail_running", Modifier.size(24.dp))
         is ActivityType.TreadmillRunning -> Icon(Icons.Connect.TreadmillRunning, "treadmill_running", Modifier.size(24.dp))

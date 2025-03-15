@@ -1,0 +1,52 @@
+package paufregi.connectfeed.di
+
+import android.net.Uri
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import paufregi.connectfeed.BuildConfig
+import paufregi.connectfeed.data.api.strava.Strava
+import paufregi.connectfeed.data.api.strava.StravaAuth
+import javax.inject.Named
+import javax.inject.Singleton
+import androidx.core.net.toUri
+
+@Module
+@InstallIn(SingletonComponent::class)
+class StravaModule {
+
+    @Provides
+    @Singleton
+    @Named("StravaClientId")
+    fun provideStravaClientId(): String = BuildConfig.STRAVA_CLIENT_ID
+
+    @Provides
+    @Singleton
+    @Named("StravaClientSecret")
+    fun provideStravaClientSecret(): String = BuildConfig.STRAVA_CLIENT_SECRET
+
+    @Provides
+    @Singleton
+    @Named("StravaAuthUrl")
+    fun provideStravaAuthUrl(): String = StravaAuth.BASE_URL
+
+    @Provides
+    @Singleton
+    @Named("StravaUrl")
+    fun provideStravaUrl(): String = Strava.BASE_URL
+
+    @Provides
+    @Singleton
+    @Named("StravaAuthUri")
+    fun provideStravaUri(
+        @Named("StravaClientId") clientId: String,
+    ): Uri = "https://www.strava.com/oauth/mobile/authorize".toUri()
+        .buildUpon()
+        .appendQueryParameter("client_id", clientId)
+        .appendQueryParameter("redirect_uri", "paufregi.connectfeed://strava/auth")
+        .appendQueryParameter("response_type", "code")
+        .appendQueryParameter("approval_prompt", "auto")
+        .appendQueryParameter("scope", "activity:read_all,activity:write")
+        .build()
+}
