@@ -29,13 +29,16 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Assemble Debug
+        run: ./gradlew assembleDebug
+
       - name: Run tests
         env: 
           TZ: 'Pacific/Auckland'
-        run: ./gradlew compileDebugSources compileDebugUnitTestSources test
+        run: ./gradlew testDebugUnitTest
 
       - name: Run android tests
-        run: ./gradlew compileDebugSources compileDebugSources pixel9ProDebugAndroidTest
+        run: ./gradlew pixel9ProDebugAndroidTest
 
   lint:
     name: Lint
@@ -53,8 +56,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Assemble Debug
+        run: ./gradlew assembleDebug
+
       - name: Run lint
-        run: ./gradlew compileDebugSources lint
+        run: ./gradlew lintDebug
 
       - name: Check and report lint results
         uses: hidakatsuya/action-report-android-lint@v1.2.2
