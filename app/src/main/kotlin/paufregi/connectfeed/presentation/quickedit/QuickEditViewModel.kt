@@ -87,12 +87,14 @@ class QuickEditViewModel @Inject constructor(
             effort = state.value.effort
         ).onFailure { errors.add("Garmin") }
 
-        updateStravaActivity(
-            activity = state.value.activity,
-            stravaActivity = state.value.stravaActivity,
-            profile = state.value.profile,
-            description = state.value.description,
-        ).onFailure { errors.add("Strava") }
+        if (state.value.stravaActivities.isNotEmpty() &&  state.value.stravaActivity != null) {
+            updateStravaActivity(
+                activity = state.value.activity,
+                stravaActivity = state.value.stravaActivity,
+                profile = state.value.profile,
+                description = state.value.description,
+            ).onFailure { errors.add("Strava") }
+        }
 
         when (errors.isNotEmpty()) {
             false -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
