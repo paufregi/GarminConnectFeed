@@ -3,6 +3,7 @@ package paufregi.connectfeed.data.api.garmin.models
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
+import paufregi.connectfeed.data.api.garmin.converters.TrainingEffectConverter
 import kotlin.math.round
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 
@@ -26,6 +27,6 @@ data class Activity(
             name = this.name,
             type = this.type.toCore(),
             distance = round(this.distance),
-            trainingEffect = this.trainingEffectLabel?.lowercase()
+            trainingEffect = TrainingEffectConverter.convert(this.trainingEffectLabel)
         )
 }

@@ -15,7 +15,7 @@ class UpdateStravaActivity @Inject constructor (private val garminRepository: Ga
     ):Result<Unit> {
         if (stravaActivity == null || profile == null) return Result.Failure("Validation error")
         val name = if (profile.rename) profile.name else activity?.name
-        val completeDescription = if (profile.trainingEffect == true && activity?.trainingEffect != null) "$description\n\nTraining Effect: ${activity.trainingEffect}" else description
+        val completeDescription = if (profile.trainingEffect == true && activity?.trainingEffect != null) "$description\n\nTraining: ${activity.trainingEffect.replace("_", "")}" else description
         val commute = profile.eventType?.let { it.id == 5L } // EventType: transportation
 
         return garminRepository.updateStravaActivity(

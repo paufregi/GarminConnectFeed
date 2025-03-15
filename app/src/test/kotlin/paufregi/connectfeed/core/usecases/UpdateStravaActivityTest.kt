@@ -59,7 +59,7 @@ class UpdateStravaActivityTest{
     fun `Update activity`() = runTest {
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
 
-        val expectedDescription = "$description\n\nTraining Effect: recovery"
+        val expectedDescription = "$description\n\nTraining: recovery"
         val res = useCase(activity, stravaActivity, profile, description)
 
         assertThat(res.isSuccessful).isTrue()
@@ -80,7 +80,7 @@ class UpdateStravaActivityTest{
             trainingEffect = true
         )
 
-        val expectedDescription = "$description\n\nTraining Effect: recovery"
+        val expectedDescription = "$description\n\nTraining: recovery"
         val res = useCase(activity, stravaActivity, profile, description)
 
         assertThat(res.isSuccessful).isTrue()
