@@ -39,14 +39,9 @@ class TestStravaModule {
     @Provides
     @Singleton
     @Named("StravaAuthUri")
-    fun provideStravaUri(
-        @Named("StravaClientId") clientId: String,
-    ): Uri = Uri.parse("https://localhost:${stravaPort}/oauth/mobile/authorize")
-        .buildUpon()
-        .appendQueryParameter("client_id", clientId)
-        .appendQueryParameter("redirect_uri", "paufregi.connectfeed://strava/auth") // Replace with your app's redirect URI
-        .appendQueryParameter("response_type", "code")
-        .appendQueryParameter("approval_prompt", "auto")
-        .appendQueryParameter("scope", "activity:write,read")
-        .build()
+    fun provideStravaUri(): Uri =
+        Uri.parse("paufregi.connectfeed://strava/auth")
+            .buildUpon()
+            .appendQueryParameter("code", "123456")
+            .build()
 }
