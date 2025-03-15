@@ -205,7 +205,7 @@ internal fun ProfileForm(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth().clickable(
-                onClick = { onEvent(ProfileEvent.SetFeelAndEffort(!state.profile.feelAndEffort)) }
+                onClick = { onEvent(ProfileEvent.SetTrainingEffect(!state.profile.trainingEffect)) }
             )
         ) {
             Checkbox(
