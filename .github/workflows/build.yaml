@@ -32,10 +32,10 @@ jobs:
       - name: Run tests
         env: 
           TZ: 'Pacific/Auckland'
-        run: ./gradlew assemble test
+        run: ./gradlew compileDebugSources compileDebugUnitTestSources test
 
       - name: Run android tests
-        run: ./gradlew assemble pixel9ProDebugAndroidTest
+        run: ./gradlew compileDebugSources compileDebugSources pixel9ProDebugAndroidTest
 
   lint:
     name: Lint
@@ -54,7 +54,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run lint
-        run: ./gradlew assemble lint
+        run: ./gradlew compileDebugSources lint
 
       - name: Check and report lint results
         uses: hidakatsuya/action-report-android-lint@v1.2.2
