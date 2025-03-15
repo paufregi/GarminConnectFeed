@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.quickedit
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel

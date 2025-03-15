@@ -1,6 +1,5 @@
 package paufregi.connectfeed
 
-import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
