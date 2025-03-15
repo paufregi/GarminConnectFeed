@@ -37,8 +37,8 @@ android {
         if (localPropertiesFile.exists()) {
             properties.load(localPropertiesFile.inputStream())
 
-            buildConfigField("String", "STRAVA_CLIENT_ID", "\"${properties.getProperty("strava.client_id")}\"")
-            buildConfigField("String", "STRAVA_CLIENT_SECRET", "\"${properties.getProperty("strava.client_secret")}\"")
+            buildConfigField("String", "STRAVA_CLIENT_ID", "\"${properties.getProperty("strava.client_id", "")}\"")
+            buildConfigField("String", "STRAVA_CLIENT_SECRET", "\"${properties.getProperty("strava.client_secret", "")}\"")
         }
     }
 
