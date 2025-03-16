@@ -37,11 +37,11 @@ jobs:
           echo "strava.client_id=${{ secrets.STRAVA_CLIENT_ID }}" >> local.properties
           echo "strava.client_secret=${{ secrets.STRAVA_CLIENT_SECRET }}" >> local.properties
 
-      - name: Run build
-        run: ./gradlew build
+      - name: Setup virtual device
+        run: ./gradlew pixel9ProSetup
 
-      - name: Run tests
-        run: ./gradlew test
+      - name: Run build & unit tests
+        run: ./gradlew build
 
       - name: Run android tests
         run: ./gradlew pixel9ProCheck
