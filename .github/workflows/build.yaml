@@ -32,6 +32,11 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Create local.properties
+        run: |
+          echo "strava.client_id=${{ secrets.STRAVA_CLIENT_ID }}" >> local.properties
+          echo "strava.client_secret=${{ secrets.STRAVA_CLIENT_SECRET }}" >> local.properties
+
       - name: Run build
         run: ./gradlew build
 
