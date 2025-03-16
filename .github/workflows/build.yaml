@@ -10,6 +10,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      TZ: 'Pacific/Auckland'
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,34 +32,19 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Run build
+        run: ./gradlew build
+
       - name: Run tests
-        env: 
-          TZ: 'Pacific/Auckland'
-        run: ./gradlew testDebugUnitTest
+        run: ./gradlew test
 
       - name: Run android tests
-        run: ./gradlew pixel9ProDebugAndroidTest
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "adopt"
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        run: ./gradlew pixel9ProCheck
 
       - name: Run lint
-        run: ./gradlew assembleDebug lintDebug
+        run: ./gradlew lint
 
-      - name: Check and report lint results
+      - name: Report lint results
         uses: hidakatsuya/action-report-android-lint@v1.2.2
         with:
           result-path: "app/build/reports/lint-results-debug.xml"
