@@ -62,8 +62,8 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: "17"
-          distribution: "adopt"
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Dependency graph
         uses: gradle/actions/dependency-submission@v4
