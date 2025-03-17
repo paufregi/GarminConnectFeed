@@ -29,7 +29,7 @@ class DisconnectStravaTest {
     }
 
     @Test
-    fun `Delete profile`() = runTest {
+    fun `Disconnect strava`() = runTest {
         coEvery { repo.clear() } returns Unit
         useCase()
         coVerify { repo.clear() }
