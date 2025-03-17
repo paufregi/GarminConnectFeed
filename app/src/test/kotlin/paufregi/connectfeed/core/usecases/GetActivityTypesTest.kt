@@ -30,6 +30,7 @@ class GetActivityTypesTest {
             ActivityType.Any,
             ActivityType.Running,
             ActivityType.Cycling,
+            ActivityType.Swimming,
             ActivityType.Strength
         )
     }
