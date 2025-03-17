@@ -9,9 +9,6 @@
 It allows you to easily synchronize your weight and body composition data from the Renpho Health app directly to your Garmin Connect account.
 Additionally, ConnectFeed provides a user-friendly way to update Garmin and Strava activities using custom profiles.
 
-
-It bridges the gap between Renpho Health, Garmin Connect, and Strava, allowing for effortless data synchronization and activity updates.
-
 ## Key Features
 
 *   **Renpho Health to Garmin Connect Sync:** Easily synchronize your weight and body composition data from the Renpho Health app directly to your Garmin Connect account.
