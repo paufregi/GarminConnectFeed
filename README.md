@@ -21,8 +21,6 @@ Additionally, ConnectFeed provides a user-friendly way to update Garmin and Stra
 ## Getting Started
 
 ### Building from Source
-
-Build the project using Gradle::
 ```shell
 ./gradlew build
 ```
@@ -30,13 +28,11 @@ Build the project using Gradle::
 ### Running Tests
 
 #### Unit Tests
-To run unit tests, execute:
 ```shell
 ./gradlew test
 ```
 
 #### Android Instrumented Tests
-To run Android tests (instrumented tests), execute:
 ```
 ./gradlew pixel9ProCheck
 ```
