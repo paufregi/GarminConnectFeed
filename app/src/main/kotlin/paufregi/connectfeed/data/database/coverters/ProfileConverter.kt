@@ -13,6 +13,7 @@ fun Profile.toEntity() = ProfileEntity(
     rename = rename,
     customWater = customWater,
     feelAndEffort = feelAndEffort,
+    trainingEffect = trainingEffect,
 )
 
 fun ProfileEntity.toCore() = Profile(
@@ -25,4 +26,5 @@ fun ProfileEntity.toCore() = Profile(
     rename = rename,
     customWater = customWater,
     feelAndEffort = feelAndEffort,
+    trainingEffect = trainingEffect,
 )

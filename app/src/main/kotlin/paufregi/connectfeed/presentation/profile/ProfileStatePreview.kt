@@ -21,7 +21,8 @@ class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
                 water = 200,
                 rename = true,
                 customWater = true,
-                feelAndEffort = true
+                feelAndEffort = true,
+                trainingEffect = true
             ),
         ),
         ProfileState(

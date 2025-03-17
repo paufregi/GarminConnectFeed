@@ -9,23 +9,29 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import paufregi.connectfeed.data.api.GarminConnect
-import paufregi.connectfeed.data.api.GarminAuth1
-import paufregi.connectfeed.data.api.GarminAuth2
-import paufregi.connectfeed.data.api.GarminSSO
-import paufregi.connectfeed.data.api.Garth
-import paufregi.connectfeed.data.api.models.OAuth1
-import paufregi.connectfeed.data.api.models.OAuthConsumer
-import paufregi.connectfeed.data.api.utils.AuthInterceptor
+import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.GarminAuth1
+import paufregi.connectfeed.data.api.garmin.GarminAuth2
+import paufregi.connectfeed.data.api.garmin.GarminSSO
+import paufregi.connectfeed.data.api.garmin.Garth
+import paufregi.connectfeed.data.api.garmin.models.OAuth1
+import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
+import paufregi.connectfeed.data.api.strava.Strava
+import paufregi.connectfeed.data.api.strava.StravaAuth
+import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.datastore.AuthStore
+import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.StravaAuthRepository
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
 
 val Context.authStore: DataStore<Preferences> by preferencesDataStore(name = "authStore")
+val Context.stravaStore: DataStore<Preferences> by preferencesDataStore(name = "stravaStore")
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -33,10 +39,17 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthDataStore(
+    fun provideAuthStore(
         @ApplicationContext context: Context,
     ): AuthStore =
         AuthStore(dataStore = context.authStore)
+
+    @Provides
+    @Singleton
+    fun provideStravaStore(
+        @ApplicationContext context: Context,
+    ): StravaStore =
+        StravaStore(dataStore = context.stravaStore)
 
     @Provides
     @Singleton
@@ -56,13 +69,21 @@ class AppModule {
 
     @Provides
     @Singleton
+    fun provideStravaAuthRepository(
+        stravaStore: StravaStore,
+        stravaAuth: StravaAuth,
+    ): StravaAuthRepository = StravaAuthRepository(
+        stravaStore,
+        stravaAuth
+    )
+
+    @Provides
+    @Singleton
     fun provideGarminRepository(
         dao: GarminDao,
         connect: GarminConnect,
-    ): GarminRepository = GarminRepository(
-        dao,
-        connect,
-    )
+        strava: Strava,
+    ): GarminRepository = GarminRepository(dao, connect, strava)
 
     @Provides
     @Singleton
@@ -88,6 +109,27 @@ class AppModule {
     fun provideGarth(
         @Named("GarthUrl") url: String
     ): Garth = Garth.client(url)
+
+    @Provides
+    @Singleton
+    fun provideStravaAuth(
+        @Named("StravaAuthUrl") url: String
+    ): StravaAuth = StravaAuth.client(url)
+
+    @Provides
+    @Singleton
+    fun provideStravaAuthInterceptor(
+        authRepo: StravaAuthRepository,
+        @Named("StravaClientId") clientId: String,
+        @Named("StravaClientSecret") clientSecret: String,
+    ): StravaAuthInterceptor = StravaAuthInterceptor(authRepo, clientId, clientSecret)
+
+    @Provides
+    @Singleton
+    fun provideStrava(
+        authInterceptor: StravaAuthInterceptor,
+        @Named("StravaUrl") url: String,
+    ): Strava = Strava.client(authInterceptor, url)
 
     @Provides
     @Singleton

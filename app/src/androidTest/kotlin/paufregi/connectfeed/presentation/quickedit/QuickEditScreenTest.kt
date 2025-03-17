@@ -27,8 +27,13 @@ class QuickEditScreenTest {
     val composeTestRule = createComposeRule()
 
     val activities = listOf(
-        Activity(1L, "Running", 10234.00, ActivityType.Running),
-        Activity(2L, "Cycling", 17803.00, ActivityType.Cycling)
+        Activity(1L, "Running", ActivityType.Running, 10234.00, "recovery"),
+        Activity(2L, "Cycling", ActivityType.Cycling, 17803.00, "recovery")
+    )
+
+    val stravaActivities = listOf(
+        Activity(1L, "Running", ActivityType.Running, 10234.00),
+        Activity(2L, "Cycling", ActivityType.Cycling, 17803.00)
     )
 
     val profiles = listOf(
@@ -47,6 +52,22 @@ class QuickEditScreenTest {
             ))
         }
         composeTestRule.onNodeWithText("Activity").isDisplayed()
+        composeTestRule.onNodeWithText("Profile").isDisplayed()
+        composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
+    }
+
+    @Test
+    fun `Default values - with Strava`() {
+        composeTestRule.setContent {
+            QuickEditContent(state = QuickEditState(
+                process = ProcessState.Idle,
+                activities = activities,
+                stravaActivities = stravaActivities,
+                profiles = profiles,
+            ))
+        }
+        composeTestRule.onNodeWithText("Activity").isDisplayed()
+        composeTestRule.onNodeWithText("Strava").isDisplayed()
         composeTestRule.onNodeWithText("Profile").isDisplayed()
         composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
@@ -73,6 +94,25 @@ class QuickEditScreenTest {
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
+        composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
+        composeTestRule.onNodeWithText("Save").assertIsEnabled()
+    }
+
+    @Test
+    fun `Values selected - with Strava`() {
+        composeTestRule.setContent {
+            QuickEditContent(state = QuickEditState(
+                process = ProcessState.Idle,
+                activities = activities,
+                stravaActivities = stravaActivities,
+                profiles = profiles,
+                activity = activities[0],
+                stravaActivity = stravaActivities[0],
+                profile = profiles[0],
+            ))
+        }
+        composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
+        composeTestRule.onNodeWithText("Strava Activity").assertTextContains(stravaActivities[0].name)
         composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
     }

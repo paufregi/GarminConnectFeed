@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.presentation.profile.ProfileEvent
 
 @Entity(tableName="profiles")
 data class ProfileEntity(
@@ -22,4 +23,5 @@ data class ProfileEntity(
     val rename: Boolean = true,
     val customWater: Boolean = false,
     val feelAndEffort: Boolean = false,
+    val trainingEffect: Boolean = false,
 )

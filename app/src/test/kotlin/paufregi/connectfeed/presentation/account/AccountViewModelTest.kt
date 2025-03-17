@@ -6,7 +6,9 @@ import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -16,7 +18,9 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.core.usecases.DisconnectStrava
 import paufregi.connectfeed.core.usecases.GetUser
+import paufregi.connectfeed.core.usecases.IsStravaLoggedIn
 import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
 import paufregi.connectfeed.presentation.ui.models.ProcessState
@@ -28,6 +32,8 @@ class AccountViewModelTest {
     private val getUser = mockk<GetUser>()
     private val refreshUser = mockk<RefreshUser>()
     private val signOut = mockk<SignOut>()
+    private val isStravaLoggedIn = mockk<IsStravaLoggedIn>()
+    private val disconnectStrava = mockk<DisconnectStrava>()
 
     private lateinit var viewModel: AccountViewModel
 
@@ -48,8 +54,9 @@ class AccountViewModelTest {
 
     @Test
     fun `Initial state`() = runTest {
-        viewModel = AccountViewModel(getUser, refreshUser, signOut)
-
+        every { getUser() } returns flowOf(user)
+        every { isStravaLoggedIn() } returns flowOf(true)
+        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
@@ -57,14 +64,19 @@ class AccountViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { getUser() }
-        confirmVerified(getUser, signOut)
+        verify {
+            getUser()
+            isStravaLoggedIn()
+        }
+        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
     }
 
     @Test
     fun `Refresh user - success`() = runTest {
         coEvery { refreshUser() } returns Result.Success(Unit)
-        viewModel = AccountViewModel(getUser, refreshUser, signOut)
+        every { getUser() } returns flowOf(user)
+        every { isStravaLoggedIn() } returns flowOf(true)
+        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
         viewModel.onEvent(AccountEvent.RefreshUser)
 
         viewModel.state.test {
@@ -73,17 +85,20 @@ class AccountViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify{
+        verify {
             getUser()
-            refreshUser()
+            isStravaLoggedIn()
         }
-        confirmVerified(getUser, signOut)
+        coVerify { refreshUser() }
+        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
     }
 
     @Test
     fun `Refresh user - failure`() = runTest {
         coEvery { refreshUser() } returns Result.Failure("error")
-        viewModel = AccountViewModel(getUser, refreshUser, signOut)
+        every { getUser() } returns flowOf(user)
+        every { isStravaLoggedIn() } returns flowOf(true)
+        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
         viewModel.onEvent(AccountEvent.RefreshUser)
 
         viewModel.state.test {
@@ -92,17 +107,20 @@ class AccountViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify{
+        verify {
             getUser()
-            refreshUser()
+            isStravaLoggedIn()
         }
-        confirmVerified(getUser, signOut)
+        coVerify { refreshUser() }
+        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
     }
 
     @Test
     fun `Sign out`() = runTest {
         coEvery { signOut() } returns Unit
-        viewModel = AccountViewModel(getUser, refreshUser, signOut)
+        every { getUser() } returns flowOf(user)
+        every { isStravaLoggedIn() } returns flowOf(true)
+        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
         viewModel.onEvent(AccountEvent.SignOut)
 
         viewModel.state.test {
@@ -112,10 +130,33 @@ class AccountViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify{
+        verify {
             getUser()
-            signOut()
+            isStravaLoggedIn()
         }
-        confirmVerified(getUser, signOut)
+        coVerify { signOut() }
+        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
+    }
+
+    @Test
+    fun `Sign out strava`() = runTest {
+        coEvery { disconnectStrava() } returns Unit
+        every { getUser() } returns flowOf(user)
+        every { isStravaLoggedIn() } returns flowOf(true)
+        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
+        viewModel.onEvent(AccountEvent.StravaDisconnect)
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify {
+            getUser()
+            isStravaLoggedIn()
+        }
+        coVerify { disconnectStrava() }
+        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
     }
 }

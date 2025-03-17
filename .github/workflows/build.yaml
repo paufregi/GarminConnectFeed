@@ -8,8 +8,11 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build & Test
     runs-on: ubuntu-latest
+    env:
+      TZ: 'Pacific/Auckland'
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,34 +32,24 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run tests
-        env: 
-          TZ: 'Pacific/Auckland'
-        run: ./gradlew test
+      - name: Create local.properties
+        run: |
+          echo "strava.client_id=${{ secrets.STRAVA_CLIENT_ID }}" >> local.properties
+          echo "strava.client_secret=${{ secrets.STRAVA_CLIENT_SECRET }}" >> local.properties
+
+      - name: Setup virtual device
+        run: ./gradlew pixel9ProSetup
+
+      - name: Run build & unit tests
+        run: ./gradlew build
 
       - name: Run android tests
-        run: ./gradlew pixel9ProDebugAndroidTest
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "adopt"
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        run: ./gradlew pixel9ProCheck
 
       - name: Run lint
         run: ./gradlew lint
 
-      - name: Check and report lint results
+      - name: Report lint results
         uses: hidakatsuya/action-report-android-lint@v1.2.2
         with:
           result-path: "app/build/reports/lint-results-debug.xml"
@@ -74,8 +67,8 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: "17"
-          distribution: "adopt"
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Dependency graph
         uses: gradle/actions/dependency-submission@v4

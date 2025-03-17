@@ -26,7 +26,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -200,6 +199,20 @@ internal fun ProfileForm(
                 onCheckedChange = { onEvent(ProfileEvent.SetFeelAndEffort(it)) },
             )
             Text(text = "Feel & Effort")
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().clickable(
+                onClick = { onEvent(ProfileEvent.SetTrainingEffect(!state.profile.trainingEffect)) }
+            )
+        ) {
+            Checkbox(
+                modifier = Modifier.testTag("training_effect_checkbox"),
+                checked = state.profile.trainingEffect,
+                onCheckedChange = { onEvent(ProfileEvent.SetTrainingEffect(it)) },
+            )
+            Text(text = "Training effect")
         }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,

@@ -7,9 +7,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.map
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.models.OAuth1
-import paufregi.connectfeed.data.api.models.OAuth2
-import paufregi.connectfeed.data.api.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.OAuth1
+import paufregi.connectfeed.data.api.garmin.models.OAuth2
+import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
 import paufregi.connectfeed.data.utils.Crypto
 
 class AuthStore(val dataStore: DataStore<Preferences>) {
