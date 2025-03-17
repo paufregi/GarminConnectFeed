@@ -137,7 +137,7 @@ internal fun ProfileForm(
             isError = state.profile.activityType != ActivityType.Any && state.profile.eventType == null
 
         )
-        if (state.profile.activityType != ActivityType.Any && state.profile.activityType != ActivityType.Strength) {
+        if (state.profile.activityType.allowCourseInProfile == true) {
             Dropdown(
                 label = { Text("Course") },
                 selected = state.profile.course?.toDropdownItem { },
