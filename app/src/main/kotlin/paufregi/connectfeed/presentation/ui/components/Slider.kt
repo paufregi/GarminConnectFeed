@@ -15,7 +15,8 @@ import androidx.compose.ui.unit.dp
 object CustomSlider {
 
     @ExperimentalMaterial3Api
-    val track: @Composable (SliderState) -> Unit = { sliderState -> SliderDefaults.Track(
+    val track: @Composable (SliderState) -> Unit = { sliderState ->
+        SliderDefaults.Track(
             sliderState = sliderState,
             modifier = Modifier.height(10.dp),
             thumbTrackGapSize = 0.dp,

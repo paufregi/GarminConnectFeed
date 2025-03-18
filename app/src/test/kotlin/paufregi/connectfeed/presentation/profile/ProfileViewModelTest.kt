@@ -250,7 +250,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.SetName("name"))
+            viewModel.onAction(ProfileAction.SetName("name"))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(Profile(name = "name"))
@@ -288,7 +288,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.SetActivityType(ActivityType.Running))
+            viewModel.onAction(ProfileAction.SetActivityType(ActivityType.Running))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(Profile(activityType = ActivityType.Running))
@@ -329,7 +329,7 @@ class ProfileViewModelTest {
         val expectedProfile = profile.copy(activityType = ActivityType.Running)
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.SetActivityType(ActivityType.Running))
+            viewModel.onAction(ProfileAction.SetActivityType(ActivityType.Running))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(expectedProfile)
@@ -370,7 +370,7 @@ class ProfileViewModelTest {
         val expectedProfile = profile.copy(activityType = ActivityType.Cycling, course = null)
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.SetActivityType(ActivityType.Cycling))
+            viewModel.onAction(ProfileAction.SetActivityType(ActivityType.Cycling))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(expectedProfile)
@@ -409,7 +409,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.SetEventType(eventType))
+            viewModel.onAction(ProfileAction.SetEventType(eventType))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(Profile(eventType = eventType))
@@ -448,7 +448,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.SetCourse(course))
+            viewModel.onAction(ProfileAction.SetCourse(course))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(Profile(course = course))
@@ -486,7 +486,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.SetWater(100))
+            viewModel.onAction(ProfileAction.SetWater(100))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(Profile(water = 100))
@@ -524,7 +524,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.SetRename(false))
+            viewModel.onAction(ProfileAction.SetRename(false))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(Profile(rename = false))
@@ -562,7 +562,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.SetCustomWater(true))
+            viewModel.onAction(ProfileAction.SetCustomWater(true))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(Profile(customWater = true))
@@ -601,7 +601,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.SetFeelAndEffort(true))
+            viewModel.onAction(ProfileAction.SetFeelAndEffort(true))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(Profile(feelAndEffort = true))
@@ -639,7 +639,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.SetTrainingEffect(true))
+            viewModel.onAction(ProfileAction.SetTrainingEffect(true))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(Profile(trainingEffect = true))
@@ -675,11 +675,11 @@ class ProfileViewModelTest {
         coEvery { saveProfile(any()) } returns Result.Success(Unit)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
-        viewModel.onEvent(ProfileEvent.Save)
+        viewModel.onAction(ProfileAction.Save)
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.Save)
+            viewModel.onAction(ProfileAction.Save)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Success("Profile saved"))
             assertThat(state.profile).isEqualTo(Profile())
@@ -719,7 +719,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(ProfileEvent.Save)
+            viewModel.onAction(ProfileAction.Save)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Failure("error"))
             assertThat(state.profile).isEqualTo(Profile())

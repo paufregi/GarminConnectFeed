@@ -58,15 +58,15 @@ internal fun QuickEditScreen(nav: NavController = rememberNavController()) {
     val viewModel = hiltViewModel<QuickEditViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    QuickEditContent(state, viewModel::onEvent, nav)
+    QuickEditContent(state, viewModel::onAction, nav)
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun QuickEditContent(
-    @PreviewParameter(QuickEditStatePreview ::class) state: QuickEditState,
-    onEvent: (QuickEditEvent) -> Unit = {},
+    @PreviewParameter(QuickEditStatePreview::class) state: QuickEditState,
+    onAction: (QuickEditAction) -> Unit = {},
     nav: NavController = rememberNavController()
 ) {
     when (state.process) {
@@ -75,23 +75,33 @@ internal fun QuickEditContent(
             StatusInfo(
                 type = StatusInfoType.Success,
                 text = state.process.message ?: "All done",
-                actionButton = { Button(text = "Ok", onClick = { onEvent(QuickEditEvent.Restart) }) },
+                actionButton = {
+                    Button(
+                        text = "Ok",
+                        onClick = { onAction(QuickEditAction.Restart) })
+                },
                 paddingValues = it
             )
         }
+
         is ProcessState.Failure -> SimpleScaffold {
             StatusInfo(
                 type = StatusInfoType.Failure,
                 text = state.process.reason,
-                actionButton = { Button(text = "Ok", onClick = { onEvent(QuickEditEvent.Restart) }) },
+                actionButton = {
+                    Button(
+                        text = "Ok",
+                        onClick = { onAction(QuickEditAction.Restart) })
+                },
                 paddingValues = it
             )
         }
+
         is ProcessState.Idle -> NavigationScaffold(
             items = Navigation.items,
             selectedIndex = Navigation.HOME,
             nav = nav
-        ) { QuickEditForm(state, onEvent, it) }
+        ) { QuickEditForm(state, onAction, it) }
     }
 }
 
@@ -99,8 +109,8 @@ internal fun QuickEditContent(
 @Composable
 @ExperimentalMaterial3Api
 internal fun QuickEditForm(
-    @PreviewParameter(QuickEditStatePreview ::class) state: QuickEditState,
-    onEvent: (QuickEditEvent) -> Unit = {},
+    @PreviewParameter(QuickEditStatePreview::class) state: QuickEditState,
+    onAction: (QuickEditAction) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -124,10 +134,10 @@ internal fun QuickEditForm(
             items = state.activities
                 .filter { state.stravaActivity?.type == null || it.type == state.stravaActivity.type }
                 .map {
-                it.toDropdownItem {
-                    onEvent(QuickEditEvent.SetActivity(it))
+                    it.toDropdownItem {
+                        onAction(QuickEditAction.SetActivity(it))
+                    }
                 }
-            }
         )
         if (state.stravaActivities.isNotEmpty()) {
             Dropdown(
@@ -137,10 +147,10 @@ internal fun QuickEditForm(
                 items = state.stravaActivities
                     .filter { state.activity?.type == null || it.type == state.activity.type }
                     .map {
-                    it.toDropdownItem {
-                        onEvent(QuickEditEvent.SetStravaActivity(it))
+                        it.toDropdownItem {
+                            onAction(QuickEditAction.SetStravaActivity(it))
+                        }
                     }
-                }
             )
         }
         Dropdown(
@@ -148,17 +158,20 @@ internal fun QuickEditForm(
             selected = state.profile?.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
             items = state.profiles
-                .filter { (state.activity?.type == null || it.activityType == state.activity.type) &&
-                        (state.stravaActivity?.type == null || it.activityType == state.stravaActivity.type) }
-                .map { it.toDropdownItem { onEvent(QuickEditEvent.SetProfile(it)) }
-            }
+                .filter {
+                    (state.activity?.type == null || it.activityType == state.activity.type) &&
+                            (state.stravaActivity?.type == null || it.activityType == state.stravaActivity.type)
+                }
+                .map {
+                    it.toDropdownItem { onAction(QuickEditAction.SetProfile(it)) }
+                }
         )
         if (state.stravaActivity != null) {
             TextField(
                 label = { Text("Description") },
                 value = state.description ?: "",
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = { onEvent(QuickEditEvent.SetDescription(it)) }
+                onValueChange = { onAction(QuickEditAction.SetDescription(it)) }
             )
         }
         if (state.profile?.customWater == true) {
@@ -166,7 +179,7 @@ internal fun QuickEditForm(
                 label = { Text("Water") },
                 value = state.profile.water?.toString() ?: "",
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = { onEvent(QuickEditEvent.SetWater(it.toIntOrNull()))},
+                onValueChange = { onAction(QuickEditAction.SetWater(it.toIntOrNull())) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
         }
@@ -181,18 +194,19 @@ internal fun QuickEditForm(
                         IconRadioItem(100f, Icons.Connect.FaceVeryHappy),
                     ),
                     selected = state.feel,
-                    onClick = { onEvent(QuickEditEvent.SetFeel(it)) }
+                    onClick = { onAction(QuickEditAction.SetFeel(it)) }
                 )
                 TextFeel(
                     state.feel,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
                         .padding(vertical = 10.dp)
                 )
             }
             Column {
                 Slider(
                     value = state.effort ?: 0f,
-                    onValueChange = { onEvent(QuickEditEvent.SetEffort(it.toInt().toFloat())) },
+                    onValueChange = { onAction(QuickEditAction.SetEffort(it.toInt().toFloat())) },
                     valueRange = 0f..100f,
                     steps = 9,
                     interactionSource = interactionSource,
@@ -201,7 +215,7 @@ internal fun QuickEditForm(
                     modifier = Modifier.fillMaxWidth()
                 )
                 TextEffort(
-                    state.effort?: 0f,
+                    state.effort ?: 0f,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
@@ -217,7 +231,7 @@ internal fun QuickEditForm(
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()
-                    onEvent(QuickEditEvent.Save)
+                    onAction(QuickEditAction.Save)
                 }
             )
         }

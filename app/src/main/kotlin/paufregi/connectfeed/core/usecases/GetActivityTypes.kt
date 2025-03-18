@@ -4,7 +4,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import javax.inject.Inject
 
 class GetActivityTypes @Inject constructor() {
-    operator fun  invoke(): List<ActivityType> {
+    operator fun invoke(): List<ActivityType> {
         return listOf(
             ActivityType.Any,
             ActivityType.Running,

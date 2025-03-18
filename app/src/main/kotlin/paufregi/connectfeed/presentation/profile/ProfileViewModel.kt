@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.profile
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,10 +44,12 @@ class ProfileViewModel @Inject constructor(
         _state.update { it.copy(process = ProcessState.Processing) }
         var errors = mutableListOf<String>()
 
-        _state.update { it.copy(
-            profile = getProfile(profileId) ?: Profile(),
-            activityTypes = getActivityTypes()
-        ) }
+        _state.update {
+            it.copy(
+                profile = getProfile(profileId) ?: Profile(),
+                activityTypes = getActivityTypes()
+            )
+        }
 
         getEventTypes()
             .onSuccess { data -> _state.update { it.copy(eventTypes = data) } }
@@ -59,14 +60,17 @@ class ProfileViewModel @Inject constructor(
             .onFailure { errors.add("courses") }
 
         when (errors.isNotEmpty()) {
-            true -> _state.update { it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}")) }
+            true -> _state.update {
+                it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}"))
+            }
+
             false -> _state.update { it.copy(process = ProcessState.Idle) }
         }
     }
 
-    fun onEvent(event: ProfileEvent) = when (event) {
-        is ProfileEvent.SetName -> _state.update { it.copy(profile = it.profile.copy(name = event.name)) }
-        is ProfileEvent.SetActivityType -> _state.update {
+    fun onAction(event: ProfileAction) = when (event) {
+        is ProfileAction.SetName -> _state.update { it.copy(profile = it.profile.copy(name = event.name)) }
+        is ProfileAction.SetActivityType -> _state.update {
             it.copy(
                 profile = it.profile.copy(
                     activityType = event.activityType,
@@ -74,19 +78,41 @@ class ProfileViewModel @Inject constructor(
                 ),
             )
         }
-        is ProfileEvent.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = event.eventType)) }
-        is ProfileEvent.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = event.course)) }
-        is ProfileEvent.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = event.water)) }
-        is ProfileEvent.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = event.rename)) }
-        is ProfileEvent.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = event.customWater)) }
-        is ProfileEvent.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = event.feelAndEffort)) }
-        is ProfileEvent.SetTrainingEffect -> _state.update { it.copy(profile = it.profile.copy(trainingEffect = event.trainingEffect)) }
-        is ProfileEvent.Save -> save()
+
+        is ProfileAction.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = event.eventType)) }
+        is ProfileAction.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = event.course)) }
+        is ProfileAction.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = event.water)) }
+        is ProfileAction.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = event.rename)) }
+        is ProfileAction.SetCustomWater -> _state.update {
+            it.copy(
+                profile = it.profile.copy(
+                    customWater = event.customWater
+                )
+            )
+        }
+
+        is ProfileAction.SetFeelAndEffort -> _state.update {
+            it.copy(
+                profile = it.profile.copy(
+                    feelAndEffort = event.feelAndEffort
+                )
+            )
+        }
+
+        is ProfileAction.SetTrainingEffect -> _state.update {
+            it.copy(
+                profile = it.profile.copy(
+                    trainingEffect = event.trainingEffect
+                )
+            )
+        }
+
+        is ProfileAction.Save -> save()
     }
 
     private fun save() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
-        when (val res = saveProfile(state.value.profile) ) {
+        when (val res = saveProfile(state.value.profile)) {
             is Result.Success -> _state.update { it.copy(process = ProcessState.Success("Profile saved")) }
             is Result.Failure -> _state.update { it.copy(process = ProcessState.Failure(res.reason)) }
         }

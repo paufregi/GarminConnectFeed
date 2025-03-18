@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.map
 import paufregi.connectfeed.data.repository.AuthRepository
 import javax.inject.Inject
 
-class IsLoggedIn @Inject constructor (
+class IsLoggedIn @Inject constructor(
     private val authRepository: AuthRepository
 ) {
     operator fun invoke(): Flow<Boolean> =

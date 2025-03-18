@@ -31,7 +31,10 @@ object Crypto {
         return KeyGenerator
             .getInstance(ALGORITHM).apply {
                 init(
-                    KeyGenParameterSpec.Builder(ALIAS, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+                    KeyGenParameterSpec.Builder(
+                        ALIAS,
+                        KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+                    )
                         .setBlockModes(BLOCK_MODE)
                         .setEncryptionPaddings(PADDING)
                         .build()

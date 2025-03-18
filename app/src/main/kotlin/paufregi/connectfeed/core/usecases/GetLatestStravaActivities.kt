@@ -6,12 +6,12 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
-class GetLatestStravaActivities @Inject constructor (
+class GetLatestStravaActivities @Inject constructor(
     private val repo: GarminRepository,
     private val isStravaLoggedIn: IsStravaLoggedIn
 ) {
     suspend operator fun invoke(): Result<List<Activity>> =
-        when(isStravaLoggedIn().first()) {
+        when (isStravaLoggedIn().first()) {
             true -> repo.getLatestStravaActivities(5)
             false -> Result.Success(emptyList())
         }

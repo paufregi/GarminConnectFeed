@@ -24,17 +24,15 @@ internal fun StravaScreen(
                 type = StatusInfoType.Success,
                 text = "Strava linked",
                 actionButton = { Button(text = "Ok", onClick = onComplete) },
-                paddingValues = it)
+                paddingValues = it
+            )
+
             is StravaState.Failure -> StatusInfo(
                 type = StatusInfoType.Failure,
                 text = "Link failed",
                 actionButton = { Button(text = "Ok", onClick = onComplete) },
-                paddingValues = it)
-            else -> StatusInfo(
-                type = StatusInfoType.Unknown,
-                text = "Don't know what to do",
-                actionButton = { Button(text = "Ok", onClick = onComplete) },
-                paddingValues = it)
+                paddingValues = it
+            )
         }
     }
 }

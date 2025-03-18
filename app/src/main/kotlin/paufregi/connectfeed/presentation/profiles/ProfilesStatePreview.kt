@@ -17,23 +17,27 @@ class ProfilesStatePreview : PreviewParameterProvider<ProfilesState> {
                     eventType = EventType(1, "transportation"),
                     activityType = ActivityType.Cycling,
                     course = Course(1, "Commute to home", 10.0, ActivityType.Cycling),
-                    water = 550),
+                    water = 550
+                ),
                 Profile(
                     name = "Ponsonby/Westhaven",
                     rename = true,
                     eventType = EventType(2, "training"),
                     activityType = ActivityType.Running,
-                    course = Course(2, "Ponsonby/Westhaven", 10.0,  ActivityType.Running)),
+                    course = Course(2, "Ponsonby/Westhaven", 10.0, ActivityType.Running)
+                ),
                 Profile(
                     name = "Gym",
                     rename = true,
                     activityType = ActivityType.Strength,
-                    water = 100),
+                    water = 100
+                ),
                 Profile(
                     name = "Just water",
                     rename = true,
                     activityType = ActivityType.Any,
-                    water = 100)
+                    water = 100
+                )
             )
         )
     )

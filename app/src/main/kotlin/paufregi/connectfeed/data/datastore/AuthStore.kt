@@ -32,7 +32,7 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun saveConsumer(consumer: OAuthConsumer){
+    suspend fun saveConsumer(consumer: OAuthConsumer) {
         dataStore.edit { preferences ->
             preferences[OAUTH_CONSUMER_KEY] = consumer.key
             preferences[OAUTH_CONSUMER_SECRET] = consumer.secret
@@ -47,7 +47,7 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun saveOAuth1(token: OAuth1){
+    suspend fun saveOAuth1(token: OAuth1) {
         dataStore.edit { preferences ->
             preferences[OAUTH1_TOKEN] = Crypto.encrypt(token.token)
             preferences[OAUTH1_SECRET] = Crypto.encrypt(token.secret)

@@ -6,9 +6,8 @@ import androidx.room.PrimaryKey
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.presentation.profile.ProfileEvent
 
-@Entity(tableName="profiles")
+@Entity(tableName = "profiles")
 data class ProfileEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,

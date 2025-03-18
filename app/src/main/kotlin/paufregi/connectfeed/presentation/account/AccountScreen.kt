@@ -16,9 +16,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,7 +53,7 @@ internal fun AccountScreen(
     val viewModel = hiltViewModel<AccountViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    AccountContent(state, stravaAuthUri, viewModel::onEvent, nav)
+    AccountContent(state, stravaAuthUri, viewModel::onAction, nav)
 }
 
 @Preview
@@ -62,7 +62,7 @@ internal fun AccountScreen(
 internal fun AccountContent(
     @PreviewParameter(AccountStatePreview::class) state: AccountState,
     stravaAuthUri: Uri = Uri.EMPTY,
-    onEvent: (AccountEvent) -> Unit = {},
+    onAction: (AccountAction) -> Unit = {},
     nav: NavController = rememberNavController()
 ) {
     when (state.process) {
@@ -71,23 +71,25 @@ internal fun AccountContent(
             StatusInfo(
                 type = StatusInfoType.Success,
                 text = state.process.message ?: "All done",
-                actionButton = { Button(text = "Ok", onClick = { onEvent(AccountEvent.Reset) }) },
+                actionButton = { Button(text = "Ok", onClick = { onAction(AccountAction.Reset) }) },
                 paddingValues = it
             )
         }
+
         is ProcessState.Failure -> SimpleScaffold {
             StatusInfo(
                 type = StatusInfoType.Failure,
                 text = state.process.reason,
-                actionButton = { Button(text = "Ok", onClick = { onEvent(AccountEvent.Reset) }) },
+                actionButton = { Button(text = "Ok", onClick = { onAction(AccountAction.Reset) }) },
                 paddingValues = it
             )
         }
+
         is ProcessState.Idle -> NavigationScaffold(
             items = Navigation.items,
             selectedIndex = Navigation.ACCOUNT,
             nav = nav
-        ) { AccountForm(state, stravaAuthUri, onEvent, it) }
+        ) { AccountForm(state, stravaAuthUri, onAction, it) }
     }
 }
 
@@ -97,7 +99,7 @@ internal fun AccountContent(
 internal fun AccountForm(
     state: AccountState,
     stravaAuthUri: Uri,
-    onEvent: (AccountEvent) -> Unit = {},
+    onAction: (AccountAction) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     val context = LocalContext.current
@@ -108,7 +110,7 @@ internal fun AccountForm(
         ConfirmationDialog(
             title = "Sign out",
             message = "Are you sure you want to sign out?",
-            onConfirm = { onEvent(AccountEvent.SignOut) },
+            onConfirm = { onAction(AccountAction.SignOut) },
             onDismiss = { signOutDialog = false },
             modifier = Modifier.testTag("sign_out_dialog")
         )
@@ -118,7 +120,7 @@ internal fun AccountForm(
         ConfirmationDialog(
             title = "Disconnect Strava",
             message = "Are you sure you want to disconnect Strava?",
-            onConfirm = { onEvent(AccountEvent.StravaDisconnect) },
+            onConfirm = { onAction(AccountAction.StravaDisconnect) },
             onDismiss = { stravaDialog = false },
             modifier = Modifier.testTag("strava_dialog")
         )
@@ -137,14 +139,17 @@ internal fun AccountForm(
         AsyncImage(
             model = state.user?.profileImageUrl,
             contentDescription = null,
-            modifier = Modifier.scale(2f).clip(CircleShape).testTag("profileImage")
+            modifier = Modifier
+                .scale(2f)
+                .clip(CircleShape)
+                .testTag("profileImage")
         )
         Spacer(modifier = Modifier.size(42.dp))
         Text(text = state.user?.name ?: "", fontSize = 24.sp)
         Spacer(modifier = Modifier.size(24.dp))
         Button(
             text = "Refresh user",
-            onClick = { onEvent(AccountEvent.RefreshUser) }
+            onClick = { onAction(AccountAction.RefreshUser) }
         )
         if (state.hasStrava == true) {
             Button(

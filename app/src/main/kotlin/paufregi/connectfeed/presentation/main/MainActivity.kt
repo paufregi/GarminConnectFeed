@@ -24,7 +24,6 @@ import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
 import paufregi.connectfeed.presentation.ui.theme.Theme
 import javax.inject.Inject
 import javax.inject.Named
-import kotlin.getValue
 
 @AndroidEntryPoint
 @ExperimentalMaterial3Api
@@ -57,7 +56,12 @@ class MainActivity : ComponentActivity() {
                     }
                     navigation<Route.Home>(startDestination = Route.QuickEdit) {
                         composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }
-                        composable<Route.Account> { AccountScreen(stravaAuthUri = stravaAuthUri, nav = nav) }
+                        composable<Route.Account> {
+                            AccountScreen(
+                                stravaAuthUri = stravaAuthUri,
+                                nav = nav
+                            )
+                        }
                         navigation<Route.Profiles>(startDestination = Route.ProfileList) {
                             composable<Route.ProfileList> { ProfilesScreen(nav = nav) }
                             composable<Route.Profile> { ProfileScreen(nav = nav) }

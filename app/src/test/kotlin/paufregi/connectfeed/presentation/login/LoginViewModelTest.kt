@@ -57,7 +57,7 @@ class LoginViewModelTest {
     @Test
     fun `Set username`() = runTest {
         viewModel = LoginViewModel(signIn)
-        viewModel.onEvent(LoginEvent.SetUsername("user"))
+        viewModel.onAction(LoginAction.SetUsername("user"))
 
         viewModel.state.test {
             var state = awaitItem()
@@ -75,7 +75,7 @@ class LoginViewModelTest {
     @Test
     fun `Set password`() = runTest {
         viewModel = LoginViewModel(signIn)
-        viewModel.onEvent(LoginEvent.SetPassword("pass"))
+        viewModel.onAction(LoginAction.SetPassword("pass"))
 
         viewModel.state.test {
             var state = awaitItem()
@@ -93,7 +93,7 @@ class LoginViewModelTest {
     @Test
     fun `Show password`() = runTest {
         viewModel = LoginViewModel(signIn)
-        viewModel.onEvent(LoginEvent.ShowPassword(true))
+        viewModel.onAction(LoginAction.ShowPassword(true))
 
         viewModel.state.test {
             var state = awaitItem()
@@ -111,10 +111,10 @@ class LoginViewModelTest {
     @Test
     fun `Reset state`() = runTest {
         viewModel = LoginViewModel(signIn)
-        viewModel.onEvent(LoginEvent.SetUsername("user"))
-        viewModel.onEvent(LoginEvent.SetPassword("pass"))
-        viewModel.onEvent(LoginEvent.ShowPassword(true))
-        viewModel.onEvent(LoginEvent.Reset)
+        viewModel.onAction(LoginAction.SetUsername("user"))
+        viewModel.onAction(LoginAction.SetPassword("pass"))
+        viewModel.onAction(LoginAction.ShowPassword(true))
+        viewModel.onAction(LoginAction.Reset)
 
         viewModel.state.test {
             var state = awaitItem()
@@ -134,12 +134,12 @@ class LoginViewModelTest {
         val user = User("user", "avatar")
         coEvery { signIn(any(), any()) } returns Result.Success(user)
         viewModel = LoginViewModel(signIn)
-        viewModel.onEvent(LoginEvent.SetUsername("user"))
-        viewModel.onEvent(LoginEvent.SetPassword("pass"))
+        viewModel.onAction(LoginAction.SetUsername("user"))
+        viewModel.onAction(LoginAction.SetPassword("pass"))
 
         viewModel.state.test {
             assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
-            viewModel.onEvent(LoginEvent.SignIn)
+            viewModel.onAction(LoginAction.SignIn)
             var state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Success())
             assertThat(state.username).isEqualTo("user")
@@ -157,12 +157,12 @@ class LoginViewModelTest {
     fun `Sign in - failed`() = runTest {
         coEvery { signIn(any(), any()) } returns Result.Failure("error")
         viewModel = LoginViewModel(signIn)
-        viewModel.onEvent(LoginEvent.SetUsername("user"))
-        viewModel.onEvent(LoginEvent.SetPassword("pass"))
+        viewModel.onAction(LoginAction.SetUsername("user"))
+        viewModel.onAction(LoginAction.SetPassword("pass"))
 
         viewModel.state.test {
             assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
-            viewModel.onEvent(LoginEvent.SignIn)
+            viewModel.onAction(LoginAction.SignIn)
             var state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Failure("error"))
             assertThat(state.username).isEqualTo("user")

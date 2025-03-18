@@ -28,14 +28,18 @@ class AccountViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(AccountState())
 
-    val state = combine(_state, getUser(), isStravaLoggedIn()) { state, user, strava -> state.copy(user = user, hasStrava = strava) }
+    val state = combine(
+        _state,
+        getUser(),
+        isStravaLoggedIn()
+    ) { state, user, strava -> state.copy(user = user, hasStrava = strava) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), AccountState())
 
-    fun onEvent(event: AccountEvent) = when (event) {
-        is AccountEvent.RefreshUser -> refreshUser()
-        is AccountEvent.SignOut -> signOut()
-        is AccountEvent.StravaDisconnect -> signOutStrava()
-        is AccountEvent.Reset -> _state.update { AccountState() }
+    fun onAction(event: AccountAction) = when (event) {
+        is AccountAction.RefreshUser -> refreshUser()
+        is AccountAction.SignOut -> signOut()
+        is AccountAction.StravaDisconnect -> signOutStrava()
+        is AccountAction.Reset -> _state.update { AccountState() }
     }
 
     private fun refreshUser() = viewModelScope.launch {

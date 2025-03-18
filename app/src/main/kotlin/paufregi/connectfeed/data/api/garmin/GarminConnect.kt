@@ -3,12 +3,12 @@ package paufregi.connectfeed.data.api.garmin
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
+import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.Course
 import paufregi.connectfeed.data.api.garmin.models.EventType
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
-import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

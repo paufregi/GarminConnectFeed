@@ -5,8 +5,8 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
-class SaveProfile @Inject constructor (private val garminRepository: GarminRepository) {
-    suspend operator fun invoke(profile: Profile):Result<Unit> {
+class SaveProfile @Inject constructor(private val garminRepository: GarminRepository) {
+    suspend operator fun invoke(profile: Profile): Result<Unit> {
         if (profile.name.isBlank()) return Result.Failure("Name cannot be empty")
         if (profile.course != null) {
             if (!profile.activityType.allowCourseInProfile) return Result.Failure("Can't have course for ${profile.activityType.name} activity type")

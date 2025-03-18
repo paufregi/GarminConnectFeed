@@ -77,7 +77,7 @@ class AccountViewModelTest {
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
         viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
-        viewModel.onEvent(AccountEvent.RefreshUser)
+        viewModel.onAction(AccountAction.RefreshUser)
 
         viewModel.state.test {
             var state = awaitItem()
@@ -99,7 +99,7 @@ class AccountViewModelTest {
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
         viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
-        viewModel.onEvent(AccountEvent.RefreshUser)
+        viewModel.onAction(AccountAction.RefreshUser)
 
         viewModel.state.test {
             var state = awaitItem()
@@ -121,7 +121,7 @@ class AccountViewModelTest {
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
         viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
-        viewModel.onEvent(AccountEvent.SignOut)
+        viewModel.onAction(AccountAction.SignOut)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -144,7 +144,7 @@ class AccountViewModelTest {
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
         viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
-        viewModel.onEvent(AccountEvent.StravaDisconnect)
+        viewModel.onAction(AccountAction.StravaDisconnect)
 
         viewModel.state.test {
             val state = awaitItem()

@@ -46,5 +46,5 @@ class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
             ),
         ),
 
-    )
+        )
 }

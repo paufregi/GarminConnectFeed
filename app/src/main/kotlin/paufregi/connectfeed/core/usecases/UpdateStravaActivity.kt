@@ -6,16 +6,22 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
-class UpdateStravaActivity @Inject constructor (private val garminRepository: GarminRepository) {
+class UpdateStravaActivity @Inject constructor(private val garminRepository: GarminRepository) {
     suspend operator fun invoke(
         activity: Activity?,
         stravaActivity: Activity?,
         profile: Profile?,
         description: String?,
-    ):Result<Unit> {
+    ): Result<Unit> {
         if (stravaActivity == null || profile == null) return Result.Failure("Validation error")
         val name = if (profile.rename) profile.name else activity?.name
-        val completeDescription = if (profile.trainingEffect == true && activity?.trainingEffect != null) "$description\n\nTraining: ${activity.trainingEffect.replace("_", "")}" else description
+        val completeDescription =
+            if (profile.trainingEffect == true && activity?.trainingEffect != null) "$description\n\nTraining: ${
+                activity.trainingEffect.replace(
+                    "_",
+                    ""
+                )
+            }" else description
         val commute = profile.eventType?.let { it.id == 5L } // EventType: transportation
 
         return garminRepository.updateStravaActivity(

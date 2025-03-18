@@ -12,11 +12,11 @@ import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Named
 
-class SyncWeight @Inject constructor (
+class SyncWeight @Inject constructor(
     private val garminRepository: GarminRepository,
     @Named("tempFolder") val folder: File
 ) {
-    suspend operator fun invoke(inputStream: InputStream):Result<Unit> {
+    suspend operator fun invoke(inputStream: InputStream): Result<Unit> {
         val weights = RenphoReader.read(inputStream)
 
         val dateFormatter = Formatter.dateTimeForFilename(ZoneId.systemDefault())

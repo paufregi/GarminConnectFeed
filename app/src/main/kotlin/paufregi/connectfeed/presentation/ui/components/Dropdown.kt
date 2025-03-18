@@ -22,7 +22,6 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.utils.Formatter
-import kotlin.String
 
 data class DropdownItem(
     val text: String,
@@ -82,13 +81,15 @@ fun Dropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    ExposedDropdownMenuBox (
+    ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
         modifier = modifier
     ) {
         TextField(
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                .fillMaxWidth(),
             label = label,
             value = selected?.text ?: "",
             supportingText = { DistanceText(selected?.distance) },
@@ -103,8 +104,8 @@ fun Dropdown(
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-        ){
-            items.forEach{
+        ) {
+            items.forEach {
                 DropdownMenuItem(
                     text = { Text(it.text) },
                     leadingIcon = { ActivityIcon(it.activityType) },

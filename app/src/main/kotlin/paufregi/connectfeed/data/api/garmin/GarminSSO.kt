@@ -51,7 +51,7 @@ interface GarminSSO {
             "redirectAfterAccountCreationUrl" to "https://sso.garmin.com/sso/embed",
         )
 
-        fun client(url: String): GarminSSO  {
+        fun client(url: String): GarminSSO {
             return Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(GarminConverterFactory())

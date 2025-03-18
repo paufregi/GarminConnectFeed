@@ -51,7 +51,7 @@ internal fun LoginScreen(
     val viewModel = hiltViewModel<LoginViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    SimpleScaffold { LoginContent(state, viewModel::onEvent, onLogin, it) }
+    SimpleScaffold { LoginContent(state, viewModel::onAction, onLogin, it) }
 }
 
 @Preview
@@ -59,7 +59,7 @@ internal fun LoginScreen(
 @ExperimentalMaterial3Api
 internal fun LoginContent(
     @PreviewParameter(LoginContentStatePreview::class) state: LoginState,
-    onEvent: (LoginEvent) -> Unit = {},
+    onAction: (LoginAction) -> Unit = {},
     onLogin: () -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
@@ -71,13 +71,15 @@ internal fun LoginContent(
             actionButton = { Button(text = "Ok", onClick = onLogin) },
             paddingValues = paddingValues
         )
+
         is ProcessState.Failure -> StatusInfo(
             type = StatusInfoType.Failure,
             text = state.process.reason,
-            actionButton = { Button(text = "Ok", onClick = { onEvent(LoginEvent.Reset) }) },
+            actionButton = { Button(text = "Ok", onClick = { onAction(LoginAction.Reset) }) },
             paddingValues = paddingValues
         )
-        is ProcessState.Idle -> LoginForm(state, onEvent, paddingValues)
+
+        is ProcessState.Idle -> LoginForm(state, onAction, paddingValues)
     }
 }
 
@@ -100,7 +102,9 @@ fun WelcomeInfo(
         AsyncImage(
             model = url,
             contentDescription = null,
-            modifier = Modifier.scale(2f).clip(CircleShape)
+            modifier = Modifier
+                .scale(2f)
+                .clip(CircleShape)
         )
         Spacer(modifier = Modifier.size(42.dp))
         Text(text = "Welcome $name", fontSize = 24.sp)
@@ -114,7 +118,7 @@ fun WelcomeInfo(
 @ExperimentalMaterial3Api
 internal fun LoginForm(
     @PreviewParameter(LoginFormStatePreview::class) state: LoginState,
-    onEvent: (LoginEvent) -> Unit = {},
+    onAction: (LoginAction) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -133,20 +137,20 @@ internal fun LoginForm(
             label = { Text("Username") },
             value = state.username,
             modifier = Modifier.fillMaxWidth(),
-            onValueChange = { onEvent(LoginEvent.SetUsername(it)) },
+            onValueChange = { onAction(LoginAction.SetUsername(it)) },
             isError = state.username.isBlank(),
         )
         TextField(
             label = { Text("Password") },
             value = state.password,
-            onValueChange =  { onEvent(LoginEvent.SetPassword(it)) },
+            onValueChange = { onAction(LoginAction.SetPassword(it)) },
             isError = state.password.isBlank(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 Button(
-                    onClick = { onEvent(LoginEvent.ShowPassword(!state.showPassword)) },
+                    onClick = { onAction(LoginAction.ShowPassword(!state.showPassword)) },
                     icon = if (state.showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                     description = if (state.showPassword) "Hide password" else "Show password"
                 )
@@ -162,7 +166,7 @@ internal fun LoginForm(
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()
-                    onEvent(LoginEvent.SignIn)
+                    onAction(LoginAction.SignIn)
                 }
             )
         }

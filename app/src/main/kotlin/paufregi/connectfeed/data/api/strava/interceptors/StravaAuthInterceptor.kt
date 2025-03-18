@@ -18,7 +18,7 @@ class StravaAuthInterceptor @Inject constructor(
     private val stravaRepo: StravaAuthRepository,
     @Named("StravaClientId") val clientId: String,
     @Named("StravaClientSecret") val clientSecret: String,
-): Interceptor {
+) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()

@@ -53,7 +53,11 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun authorize(username: String, password: String, consumer: OAuthConsumer): Result<OAuth1> {
+    suspend fun authorize(
+        username: String,
+        password: String,
+        consumer: OAuthConsumer
+    ): Result<OAuth1> {
         val resCSRF = garminSSO.getCSRF()
         if (!resCSRF.isSuccessful) return Result.Failure("Problem with the login page")
         val csrf = resCSRF.body()!!
