@@ -26,7 +26,7 @@ object SportTypeConverter {
         "Pickleball" -> ActivityType.Unknown
         "Pilates" -> ActivityType.Unknown
         "Racquetball" -> ActivityType.Unknown
-        "Ride" ->   ActivityType.Cycling
+        "Ride" -> ActivityType.Cycling
         "RockClimbing" -> ActivityType.Unknown
         "RollerSki" -> ActivityType.Unknown
         "Rowing" -> ActivityType.Unknown

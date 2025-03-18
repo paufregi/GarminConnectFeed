@@ -40,7 +40,7 @@ interface StravaAuth {
     companion object {
         const val BASE_URL = "https://www.strava.com"
 
-        fun client(url: String): StravaAuth  {
+        fun client(url: String): StravaAuth {
             return Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create())

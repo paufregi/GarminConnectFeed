@@ -10,11 +10,10 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import paufregi.connectfeed.presentation.ui.theme.Theme
-import kotlin.getValue
 
 @AndroidEntryPoint
 @ExperimentalMaterial3Api
-class StravaActivity: ComponentActivity() {
+class StravaActivity : ComponentActivity() {
     private val viewModel: StravaViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {

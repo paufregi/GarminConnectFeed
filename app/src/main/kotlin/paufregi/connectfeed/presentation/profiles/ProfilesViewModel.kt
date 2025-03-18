@@ -17,12 +17,12 @@ class ProfilesViewModel @Inject constructor(
     val deleteProfile: DeleteProfile
 ) : ViewModel() {
     val state = getProfiles()
-        .map {  ProfilesState(profiles = it) }
+        .map { ProfilesState(profiles = it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), ProfilesState())
 
-    fun onEvent(event: ProfileEvent) {
+    fun onAction(event: ProfileAction) {
         when (event) {
-            is ProfileEvent.Delete -> viewModelScope.launch { deleteProfile(event.profile) }
+            is ProfileAction.Delete -> viewModelScope.launch { deleteProfile(event.profile) }
         }
     }
 }

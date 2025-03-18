@@ -1,6 +1,7 @@
 package paufregi.connectfeed.di
 
 import android.net.Uri
+import androidx.core.net.toUri
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,7 +11,6 @@ import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.StravaAuth
 import javax.inject.Named
 import javax.inject.Singleton
-import androidx.core.net.toUri
 
 @Module
 @InstallIn(SingletonComponent::class)

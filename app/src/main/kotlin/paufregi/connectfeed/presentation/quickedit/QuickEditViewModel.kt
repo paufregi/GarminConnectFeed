@@ -27,32 +27,35 @@ class QuickEditViewModel @Inject constructor(
     val updateStravaActivity: UpdateStravaActivity
 ) : ViewModel() {
     private val _state = MutableStateFlow(QuickEditState())
-    val state = combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles) }
-        .onStart { load() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), QuickEditState())
+    val state =
+        combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles) }
+            .onStart { load() }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), QuickEditState())
 
-    fun onEvent(event: QuickEditEvent) = when (event) {
-        is QuickEditEvent.SetActivity -> _state.update {
+    fun onAction(event: QuickEditAction) = when (event) {
+        is QuickEditAction.SetActivity -> _state.update {
             it.copy(
                 activity = event.activity,
                 stravaActivity = if (it.stravaActivity?.type != event.activity.type) null else it.stravaActivity,
                 profile = if (it.profile?.activityType != event.activity.type) null else it.profile,
             )
         }
-        is QuickEditEvent.SetStravaActivity -> _state.update {
+
+        is QuickEditAction.SetStravaActivity -> _state.update {
             it.copy(
                 stravaActivity = event.activity,
                 activity = if (it.activity?.type != event.activity.type) null else it.activity,
                 profile = if (it.profile?.activityType != event.activity.type) null else it.profile,
             )
         }
-        is QuickEditEvent.SetProfile -> _state.update { it.copy( profile = event.profile ) }
-        is QuickEditEvent.SetDescription -> _state.update { it.copy( description = event.description ) }
-        is QuickEditEvent.SetWater -> _state.update { it.copy( profile = it.profile?.copy(water = event.water) ) }
-        is QuickEditEvent.SetEffort -> _state.update { it.copy( effort = if (event.effort == 0f) null else event.effort ) }
-        is QuickEditEvent.SetFeel -> _state.update { it.copy( feel = event.feel ) }
-        is QuickEditEvent.Save -> saveActivity()
-        is QuickEditEvent.Restart -> {
+
+        is QuickEditAction.SetProfile -> _state.update { it.copy(profile = event.profile) }
+        is QuickEditAction.SetDescription -> _state.update { it.copy(description = event.description) }
+        is QuickEditAction.SetWater -> _state.update { it.copy(profile = it.profile?.copy(water = event.water)) }
+        is QuickEditAction.SetEffort -> _state.update { it.copy(effort = if (event.effort == 0f) null else event.effort) }
+        is QuickEditAction.SetFeel -> _state.update { it.copy(feel = event.feel) }
+        is QuickEditAction.Save -> saveActivity()
+        is QuickEditAction.Restart -> {
             _state.update { QuickEditState() }
             load()
         }
@@ -71,7 +74,10 @@ class QuickEditViewModel @Inject constructor(
             .onFailure { errors.add("Strava activities") }
 
         when (errors.isNotEmpty()) {
-            true -> _state.update { it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}")) }
+            true -> _state.update {
+                it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}"))
+            }
+
             false -> _state.update { it.copy(process = ProcessState.Idle) }
         }
     }
@@ -86,7 +92,7 @@ class QuickEditViewModel @Inject constructor(
             effort = state.value.effort
         ).onFailure { errors.add("Garmin") }
 
-        if (state.value.stravaActivities.isNotEmpty() &&  state.value.stravaActivity != null) {
+        if (state.value.stravaActivities.isNotEmpty() && state.value.stravaActivity != null) {
             updateStravaActivity(
                 activity = state.value.activity,
                 stravaActivity = state.value.stravaActivity,
@@ -97,7 +103,9 @@ class QuickEditViewModel @Inject constructor(
 
         when (errors.isNotEmpty()) {
             false -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
-            true -> _state.update { it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")} activity")) }
+            true -> _state.update {
+                it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")} activity"))
+            }
         }
     }
 }

@@ -57,7 +57,7 @@ internal fun ProfilesScreen(
             ) { Icon(Icons.Default.Add, "Create profile") }
         }
     ) {
-        ProfilesContent(state, viewModel::onEvent, nav)
+        ProfilesContent(state, viewModel::onAction, nav)
     }
 }
 
@@ -66,7 +66,7 @@ internal fun ProfilesScreen(
 @ExperimentalMaterial3Api
 internal fun ProfilesContent(
     @PreviewParameter(ProfilesStatePreview::class) state: ProfilesState,
-    onEvent: (ProfileEvent) -> Unit = {},
+    onAction: (ProfileAction) -> Unit = {},
     nav: NavHostController = rememberNavController(),
     paddingValues: PaddingValues = PaddingValues(),
 ) {
@@ -81,7 +81,9 @@ internal fun ProfilesContent(
             .verticalScroll(rememberScrollState())
             .testTag("profiles_content")
     ) {
-        if (state.profiles.isEmpty()) { Text("No profile") }
+        if (state.profiles.isEmpty()) {
+            Text("No profile")
+        }
         state.profiles.fastForEachIndexed { index, it ->
             Card(
                 modifier = Modifier
@@ -98,7 +100,7 @@ internal fun ProfilesContent(
                     Spacer(modifier = Modifier.weight(1f))
                     Button(
                         icon = Icons.Default.Delete,
-                        onClick = { onEvent(ProfileEvent.Delete(it)) },
+                        onClick = { onAction(ProfileAction.Delete(it)) },
                         modifier = Modifier.testTag("delete_profile_${it.id}")
                     )
                 }

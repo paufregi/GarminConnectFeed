@@ -5,7 +5,7 @@ import paufregi.connectfeed.data.repository.StravaAuthRepository
 import javax.inject.Inject
 import javax.inject.Named
 
-class StravaCodeExchange @Inject constructor (
+class StravaCodeExchange @Inject constructor(
     private val stravaAuthRepository: StravaAuthRepository,
     @Named("StravaClientId") val clientId: String,
     @Named("StravaClientSecret") val clientSecret: String,

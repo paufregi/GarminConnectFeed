@@ -19,7 +19,7 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.usecases.DeleteProfile
 import paufregi.connectfeed.core.usecases.GetProfiles
-import paufregi.connectfeed.presentation.profiles.ProfileEvent
+import paufregi.connectfeed.presentation.profiles.ProfileAction
 import paufregi.connectfeed.presentation.profiles.ProfilesViewModel
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
@@ -91,7 +91,7 @@ class ProfilesViewModelTest {
         viewModel.state.test {
             var state = awaitItem()
             assertThat(state.profiles).isEqualTo(profiles)
-            viewModel.onEvent(ProfileEvent.Delete(profiles[0]))
+            viewModel.onAction(ProfileAction.Delete(profiles[0]))
             cancelAndIgnoreRemainingEvents()
         }
 

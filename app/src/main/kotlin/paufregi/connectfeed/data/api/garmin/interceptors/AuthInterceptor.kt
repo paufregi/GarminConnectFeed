@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(
     private val authRepository: AuthRepository
-): Interceptor {
+) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
@@ -31,8 +31,10 @@ class AuthInterceptor @Inject constructor(
         val oAuth2 = authRepository.getOAuth2().firstOrNull()
         if (oAuth2 != null && !oAuth2.isExpired()) return Result.Success(oAuth2)
 
-        val consumer = authRepository.getOrFetchConsumer() ?: return Result.Failure("Could not get OAuth Consumer")
-        val oAuth1 = authRepository.getOAuth1().firstOrNull() ?: return Result.Failure("No OAuth1 token found")
+        val consumer = authRepository.getOrFetchConsumer()
+            ?: return Result.Failure("Could not get OAuth Consumer")
+        val oAuth1 = authRepository.getOAuth1().firstOrNull()
+            ?: return Result.Failure("No OAuth1 token found")
 
         val resOAuth2 = authRepository.exchange(consumer, oAuth1)
             .onSuccess { authRepository.saveOAuth2(it) }

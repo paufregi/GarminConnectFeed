@@ -30,7 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.presentation.Route
 
-data class NavigationItem (
+data class NavigationItem(
     val label: String,
     val icon: ImageVector,
     val route: Route,

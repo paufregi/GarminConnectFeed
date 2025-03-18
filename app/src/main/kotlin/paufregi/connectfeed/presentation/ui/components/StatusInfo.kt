@@ -21,25 +21,21 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 
 sealed class StatusInfoType(
     val icon: ImageVector,
     val color: Color
-){
-    object Success: StatusInfoType(Icons.Default.CheckCircleOutline, Color.Green)
-    object Failure: StatusInfoType(Icons.Default.WarningAmber, Color.Red)
-    object Unknown: StatusInfoType(Icons.Default.WarningAmber, Color.DarkGray)
+) {
+    object Success : StatusInfoType(Icons.Default.CheckCircleOutline, Color.Green)
+    object Failure : StatusInfoType(Icons.Default.WarningAmber, Color.Red)
+    object Unknown : StatusInfoType(Icons.Default.WarningAmber, Color.DarkGray)
 }
 
-@Preview
 @Composable
 @ExperimentalMaterial3Api
 fun StatusInfo(
-    @PreviewParameter(StatusInfoTypePreview::class) type: StatusInfoType,
+    type: StatusInfoType,
     text: String = "",
     actionButton: @Composable () -> Unit = { },
     paddingValues: PaddingValues = PaddingValues()
@@ -58,15 +54,12 @@ fun StatusInfo(
             modifier = Modifier.scale(2.5f)
         )
         Spacer(modifier = Modifier.height(20.dp))
-        Text(text = text, color = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.testTag("status_info_text"))
+        Text(
+            text = text,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.testTag("status_info_text")
+        )
         Spacer(modifier = Modifier.height(50.dp))
         actionButton()
     }
-}
-
-private class StatusInfoTypePreview : PreviewParameterProvider<StatusInfoType> {
-    override val values = sequenceOf(
-        StatusInfoType.Success,
-        StatusInfoType.Failure,
-    )
 }

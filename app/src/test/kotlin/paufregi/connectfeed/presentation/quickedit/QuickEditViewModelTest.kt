@@ -134,7 +134,7 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+            viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -164,7 +164,7 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
+            viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -194,9 +194,9 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+            viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
             awaitItem() // skip
-            viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
+            viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -226,9 +226,9 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[1]))
+            viewModel.onAction(QuickEditAction.SetProfile(profiles[1]))
             awaitItem() // skip
-            viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
+            viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -257,9 +257,9 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+            viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
             awaitItem() // skip
-            viewModel.onEvent(QuickEditEvent.SetWater(100))
+            viewModel.onAction(QuickEditAction.SetWater(100))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -289,7 +289,7 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(QuickEditEvent.SetEffort(50f))
+            viewModel.onAction(QuickEditAction.SetEffort(50f))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -319,7 +319,7 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(QuickEditEvent.SetFeel(50f))
+            viewModel.onAction(QuickEditAction.SetFeel(50f))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -351,19 +351,19 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             awaitItem() // skip initial state
-            viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
+            viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
             awaitItem() // skip
-            viewModel.onEvent(QuickEditEvent.SetStravaActivity(stravaActivities[0]))
+            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
             awaitItem() // skip
-            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+            viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
             awaitItem() // skip
-            viewModel.onEvent(QuickEditEvent.SetEffort(80f))
+            viewModel.onAction(QuickEditAction.SetEffort(80f))
             awaitItem() // skip
-            viewModel.onEvent(QuickEditEvent.SetFeel(50f))
+            viewModel.onAction(QuickEditAction.SetFeel(50f))
             awaitItem() // skip
-            viewModel.onEvent(QuickEditEvent.SetDescription("description"))
+            viewModel.onAction(QuickEditAction.SetDescription("description"))
             awaitItem() // skip
-            viewModel.onEvent(QuickEditEvent.Save)
+            viewModel.onAction(QuickEditAction.Save)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Success("Activity updated"))
             assertThat(state.activities).isEqualTo(activities)
@@ -410,19 +410,19 @@ class QuickEditViewModelTest {
 
             viewModel.state.test {
                 awaitItem() // skip initial state
-                viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
+                viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetStravaActivity(stravaActivities[0]))
+                viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+                viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetEffort(80f))
+                viewModel.onAction(QuickEditAction.SetEffort(80f))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetFeel(50f))
+                viewModel.onAction(QuickEditAction.SetFeel(50f))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetDescription("description"))
+                viewModel.onAction(QuickEditAction.SetDescription("description"))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.Save)
+                viewModel.onAction(QuickEditAction.Save)
                 val state = awaitItem()
                 assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't update Garmin activity"))
                 assertThat(state.activities).isEqualTo(activities)
@@ -470,19 +470,19 @@ class QuickEditViewModelTest {
 
             viewModel.state.test {
                 awaitItem() // skip initial state
-                viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
+                viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetStravaActivity(stravaActivities[0]))
+                viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+                viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetEffort(80f))
+                viewModel.onAction(QuickEditAction.SetEffort(80f))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetFeel(50f))
+                viewModel.onAction(QuickEditAction.SetFeel(50f))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetDescription("description"))
+                viewModel.onAction(QuickEditAction.SetDescription("description"))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.Save)
+                viewModel.onAction(QuickEditAction.Save)
                 val state = awaitItem()
                 assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't update Strava activity"))
                 assertThat(state.activities).isEqualTo(activities)
@@ -530,19 +530,19 @@ class QuickEditViewModelTest {
 
             viewModel.state.test {
                 awaitItem() // skip initial state
-                viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
+                viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetStravaActivity(stravaActivities[0]))
+                viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+                viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetEffort(80f))
+                viewModel.onAction(QuickEditAction.SetEffort(80f))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetFeel(50f))
+                viewModel.onAction(QuickEditAction.SetFeel(50f))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.SetDescription("description"))
+                viewModel.onAction(QuickEditAction.SetDescription("description"))
                 awaitItem() // skip
-                viewModel.onEvent(QuickEditEvent.Save)
+                viewModel.onAction(QuickEditAction.Save)
                 val state = awaitItem()
                 assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't update Garmin & Strava activity"))
                 assertThat(state.activities).isEqualTo(activities)

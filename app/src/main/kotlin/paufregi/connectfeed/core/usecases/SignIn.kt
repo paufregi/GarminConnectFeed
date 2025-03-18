@@ -6,7 +6,7 @@ import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
-class SignIn @Inject constructor (
+class SignIn @Inject constructor(
     private val garminRepository: GarminRepository,
     private val authRepository: AuthRepository,
 ) {

@@ -4,12 +4,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.GarminAuth1
 import paufregi.connectfeed.data.api.garmin.GarminAuth2
+import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.GarminSSO
 import paufregi.connectfeed.data.api.garmin.Garth
-import paufregi.connectfeed.data.api.strava.StravaAuth
 import javax.inject.Named
 import javax.inject.Singleton
 

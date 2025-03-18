@@ -32,7 +32,7 @@ interface Strava {
     companion object {
         const val BASE_URL = "https://www.strava.com/api/v3/"
 
-        fun client(authInterceptor: StravaAuthInterceptor, url: String): Strava  {
+        fun client(authInterceptor: StravaAuthInterceptor, url: String): Strava {
             val client = OkHttpClient.Builder().addInterceptor(authInterceptor)
 
             return Retrofit.Builder()

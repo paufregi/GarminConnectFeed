@@ -1,7 +1,7 @@
 package paufregi.connectfeed.data.database.coverters
 
-import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.data.database.entities.ProfileEntity
 
 fun Profile.toEntity() = ProfileEntity(
     id = id,

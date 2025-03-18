@@ -15,7 +15,7 @@ data class ActivityType(
 ) {
     fun toCore(): CoreActivityType = when (this.id) {
         1L -> CoreActivityType.Running
-        2L,10L -> CoreActivityType.Cycling
+        2L, 10L -> CoreActivityType.Cycling
         3L -> CoreActivityType.Hiking
         4L -> CoreActivityType.Other
         6L -> CoreActivityType.TrailRunning
@@ -23,7 +23,7 @@ data class ActivityType(
         13L -> CoreActivityType.Strength
         18L -> CoreActivityType.TreadmillRunning
         25L -> CoreActivityType.IndoorCycling
-        26L,27L -> CoreActivityType.Swimming
+        26L, 27L -> CoreActivityType.Swimming
         28L -> CoreActivityType.OpenWaterSwimming
         176L -> CoreActivityType.EBiking
         163L -> CoreActivityType.Yoga

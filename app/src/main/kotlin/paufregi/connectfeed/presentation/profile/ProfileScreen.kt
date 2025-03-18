@@ -50,8 +50,7 @@ internal fun ProfileScreen(
     val viewModel = hiltViewModel<ProfileViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-
-    ProfileContent(state, viewModel::onEvent, nav)
+    ProfileContent(state, viewModel::onAction, nav)
 }
 
 @Preview
@@ -59,7 +58,7 @@ internal fun ProfileScreen(
 @ExperimentalMaterial3Api
 internal fun ProfileContent(
     @PreviewParameter(ProfileStatePreview::class) state: ProfileState,
-    onEvent: (ProfileEvent) -> Unit = {},
+    onAction: (ProfileAction) -> Unit = {},
     nav: NavHostController = rememberNavController()
 ) {
     when (state.process) {
@@ -72,6 +71,7 @@ internal fun ProfileContent(
                 paddingValues = it
             )
         }
+
         is ProcessState.Failure -> SimpleScaffold {
             StatusInfo(
                 type = StatusInfoType.Failure,
@@ -80,11 +80,12 @@ internal fun ProfileContent(
                 paddingValues = it
             )
         }
+
         is ProcessState.Idle -> NavigationScaffold(
             items = Navigation.items,
             selectedIndex = Navigation.PROFILES,
             nav = nav
-        ) { ProfileForm(state, onEvent, nav, it) }
+        ) { ProfileForm(state, onAction, nav, it) }
     }
 }
 
@@ -93,7 +94,7 @@ internal fun ProfileContent(
 @ExperimentalMaterial3Api
 internal fun ProfileForm(
     @PreviewParameter(ProfileStatePreview::class) state: ProfileState,
-    onEvent: (ProfileEvent) -> Unit = {},
+    onAction: (ProfileAction) -> Unit = {},
     nav: NavHostController = rememberNavController(),
     paddingValues: PaddingValues = PaddingValues()
 ) {
@@ -113,7 +114,7 @@ internal fun ProfileForm(
         TextField(
             label = { Text("Name") },
             value = state.profile.name,
-            onValueChange = { onEvent(ProfileEvent.SetName(it)) },
+            onValueChange = { onAction(ProfileAction.SetName(it)) },
             isError = state.profile.name.isBlank(),
             modifier = Modifier.fillMaxWidth()
         )
@@ -122,7 +123,7 @@ internal fun ProfileForm(
             selected = state.profile.activityType.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
             items = state.activityTypes.map {
-                it.toDropdownItem { onEvent(ProfileEvent.SetActivityType(it)) }
+                it.toDropdownItem { onAction(ProfileAction.SetActivityType(it)) }
             }
         )
         Dropdown(
@@ -131,7 +132,7 @@ internal fun ProfileForm(
             modifier = Modifier.fillMaxWidth(),
             items = state.eventTypes.map {
                 it.toDropdownItem {
-                    onEvent(ProfileEvent.SetEventType(it))
+                    onAction(ProfileAction.SetEventType(it))
                 }
             },
             isError = state.profile.activityType != ActivityType.Any && state.profile.eventType == null
@@ -145,14 +146,14 @@ internal fun ProfileForm(
                 items = state.courses
                     .filter { it.type == state.profile.activityType || state.profile.activityType == ActivityType.Any }
                     .map {
-                        it.toDropdownItem { onEvent(ProfileEvent.SetCourse(it)) }
+                        it.toDropdownItem { onAction(ProfileAction.SetCourse(it)) }
                     }
             )
         }
         TextField(
             label = { Text("Water") },
             value = state.profile.water?.toString() ?: "",
-            onValueChange = { onEvent(ProfileEvent.SetWater(it.toIntOrNull()))   },
+            onValueChange = { onAction(ProfileAction.SetWater(it.toIntOrNull())) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
         )
@@ -162,61 +163,69 @@ internal fun ProfileForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(onClick = {
-                    onEvent(ProfileEvent.SetRename(!state.profile.rename))
+                    onAction(ProfileAction.SetRename(!state.profile.rename))
                 })
         ) {
             Checkbox(
                 modifier = Modifier.testTag("rename_checkbox"),
                 checked = state.profile.rename,
-                onCheckedChange = { onEvent(ProfileEvent.SetRename(it)) },
+                onCheckedChange = { onAction(ProfileAction.SetRename(it)) },
             )
             Text("Rename activity")
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().clickable(
-                onClick = { onEvent(ProfileEvent.SetCustomWater(!state.profile.customWater)) }
-            )
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    onClick = { onAction(ProfileAction.SetCustomWater(!state.profile.customWater)) }
+                )
         ) {
             Checkbox(
                 modifier = Modifier.testTag("custom_water_checkbox"),
                 checked = state.profile.customWater,
-                onCheckedChange = { onEvent(ProfileEvent.SetCustomWater(it)) },
+                onCheckedChange = { onAction(ProfileAction.SetCustomWater(it)) },
             )
             Text("Customizable water")
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().clickable(
-                onClick = { onEvent(ProfileEvent.SetFeelAndEffort(!state.profile.feelAndEffort)) }
-            )
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    onClick = { onAction(ProfileAction.SetFeelAndEffort(!state.profile.feelAndEffort)) }
+                )
         ) {
             Checkbox(
                 modifier = Modifier.testTag("feel_and_effort_checkbox"),
                 checked = state.profile.feelAndEffort,
-                onCheckedChange = { onEvent(ProfileEvent.SetFeelAndEffort(it)) },
+                onCheckedChange = { onAction(ProfileAction.SetFeelAndEffort(it)) },
             )
             Text(text = "Feel & Effort")
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().clickable(
-                onClick = { onEvent(ProfileEvent.SetTrainingEffect(!state.profile.trainingEffect)) }
-            )
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    onClick = { onAction(ProfileAction.SetTrainingEffect(!state.profile.trainingEffect)) }
+                )
         ) {
             Checkbox(
                 modifier = Modifier.testTag("training_effect_checkbox"),
                 checked = state.profile.trainingEffect,
-                onCheckedChange = { onEvent(ProfileEvent.SetTrainingEffect(it)) },
+                onCheckedChange = { onAction(ProfileAction.SetTrainingEffect(it)) },
             )
             Text(text = "Training effect")
         }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
         ) {
             Button(
                 text = "Cancel",
@@ -230,7 +239,8 @@ internal fun ProfileForm(
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()
-                    onEvent(ProfileEvent.Save) }
+                    onAction(ProfileAction.Save)
+                }
             )
         }
     }
