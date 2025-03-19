@@ -8,7 +8,7 @@ sealed class ActivityType(val name: String, val order: Int, val allowCourseInPro
     data object Cycling : ActivityType("Cycling", 5, true)
     data object IndoorCycling : ActivityType("Indoor Cycling", 6, false)
     data object EBiking : ActivityType("eBiking", 7, true)
-    data object Swimming : ActivityType("Swimming", 8, true)
+    data object Swimming : ActivityType("Swimming", 8, false)
     data object OpenWaterSwimming : ActivityType("Open Water Swimming", 9, false)
     data object Strength : ActivityType("Strength", 10, false)
     data object Walking : ActivityType("Walking", 11, true)
