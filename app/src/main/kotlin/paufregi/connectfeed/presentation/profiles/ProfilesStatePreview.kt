@@ -14,7 +14,7 @@ class ProfilesStatePreview : PreviewParameterProvider<ProfilesState> {
                 Profile(
                     name = "Commute to home",
                     rename = true,
-                    eventType = EventType(1, "transportation"),
+                    eventType = EventType.Transportation,
                     activityType = ActivityType.Cycling,
                     course = Course(1, "Commute to home", 10.0, ActivityType.Cycling),
                     water = 550
@@ -22,7 +22,7 @@ class ProfilesStatePreview : PreviewParameterProvider<ProfilesState> {
                 Profile(
                     name = "Ponsonby/Westhaven",
                     rename = true,
-                    eventType = EventType(2, "training"),
+                    eventType = EventType.Transportation,
                     activityType = ActivityType.Running,
                     course = Course(2, "Ponsonby/Westhaven", 10.0, ActivityType.Running)
                 ),

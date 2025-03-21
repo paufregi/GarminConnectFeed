@@ -41,72 +41,37 @@ class ProfileViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), ProfileState())
 
     private fun load() = viewModelScope.launch {
-        _state.update { it.copy(process = ProcessState.Processing) }
-        var errors = mutableListOf<String>()
-
         _state.update {
             it.copy(
+                process = ProcessState.Processing,
                 profile = getProfile(profileId) ?: Profile(),
-                activityTypes = getActivityTypes()
+                activityTypes = getActivityTypes(),
+                eventTypes = getEventTypes()
             )
         }
 
-        getEventTypes()
-            .onSuccess { data -> _state.update { it.copy(eventTypes = data) } }
-            .onFailure { errors.add("event types") }
-
         getCourses()
-            .onSuccess { data -> _state.update { it.copy(courses = data) } }
-            .onFailure { errors.add("courses") }
+            .onSuccess { data -> _state.update { it.copy(courses = data, process = ProcessState.Idle) } }
+            .onFailure { _state.update { it.copy(process = ProcessState.Failure("Couldn't load courses")) } }
 
-        when (errors.isNotEmpty()) {
-            true -> _state.update {
-                it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}"))
-            }
-
-            false -> _state.update { it.copy(process = ProcessState.Idle) }
-        }
     }
 
     fun onAction(event: ProfileAction) = when (event) {
         is ProfileAction.SetName -> _state.update { it.copy(profile = it.profile.copy(name = event.name)) }
         is ProfileAction.SetActivityType -> _state.update {
-            it.copy(
-                profile = it.profile.copy(
-                    activityType = event.activityType,
-                    course = if (event.activityType == it.profile.course?.type) it.profile.course else null,
-                ),
-            )
+            it.copy(profile = it.profile.copy(
+                activityType = event.activityType,
+                course = if (event.activityType == it.profile.course?.type) it.profile.course else null,
+            ))
         }
 
         is ProfileAction.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = event.eventType)) }
         is ProfileAction.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = event.course)) }
         is ProfileAction.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = event.water)) }
         is ProfileAction.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = event.rename)) }
-        is ProfileAction.SetCustomWater -> _state.update {
-            it.copy(
-                profile = it.profile.copy(
-                    customWater = event.customWater
-                )
-            )
-        }
-
-        is ProfileAction.SetFeelAndEffort -> _state.update {
-            it.copy(
-                profile = it.profile.copy(
-                    feelAndEffort = event.feelAndEffort
-                )
-            )
-        }
-
-        is ProfileAction.SetTrainingEffect -> _state.update {
-            it.copy(
-                profile = it.profile.copy(
-                    trainingEffect = event.trainingEffect
-                )
-            )
-        }
-
+        is ProfileAction.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = event.customWater)) }
+        is ProfileAction.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = event.feelAndEffort)) }
+        is ProfileAction.SetTrainingEffect -> _state.update { it.copy(profile = it.profile.copy(trainingEffect = event.trainingEffect)) }
         is ProfileAction.Save -> save()
     }
 

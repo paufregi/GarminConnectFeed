@@ -32,7 +32,7 @@ class UpdateActivityTest{
     val profile = Profile(
         name = "newName",
         activityType = ActivityType.Running,
-        eventType = EventType(id = 1, name = "event 1"),
+        eventType = EventType.Training,
         course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
         water = 500,
         rename = true,

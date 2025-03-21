@@ -5,8 +5,8 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.data.database.entities.ProfileEntity
 
 class ProfileConverterTest {
 
@@ -14,7 +14,7 @@ class ProfileConverterTest {
         id = 1,
         name = "profile",
         activityType = ActivityType.Cycling,
-        eventType = EventType(id = 1, name = "event 1"),
+        eventType = EventType.Training,
         course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
         water = 550,
         rename = true,
@@ -27,7 +27,7 @@ class ProfileConverterTest {
         id = 1,
         name = "profile",
         activityType = ActivityType.Cycling,
-        eventType = EventType(id = 1, name = "event 1"),
+        eventType = EventType.Training,
         course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
         water = 550,
         rename = true,

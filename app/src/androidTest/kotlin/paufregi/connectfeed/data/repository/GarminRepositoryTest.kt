@@ -17,10 +17,6 @@ import org.junit.Test
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.consumer
-import paufregi.connectfeed.core.models.Activity as CoreActivity
-import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
-import paufregi.connectfeed.core.models.Course as CoreCourse
-import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
@@ -39,6 +35,10 @@ import paufregi.connectfeed.stravaPort
 import paufregi.connectfeed.stravaToken
 import java.io.File
 import javax.inject.Inject
+import paufregi.connectfeed.core.models.Activity as CoreActivity
+import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
+import paufregi.connectfeed.core.models.Course as CoreCourse
+import paufregi.connectfeed.core.models.EventType as CoreEventType
 
 @HiltAndroidTest
 class GarminRepositoryTest {
@@ -180,25 +180,6 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
     }
-
-    @Test
-    fun `Get event types`() = runTest {
-        authStore.saveConsumer(consumer)
-        authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
-
-        val expected = listOf(
-            CoreEventType(id = 1, name = "Race"),
-            CoreEventType(id = 2, name = "Training"),
-        )
-
-        val res = repo.getEventTypes()
-
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(expected)
-    }
-
     @Test
     fun `Update activity`() = runTest {
         authStore.saveConsumer(consumer)
@@ -207,7 +188,7 @@ class GarminRepositoryTest {
 
         val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, trainingEffect = "", type = CoreActivityType.Cycling)
         val name = "newName"
-        val eventType = CoreEventType(1, "event")
+        val eventType = CoreEventType.Training
         val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
         val water = 2
         val effort = 50f

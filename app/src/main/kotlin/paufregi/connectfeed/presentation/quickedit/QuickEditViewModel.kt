@@ -26,7 +26,9 @@ class QuickEditViewModel @Inject constructor(
     val updateActivity: UpdateActivity,
     val updateStravaActivity: UpdateStravaActivity
 ) : ViewModel() {
+
     private val _state = MutableStateFlow(QuickEditState())
+
     val state =
         combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles) }
             .onStart { load() }

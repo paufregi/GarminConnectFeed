@@ -37,7 +37,7 @@ class SaveProfileTest{
             id = 1,
             name = "Commute to home",
             rename = true,
-            eventType = EventType(id = 1, name = "event 1"),
+            eventType = EventType.Training,
             activityType = ActivityType.Cycling,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
@@ -58,7 +58,7 @@ class SaveProfileTest{
             id = 1,
             name = "",
             rename = true,
-            eventType = EventType(id = 1, name = "event 1"),
+            eventType = EventType.Training,
             activityType = ActivityType.Cycling,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
@@ -77,7 +77,7 @@ class SaveProfileTest{
             id = 1,
             name = "Test",
             rename = true,
-            eventType = EventType(id = 1, name = "event 1"),
+            eventType = EventType.Training,
             activityType = ActivityType.Strength,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
@@ -96,7 +96,7 @@ class SaveProfileTest{
             id = 1,
             name = "Test",
             rename = true,
-            eventType = EventType(id = 1, name = "event 1"),
+            eventType = EventType.Training,
             activityType = ActivityType.Any,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
@@ -115,7 +115,7 @@ class SaveProfileTest{
             id = 1,
             name = "Test",
             rename = true,
-            eventType = EventType(id = 1, name = "event 1"),
+            eventType = EventType.Training,
             activityType = ActivityType.Running,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550

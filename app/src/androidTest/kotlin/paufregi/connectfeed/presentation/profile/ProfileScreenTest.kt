@@ -70,7 +70,7 @@ class ProfileScreenTest {
                 profile = Profile(
                     name = "Profile 1",
                     activityType = ActivityType.Running,
-                    eventType = EventType(id = 1, name = "Event 1"),
+                    eventType = EventType.Training,
                     course = Course(id = 1, name = "Course 1", distance = 10234.00, type = ActivityType.Running),
                     water = 10,
                     rename = true,
@@ -82,7 +82,7 @@ class ProfileScreenTest {
         }
         composeTestRule.onNodeWithText("Name").assertTextContains("Profile 1")
         composeTestRule.onNodeWithText("Activity Type").assertTextContains("Running")
-        composeTestRule.onNodeWithText("Event Type").assertTextContains("Event 1")
+        composeTestRule.onNodeWithText("Event Type").assertTextContains(EventType.Training.name)
         composeTestRule.onNodeWithText("Course").assertTextContains("Course 1")
         composeTestRule.onNodeWithText("Water").assertTextContains("10")
         composeTestRule.onNodeWithTag("rename_checkbox").assertIsOn()
@@ -101,7 +101,7 @@ class ProfileScreenTest {
                 profile = Profile(
                     name = "",
                     activityType = ActivityType.Running,
-                    eventType = EventType(id = 1, name = "Event 1"),
+                    eventType = EventType.Training,
                     course = Course(id = 1, name = "Course 1", distance = 10234.00, type = ActivityType.Running),
                 )
             ))
@@ -133,7 +133,7 @@ class ProfileScreenTest {
                 profile = Profile(
                     name = "Profile 1",
                     activityType = ActivityType.Any,
-                    eventType = EventType(id = 1, name = "Event 1"),
+                    eventType = EventType.Training,
                 )
             ))
         }
@@ -149,7 +149,7 @@ class ProfileScreenTest {
                 profile = Profile(
                     name = "Profile 1",
                     activityType = ActivityType.Strength,
-                    eventType = EventType(id = 1, name = "Event 1")
+                    eventType = EventType.Training
                 )
             ))
         }

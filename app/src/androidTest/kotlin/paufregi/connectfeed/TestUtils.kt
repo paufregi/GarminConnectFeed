@@ -655,21 +655,6 @@ val coursesJson = """
     ]
 """.trimIndent()
 
-val eventTypesJson = """
-    [
-        {
-            "typeId": 1,
-            "typeKey": "race",
-            "sortOrder": 5
-        },
-        {
-            "typeId": 2,
-            "typeKey": "training",
-            "sortOrder": 4
-        }
-    ]
-""".trimIndent()
-
 val stravaExchangeTokenJson = """
     {
         "token_type": "Bearer",
@@ -861,9 +846,6 @@ val connectDispatcher: Dispatcher = object : Dispatcher() {
 
             path == "/course-service/course" && request.method == "GET" ->
                 MockResponse().setResponseCode(200).setBody(coursesJson)
-
-            path == "/activity-service/activity/eventTypes" && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(eventTypesJson)
 
             (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
                 MockResponse().setResponseCode(200).setBody(latestActivitiesJson)

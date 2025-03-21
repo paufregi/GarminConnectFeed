@@ -36,7 +36,7 @@ class GetProfileTest{
             id = 1,
             name = "Commute to home",
             rename = true,
-            eventType = EventType(id = 1, name = "event 1"),
+            eventType = EventType.Training,
             activityType = ActivityType.Cycling,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550

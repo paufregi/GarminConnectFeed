@@ -17,6 +17,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.coursesJson
+import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.ActivityType
 import paufregi.connectfeed.data.api.garmin.models.Course
@@ -25,8 +26,6 @@ import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
-import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
-import paufregi.connectfeed.eventTypesJson
 import paufregi.connectfeed.latestActivitiesJson
 import paufregi.connectfeed.userProfileJson
 import java.io.File
@@ -240,49 +239,6 @@ class GarminConnectTest {
         server.enqueue(response)
 
         val res = api.getCourses()
-
-        assertThat(res.isSuccessful).isFalse()
-        verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
-    }
-
-    @Test
-    fun `Get event types`() = runTest {
-        val response = MockResponse().setResponseCode(200).setBody(eventTypesJson)
-        server.enqueue(response)
-
-        val res = api.getEventTypes()
-
-        val expected = listOf(
-            EventType(id = 1, key = "race"),
-            EventType(id = 2, key = "training"),
-        )
-
-        assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(expected)
-        verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
-    }
-
-    @Test
-    fun `Get event types - empty`() = runTest {
-        val response = MockResponse().setResponseCode(200).setBody("[]")
-        server.enqueue(response)
-
-        val res = api.getEventTypes()
-
-        assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEmpty()
-        verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
-    }
-
-    @Test
-    fun `Get event types - failure`() = runTest {
-        val response = MockResponse().setResponseCode(400)
-        server.enqueue(response)
-
-        val res = api.getEventTypes()
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }

@@ -10,141 +10,187 @@ class ActivityTypeConverterTest {
 
     @Test
     fun `To Activity type - any`() {
-        val result = converter.fromString("Any")
+        val name = converter.toName(ActivityType.Any)
+        assertThat(name).isEqualTo(ActivityType.Any.name)
 
-        assertThat(result).isEqualTo(ActivityType.Any)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Any)
     }
 
     @Test
     fun `To Activity type - running`() {
-        val result = converter.fromString("Running")
+        val name = converter.toName(ActivityType.Running)
+        assertThat(name).isEqualTo(ActivityType.Running.name)
 
-        assertThat(result).isEqualTo(ActivityType.Running)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Running)
     }
 
     @Test
     fun `To Activity type - trail running`() {
-        val result = converter.fromString("Trail Running")
+        val name = converter.toName(ActivityType.TrailRunning)
+        assertThat(name).isEqualTo(ActivityType.TrailRunning.name)
 
-        assertThat(result).isEqualTo(ActivityType.TrailRunning)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.TrailRunning)
     }
 
     @Test
     fun `To Activity type - treadmill running`() {
-        val result = converter.fromString("Treadmill Running")
+        val name = converter.toName(ActivityType.TreadmillRunning)
+        assertThat(name).isEqualTo(ActivityType.TreadmillRunning.name)
 
-        assertThat(result).isEqualTo(ActivityType.TreadmillRunning)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.TreadmillRunning)
     }
 
     @Test
     fun `To Activity type - cycling`() {
-        val result = converter.fromString("Cycling")
+        val name = converter.toName(ActivityType.Cycling)
+        assertThat(name).isEqualTo(ActivityType.Cycling.name)
 
-        assertThat(result).isEqualTo(ActivityType.Cycling)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Cycling)
     }
 
     @Test
     fun `To Activity type - indoor cycling`() {
-        val result = converter.fromString("Indoor Cycling")
+        val name = converter.toName(ActivityType.IndoorCycling)
+        assertThat(name).isEqualTo(ActivityType.IndoorCycling.name)
 
-        assertThat(result).isEqualTo(ActivityType.IndoorCycling)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.IndoorCycling)
     }
 
     @Test
     fun `To Activity type - eBiking`() {
-        val result = converter.fromString("eBiking")
+        val name = converter.toName(ActivityType.EBiking)
+        assertThat(name).isEqualTo(ActivityType.EBiking.name)
 
-        assertThat(result).isEqualTo(ActivityType.EBiking)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.EBiking)
     }
 
     @Test
     fun `To Activity type - swimming`() {
-        val result = converter.fromString("Swimming")
+        val name = converter.toName(ActivityType.Swimming)
+        assertThat(name).isEqualTo(ActivityType.Swimming.name)
 
-        assertThat(result).isEqualTo(ActivityType.Swimming)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Swimming)
     }
 
     @Test
     fun `To Activity type - open water swimming`() {
-        val result = converter.fromString("Open Water Swimming")
+        val name = converter.toName(ActivityType.OpenWaterSwimming)
+        assertThat(name).isEqualTo(ActivityType.OpenWaterSwimming.name)
 
-        assertThat(result).isEqualTo(ActivityType.OpenWaterSwimming)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.OpenWaterSwimming)
     }
 
     @Test
     fun `To Activity type - strength`() {
-        val result = converter.fromString("Strength")
+        val name = converter.toName(ActivityType.Strength)
+        assertThat(name).isEqualTo(ActivityType.Strength.name)
 
-        assertThat(result).isEqualTo(ActivityType.Strength)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Strength)
     }
 
     @Test
     fun `To Activity type - walking`() {
-        val result = converter.fromString("Walking")
+        val name = converter.toName(ActivityType.Walking)
+        assertThat(name).isEqualTo(ActivityType.Walking.name)
 
-        assertThat(result).isEqualTo(ActivityType.Walking)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Walking)
     }
 
     @Test
     fun `To Activity type - hiking`() {
-        val result = converter.fromString("Hiking")
+        val name = converter.toName(ActivityType.Hiking)
+        assertThat(name).isEqualTo(ActivityType.Hiking.name)
 
-        assertThat(result).isEqualTo(ActivityType.Hiking)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Hiking)
     }
 
     @Test
     fun `To Activity type - rugby`() {
-        val result = converter.fromString("Rugby")
+        val name = converter.toName(ActivityType.Rugby)
+        assertThat(name).isEqualTo(ActivityType.Rugby.name)
 
-        assertThat(result).isEqualTo(ActivityType.Rugby)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Rugby)
     }
 
     @Test
     fun `To Activity type - soccer`() {
-        val result = converter.fromString("Soccer")
+        val name = converter.toName(ActivityType.Soccer)
+        assertThat(name).isEqualTo(ActivityType.Soccer.name)
 
-        assertThat(result).isEqualTo(ActivityType.Soccer)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Soccer)
     }
 
     @Test
     fun `To Activity type - jump rope`() {
-        val result = converter.fromString("Jump Rope")
+        val name = converter.toName(ActivityType.JumpRope)
+        assertThat(name).isEqualTo(ActivityType.JumpRope.name)
 
-        assertThat(result).isEqualTo(ActivityType.JumpRope)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.JumpRope)
     }
 
     @Test
     fun `To Activity type - breathwork`() {
-        val result = converter.fromString("Breathwork")
+        val name = converter.toName(ActivityType.Breathwork)
+        assertThat(name).isEqualTo(ActivityType.Breathwork.name)
 
-        assertThat(result).isEqualTo(ActivityType.Breathwork)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Breathwork)
     }
 
     @Test
     fun `To Activity type - meditation`() {
-        val result = converter.fromString("Meditation")
+        val name = converter.toName(ActivityType.Meditation)
+        assertThat(name).isEqualTo(ActivityType.Meditation.name)
 
-        assertThat(result).isEqualTo(ActivityType.Meditation)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Meditation)
     }
 
     @Test
     fun `To Activity type - yoga`() {
-        val result = converter.fromString("Yoga")
+        val name = converter.toName(ActivityType.Yoga)
+        assertThat(name).isEqualTo(ActivityType.Yoga.name)
 
-        assertThat(result).isEqualTo(ActivityType.Yoga)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Yoga)
     }
 
     @Test
     fun `To Activity type - other`() {
-        val result = converter.fromString("Other")
+        val name = converter.toName(ActivityType.Other)
+        assertThat(name).isEqualTo(ActivityType.Other.name)
 
-        assertThat(result).isEqualTo(ActivityType.Other)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Other)
     }
 
     @Test
     fun `To Activity type - unknown`() {
-        val result = converter.fromString("nope")
+        val name = converter.toName(ActivityType.Unknown)
+        assertThat(name).isEqualTo(ActivityType.Unknown.name)
 
-        assertThat(result).isEqualTo(ActivityType.Unknown)
+        val type = converter.fromName(name)
+        assertThat(type).isEqualTo(ActivityType.Unknown)
+    }
+
+    @Test
+    fun `To Activity type - nope`() {
+        val type = converter.fromName("nope")
+        assertThat(type).isEqualTo(ActivityType.Unknown)
     }
 }

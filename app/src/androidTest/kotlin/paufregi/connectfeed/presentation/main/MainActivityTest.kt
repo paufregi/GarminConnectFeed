@@ -226,7 +226,7 @@ class MainActivityTest {
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
         authStore.saveOAuth2(oauth2)
-        dao.saveProfile(ProfileEntity(id = 5, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType(id = 1, name = "Race")))
+        dao.saveProfile(ProfileEntity(id = 5, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
@@ -257,7 +257,7 @@ class MainActivityTest {
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
         authStore.saveOAuth2(oauth2)
-        dao.saveProfile(ProfileEntity(id = 10, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType(id = 1, name = "Race")))
+        dao.saveProfile(ProfileEntity(id = 10, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
@@ -275,7 +275,7 @@ class MainActivityTest {
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
         authStore.saveOAuth2(oauth2)
-        dao.saveProfile(ProfileEntity(name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType(id = 1, name = "Race")))
+        dao.saveProfile(ProfileEntity(name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
@@ -295,7 +295,7 @@ class MainActivityTest {
         authStore.saveOAuth1(oauth1)
         authStore.saveOAuth2(oauth2)
         stravaStore.saveToken(stravaToken)
-        dao.saveProfile(ProfileEntity(name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType(id = 1, name = "Race")))
+        dao.saveProfile(ProfileEntity(name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
