@@ -1,6 +1,7 @@
 package paufregi.connectfeed.core.usecases
 
 import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
@@ -16,13 +17,11 @@ class UpdateStravaActivity @Inject constructor(private val garminRepository: Gar
         if (stravaActivity == null || profile == null) return Result.Failure("Validation error")
         val name = if (profile.rename) profile.name else activity?.name
         val completeDescription =
-            if (profile.trainingEffect == true && activity?.trainingEffect != null) "$description\n\nTraining: ${
-                activity.trainingEffect.replace(
-                    "_",
-                    ""
-                )
-            }" else description
-        val commute = profile.eventType?.let { it.id == 5L } // EventType: transportation
+            if (profile.trainingEffect == true && activity?.trainingEffect != null)
+                "$description\n\nTraining: ${activity.trainingEffect}"
+            else
+                description
+        val commute = profile.eventType?.let { it == EventType.Transportation }
 
         return garminRepository.updateStravaActivity(
             activity = stravaActivity,

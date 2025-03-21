@@ -11,7 +11,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.user

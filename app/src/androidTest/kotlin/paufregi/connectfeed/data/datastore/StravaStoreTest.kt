@@ -14,10 +14,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.garmin.models.OAuth1
-import paufregi.connectfeed.data.api.garmin.models.OAuth2
-import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
 import paufregi.connectfeed.data.api.strava.models.Token
 import javax.inject.Inject
 

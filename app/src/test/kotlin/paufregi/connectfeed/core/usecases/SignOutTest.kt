@@ -10,7 +10,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.data.repository.AuthRepository
-import paufregi.connectfeed.data.repository.GarminRepository
 
 class SignOutTest{
     private val authRepo = mockk<AuthRepository>()
