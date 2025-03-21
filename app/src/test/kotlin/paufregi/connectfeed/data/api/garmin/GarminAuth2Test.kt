@@ -10,7 +10,7 @@ import org.junit.Test
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
 import paufregi.connectfeed.oauth2
-import paufregi.connectfeed.oauth2Body
+import paufregi.connectfeed.oauth2Json
 
 class GarminAuth2Test {
 
@@ -34,7 +34,7 @@ class GarminAuth2Test {
     fun `Get OAuth2 token`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
-            .setBody(oauth2Body)
+            .setBody(oauth2Json)
         server.enqueue(response)
 
         val res = api.getOauth2()

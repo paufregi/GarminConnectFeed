@@ -9,8 +9,8 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.data.api.garmin.models.CSRF
 import paufregi.connectfeed.data.api.garmin.models.Ticket
-import paufregi.connectfeed.htmlForCSRF
-import paufregi.connectfeed.htmlForTicket
+import paufregi.connectfeed.htmlCSRF
+import paufregi.connectfeed.htmlTicket
 
 class GarminSSOTest {
 
@@ -32,7 +32,7 @@ class GarminSSOTest {
     fun `Get CSRF`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
-            .setBody(htmlForCSRF)
+            .setBody(htmlCSRF)
         server.enqueue(response)
 
         val res = api.getCSRF()
@@ -61,7 +61,7 @@ class GarminSSOTest {
     fun `Get Ticket`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
-            .setBody(htmlForTicket)
+            .setBody(htmlTicket)
         server.enqueue(response)
 
         val res = api.login(username = "user", password = "pass", csrf = CSRF("csrf"))

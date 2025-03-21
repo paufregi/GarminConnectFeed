@@ -6,7 +6,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Test
 import paufregi.connectfeed.data.api.garmin.models.Ticket
-import paufregi.connectfeed.htmlForTicket
+import paufregi.connectfeed.htmlTicket
 
 class TicketExtractorTest {
 
@@ -16,7 +16,7 @@ class TicketExtractorTest {
 
     @Test
     fun `Extract Ticket`() {
-        val responseBody = htmlForTicket.toResponseBody(mediaType.toMediaType())
+        val responseBody = htmlTicket.toResponseBody(mediaType.toMediaType())
 
         assertThat(converter.convert(responseBody)).isEqualTo(Ticket("TEST_TICKET_VALUE"))
     }
