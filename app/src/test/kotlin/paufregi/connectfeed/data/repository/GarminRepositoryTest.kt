@@ -244,22 +244,36 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get latest activities`() = runTest {
-            val activities = listOf(
-                Activity(id = 1, name = "activity_1", distance = 10234.00, trainingEffectLabel = "recovery", type = ActivityType(id = 1, key = "running")),
-                Activity(id = 2, name = "activity_2", distance = 17759.00, trainingEffectLabel = "recovery", type = ActivityType(id = 10, key = "road_biking"))
+        val activities = listOf(
+            Activity(
+                id = 1,
+                name = "activity_1",
+                distance = 10234.00,
+                trainingEffectLabel = "recovery",
+                type = ActivityType(id = 1, key = "running"),
+                eventType = EventType(id = 4, key = "training")
+            ),
+            Activity(
+                id = 2,
+                name = "activity_2",
+                distance = 17759.00,
+                trainingEffectLabel = "recovery",
+                type = ActivityType(id = 10, key = "road_biking"),
+                eventType = EventType(id = 4, key = "training")
             )
-            coEvery { connect.getLatestActivities(any()) } returns Response.success(activities)
+        )
+        coEvery { connect.getLatestActivities(any()) } returns Response.success(activities)
 
-            val expected = activities.map { it.toCore() }
+        val expected = activities.map { it.toCore() }
 
-            val res = repo.getLatestActivities(limit = 5)
+        val res = repo.getLatestActivities(limit = 5)
 
-            assertThat(res.isSuccessful).isTrue()
-            res as Result.Success
-            assertThat(res.data).isEqualTo(expected)
-            coVerify { connect.getLatestActivities(5) }
-            confirmVerified(dao, connect, strava)
-        }
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
+        coVerify { connect.getLatestActivities(5) }
+        confirmVerified(dao, connect, strava)
+    }
 
     @Test
     fun `Get latest activities - empty list`() = runTest {

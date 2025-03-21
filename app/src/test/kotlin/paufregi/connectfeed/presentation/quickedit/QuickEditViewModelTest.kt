@@ -18,6 +18,7 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetLatestActivities
@@ -43,13 +44,37 @@ class QuickEditViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     val activities = listOf(
-        Activity(1L, "Running", ActivityType.Running, 10234.00, trainingEffect = "recovery"),
-        Activity(2L, "Cycling", ActivityType.Cycling, 17803.00, trainingEffect = "base")
+        Activity(
+            id = 1L,
+            name = "Running",
+            type = ActivityType.Running,
+            eventType = EventType.Training,
+            distance = 10234.00,
+            trainingEffect = "recovery"
+        ),
+        Activity(
+            id = 2L,
+            name = "Cycling",
+            type = ActivityType.Cycling,
+            eventType = EventType.Training,
+            distance = 17803.00,
+            trainingEffect = "base"
+        )
     )
 
     val stravaActivities = listOf(
-        Activity(1L, "StravaRunning", ActivityType.Running, 10234.00),
-        Activity(2L, "StravaCycling", ActivityType.Cycling, 17803.00)
+        Activity(
+            id = 1L,
+            name = "StravaRunning",
+            type = ActivityType.Running,
+            distance = 10234.00
+        ),
+        Activity(
+            id = 2L,
+            name = "StravaCycling",
+            type = ActivityType.Cycling,
+            distance = 17803.00
+        )
     )
 
     val profiles = listOf(

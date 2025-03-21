@@ -27,13 +27,35 @@ class QuickEditScreenTest {
     val composeTestRule = createComposeRule()
 
     val activities = listOf(
-        Activity(1L, "Running", ActivityType.Running, 10234.00, "recovery"),
-        Activity(2L, "Cycling", ActivityType.Cycling, 17803.00, "recovery")
+        Activity(
+            id = 1L,
+            name = "Running",
+            type = ActivityType.Running,
+            distance = 10234.00,
+            trainingEffect = "recovery"
+        ),
+        Activity(
+            id  = 2L,
+            name = "Cycling",
+            type = ActivityType.Cycling,
+            distance = 17803.00,
+            trainingEffect = "recovery"
+        )
     )
 
     val stravaActivities = listOf(
-        Activity(1L, "Running", ActivityType.Running, 10234.00),
-        Activity(2L, "Cycling", ActivityType.Cycling, 17803.00)
+        Activity(
+            id = 1L,
+            name = "Running",
+            type = ActivityType.Running,
+            distance = 10234.00
+        ),
+        Activity(
+            id = 2L,
+            name = "Cycling",
+            type = ActivityType.Cycling,
+            distance = 17803.00
+        )
     )
 
     val profiles = listOf(
