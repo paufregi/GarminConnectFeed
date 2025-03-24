@@ -1,7 +1,9 @@
 package paufregi.connectfeed.presentation.quickedit
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.isDisplayed
@@ -75,6 +77,7 @@ class QuickEditScreenTest {
         }
         composeTestRule.onNodeWithText("Activity").isDisplayed()
         composeTestRule.onNodeWithText("Profile").isDisplayed()
+        composeTestRule.onNodeWithTag("navigation_bar").assertIsNotDisplayed()
         composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
 
@@ -91,17 +94,8 @@ class QuickEditScreenTest {
         composeTestRule.onNodeWithText("Activity").isDisplayed()
         composeTestRule.onNodeWithText("Strava").isDisplayed()
         composeTestRule.onNodeWithText("Profile").isDisplayed()
+        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
-    }
-
-    @Test
-    fun `Loading spinner`() {
-        composeTestRule.setContent {
-            QuickEditContent(state = QuickEditState(
-                process = ProcessState.Processing,
-            ))
-        }
-        composeTestRule.onNodeWithTag("loading").isDisplayed()
     }
 
     @Test
@@ -117,6 +111,7 @@ class QuickEditScreenTest {
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
         composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
+        composeTestRule.onNodeWithTag("navigation_bar").assertIsNotDisplayed()
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
     }
 
@@ -136,6 +131,39 @@ class QuickEditScreenTest {
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
         composeTestRule.onNodeWithText("Strava Activity").assertTextContains(stravaActivities[0].name)
         composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
+        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
+    }
+
+    @Test
+    fun `Loading spinner`() {
+        composeTestRule.setContent {
+            QuickEditContent(state = QuickEditState(
+                process = ProcessState.Processing,
+            ))
+        }
+        composeTestRule.onNodeWithTag("loading").isDisplayed()
+    }
+
+    @Test
+    fun `Update - success`() {
+        composeTestRule.setContent {
+            QuickEditContent(state = QuickEditState(
+                process = ProcessState.Success("Activity updated"),
+            ))
+        }
+        composeTestRule.onNodeWithTag("status_info_text").isDisplayed()
+        composeTestRule.onNodeWithText("Activity updated").isDisplayed()
+    }
+
+    @Test
+    fun `Update - failure`() {
+        composeTestRule.setContent {
+            QuickEditContent(state = QuickEditState(
+                process = ProcessState.Failure("Couldn't update activity"),
+            ))
+        }
+        composeTestRule.onNodeWithTag("status_info_text").isDisplayed()
+        composeTestRule.onNodeWithText("Couldn't update activity").isDisplayed()
     }
 }
