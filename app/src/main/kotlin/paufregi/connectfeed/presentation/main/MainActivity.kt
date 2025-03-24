@@ -21,6 +21,7 @@ import paufregi.connectfeed.presentation.login.LoginScreen
 import paufregi.connectfeed.presentation.profile.ProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
+import paufregi.connectfeed.presentation.syncstrava.SyncStravaScreen
 import paufregi.connectfeed.presentation.ui.theme.Theme
 import javax.inject.Inject
 import javax.inject.Named
@@ -49,19 +50,17 @@ class MainActivity : ComponentActivity() {
             Theme {
                 NavHost(
                     navController = nav,
-                    startDestination = if (state.showLogin == true) Route.Auth else Route.Home
+                    startDestination = if (state.showLogin == true) Route.Auth else Route.App
                 ) {
                     navigation<Route.Auth>(startDestination = Route.Login) {
                         composable<Route.Login> { LoginScreen(viewModel::hideLogin) }
                     }
-                    navigation<Route.Home>(startDestination = Route.QuickEdit) {
-                        composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }
-                        composable<Route.Account> {
-                            AccountScreen(
-                                stravaAuthUri = stravaAuthUri,
-                                nav = nav
-                            )
+                    navigation<Route.App>(startDestination = Route.Home) {
+                        navigation<Route.Home>(startDestination = Route.QuickEdit) {
+                            composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }
+                            composable<Route.SyncStrava> { SyncStravaScreen(nav = nav) }
                         }
+                        composable<Route.Account> { AccountScreen(stravaAuthUri = stravaAuthUri, nav = nav) }
                         navigation<Route.Profiles>(startDestination = Route.ProfileList) {
                             composable<Route.ProfileList> { ProfilesScreen(nav = nav) }
                             composable<Route.Profile> { ProfileScreen(nav = nav) }

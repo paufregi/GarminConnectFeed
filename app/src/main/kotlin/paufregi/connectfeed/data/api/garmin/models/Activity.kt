@@ -16,6 +16,8 @@ data class Activity(
     val name: String,
     @SerializedName("activityType")
     val type: ActivityType,
+    @SerializedName("eventType")
+    val eventType: EventType?,
     @SerializedName("distance")
     val distance: Double,
     @SerializedName("trainingEffectLabel")
@@ -26,6 +28,7 @@ data class Activity(
             id = this.id,
             name = this.name,
             type = this.type.toCore(),
+            eventType = this.eventType?.toCore(),
             distance = round(this.distance),
             trainingEffect = TrainingEffectConverter.convert(this.trainingEffectLabel)
         )

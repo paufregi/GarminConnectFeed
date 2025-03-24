@@ -14,10 +14,6 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.core.models.Activity as CoreActivity
-import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
-import paufregi.connectfeed.core.models.Course as CoreCourse
-import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
@@ -31,12 +27,16 @@ import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import paufregi.connectfeed.data.api.strava.Strava
-import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
-import paufregi.connectfeed.data.api.strava.models.UpdateActivity as StravaUpdateActivity
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import retrofit2.Response
 import java.io.File
+import paufregi.connectfeed.core.models.Activity as CoreActivity
+import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
+import paufregi.connectfeed.core.models.Course as CoreCourse
+import paufregi.connectfeed.core.models.EventType as CoreEventType
+import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
+import paufregi.connectfeed.data.api.strava.models.UpdateActivity as StravaUpdateActivity
 
 class GarminRepositoryTest {
 
@@ -102,7 +102,7 @@ class GarminRepositoryTest {
             Profile(
                 id = 1,
                 name = "profile 1",
-                eventType = CoreEventType(id = 1, name = "event 1"),
+                eventType = CoreEventType.Training,
                 activityType = CoreActivityType.Cycling,
                 course = CoreCourse(1, "course 1", 10234.00, CoreActivityType.Cycling),
                 water = 2
@@ -110,7 +110,7 @@ class GarminRepositoryTest {
             Profile(
                 id = 2,
                 name = "profile 2",
-                eventType = CoreEventType(id = 2, name = "event 2"),
+                eventType = CoreEventType.Recreation,
                 activityType = CoreActivityType.Running,
                 course = CoreCourse(2, "course 2", 15007.00, CoreActivityType.Running),
             )
@@ -119,7 +119,7 @@ class GarminRepositoryTest {
             ProfileEntity(
                 id = 1,
                 name = "profile 1",
-                eventType = CoreEventType(id = 1, name = "event 1"),
+                eventType = CoreEventType.Training,
                 activityType = CoreActivityType.Cycling,
                 course = CoreCourse(1, "course 1", 10234.00, CoreActivityType.Cycling),
                 water = 2
@@ -127,7 +127,7 @@ class GarminRepositoryTest {
             ProfileEntity(
                 id = 2,
                 name = "profile 2",
-                eventType = CoreEventType(id = 2, name = "event 2"),
+                eventType = CoreEventType.Recreation,
                 activityType = CoreActivityType.Running,
                 course = CoreCourse(2, "course 2", 15007.00, CoreActivityType.Running),
             )
@@ -166,7 +166,7 @@ class GarminRepositoryTest {
         val profile = Profile(
             id = 1,
             name = "profile",
-            eventType = CoreEventType(id = 1, name = "event"),
+            eventType = CoreEventType.Training,
             activityType = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
@@ -174,7 +174,7 @@ class GarminRepositoryTest {
         val profileEntity  = ProfileEntity(
             id = 1,
             name = "profile",
-            eventType = CoreEventType(id = 1, name = "event"),
+            eventType = CoreEventType.Training,
             activityType = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
@@ -194,7 +194,7 @@ class GarminRepositoryTest {
     fun `Save profile`() = runTest {
         val profile = Profile(
             name = "profile",
-            eventType = CoreEventType(id = 1, name = "event"),
+            eventType = CoreEventType.Training,
             activityType = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
@@ -202,7 +202,7 @@ class GarminRepositoryTest {
 
         val profileEntity  = ProfileEntity(
             name = "profile",
-            eventType = CoreEventType(id = 1, name = "event"),
+            eventType = CoreEventType.Training,
             activityType = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
@@ -221,7 +221,7 @@ class GarminRepositoryTest {
         val profile = Profile(
             id = 1,
             name = "profile",
-            eventType = CoreEventType(id = 1, name = "event"),
+            eventType = CoreEventType.Training,
             activityType = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
         )
@@ -229,7 +229,7 @@ class GarminRepositoryTest {
         val profileEntity  = ProfileEntity(
             id = 1,
             name = "profile",
-            eventType = CoreEventType(id = 1, name = "event"),
+            eventType = CoreEventType.Training,
             activityType = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
         )
@@ -244,22 +244,36 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get latest activities`() = runTest {
-            val activities = listOf(
-                Activity(id = 1, name = "activity_1", distance = 10234.00, trainingEffectLabel = "recovery", type = ActivityType(id = 1, key = "running")),
-                Activity(id = 2, name = "activity_2", distance = 17759.00, trainingEffectLabel = "recovery", type = ActivityType(id = 10, key = "road_biking"))
+        val activities = listOf(
+            Activity(
+                id = 1,
+                name = "activity_1",
+                distance = 10234.00,
+                trainingEffectLabel = "recovery",
+                type = ActivityType(id = 1, key = "running"),
+                eventType = EventType(id = 4, key = "training")
+            ),
+            Activity(
+                id = 2,
+                name = "activity_2",
+                distance = 17759.00,
+                trainingEffectLabel = "recovery",
+                type = ActivityType(id = 10, key = "road_biking"),
+                eventType = EventType(id = 4, key = "training")
             )
-            coEvery { connect.getLatestActivities(any()) } returns Response.success(activities)
+        )
+        coEvery { connect.getLatestActivities(any()) } returns Response.success(activities)
 
-            val expected = activities.map { it.toCore() }
+        val expected = activities.map { it.toCore() }
 
-            val res = repo.getLatestActivities(limit = 5)
+        val res = repo.getLatestActivities(limit = 5)
 
-            assertThat(res.isSuccessful).isTrue()
-            res as Result.Success
-            assertThat(res.data).isEqualTo(expected)
-            coVerify { connect.getLatestActivities(5) }
-            confirmVerified(dao, connect, strava)
-        }
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
+        coVerify { connect.getLatestActivities(5) }
+        confirmVerified(dao, connect, strava)
+    }
 
     @Test
     fun `Get latest activities - empty list`() = runTest {
@@ -414,65 +428,6 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Get event types`() = runTest {
-        val eventTypes = listOf(
-            EventType(id = 1, key = "race"),
-            EventType(id = 2, key = "training")
-        )
-        coEvery { connect.getEventTypes() } returns Response.success(eventTypes)
-
-        val expected = listOf(
-            CoreEventType(id = 1, name = "Race"),
-            CoreEventType(id = 2, name = "Training"),
-        )
-
-        val res = repo.getEventTypes()
-
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(expected)
-        coVerify { connect.getEventTypes() }
-        confirmVerified(dao, connect, strava)
-    }
-
-    @Test
-    fun `Get event types - empty list`() = runTest {
-        coEvery { connect.getEventTypes() } returns Response.success(emptyList())
-
-        val res = repo.getEventTypes()
-
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(emptyList<CoreEventType>())
-        coVerify { connect.getEventTypes() }
-        confirmVerified(dao, connect, strava)
-    }
-
-    @Test
-    fun `Get event types - null`() = runTest {
-        coEvery { connect.getEventTypes() } returns Response.success(null)
-
-        val res = repo.getEventTypes()
-
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(emptyList<CoreEventType>())
-        coVerify { connect.getEventTypes() }
-        confirmVerified(dao, connect, strava)
-    }
-
-    @Test
-    fun `Get event types - failure`() = runTest {
-        coEvery { connect.getEventTypes() } returns Response.error<List<EventType>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val res = repo.getEventTypes()
-
-        assertThat(res.isSuccessful).isFalse()
-        coVerify { connect.getEventTypes() }
-        confirmVerified(dao, connect, strava)
-    }
-
-    @Test
     fun `Update activity`() = runTest {
         coEvery { connect.updateActivity(any(), any()) } returns Response.success(Unit)
 
@@ -483,7 +438,7 @@ class GarminRepositoryTest {
             type = CoreActivityType.Cycling
         )
         val name = "newName"
-        val eventType = CoreEventType(1, "event")
+        val eventType = CoreEventType.Training
         val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
         val water = 2
         val effort = 50f
@@ -492,7 +447,7 @@ class GarminRepositoryTest {
         val expectedRequest = UpdateActivity(
             id = 1,
             name = name,
-            eventType = EventType(id = eventType.id, key = eventType.name),
+            eventType = EventType(id = eventType.id, key = eventType.key),
             metadata = Metadata(courseId = course.id),
             summary = Summary(water = water, feel = feel, effort = effort)
         )
@@ -522,14 +477,14 @@ class GarminRepositoryTest {
             type = CoreActivityType.Cycling
         )
         val name = "newName"
-        val eventType = CoreEventType(1, "event")
+        val eventType = CoreEventType.Training
         val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
         val water = 2
 
         val expectedRequest = UpdateActivity(
             id = 1,
             name = "newName",
-            eventType = EventType(id = 1, key = "event"),
+            eventType = EventType(id = eventType.id, key = eventType.key),
             metadata = Metadata(courseId = 1),
             summary = Summary(water = 2, feel = null, effort = null)
         )

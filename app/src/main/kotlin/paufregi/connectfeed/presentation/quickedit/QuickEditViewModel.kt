@@ -26,11 +26,34 @@ class QuickEditViewModel @Inject constructor(
     val updateActivity: UpdateActivity,
     val updateStravaActivity: UpdateStravaActivity
 ) : ViewModel() {
+
     private val _state = MutableStateFlow(QuickEditState())
+
     val state =
         combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles) }
             .onStart { load() }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), QuickEditState())
+
+    private fun load() = viewModelScope.launch {
+        _state.update { it.copy(process = ProcessState.Processing) }
+        val errors = mutableListOf<String>()
+
+        getLatestActivities()
+            .onSuccess { data -> _state.update { it.copy(activities = data) } }
+            .onFailure { errors.add("activities") }
+
+        getLatestStravaActivities()
+            .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
+            .onFailure { errors.add("Strava activities") }
+
+        when (errors.isNotEmpty()) {
+            true -> _state.update {
+                it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}"))
+            }
+
+            false -> _state.update { it.copy(process = ProcessState.Idle) }
+        }
+    }
 
     fun onAction(event: QuickEditAction) = when (event) {
         is QuickEditAction.SetActivity -> _state.update {
@@ -61,27 +84,6 @@ class QuickEditViewModel @Inject constructor(
         }
     }
 
-    private fun load() = viewModelScope.launch {
-        _state.update { it.copy(process = ProcessState.Processing) }
-        val errors = mutableListOf<String>()
-
-        getLatestActivities()
-            .onSuccess { data -> _state.update { it.copy(activities = data) } }
-            .onFailure { errors.add("activities") }
-
-        getLatestStravaActivities()
-            .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
-            .onFailure { errors.add("Strava activities") }
-
-        when (errors.isNotEmpty()) {
-            true -> _state.update {
-                it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}"))
-            }
-
-            false -> _state.update { it.copy(process = ProcessState.Idle) }
-        }
-    }
-
     private fun saveActivity() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
@@ -90,7 +92,7 @@ class QuickEditViewModel @Inject constructor(
             profile = state.value.profile,
             feel = state.value.feel,
             effort = state.value.effort
-        ).onFailure { errors.add("Garmin") }
+        ).onFailure { errors.add("activity") }
 
         if (state.value.stravaActivities.isNotEmpty() && state.value.stravaActivity != null) {
             updateStravaActivity(
@@ -98,13 +100,13 @@ class QuickEditViewModel @Inject constructor(
                 stravaActivity = state.value.stravaActivity,
                 profile = state.value.profile,
                 description = state.value.description,
-            ).onFailure { errors.add("Strava") }
+            ).onFailure { errors.add("Strava activity") }
         }
 
         when (errors.isNotEmpty()) {
             false -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
             true -> _state.update {
-                it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")} activity"))
+                it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")}"))
             }
         }
     }

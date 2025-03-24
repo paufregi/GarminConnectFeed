@@ -7,7 +7,7 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 
 import org.junit.Test
 import paufregi.connectfeed.data.api.garmin.models.CSRF
-import paufregi.connectfeed.htmlForCSRF
+import paufregi.connectfeed.htmlCSRF
 
 class CSRFExtractorTest {
 
@@ -16,7 +16,7 @@ class CSRFExtractorTest {
 
     @Test
     fun `Extract CSRF token`() {
-        val responseBody = htmlForCSRF.toResponseBody(mediaType.toMediaType())
+        val responseBody = htmlCSRF.toResponseBody(mediaType.toMediaType())
 
         val result = converter.convert(responseBody)
 

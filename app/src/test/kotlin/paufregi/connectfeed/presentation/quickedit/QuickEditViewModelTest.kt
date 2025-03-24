@@ -18,6 +18,7 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetLatestActivities
@@ -43,13 +44,37 @@ class QuickEditViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     val activities = listOf(
-        Activity(1L, "Running", ActivityType.Running, 10234.00, trainingEffect = "recovery"),
-        Activity(2L, "Cycling", ActivityType.Cycling, 17803.00, trainingEffect = "base")
+        Activity(
+            id = 1L,
+            name = "Running",
+            type = ActivityType.Running,
+            eventType = EventType.Training,
+            distance = 10234.00,
+            trainingEffect = "recovery"
+        ),
+        Activity(
+            id = 2L,
+            name = "Cycling",
+            type = ActivityType.Cycling,
+            eventType = EventType.Training,
+            distance = 17803.00,
+            trainingEffect = "base"
+        )
     )
 
     val stravaActivities = listOf(
-        Activity(1L, "StravaRunning", ActivityType.Running, 10234.00),
-        Activity(2L, "StravaCycling", ActivityType.Cycling, 17803.00)
+        Activity(
+            id = 1L,
+            name = "StravaRunning",
+            type = ActivityType.Running,
+            distance = 10234.00
+        ),
+        Activity(
+            id = 2L,
+            name = "StravaCycling",
+            type = ActivityType.Cycling,
+            distance = 17803.00
+        )
     )
 
     val profiles = listOf(
@@ -71,6 +96,38 @@ class QuickEditViewModelTest {
     @Test
     fun `Initial state`() = runTest {
         coEvery { getActivities() } returns Result.Success(activities)
+        coEvery { getStravaActivities() } returns Result.Success(emptyList())
+        every { getProfiles() } returns flowOf(profiles)
+
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEmpty()
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isNull()
+            assertThat(state.profile).isNull()
+            assertThat(state.description).isNull()
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{
+            getActivities()
+            getStravaActivities()
+        }
+        verify{ getProfiles() }
+        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+    }
+
+    @Test
+    fun `Initial state - with Strava`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
@@ -80,11 +137,15 @@ class QuickEditViewModelTest {
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isNull()
             assertThat(state.profile).isNull()
+            assertThat(state.description).isNull()
             assertThat(state.effort).isNull()
             assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -107,12 +168,80 @@ class QuickEditViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't load activities"))
-            assertThat(state.activities).isEqualTo(emptyList<Activity>())
+            assertThat(state.activities).isEmpty()
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isNull()
             assertThat(state.profile).isNull()
+            assertThat(state.description).isNull()
             assertThat(state.effort).isNull()
             assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isTrue()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{
+            getActivities()
+            getStravaActivities()
+        }
+        verify{ getProfiles() }
+        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+    }
+
+    @Test
+    fun `Fails to load strava activities`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        coEvery { getStravaActivities() } returns Result.Failure("error")
+        every { getProfiles() } returns flowOf(profiles)
+
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't load Strava activities"))
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEmpty()
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isNull()
+            assertThat(state.profile).isNull()
+            assertThat(state.description).isNull()
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{
+            getActivities()
+            getStravaActivities()
+        }
+        verify{ getProfiles() }
+        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+    }
+
+    @Test
+    fun `Fails to load all activities`() = runTest {
+        coEvery { getActivities() } returns Result.Failure("error")
+        coEvery { getStravaActivities() } returns Result.Failure("error")
+        every { getProfiles() } returns flowOf(profiles)
+
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't load activities & Strava activities"))
+            assertThat(state.activities).isEmpty()
+            assertThat(state.stravaActivities).isEmpty()
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isNull()
+            assertThat(state.profile).isNull()
+            assertThat(state.description).isNull()
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -138,11 +267,15 @@ class QuickEditViewModelTest {
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isNull()
             assertThat(state.profile).isEqualTo(profiles[0])
+            assertThat(state.description).isNull()
             assertThat(state.effort).isNull()
             assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -168,11 +301,15 @@ class QuickEditViewModelTest {
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.stravaActivity).isNull()
             assertThat(state.profile).isNull()
+            assertThat(state.description).isNull()
             assertThat(state.effort).isNull()
             assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -185,7 +322,7 @@ class QuickEditViewModelTest {
     }
 
     @Test
-    fun `Set activity with matching profile`() = runTest {
+    fun `Set activity - matching`() = runTest {
         coEvery { getActivities() } returns Result.Success(activities)
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
@@ -196,15 +333,21 @@ class QuickEditViewModelTest {
             awaitItem() // skip initial state
             viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
             awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
+            awaitItem() // skip
             viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
             assertThat(state.profile).isEqualTo(profiles[0])
+            assertThat(state.description).isNull()
             assertThat(state.effort).isNull()
             assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -217,7 +360,7 @@ class QuickEditViewModelTest {
     }
 
     @Test
-    fun `Set activity with no matching profile`() = runTest {
+    fun `Set activity - no matching`() = runTest {
         coEvery { getActivities() } returns Result.Success(activities)
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
@@ -228,15 +371,166 @@ class QuickEditViewModelTest {
             awaitItem() // skip initial state
             viewModel.onAction(QuickEditAction.SetProfile(profiles[1]))
             awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[1]))
+            awaitItem() // skip
             viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.stravaActivity).isNull()
             assertThat(state.profile).isNull()
+            assertThat(state.description).isNull()
             assertThat(state.effort).isNull()
             assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isTrue()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{
+            getActivities()
+            getStravaActivities()
+        }
+        verify{ getProfiles() }
+        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+    }
+
+    @Test
+    fun `Set Strava activity`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        every { getProfiles() } returns flowOf(profiles)
+
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+
+        viewModel.state.test {
+            awaitItem() // skip initial state
+            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
+            assertThat(state.profile).isNull()
+            assertThat(state.description).isNull()
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isTrue()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify {
+            getActivities()
+            getStravaActivities()
+        }
+        verify { getProfiles() }
+        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+    }
+
+    @Test
+    fun `Set Strava activity - matching`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        every { getProfiles() } returns flowOf(profiles)
+
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+
+        viewModel.state.test {
+            awaitItem() // skip initial state
+            viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
+            assertThat(state.profile).isEqualTo(profiles[0])
+            assertThat(state.description).isNull()
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isTrue()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{
+            getActivities()
+            getStravaActivities()
+        }
+        verify{ getProfiles() }
+        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+    }
+
+    @Test
+    fun `Set Strava activity - no matching`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        every { getProfiles() } returns flowOf(profiles)
+
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+
+        viewModel.state.test {
+            awaitItem() // skip initial state
+            viewModel.onAction(QuickEditAction.SetProfile(profiles[1]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetActivity(activities[1]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
+            assertThat(state.profile).isNull()
+            assertThat(state.description).isNull()
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isTrue()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{
+            getActivities()
+            getStravaActivities()
+        }
+        verify{ getProfiles() }
+        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+    }
+
+    @Test
+    fun `Set description`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        every { getProfiles() } returns flowOf(profiles)
+
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+
+        viewModel.state.test {
+            awaitItem() // skip initial state
+            viewModel.onAction(QuickEditAction.SetDescription("description"))
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isNull()
+            assertThat(state.profile).isNull()
+            assertThat(state.description).isEqualTo("description")
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isTrue()
+            cancelAndIgnoreRemainingEvents()
         }
 
         coVerify{
@@ -263,11 +557,15 @@ class QuickEditViewModelTest {
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isNull()
             assertThat(state.profile).isEqualTo(profiles[0].copy(water = 100))
+            assertThat(state.description).isNull()
             assertThat(state.effort).isNull()
             assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -293,11 +591,15 @@ class QuickEditViewModelTest {
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isNull()
             assertThat(state.profile).isNull()
+            assertThat(state.description).isNull()
             assertThat(state.effort).isEqualTo(50f)
             assertThat(state.feel).isNull()
+            assertThat(state.hasStrava).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -323,11 +625,15 @@ class QuickEditViewModelTest {
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isNull()
             assertThat(state.profile).isNull()
+            assertThat(state.description).isNull()
             assertThat(state.effort).isNull()
             assertThat(state.feel).isEqualTo(50f)
+            assertThat(state.hasStrava).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -347,7 +653,13 @@ class QuickEditViewModelTest {
         coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
         coEvery { updateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(
+            getActivities,
+            getStravaActivities,
+            getProfiles,
+            updateActivity,
+            updateStravaActivity
+        )
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -372,8 +684,10 @@ class QuickEditViewModelTest {
             assertThat(state.activity).isEqualTo(activities[0])
             assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
             assertThat(state.profile).isEqualTo(profiles[0])
+            assertThat(state.description).isEqualTo("description")
             assertThat(state.effort).isEqualTo(80f)
             assertThat(state.feel).isEqualTo(50f)
+            assertThat(state.hasStrava).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -381,195 +695,208 @@ class QuickEditViewModelTest {
             getActivities()
             getStravaActivities()
             updateActivity(activities[0], profiles[0], 50f, 80f)
-            updateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description") }
-        verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+            updateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
+        }
+        verify { getProfiles() }
+        confirmVerified(
+            getActivities,
+            getStravaActivities,
+            getProfiles,
+            updateActivity,
+            updateStravaActivity
+        )
+    }
 
-        @Test
-        fun `Save activity - garmin failure`() = runTest {
-            coEvery { getActivities() } returns Result.Success(activities)
-            coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
-            every { getProfiles() } returns flowOf(profiles)
-            coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
-            coEvery {
-                updateStravaActivity(
-                    any(),
-                    any(),
-                    any(),
-                    any()
-                )
-            } returns Result.Success(Unit)
-
-            viewModel = QuickEditViewModel(
-                getActivities,
-                getStravaActivities,
-                getProfiles,
-                updateActivity,
-                updateStravaActivity
+    @Test
+    fun `Save activity - failure`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        every { getProfiles() } returns flowOf(profiles)
+        coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
+        coEvery {
+            updateStravaActivity(
+                any(),
+                any(),
+                any(),
+                any()
             )
+        } returns Result.Success(Unit)
 
-            viewModel.state.test {
-                awaitItem() // skip initial state
-                viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetEffort(80f))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetFeel(50f))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetDescription("description"))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.Save)
-                val state = awaitItem()
-                assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't update Garmin activity"))
-                assertThat(state.activities).isEqualTo(activities)
-                assertThat(state.stravaActivities).isEqualTo(stravaActivities)
-                assertThat(state.profiles).isEqualTo(profiles)
-                assertThat(state.activity).isEqualTo(activities[0])
-                assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
-                assertThat(state.profile).isEqualTo(profiles[0])
-                assertThat(state.effort).isEqualTo(80f)
-                assertThat(state.feel).isEqualTo(50f)
-                cancelAndIgnoreRemainingEvents()
-            }
+        viewModel = QuickEditViewModel(
+            getActivities,
+            getStravaActivities,
+            getProfiles,
+            updateActivity,
+            updateStravaActivity
+        )
 
-            coVerify {
-                getActivities()
-                getStravaActivities()
-                updateActivity(activities[0], profiles[0], 50f, 80f)
-                updateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
-            }
-            verify { getProfiles() }
-            confirmVerified(
-                getActivities,
-                getStravaActivities,
-                getProfiles,
-                updateActivity,
-                updateStravaActivity
-            )
+        viewModel.state.test {
+            awaitItem() // skip initial state
+            viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetEffort(80f))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetFeel(50f))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetDescription("description"))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.Save)
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't update activity"))
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
+            assertThat(state.profile).isEqualTo(profiles[0])
+            assertThat(state.description).isEqualTo("description")
+            assertThat(state.effort).isEqualTo(80f)
+            assertThat(state.feel).isEqualTo(50f)
+            assertThat(state.hasStrava).isTrue()
+            cancelAndIgnoreRemainingEvents()
         }
 
-        @Test
-        fun `Save activity - strava failure`() = runTest {
-            coEvery { getActivities() } returns Result.Success(activities)
-            coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
-            every { getProfiles() } returns flowOf(profiles)
-            coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
-            coEvery { updateStravaActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
+        coVerify {
+            getActivities()
+            getStravaActivities()
+            updateActivity(activities[0], profiles[0], 50f, 80f)
+            updateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
+        }
+        verify { getProfiles() }
+        confirmVerified(
+            getActivities,
+            getStravaActivities,
+            getProfiles,
+            updateActivity,
+            updateStravaActivity
+        )
+    }
 
-            viewModel = QuickEditViewModel(
-                getActivities,
-                getStravaActivities,
-                getProfiles,
-                updateActivity,
-                updateStravaActivity
-            )
+    @Test
+    fun `Save activity - strava failure`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        every { getProfiles() } returns flowOf(profiles)
+        coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { updateStravaActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
 
-            viewModel.state.test {
-                awaitItem() // skip initial state
-                viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetEffort(80f))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetFeel(50f))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetDescription("description"))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.Save)
-                val state = awaitItem()
-                assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't update Strava activity"))
-                assertThat(state.activities).isEqualTo(activities)
-                assertThat(state.stravaActivities).isEqualTo(stravaActivities)
-                assertThat(state.profiles).isEqualTo(profiles)
-                assertThat(state.activity).isEqualTo(activities[0])
-                assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
-                assertThat(state.profile).isEqualTo(profiles[0])
-                assertThat(state.effort).isEqualTo(80f)
-                assertThat(state.feel).isEqualTo(50f)
-                cancelAndIgnoreRemainingEvents()
-            }
+        viewModel = QuickEditViewModel(
+            getActivities,
+            getStravaActivities,
+            getProfiles,
+            updateActivity,
+            updateStravaActivity
+        )
 
-            coVerify {
-                getActivities()
-                getStravaActivities()
-                updateActivity(activities[0], profiles[0], 50f, 80f)
-                updateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
-            }
-            verify { getProfiles() }
-            confirmVerified(
-                getActivities,
-                getStravaActivities,
-                getProfiles,
-                updateActivity,
-                updateStravaActivity
-            )
+        viewModel.state.test {
+            awaitItem() // skip initial state
+            viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetEffort(80f))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetFeel(50f))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetDescription("description"))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.Save)
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't update Strava activity"))
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
+            assertThat(state.profile).isEqualTo(profiles[0])
+            assertThat(state.description).isEqualTo("description")
+            assertThat(state.effort).isEqualTo(80f)
+            assertThat(state.feel).isEqualTo(50f)
+            assertThat(state.hasStrava).isTrue()
+            cancelAndIgnoreRemainingEvents()
         }
 
-        @Test
-        fun `Save activity - garmin & strava failure`() = runTest {
-            coEvery { getActivities() } returns Result.Success(activities)
-            coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
-            every { getProfiles() } returns flowOf(profiles)
-            coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
-            coEvery { updateStravaActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
-
-            viewModel = QuickEditViewModel(
-                getActivities,
-                getStravaActivities,
-                getProfiles,
-                updateActivity,
-                updateStravaActivity
-            )
-
-            viewModel.state.test {
-                awaitItem() // skip initial state
-                viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetEffort(80f))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetFeel(50f))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.SetDescription("description"))
-                awaitItem() // skip
-                viewModel.onAction(QuickEditAction.Save)
-                val state = awaitItem()
-                assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't update Garmin & Strava activity"))
-                assertThat(state.activities).isEqualTo(activities)
-                assertThat(state.stravaActivities).isEqualTo(stravaActivities)
-                assertThat(state.profiles).isEqualTo(profiles)
-                assertThat(state.activity).isEqualTo(activities[0])
-                assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
-                assertThat(state.profile).isEqualTo(profiles[0])
-                assertThat(state.effort).isEqualTo(80f)
-                assertThat(state.feel).isEqualTo(50f)
-                cancelAndIgnoreRemainingEvents()
-            }
-
-            coVerify {
-                getActivities()
-                getStravaActivities()
-                updateActivity(activities[0], profiles[0], 50f, 80f)
-                updateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
-            }
-            verify { getProfiles() }
-            confirmVerified(
-                getActivities,
-                getStravaActivities,
-                getProfiles,
-                updateActivity,
-                updateStravaActivity
-            )
+        coVerify {
+            getActivities()
+            getStravaActivities()
+            updateActivity(activities[0], profiles[0], 50f, 80f)
+            updateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
         }
+        verify { getProfiles() }
+        confirmVerified(
+            getActivities,
+            getStravaActivities,
+            getProfiles,
+            updateActivity,
+            updateStravaActivity
+        )
+    }
+
+    @Test
+    fun `Save activity - both failure`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        every { getProfiles() } returns flowOf(profiles)
+        coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
+        coEvery { updateStravaActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
+
+        viewModel = QuickEditViewModel(
+            getActivities,
+            getStravaActivities,
+            getProfiles,
+            updateActivity,
+            updateStravaActivity
+        )
+
+        viewModel.state.test {
+            awaitItem() // skip initial state
+            viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetEffort(80f))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetFeel(50f))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.SetDescription("description"))
+            awaitItem() // skip
+            viewModel.onAction(QuickEditAction.Save)
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't update activity & Strava activity"))
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
+            assertThat(state.profiles).isEqualTo(profiles)
+            assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
+            assertThat(state.profile).isEqualTo(profiles[0])
+            assertThat(state.description).isEqualTo("description")
+            assertThat(state.effort).isEqualTo(80f)
+            assertThat(state.feel).isEqualTo(50f)
+            assertThat(state.hasStrava).isTrue()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify {
+            getActivities()
+            getStravaActivities()
+            updateActivity(activities[0], profiles[0], 50f, 80f)
+            updateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
+        }
+        verify { getProfiles() }
+        confirmVerified(
+            getActivities,
+            getStravaActivities,
+            getProfiles,
+            updateActivity,
+            updateStravaActivity
+        )
     }
 }

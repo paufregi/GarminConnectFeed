@@ -6,7 +6,6 @@ import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.Course
-import paufregi.connectfeed.data.api.garmin.models.EventType
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import retrofit2.Response
@@ -36,9 +35,6 @@ interface GarminConnect {
 
     @GET("/course-service/course")
     suspend fun getCourses(): Response<List<Course>>
-
-    @GET("/activity-service/activity/eventTypes")
-    suspend fun getEventTypes(): Response<List<EventType>>
 
     @GET("/userprofile-service/socialProfile")
     suspend fun getUserProfile(): Response<UserProfile>

@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import paufregi.connectfeed.presentation.HomeNavigation
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.CustomSlider
@@ -37,6 +38,7 @@ import paufregi.connectfeed.presentation.ui.components.Dropdown
 import paufregi.connectfeed.presentation.ui.components.IconRadioGroup
 import paufregi.connectfeed.presentation.ui.components.IconRadioItem
 import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.presentation.ui.components.NavigationBar
 import paufregi.connectfeed.presentation.ui.components.NavigationScaffold
 import paufregi.connectfeed.presentation.ui.components.SimpleScaffold
 import paufregi.connectfeed.presentation.ui.components.StatusInfo
@@ -100,6 +102,15 @@ internal fun QuickEditContent(
         is ProcessState.Idle -> NavigationScaffold(
             items = Navigation.items,
             selectedIndex = Navigation.HOME,
+            bottomBar = {
+                if (state.hasStrava) {
+                    NavigationBar(
+                        items = HomeNavigation.items,
+                        selectedIndex = HomeNavigation.QUICK_EDIT,
+                        nav = nav
+                    )
+                }
+            },
             nav = nav
         ) { QuickEditForm(state, onAction, it) }
     }
@@ -139,7 +150,7 @@ internal fun QuickEditForm(
                     }
                 }
         )
-        if (state.stravaActivities.isNotEmpty()) {
+        if (state.hasStrava) {
             Dropdown(
                 label = { Text("Strava Activity") },
                 selected = state.stravaActivity?.toDropdownItem { },
@@ -226,8 +237,8 @@ internal fun QuickEditForm(
         ) {
             Button(
                 text = "Save",
-                enabled = state.activity != null && state.profile != null && (state.stravaActivities.isEmpty() || state.stravaActivity != null),
-
+                enabled = state.activity != null && state.profile != null &&
+                        (!state.hasStrava || state.stravaActivity != null),
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()

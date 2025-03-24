@@ -44,6 +44,7 @@ fun NavigationScaffold(
     nav: NavController = rememberNavController(),
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
+    bottomBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit = {}
 ) {
 
@@ -73,6 +74,7 @@ fun NavigationScaffold(
         Scaffold(
             floatingActionButton = floatingActionButton,
             floatingActionButtonPosition = floatingActionButtonPosition,
+            bottomBar = bottomBar,
             topBar = {
                 TopAppBar(
                     title = { Text("Connect Feed") },

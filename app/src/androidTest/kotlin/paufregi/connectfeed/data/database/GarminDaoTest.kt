@@ -48,7 +48,7 @@ class GarminDaoTest {
         val profile = ProfileEntity(
             id = 1,
             name = "profile1",
-            eventType = EventType(id = 1, name = "event1"),
+            eventType = EventType.Training,
             activityType = ActivityType.Running,
             course = Course(id = 1, name = "course1", distance = 1000.50, type = ActivityType.Running),
             water = 100,

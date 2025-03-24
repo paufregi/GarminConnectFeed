@@ -14,7 +14,6 @@ data class ProfileEntity(
 
     val name: String,
     val activityType: ActivityType = ActivityType.Any,
-    @Embedded(prefix = "event_")
     val eventType: EventType? = null,
     @Embedded(prefix = "course_")
     val course: Course? = null,

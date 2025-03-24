@@ -1,7 +1,9 @@
 package paufregi.connectfeed.presentation.quickedit
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.isDisplayed
@@ -27,13 +29,35 @@ class QuickEditScreenTest {
     val composeTestRule = createComposeRule()
 
     val activities = listOf(
-        Activity(1L, "Running", ActivityType.Running, 10234.00, "recovery"),
-        Activity(2L, "Cycling", ActivityType.Cycling, 17803.00, "recovery")
+        Activity(
+            id = 1L,
+            name = "Running",
+            type = ActivityType.Running,
+            distance = 10234.00,
+            trainingEffect = "recovery"
+        ),
+        Activity(
+            id  = 2L,
+            name = "Cycling",
+            type = ActivityType.Cycling,
+            distance = 17803.00,
+            trainingEffect = "recovery"
+        )
     )
 
     val stravaActivities = listOf(
-        Activity(1L, "Running", ActivityType.Running, 10234.00),
-        Activity(2L, "Cycling", ActivityType.Cycling, 17803.00)
+        Activity(
+            id = 1L,
+            name = "Running",
+            type = ActivityType.Running,
+            distance = 10234.00
+        ),
+        Activity(
+            id = 2L,
+            name = "Cycling",
+            type = ActivityType.Cycling,
+            distance = 17803.00
+        )
     )
 
     val profiles = listOf(
@@ -53,6 +77,7 @@ class QuickEditScreenTest {
         }
         composeTestRule.onNodeWithText("Activity").isDisplayed()
         composeTestRule.onNodeWithText("Profile").isDisplayed()
+        composeTestRule.onNodeWithTag("navigation_bar").assertIsNotDisplayed()
         composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
 
@@ -69,17 +94,8 @@ class QuickEditScreenTest {
         composeTestRule.onNodeWithText("Activity").isDisplayed()
         composeTestRule.onNodeWithText("Strava").isDisplayed()
         composeTestRule.onNodeWithText("Profile").isDisplayed()
+        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
-    }
-
-    @Test
-    fun `Loading spinner`() {
-        composeTestRule.setContent {
-            QuickEditContent(state = QuickEditState(
-                process = ProcessState.Processing,
-            ))
-        }
-        composeTestRule.onNodeWithTag("loading").isDisplayed()
     }
 
     @Test
@@ -95,6 +111,7 @@ class QuickEditScreenTest {
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
         composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
+        composeTestRule.onNodeWithTag("navigation_bar").assertIsNotDisplayed()
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
     }
 
@@ -114,6 +131,39 @@ class QuickEditScreenTest {
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
         composeTestRule.onNodeWithText("Strava Activity").assertTextContains(stravaActivities[0].name)
         composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
+        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
+    }
+
+    @Test
+    fun `Loading spinner`() {
+        composeTestRule.setContent {
+            QuickEditContent(state = QuickEditState(
+                process = ProcessState.Processing,
+            ))
+        }
+        composeTestRule.onNodeWithTag("loading").isDisplayed()
+    }
+
+    @Test
+    fun `Update - success`() {
+        composeTestRule.setContent {
+            QuickEditContent(state = QuickEditState(
+                process = ProcessState.Success("Activity updated"),
+            ))
+        }
+        composeTestRule.onNodeWithTag("status_info_text").isDisplayed()
+        composeTestRule.onNodeWithText("Activity updated").isDisplayed()
+    }
+
+    @Test
+    fun `Update - failure`() {
+        composeTestRule.setContent {
+            QuickEditContent(state = QuickEditState(
+                process = ProcessState.Failure("Couldn't update activity"),
+            ))
+        }
+        composeTestRule.onNodeWithTag("status_info_text").isDisplayed()
+        composeTestRule.onNodeWithText("Couldn't update activity").isDisplayed()
     }
 }

@@ -32,14 +32,32 @@ val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
 
 val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
 val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
-val consumerBody = """{"consumer_key":"${consumer.key}","consumer_secret":"${consumer.secret}"}"""
 val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
-val oauth1Body = "oauth_token=${oauth1.token}&oauth_token_secret=${oauth1.secret}"
 val oauth2 = createOAuth2(tomorrow)
-val oauth2Body = """{"scope": "SCOPE","jti": "JTI","access_token": "${oauth2.accessToken}","token_type": "TOKEN_TYPE","refresh_token": "REFRESH_TOKEN","expires_in": 0,"refresh_token_expires_in": 0}"""
 val stravaToken = createStravaToken(tomorrow)
 
-val htmlForCSRF = """
+val oauth1Body = "oauth_token=${oauth1.token}&oauth_token_secret=${oauth1.secret}"
+
+val consumerJson = """
+    {
+    "consumer_key":"${consumer.key}",
+    "consumer_secret":"${consumer.secret}"
+    }
+    """.trimIndent()
+
+val oauth2Json = """
+    {
+    "scope": "SCOPE",
+    "jti": "JTI",
+    "access_token": "${oauth2.accessToken}",
+    "token_type": "TOKEN_TYPE",
+    "refresh_token": "REFRESH_TOKEN",
+    "expires_in": 0,
+    "refresh_token_expires_in": 0
+    }
+    """.trimIndent()
+
+val htmlCSRF = """
         <!DOCTYPE html>
         <html lang="en" class="no-js">
             <head>
@@ -114,7 +132,7 @@ val htmlForCSRF = """
         </html>
     """.trimIndent()
 
-val htmlForTicket = """
+val htmlTicket = """
         <!DOCTYPE html>
         <html class="no-js">
             <head>
@@ -637,21 +655,6 @@ val coursesJson = """
     ]
 """.trimIndent()
 
-val eventTypesJson = """
-    [
-        {
-            "typeId": 1,
-            "typeKey": "race",
-            "sortOrder": 5
-        },
-        {
-            "typeId": 2,
-            "typeKey": "training",
-            "sortOrder": 4
-        }
-    ]
-""".trimIndent()
-
 val stravaExchangeTokenJson = """
     {
         "token_type": "Bearer",
@@ -806,62 +809,6 @@ const val garminSSOPort = 8082
 const val garthPort = 8083
 const val stravaPort = 8084
 
-fun loadRes(res: Int): String =
-    getInstrumentation().context.resources.openRawResource(res).bufferedReader().use { it.readText() }
-
-var sslSocketFactory = HandshakeCertificates.Builder()
-    .heldCertificate(HeldCertificate.decode(loadRes(R.raw.server)))
-    .build().sslSocketFactory()
-
-val connectDispatcher: Dispatcher = object : Dispatcher() {
-    override fun dispatch(request: RecordedRequest): MockResponse {
-        val path = request.path ?: ""
-        return when {
-            path.startsWith("/oauth-service/oauth/preauthorized") && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(oauth1Body)
-            path == "/oauth-service/oauth/exchange/user/2.0" && request.method == "POST" ->
-                MockResponse().setResponseCode(200).setBody(oauth2Body)
-            path == "/upload-service/upload" && request.method == "POST" ->
-                MockResponse().setResponseCode(200)
-            path == "/userprofile-service/socialProfile" && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(userProfileJson)
-            path == "/course-service/course" && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(coursesJson)
-            path == "/activity-service/activity/eventTypes" && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(eventTypesJson)
-            (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
-                MockResponse().setResponseCode(200).setBody(latestActivitiesJson)
-            (path.startsWith("/activity-service/activity") && request.method == "PUT") ->
-                MockResponse().setResponseCode(200)
-            else -> MockResponse().setResponseCode(404)
-        }
-    }
-}
-
-val garthDispatcher: Dispatcher = object : Dispatcher() {
-    override fun dispatch(request: RecordedRequest): MockResponse {
-        val path = request.path ?: ""
-        return when {
-            path == "/oauth_consumer.json" && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(consumerBody)
-            else -> MockResponse().setResponseCode(404)
-        }
-    }
-}
-
-val garminSSODispatcher: Dispatcher = object : Dispatcher() {
-    override fun dispatch(request: RecordedRequest): MockResponse {
-        val path = request.path ?: ""
-        return when {
-            path.startsWith("/sso/signin") && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(htmlForCSRF)
-            path.startsWith("/sso/signin") && request.method == "POST" ->
-                MockResponse().setResponseCode(200).setBody(htmlForTicket)
-            else -> MockResponse().setResponseCode(404)
-        }
-    }
-}
-
 fun RecordedRequest.getFields(): Map<String, String> {
     val body = body.readUtf8()
     val contentType = headers["Content-Type"] ?: ""
@@ -873,23 +820,95 @@ fun RecordedRequest.getFields(): Map<String, String> {
     }
 }
 
+fun loadRes(res: Int): String =
+    getInstrumentation().context.resources.openRawResource(res).bufferedReader()
+        .use { it.readText() }
+
+var sslSocketFactory = HandshakeCertificates.Builder()
+    .heldCertificate(HeldCertificate.decode(loadRes(R.raw.server)))
+    .build().sslSocketFactory()
+
+val connectDispatcher: Dispatcher = object : Dispatcher() {
+    override fun dispatch(request: RecordedRequest): MockResponse {
+        val path = request.path ?: ""
+        return when {
+            path.startsWith("/oauth-service/oauth/preauthorized") && request.method == "GET" ->
+                MockResponse().setResponseCode(200).setBody(oauth1Body)
+
+            path == "/oauth-service/oauth/exchange/user/2.0" && request.method == "POST" ->
+                MockResponse().setResponseCode(200).setBody(oauth2Json)
+
+            path == "/upload-service/upload" && request.method == "POST" ->
+                MockResponse().setResponseCode(200)
+
+            path == "/userprofile-service/socialProfile" && request.method == "GET" ->
+                MockResponse().setResponseCode(200).setBody(userProfileJson)
+
+            path == "/course-service/course" && request.method == "GET" ->
+                MockResponse().setResponseCode(200).setBody(coursesJson)
+
+            (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
+                MockResponse().setResponseCode(200).setBody(latestActivitiesJson)
+
+            (path.startsWith("/activity-service/activity") && request.method == "PUT") ->
+                MockResponse().setResponseCode(200)
+
+            else -> MockResponse().setResponseCode(404)
+        }
+    }
+}
+
+val garthDispatcher: Dispatcher = object : Dispatcher() {
+    override fun dispatch(request: RecordedRequest): MockResponse {
+        val path = request.path ?: ""
+        return when {
+            path == "/oauth_consumer.json" && request.method == "GET" ->
+                MockResponse().setResponseCode(200).setBody(consumerJson)
+
+            else -> MockResponse().setResponseCode(404)
+        }
+    }
+}
+
+val garminSSODispatcher: Dispatcher = object : Dispatcher() {
+    override fun dispatch(request: RecordedRequest): MockResponse {
+        val path = request.path ?: ""
+        return when {
+            path.startsWith("/sso/signin") && request.method == "GET" ->
+                MockResponse().setResponseCode(200).setBody(htmlCSRF)
+
+            path.startsWith("/sso/signin") && request.method == "POST" ->
+                MockResponse().setResponseCode(200).setBody(htmlTicket)
+
+            else -> MockResponse().setResponseCode(404)
+        }
+    }
+}
+
 val stravaDispatcher: Dispatcher = object : Dispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
         val path = request.path ?: ""
         val fields = request.getFields()
         return when {
             path.startsWith("/oauth/mobile/authorize") ->
-                MockResponse().setResponseCode(302).setHeader("Location", "paufregi.connectfeed://strava/auth?code=123456")
+                MockResponse().setResponseCode(302)
+                    .setHeader("Location", "paufregi.connectfeed://strava/auth?code=123456")
+
             path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "authorization_code" ->
                 MockResponse().setResponseCode(200).setBody(stravaExchangeTokenJson)
+
             path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "refresh_token" ->
                 MockResponse().setResponseCode(200).setBody(stravaRefreshTokenJson)
+
             path == "/oauth/deauthorize" && request.method == "POST" ->
                 MockResponse().setResponseCode(200).setBody(stravaDeauthorizationJson)
+
             path.startsWith("/athlete/activities") && request.method == "GET" ->
                 MockResponse().setResponseCode(200).setBody(stravaLatestActivitiesJson)
+
             path.startsWith("/activities/") && request.method == "PUT" ->
                 MockResponse().setResponseCode(200)
+
             else -> MockResponse().setResponseCode(404)
         }
     }

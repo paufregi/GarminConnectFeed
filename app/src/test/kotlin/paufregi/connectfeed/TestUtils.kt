@@ -27,7 +27,8 @@ val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/larg
 val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
 val oauth2 = createOAuth2(tomorrow)
-val oauth2Body = """
+
+val oauth2Json = """
     {
         "scope": "SCOPE",
         "jti": "JTI",
@@ -39,8 +40,7 @@ val oauth2Body = """
     }
     """.trimIndent()
 
-
-val htmlForCSRF = """
+val htmlCSRF = """
         <!DOCTYPE html>
         <html lang="en" class="no-js">
             <head>
@@ -115,7 +115,7 @@ val htmlForCSRF = """
         </html>
     """.trimIndent()
 
-val htmlForTicket = """
+val htmlTicket = """
         <!DOCTYPE html>
         <html class="no-js">
             <head>

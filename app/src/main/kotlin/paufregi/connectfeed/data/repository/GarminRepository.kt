@@ -66,12 +66,6 @@ class GarminRepository @Inject constructor(
             { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
         )
 
-    suspend fun getEventTypes(): Result<List<EventType>> =
-        callApi(
-            { garminConnect.getEventTypes() },
-            { res -> res.body()?.fastMap { it.toCore() }?.filterNotNull() ?: emptyList() }
-        )
-
     suspend fun updateActivity(
         activity: Activity,
         name: String?,
@@ -84,7 +78,7 @@ class GarminRepository @Inject constructor(
         val request = UpdateActivity(
             id = activity.id,
             name = name,
-            eventType = DataEventType(eventType?.id, eventType?.name?.lowercase()),
+            eventType = DataEventType(eventType?.id, eventType?.key),
             metadata = Metadata(course?.id),
             summary = Summary(water, feel, effort)
         )

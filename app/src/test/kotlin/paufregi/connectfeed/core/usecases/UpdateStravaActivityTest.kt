@@ -38,7 +38,7 @@ class UpdateStravaActivityTest{
     val profile = Profile(
         name = "newName",
         activityType = ActivityType.Running,
-        eventType = EventType(id = 5, name = "transportation"),
+        eventType = EventType.Transportation,
         course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
         rename = true,
         trainingEffect = true
@@ -74,7 +74,7 @@ class UpdateStravaActivityTest{
         val profile = Profile(
             name = "newName",
             activityType = ActivityType.Running,
-            eventType = EventType(id = 5, name = "transportation"),
+            eventType = EventType.Transportation,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
             rename = false,
             trainingEffect = true
@@ -95,7 +95,7 @@ class UpdateStravaActivityTest{
         val profile = Profile(
             name = "newName",
             activityType = ActivityType.Running,
-            eventType = EventType(id = 5, name = "transportation"),
+            eventType = EventType.Transportation,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
             rename = true,
             trainingEffect = false
@@ -115,7 +115,7 @@ class UpdateStravaActivityTest{
         val profile = Profile(
             name = "newName",
             activityType = ActivityType.Running,
-            eventType = EventType(id = 1, name = "event"),
+            eventType = EventType.Training,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
             rename = true,
             trainingEffect = false

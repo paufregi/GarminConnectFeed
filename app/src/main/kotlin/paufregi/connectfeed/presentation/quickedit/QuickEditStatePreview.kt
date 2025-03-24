@@ -11,7 +11,6 @@ class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
         QuickEditState(ProcessState.Processing),
         QuickEditState(ProcessState.Success("Activity updates")),
         QuickEditState(ProcessState.Failure("Failed to update activity")),
-        QuickEditState(ProcessState.Failure("Failed to update activity")),
         QuickEditState(
             activity = Activity(
                 id = 1,
