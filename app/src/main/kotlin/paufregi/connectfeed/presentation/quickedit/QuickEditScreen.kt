@@ -232,9 +232,16 @@ internal fun QuickEditForm(
             }
         }
         Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier.fillMaxWidth()
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
         ) {
+            Button(
+                text = "Reset",
+                onClick = { onAction(QuickEditAction.Restart) }
+            )
+
             Button(
                 text = "Save",
                 enabled = state.activity != null && state.profile != null &&
