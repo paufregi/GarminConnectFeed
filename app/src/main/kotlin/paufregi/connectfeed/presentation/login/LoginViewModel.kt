@@ -22,11 +22,11 @@ class LoginViewModel @Inject constructor(
     val state = _state
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(500L), LoginState())
 
-    fun onAction(event: LoginAction) {
-        when (event) {
-            is LoginAction.SetUsername -> _state.update { it.copy(username = event.username) }
-            is LoginAction.SetPassword -> _state.update { it.copy(password = event.password) }
-            is LoginAction.ShowPassword -> _state.update { it.copy(showPassword = event.showPassword) }
+    fun onAction(action: LoginAction) {
+        when (action) {
+            is LoginAction.SetUsername -> _state.update { it.copy(username = action.username) }
+            is LoginAction.SetPassword -> _state.update { it.copy(password = action.password) }
+            is LoginAction.ShowPassword -> _state.update { it.copy(showPassword = action.showPassword) }
             is LoginAction.Reset -> _state.update { LoginState() }
             is LoginAction.SignIn -> signIn()
         }

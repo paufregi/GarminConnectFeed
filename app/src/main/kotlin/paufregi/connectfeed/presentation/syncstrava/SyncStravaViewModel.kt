@@ -50,12 +50,12 @@ class SyncStravaViewModel @Inject constructor(
         }
     }
 
-    fun onAction(event: SyncStravaAction) = when (event) {
+    fun onAction(action: SyncStravaAction) = when (action) {
         is SyncStravaAction.SetActivity -> _state.update {
             it.copy(
-                activity = event.activity,
-                stravaActivity = if ((it.stravaActivity == null) || (it.stravaActivity.type != event.activity.type))
-                    it.stravaActivities.find { it.match(event.activity) }
+                activity = action.activity,
+                stravaActivity = if ((it.stravaActivity == null) || (it.stravaActivity.type != action.activity.type))
+                    it.stravaActivities.find { it.match(action.activity) }
                 else
                     it.stravaActivity,
             )
@@ -63,16 +63,16 @@ class SyncStravaViewModel @Inject constructor(
 
         is SyncStravaAction.SetStravaActivity -> _state.update {
             it.copy(
-                stravaActivity = event.activity,
-                activity = if ((it.activity == null) || (it.activity.type != event.activity.type))
-                    it.activities.find { it.match(event.activity) }
+                stravaActivity = action.activity,
+                activity = if ((it.activity == null) || (it.activity.type != action.activity.type))
+                    it.activities.find { it.match(action.activity) }
                 else
                     it.activity,
             )
         }
 
-        is SyncStravaAction.SetDescription -> _state.update { it.copy(description = event.description) }
-        is SyncStravaAction.SetTrainingEffect -> _state.update { it.copy(trainingEffect = event.trainingEffect) }
+        is SyncStravaAction.SetDescription -> _state.update { it.copy(description = action.description) }
+        is SyncStravaAction.SetTrainingEffect -> _state.update { it.copy(trainingEffect = action.trainingEffect) }
         is SyncStravaAction.Save -> saveActivity()
         is SyncStravaAction.Restart -> {
             _state.update { SyncStravaState() }

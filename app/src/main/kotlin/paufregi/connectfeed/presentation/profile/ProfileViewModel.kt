@@ -56,22 +56,22 @@ class ProfileViewModel @Inject constructor(
 
     }
 
-    fun onAction(event: ProfileAction) = when (event) {
-        is ProfileAction.SetName -> _state.update { it.copy(profile = it.profile.copy(name = event.name)) }
+    fun onAction(action: ProfileAction) = when (action) {
+        is ProfileAction.SetName -> _state.update { it.copy(profile = it.profile.copy(name = action.name)) }
         is ProfileAction.SetActivityType -> _state.update {
             it.copy(profile = it.profile.copy(
-                activityType = event.activityType,
-                course = if (event.activityType == it.profile.course?.type) it.profile.course else null,
+                activityType = action.activityType,
+                course = if (action.activityType == it.profile.course?.type) it.profile.course else null,
             ))
         }
 
-        is ProfileAction.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = event.eventType)) }
-        is ProfileAction.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = event.course)) }
-        is ProfileAction.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = event.water)) }
-        is ProfileAction.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = event.rename)) }
-        is ProfileAction.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = event.customWater)) }
-        is ProfileAction.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = event.feelAndEffort)) }
-        is ProfileAction.SetTrainingEffect -> _state.update { it.copy(profile = it.profile.copy(trainingEffect = event.trainingEffect)) }
+        is ProfileAction.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = action.eventType)) }
+        is ProfileAction.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = action.course)) }
+        is ProfileAction.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = action.water)) }
+        is ProfileAction.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = action.rename)) }
+        is ProfileAction.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = action.customWater)) }
+        is ProfileAction.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = action.feelAndEffort)) }
+        is ProfileAction.SetTrainingEffect -> _state.update { it.copy(profile = it.profile.copy(trainingEffect = action.trainingEffect)) }
         is ProfileAction.Save -> save()
     }
 

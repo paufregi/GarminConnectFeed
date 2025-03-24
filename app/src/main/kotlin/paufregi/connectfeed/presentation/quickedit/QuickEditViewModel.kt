@@ -55,13 +55,13 @@ class QuickEditViewModel @Inject constructor(
         }
     }
 
-    fun onAction(event: QuickEditAction) = when (event) {
+    fun onAction(action: QuickEditAction) = when (action) {
         is QuickEditAction.SetActivity -> _state.update {
             it.copy(
-                activity = event.activity,
-                profile = if (it.profile?.activityType != event.activity.type) null else it.profile,
-                stravaActivity = if ((it.stravaActivity == null) || (it.stravaActivity.type != event.activity.type))
-                    it.stravaActivities.find { it.match(event.activity) }
+                activity = action.activity,
+                profile = if (it.profile?.activityType != action.activity.type) null else it.profile,
+                stravaActivity = if ((it.stravaActivity == null) || (it.stravaActivity.type != action.activity.type))
+                    it.stravaActivities.find { it.match(action.activity) }
                 else
                     it.stravaActivity,
             )
@@ -69,20 +69,20 @@ class QuickEditViewModel @Inject constructor(
 
         is QuickEditAction.SetStravaActivity -> _state.update {
             it.copy(
-                stravaActivity = event.activity,
-                profile = if (it.profile?.activityType != event.activity.type) null else it.profile,
-                activity = if ((it.activity == null) || (it.activity.type != event.activity.type))
-                    it.activities.find { it.match(event.activity) }
+                stravaActivity = action.activity,
+                profile = if (it.profile?.activityType != action.activity.type) null else it.profile,
+                activity = if ((it.activity == null) || (it.activity.type != action.activity.type))
+                    it.activities.find { it.match(action.activity) }
                 else
                     it.activity,
             )
         }
 
-        is QuickEditAction.SetProfile -> _state.update { it.copy(profile = event.profile) }
-        is QuickEditAction.SetDescription -> _state.update { it.copy(description = event.description) }
-        is QuickEditAction.SetWater -> _state.update { it.copy(profile = it.profile?.copy(water = event.water)) }
-        is QuickEditAction.SetEffort -> _state.update { it.copy(effort = if (event.effort == 0f) null else event.effort) }
-        is QuickEditAction.SetFeel -> _state.update { it.copy(feel = event.feel) }
+        is QuickEditAction.SetProfile -> _state.update { it.copy(profile = action.profile) }
+        is QuickEditAction.SetDescription -> _state.update { it.copy(description = action.description) }
+        is QuickEditAction.SetWater -> _state.update { it.copy(profile = it.profile?.copy(water = action.water)) }
+        is QuickEditAction.SetEffort -> _state.update { it.copy(effort = if (action.effort == 0f) null else action.effort) }
+        is QuickEditAction.SetFeel -> _state.update { it.copy(feel = action.feel) }
         is QuickEditAction.Save -> saveActivity()
         is QuickEditAction.Restart -> {
             _state.update { QuickEditState() }
