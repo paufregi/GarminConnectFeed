@@ -309,4 +309,25 @@ class MainActivityTest {
 
         composeTestRule.waitUntil(conditionDescription = "Activity updated") { composeTestRule.onNodeWithText("Activity updated").isDisplayed() }
     }
+
+    @Test
+    fun `Sync Strava activity`() = runTest {
+        authStore.saveUser(user)
+        authStore.saveConsumer(consumer)
+        authStore.saveOAuth1(oauth1)
+        authStore.saveOAuth2(oauth2)
+        stravaStore.saveToken(stravaToken)
+
+        ActivityScenario.launch(MainActivity::class.java)
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.onNodeWithText("Sync Strava").performClick()
+        composeTestRule.waitUntil(conditionDescription = "sync_strava_form") { composeTestRule.onNodeWithTag("sync_strava_form").isDisplayed() }
+        composeTestRule.onNodeWithText("Activity").performClick()
+        composeTestRule.onNodeWithText("Activity 1").performClick()
+        composeTestRule.onNodeWithText("Strava Activity").performClick()
+        composeTestRule.onNodeWithText("Bondcliff").performClick()
+        composeTestRule.onNodeWithText("Save").performClick()
+
+        composeTestRule.waitUntil(conditionDescription = "Activity updated") { composeTestRule.onNodeWithText("Activity updated").isDisplayed() }
+    }
 }
