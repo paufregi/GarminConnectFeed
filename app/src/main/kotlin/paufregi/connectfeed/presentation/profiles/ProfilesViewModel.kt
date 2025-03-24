@@ -20,9 +20,9 @@ class ProfilesViewModel @Inject constructor(
         .map { ProfilesState(profiles = it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), ProfilesState())
 
-    fun onAction(event: ProfileAction) {
-        when (event) {
-            is ProfileAction.Delete -> viewModelScope.launch { deleteProfile(event.profile) }
+    fun onAction(action: ProfileAction) {
+        when (action) {
+            is ProfileAction.Delete -> viewModelScope.launch { deleteProfile(action.profile) }
         }
     }
 }

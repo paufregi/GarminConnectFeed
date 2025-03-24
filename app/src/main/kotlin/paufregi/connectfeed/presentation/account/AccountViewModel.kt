@@ -35,7 +35,7 @@ class AccountViewModel @Inject constructor(
     ) { state, user, strava -> state.copy(user = user, hasStrava = strava) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), AccountState())
 
-    fun onAction(event: AccountAction) = when (event) {
+    fun onAction(action: AccountAction) = when (action) {
         is AccountAction.RefreshUser -> refreshUser()
         is AccountAction.SignOut -> signOut()
         is AccountAction.StravaDisconnect -> signOutStrava()
