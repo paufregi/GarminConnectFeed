@@ -34,6 +34,7 @@ import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
 import paufregi.connectfeed.stravaToken
 import java.io.File
+import java.time.Instant
 import javax.inject.Inject
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
@@ -142,7 +143,8 @@ class GarminRepositoryTest {
                 distance = 17804.00,
                 trainingEffect = "recovery",
                 type = CoreActivityType.Cycling,
-                eventType = CoreEventType.Transportation
+                eventType = CoreEventType.Transportation,
+                date = Instant.ofEpochMilli(1729754100000)
             ),
             CoreActivity(
                 id = 2,
@@ -150,7 +152,8 @@ class GarminRepositoryTest {
                 distance = 17760.00,
                 trainingEffect = "recovery",
                 type = CoreActivityType.Cycling,
-                eventType = CoreEventType.Transportation
+                eventType = CoreEventType.Transportation,
+                date = Instant.ofEpochMilli(1729705968000)
             )
         )
 
@@ -166,8 +169,20 @@ class GarminRepositoryTest {
         stravaStore.saveToken(stravaToken)
 
         val expected = listOf(
-            CoreActivity(id = 1, name = "Happy Friday", distance = 7804.0, type = CoreActivityType.Running),
-            CoreActivity(id = 2, name = "Bondcliff", distance = 23676.0, type = CoreActivityType.Cycling)
+            CoreActivity(
+                id = 1,
+                name = "Happy Friday",
+                distance = 7804.0,
+                type = CoreActivityType.Running,
+                date = Instant.parse("2018-05-02T12:15:09Z")
+            ),
+            CoreActivity(
+                id = 2,
+                name = "Bondcliff",
+                distance = 23676.0,
+                type = CoreActivityType.Cycling,
+                date = Instant.parse("2018-04-30T12:35:51Z")
+                )
         )
 
         val res = repo.getLatestStravaActivities(5)

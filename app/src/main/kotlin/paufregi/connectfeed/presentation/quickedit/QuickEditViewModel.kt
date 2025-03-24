@@ -59,16 +59,22 @@ class QuickEditViewModel @Inject constructor(
         is QuickEditAction.SetActivity -> _state.update {
             it.copy(
                 activity = event.activity,
-                stravaActivity = if (it.stravaActivity?.type != event.activity.type) null else it.stravaActivity,
                 profile = if (it.profile?.activityType != event.activity.type) null else it.profile,
+                stravaActivity = if ((it.stravaActivity == null) || (it.stravaActivity.type != event.activity.type))
+                    it.stravaActivities.find { it.match(event.activity) }
+                else
+                    it.stravaActivity,
             )
         }
 
         is QuickEditAction.SetStravaActivity -> _state.update {
             it.copy(
                 stravaActivity = event.activity,
-                activity = if (it.activity?.type != event.activity.type) null else it.activity,
                 profile = if (it.profile?.activityType != event.activity.type) null else it.profile,
+                activity = if ((it.activity == null) || (it.activity.type != event.activity.type))
+                    it.activities.find { it.match(event.activity) }
+                else
+                    it.activity,
             )
         }
 

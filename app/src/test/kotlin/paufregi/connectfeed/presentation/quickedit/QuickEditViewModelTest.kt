@@ -28,6 +28,7 @@ import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
+import java.time.Instant
 
 @ExperimentalCoroutinesApi
 class QuickEditViewModelTest {
@@ -50,7 +51,8 @@ class QuickEditViewModelTest {
             type = ActivityType.Running,
             eventType = EventType.Training,
             distance = 10234.00,
-            trainingEffect = "recovery"
+            trainingEffect = "recovery",
+            date = Instant.ofEpochMilli(1735693200000)
         ),
         Activity(
             id = 2L,
@@ -58,8 +60,18 @@ class QuickEditViewModelTest {
             type = ActivityType.Cycling,
             eventType = EventType.Training,
             distance = 17803.00,
-            trainingEffect = "base"
-        )
+            trainingEffect = "base",
+            date = Instant.ofEpochMilli(1729705968000)
+        ),
+        Activity(
+            id = 3L,
+            name = "Running2",
+            type = ActivityType.Running,
+            eventType = EventType.Training,
+            distance = 5234.00,
+            trainingEffect = "base",
+            date = Instant.ofEpochMilli(1729705968000)
+        ),
     )
 
     val stravaActivities = listOf(
@@ -67,14 +79,23 @@ class QuickEditViewModelTest {
             id = 1L,
             name = "StravaRunning",
             type = ActivityType.Running,
-            distance = 10234.00
+            distance = 10234.00,
+            date = Instant.ofEpochMilli(1735693200000)
         ),
         Activity(
             id = 2L,
             name = "StravaCycling",
             type = ActivityType.Cycling,
-            distance = 17803.00
-        )
+            distance = 17803.00,
+            date = Instant.ofEpochMilli(1729705968000)
+        ),
+        Activity(
+            id = 3L,
+            name = "StravaRunning2",
+            type = ActivityType.Running,
+            distance = 5234.00,
+            date = Instant.ofEpochMilli(1729705968000)
+        ),
     )
 
     val profiles = listOf(
@@ -304,7 +325,7 @@ class QuickEditViewModelTest {
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isEqualTo(activities[0])
-            assertThat(state.stravaActivity).isNull()
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
             assertThat(state.profile).isNull()
             assertThat(state.description).isNull()
             assertThat(state.effort).isNull()
@@ -333,7 +354,7 @@ class QuickEditViewModelTest {
             awaitItem() // skip initial state
             viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
             awaitItem() // skip
-            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
+            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[2]))
             awaitItem() // skip
             viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
             val state = awaitItem()
@@ -342,7 +363,7 @@ class QuickEditViewModelTest {
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isEqualTo(activities[0])
-            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[2])
             assertThat(state.profile).isEqualTo(profiles[0])
             assertThat(state.description).isNull()
             assertThat(state.effort).isNull()
@@ -380,7 +401,7 @@ class QuickEditViewModelTest {
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.activity).isEqualTo(activities[0])
-            assertThat(state.stravaActivity).isNull()
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
             assertThat(state.profile).isNull()
             assertThat(state.description).isNull()
             assertThat(state.effort).isNull()
@@ -413,7 +434,7 @@ class QuickEditViewModelTest {
             assertThat(state.activities).isEqualTo(activities)
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
-            assertThat(state.activity).isNull()
+            assertThat(state.activity).isEqualTo(activities[0])
             assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
             assertThat(state.profile).isNull()
             assertThat(state.description).isNull()
@@ -443,7 +464,7 @@ class QuickEditViewModelTest {
             awaitItem() // skip initial state
             viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
             awaitItem() // skip
-            viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
+            viewModel.onAction(QuickEditAction.SetActivity(activities[2]))
             awaitItem() // skip
             viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
             val state = awaitItem()
@@ -451,7 +472,7 @@ class QuickEditViewModelTest {
             assertThat(state.activities).isEqualTo(activities)
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
-            assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.activity).isEqualTo(activities[2])
             assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
             assertThat(state.profile).isEqualTo(profiles[0])
             assertThat(state.description).isNull()
@@ -489,7 +510,7 @@ class QuickEditViewModelTest {
             assertThat(state.activities).isEqualTo(activities)
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
-            assertThat(state.activity).isNull()
+            assertThat(state.activity).isEqualTo(activities[0])
             assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
             assertThat(state.profile).isNull()
             assertThat(state.description).isNull()
@@ -665,8 +686,6 @@ class QuickEditViewModelTest {
             awaitItem() // skip initial state
             viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
             awaitItem() // skip
-            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
-            awaitItem() // skip
             viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
             awaitItem() // skip
             viewModel.onAction(QuickEditAction.SetEffort(80f))
@@ -734,8 +753,6 @@ class QuickEditViewModelTest {
             awaitItem() // skip initial state
             viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
             awaitItem() // skip
-            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
-            awaitItem() // skip
             viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
             awaitItem() // skip
             viewModel.onAction(QuickEditAction.SetEffort(80f))
@@ -796,8 +813,6 @@ class QuickEditViewModelTest {
             awaitItem() // skip initial state
             viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
             awaitItem() // skip
-            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
-            awaitItem() // skip
             viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
             awaitItem() // skip
             viewModel.onAction(QuickEditAction.SetEffort(80f))
@@ -857,8 +872,6 @@ class QuickEditViewModelTest {
         viewModel.state.test {
             awaitItem() // skip initial state
             viewModel.onAction(QuickEditAction.SetActivity(activities[0]))
-            awaitItem() // skip
-            viewModel.onAction(QuickEditAction.SetStravaActivity(stravaActivities[0]))
             awaitItem() // skip
             viewModel.onAction(QuickEditAction.SetProfile(profiles[0]))
             awaitItem() // skip

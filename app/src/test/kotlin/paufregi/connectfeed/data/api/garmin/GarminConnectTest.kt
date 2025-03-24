@@ -125,7 +125,8 @@ class GarminConnectTest {
                 distance = 17803.69921875,
                 trainingEffectLabel = "RECOVERY",
                 type = ActivityType(id = 10, key = "road_biking"),
-                eventType = EventType(id = 5, key = "transportation")
+                eventType = EventType(id = 5, key = "transportation"),
+                beginTimestamp = 1729754100000
             ),
             Activity(
                 id = 2,
@@ -133,7 +134,8 @@ class GarminConnectTest {
                 distance = 17759.779296875,
                 trainingEffectLabel = "RECOVERY",
                 type = ActivityType(id = 10, key = "road_biking"),
-                eventType = EventType(id = 5, key = "transportation")
+                eventType = EventType(id = 5, key = "transportation"),
+                beginTimestamp = 1729705968000
             )
         )
 

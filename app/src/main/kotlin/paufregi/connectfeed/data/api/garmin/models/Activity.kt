@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 import paufregi.connectfeed.data.api.garmin.converters.TrainingEffectConverter
+import java.time.Instant
 import kotlin.math.round
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 
@@ -22,6 +23,8 @@ data class Activity(
     val distance: Double,
     @SerializedName("trainingEffectLabel")
     val trainingEffectLabel: String?,
+    @SerializedName("beginTimestamp")
+    val beginTimestamp: Long?,
 ) {
     fun toCore(): CoreActivity =
         CoreActivity(
@@ -30,6 +33,7 @@ data class Activity(
             type = this.type.toCore(),
             eventType = this.eventType?.toCore(),
             distance = round(this.distance),
-            trainingEffect = TrainingEffectConverter.convert(this.trainingEffectLabel)
+            trainingEffect = TrainingEffectConverter.convert(this.trainingEffectLabel),
+            date = this.beginTimestamp?.let { Instant.ofEpochMilli(it) }
         )
 }

@@ -251,7 +251,8 @@ class GarminRepositoryTest {
                 distance = 10234.00,
                 trainingEffectLabel = "recovery",
                 type = ActivityType(id = 1, key = "running"),
-                eventType = EventType(id = 4, key = "training")
+                eventType = EventType(id = 4, key = "training"),
+                beginTimestamp = 1729754100000
             ),
             Activity(
                 id = 2,
@@ -259,7 +260,8 @@ class GarminRepositoryTest {
                 distance = 17759.00,
                 trainingEffectLabel = "recovery",
                 type = ActivityType(id = 10, key = "road_biking"),
-                eventType = EventType(id = 4, key = "training")
+                eventType = EventType(id = 4, key = "training"),
+                beginTimestamp = 1729705968000
             )
         )
         coEvery { connect.getLatestActivities(any()) } returns Response.success(activities)
@@ -315,8 +317,20 @@ class GarminRepositoryTest {
     @Test
     fun `Get latest Strava activities`() = runTest {
         val activities = listOf(
-            StravaActivity(id = 1, name = "activity_1", distance = 10234.00, sportType = "Run"),
-            StravaActivity(id = 2, name = "activity_2", distance = 17759.00, sportType = "Ride")
+            StravaActivity(
+                id = 1,
+                name = "activity_1",
+                distance = 10234.00,
+                sportType = "Run",
+                startDate = "2018-05-02T12:15:09Z"
+            ),
+            StravaActivity(
+                id = 2,
+                name = "activity_2",
+                distance = 17759.00,
+                sportType = "Ride",
+                startDate = "2018-04-30T12:35:51Z"
+            )
         )
         coEvery { strava.getLatestActivities(perPage = any()) } returns Response.success(activities)
 

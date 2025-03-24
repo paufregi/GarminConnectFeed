@@ -2,6 +2,7 @@ package paufregi.connectfeed.data.api.strava.models
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import java.time.Instant
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 
@@ -13,14 +14,16 @@ class ActivityTest {
             id = 1,
             name = "name",
             distance = 15007.59123,
-            sportType = "Run"
+            sportType = "Run",
+            startDate = "2024-01-01T01:00:00Z",
         )
 
         val coreActivity = CoreActivity(
             id = 1,
             name = "name",
             distance = 15008.00,
-            type = CoreActivityType.Running
+            type = CoreActivityType.Running,
+            date = Instant.parse("2024-01-01T01:00:00Z")
         )
 
         assertThat(activity.toCore()).isEqualTo(coreActivity)

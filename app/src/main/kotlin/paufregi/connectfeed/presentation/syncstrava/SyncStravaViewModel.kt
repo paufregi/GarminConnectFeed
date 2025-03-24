@@ -29,30 +29,6 @@ class SyncStravaViewModel @Inject constructor(
         .onStart { load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), SyncStravaState())
 
-    fun onAction(event: SyncStravaAction) = when (event) {
-        is SyncStravaAction.SetActivity -> _state.update {
-            it.copy(
-                activity = event.activity,
-                stravaActivity = if (it.stravaActivity?.type != event.activity.type) null else it.stravaActivity,
-            )
-        }
-
-        is SyncStravaAction.SetStravaActivity -> _state.update {
-            it.copy(
-                stravaActivity = event.activity,
-                activity = if (it.activity?.type != event.activity.type) null else it.activity,
-            )
-        }
-
-        is SyncStravaAction.SetDescription -> _state.update { it.copy(description = event.description) }
-        is SyncStravaAction.SetTrainingEffect -> _state.update { it.copy(trainingEffect = event.trainingEffect) }
-        is SyncStravaAction.Save -> saveActivity()
-        is SyncStravaAction.Restart -> {
-            _state.update { SyncStravaState() }
-            load()
-        }
-    }
-
     private fun load() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
@@ -71,6 +47,36 @@ class SyncStravaViewModel @Inject constructor(
             }
 
             false -> _state.update { it.copy(process = ProcessState.Idle) }
+        }
+    }
+
+    fun onAction(event: SyncStravaAction) = when (event) {
+        is SyncStravaAction.SetActivity -> _state.update {
+            it.copy(
+                activity = event.activity,
+                stravaActivity = if ((it.stravaActivity == null) || (it.stravaActivity.type != event.activity.type))
+                    it.stravaActivities.find { it.match(event.activity) }
+                else
+                    it.stravaActivity,
+            )
+        }
+
+        is SyncStravaAction.SetStravaActivity -> _state.update {
+            it.copy(
+                stravaActivity = event.activity,
+                activity = if ((it.activity == null) || (it.activity.type != event.activity.type))
+                    it.activities.find { it.match(event.activity) }
+                else
+                    it.activity,
+            )
+        }
+
+        is SyncStravaAction.SetDescription -> _state.update { it.copy(description = event.description) }
+        is SyncStravaAction.SetTrainingEffect -> _state.update { it.copy(trainingEffect = event.trainingEffect) }
+        is SyncStravaAction.Save -> saveActivity()
+        is SyncStravaAction.Restart -> {
+            _state.update { SyncStravaState() }
+            load()
         }
     }
 

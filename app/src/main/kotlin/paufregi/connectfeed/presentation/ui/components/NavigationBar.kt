@@ -1,8 +1,6 @@
 package paufregi.connectfeed.presentation.ui.components
 
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar as MaterialNavigationBar
-import androidx.compose.material3.NavigationBarItem as MaterialNavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -10,6 +8,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.material3.NavigationBar as MaterialNavigationBar
+import androidx.compose.material3.NavigationBarItem as MaterialNavigationBarItem
 
 @Composable
 fun NavigationBar(
