@@ -6,11 +6,8 @@ import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -19,16 +16,10 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetLatestActivities
 import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
-import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.SyncStravaActivity
-import paufregi.connectfeed.core.usecases.UpdateActivity
-import paufregi.connectfeed.core.usecases.UpdateStravaActivity
-import paufregi.connectfeed.presentation.quickedit.QuickEditAction
-import paufregi.connectfeed.presentation.quickedit.QuickEditViewModel
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 

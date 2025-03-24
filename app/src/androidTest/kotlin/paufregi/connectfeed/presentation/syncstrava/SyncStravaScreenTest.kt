@@ -3,7 +3,6 @@ package paufregi.connectfeed.presentation.syncstrava
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.isDisplayed
@@ -17,7 +16,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
