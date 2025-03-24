@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 import paufregi.connectfeed.data.api.strava.converters.SportTypeConverter
+import java.time.Instant
 import kotlin.math.round
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 
@@ -18,11 +19,14 @@ data class Activity(
     val sportType: String,
     @SerializedName("distance")
     val distance: Double,
+    @SerializedName("start_date")
+    val startDate: String?,
 ) {
     fun toCore(): CoreActivity = CoreActivity(
         id = id,
         name = name,
         distance = round(this.distance),
         type = SportTypeConverter.toActivityType(sportType),
+        date = Instant.parse(this.startDate)
     )
 }

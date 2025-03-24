@@ -56,14 +56,15 @@ class StravaTest {
                 id = 1,
                 name = "Happy Friday",
                 distance = 7803.6,
-                sportType = "Run"
-
+                sportType = "Run",
+                startDate = "2018-05-02T12:15:09Z"
             ),
             Activity(
                 id = 2,
                 name = "Bondcliff",
                 distance = 23676.5,
-                sportType = "Ride"
+                sportType = "Ride",
+                startDate = "2018-04-30T12:35:51Z"
             )
         )
 
