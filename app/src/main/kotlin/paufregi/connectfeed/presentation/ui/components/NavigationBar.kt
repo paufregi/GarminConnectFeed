@@ -26,7 +26,6 @@ fun NavigationBar(
                 selected = index == selectedIndex,
                 onClick = { nav.navigate(item.route) },
                 label = { Text(item.label) },
-                alwaysShowLabel = true,
                 icon = { Icon(item.icon, item.label) }
             )
         }

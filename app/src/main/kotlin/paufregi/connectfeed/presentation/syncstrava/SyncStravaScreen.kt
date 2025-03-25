@@ -116,14 +116,14 @@ internal fun SyncStravaForm(
     val focusManager = LocalFocusManager.current
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(
                 top = paddingValues.calculateTopPadding(),
-                bottom = paddingValues.calculateBottomPadding(),
+                bottom = paddingValues.calculateBottomPadding() + 5.dp,
                 start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr) + 20.dp,
                 end = paddingValues.calculateRightPadding(LayoutDirection.Ltr) + 20.dp,
             )
