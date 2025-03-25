@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -23,6 +25,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -117,8 +120,13 @@ internal fun SyncStravaForm(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
-            .padding(horizontal = 20.dp)
+            .verticalScroll(rememberScrollState())
+            .padding(
+                top = paddingValues.calculateTopPadding(),
+                bottom = paddingValues.calculateBottomPadding(),
+                start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr) + 20.dp,
+                end = paddingValues.calculateRightPadding(LayoutDirection.Ltr) + 20.dp,
+            )
             .testTag("sync_strava_form")
     ) {
         remember { MutableInteractionSource() }
@@ -162,9 +170,15 @@ internal fun SyncStravaForm(
             Text("Training Effect")
         }
         Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier.fillMaxWidth()
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
         ) {
+            Button(
+                text = "Reset",
+                onClick = { onAction(SyncStravaAction.Restart) }
+            )
             Button(
                 text = "Save",
                 enabled = state.activity != null && state.stravaActivity != null,

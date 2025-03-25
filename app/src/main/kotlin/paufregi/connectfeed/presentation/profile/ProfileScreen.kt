@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -106,9 +107,13 @@ internal fun ProfileForm(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
-            .padding(horizontal = 20.dp)
             .verticalScroll(rememberScrollState())
+            .padding(
+                top = paddingValues.calculateTopPadding(),
+                bottom = paddingValues.calculateBottomPadding(),
+                start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr) + 20.dp,
+                end = paddingValues.calculateRightPadding(LayoutDirection.Ltr) + 20.dp,
+            )
             .testTag("profile_form")
     ) {
         TextField(
