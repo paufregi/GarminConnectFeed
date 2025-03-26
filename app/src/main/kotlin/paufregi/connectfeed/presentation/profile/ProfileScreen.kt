@@ -103,7 +103,7 @@ internal fun ProfileForm(
     val focusManager = LocalFocusManager.current
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
@@ -121,7 +121,7 @@ internal fun ProfileForm(
             value = state.profile.name,
             onValueChange = { onAction(ProfileAction.SetName(it)) },
             isError = state.profile.name.isBlank(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
         Dropdown(
             label = { Text("Activity Type") },
@@ -160,7 +160,7 @@ internal fun ProfileForm(
             value = state.profile.water?.toString() ?: "",
             onValueChange = { onAction(ProfileAction.SetWater(it.toIntOrNull())) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -228,9 +228,7 @@ internal fun ProfileForm(
         }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+            modifier = Modifier.fillMaxWidth().padding(20.dp)
         ) {
             Button(
                 text = "Cancel",

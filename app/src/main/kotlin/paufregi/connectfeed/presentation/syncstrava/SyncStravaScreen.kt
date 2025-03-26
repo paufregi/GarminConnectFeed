@@ -116,14 +116,14 @@ internal fun SyncStravaForm(
     val focusManager = LocalFocusManager.current
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(
                 top = paddingValues.calculateTopPadding(),
-                bottom = paddingValues.calculateBottomPadding() + 5.dp,
+                bottom = paddingValues.calculateBottomPadding(),
                 start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr) + 20.dp,
                 end = paddingValues.calculateRightPadding(LayoutDirection.Ltr) + 20.dp,
             )
@@ -152,7 +152,7 @@ internal fun SyncStravaForm(
         TextField(
             label = { Text("Description") },
             value = state.description ?: "",
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
             onValueChange = { onAction(SyncStravaAction.SetDescription(it)) }
         )
         Row(
@@ -173,7 +173,7 @@ internal fun SyncStravaForm(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+                .padding(20.dp)
         ) {
             Button(
                 text = "Reset",
