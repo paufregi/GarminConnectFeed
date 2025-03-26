@@ -43,7 +43,8 @@ class SyncStravaViewModelTest {
             type = ActivityType.Running,
             eventType = EventType.Training,
             distance = 10234.00,
-            trainingEffect = "recovery"
+            trainingEffect = "recovery",
+            date = Instant.parse("2025-01-01T01:00:00Z")
         ),
         Activity(
             id = 2L,
@@ -51,7 +52,8 @@ class SyncStravaViewModelTest {
             type = ActivityType.Cycling,
             eventType = EventType.Training,
             distance = 17803.00,
-            trainingEffect = "base"
+            trainingEffect = "base",
+            date = Instant.parse("2025-01-01T02:00:00Z")
         ),
         Activity(
             id = 3L,
@@ -60,7 +62,7 @@ class SyncStravaViewModelTest {
             eventType = EventType.Training,
             distance = 5234.00,
             trainingEffect = "base",
-            date = Instant.ofEpochMilli(1729705968000)
+            date = Instant.parse("2025-01-01T03:00:00Z")
         ),
     )
 
@@ -69,20 +71,22 @@ class SyncStravaViewModelTest {
             id = 1L,
             name = "StravaRunning",
             type = ActivityType.Running,
-            distance = 10234.00
+            distance = 10234.00,
+            date = Instant.parse("2025-01-01T01:00:00Z")
         ),
         Activity(
             id = 2L,
             name = "StravaCycling",
             type = ActivityType.Cycling,
-            distance = 17803.00
+            distance = 17803.00,
+            date = Instant.parse("2025-01-01T02:00:00Z")
         ),
         Activity(
             id = 3L,
             name = "StravaRunning2",
             type = ActivityType.Running,
             distance = 5234.00,
-            date = Instant.ofEpochMilli(1729705968000)
+            date = Instant.parse("2025-01-01T03:00:00Z")
         ),
     )
 

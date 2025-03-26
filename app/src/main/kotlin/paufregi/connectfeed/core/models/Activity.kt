@@ -1,5 +1,6 @@
 package paufregi.connectfeed.core.models
 
+import java.time.Duration
 import java.time.Instant
 
 data class Activity(
@@ -12,6 +13,8 @@ data class Activity(
     val date: Instant? = null
 ) {
     fun match(other: Activity): Boolean {
-        return this.type == other.type && this.date == other.date
+        return this.type == other.type &&
+                (this.date != null && other.date != null &&
+                Duration.between(this.date, other.date).abs() <= Duration.ofMinutes(1))
     }
 }
