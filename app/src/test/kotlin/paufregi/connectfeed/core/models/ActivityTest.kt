@@ -15,7 +15,7 @@ class ActivityTest {
             trainingEffect = "recovery",
             type = ActivityType.Cycling,
             eventType = EventType.Transportation,
-            date = Instant.ofEpochMilli(1729754100000)
+            date = Instant.parse("2025-01-01T01:01:00Z")
         )
 
         val activity2 = Activity(
@@ -24,14 +24,14 @@ class ActivityTest {
             distance = 7804.00,
             trainingEffect = "recovery",
             type = ActivityType.Cycling,
-            date = Instant.ofEpochMilli(1729754100000)
+            date = Instant.parse("2025-01-01T01:01:30Z")
         )
 
         assertThat(activity1.match(activity2)).isTrue()
     }
 
     @Test
-    fun `No match activity`() {
+    fun `No match - no timestamp`() {
         val activity1 = Activity(
             id = 1,
             name = "Activity 1",
@@ -39,7 +39,7 @@ class ActivityTest {
             trainingEffect = "recovery",
             type = ActivityType.Cycling,
             eventType = EventType.Transportation,
-            date = Instant.ofEpochMilli(1729754100000)
+            date = null
         )
 
         val activity2 = Activity(
@@ -48,7 +48,79 @@ class ActivityTest {
             distance = 7804.00,
             trainingEffect = "recovery",
             type = ActivityType.Cycling,
-            date = Instant.ofEpochMilli(1729754500000)
+            date = Instant.parse("2025-01-01T01:02:00Z")
+        )
+
+        assertThat(activity1.match(activity2)).isFalse()
+    }
+
+    @Test
+    fun `No match - no timestamp in parameter`() {
+        val activity1 = Activity(
+            id = 1,
+            name = "Activity 1",
+            distance = 17804.00,
+            trainingEffect = "recovery",
+            type = ActivityType.Cycling,
+            eventType = EventType.Transportation,
+            date = Instant.parse("2025-01-01T01:01:00Z")
+        )
+
+        val activity2 = Activity(
+            id = 2,
+            name = "Activity 2",
+            distance = 7804.00,
+            trainingEffect = "recovery",
+            type = ActivityType.Cycling,
+            date = null
+        )
+
+        assertThat(activity1.match(activity2)).isFalse()
+    }
+
+    @Test
+    fun `No match - different type`() {
+        val activity1 = Activity(
+            id = 1,
+            name = "Activity 1",
+            distance = 7804.00,
+            trainingEffect = "recovery",
+            type = ActivityType.Running,
+            eventType = EventType.Transportation,
+            date = Instant.parse("2025-01-01T01:01:00Z")
+        )
+
+        val activity2 = Activity(
+            id = 2,
+            name = "Activity 2",
+            distance = 17804.00,
+            trainingEffect = "recovery",
+            type = ActivityType.Cycling,
+            date = Instant.parse("2025-01-01T01:01:00Z")
+        )
+
+        assertThat(activity1.match(activity2)).isFalse()
+    }
+
+    @Test
+    fun `No match - different timestamp`() {
+        val activity1 = Activity(
+            id = 1,
+            name = "Activity 1",
+            distance = 17804.00,
+            trainingEffect = "recovery",
+            type = ActivityType.Cycling,
+            eventType = EventType.Transportation,
+            date = Instant.parse("2025-01-01T01:01:00Z")
+        )
+
+        val activity2 = Activity(
+            id = 2,
+            name = "Activity 2",
+            distance = 7804.00,
+            trainingEffect = "recovery",
+            type = ActivityType.Cycling,
+            date = Instant.parse("2025-01-01T01:02:30Z")
         )
 
         assertThat(activity1.match(activity2)).isFalse()
