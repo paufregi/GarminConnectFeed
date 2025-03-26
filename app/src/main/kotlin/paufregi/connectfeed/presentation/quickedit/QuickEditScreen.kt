@@ -131,14 +131,14 @@ internal fun QuickEditForm(
     val focusManager = LocalFocusManager.current
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(
                 top = paddingValues.calculateTopPadding(),
-                bottom = paddingValues.calculateBottomPadding() + 5.dp,
+                bottom = paddingValues.calculateBottomPadding(),
                 start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr) + 20.dp,
                 end = paddingValues.calculateRightPadding(LayoutDirection.Ltr) + 20.dp,
             )
@@ -189,7 +189,7 @@ internal fun QuickEditForm(
             TextField(
                 label = { Text("Description") },
                 value = state.description ?: "",
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 onValueChange = { onAction(QuickEditAction.SetDescription(it)) }
             )
         }
@@ -197,7 +197,7 @@ internal fun QuickEditForm(
             TextField(
                 label = { Text("Water") },
                 value = state.profile.water?.toString() ?: "",
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 onValueChange = { onAction(QuickEditAction.SetWater(it.toIntOrNull())) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
@@ -241,9 +241,7 @@ internal fun QuickEditForm(
         }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+            modifier = Modifier.fillMaxWidth().padding(20.dp)
         ) {
             Button(
                 text = "Reset",
