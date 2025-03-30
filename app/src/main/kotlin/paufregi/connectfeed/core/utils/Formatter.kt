@@ -1,7 +1,6 @@
 package paufregi.connectfeed.core.utils
 
 import android.annotation.SuppressLint
-import com.garmin.fit.BodyLocation
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

@@ -18,9 +18,9 @@ import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class UpdateActivityTest{
+class QuickUpdateActivityTest{
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: UpdateActivity
+    private lateinit var useCase: QuickUpdateActivity
 
     val activity = Activity(
         id = 1,
@@ -43,7 +43,7 @@ class UpdateActivityTest{
 
     @Before
     fun setup(){
-        useCase = UpdateActivity(repo)
+        useCase = QuickUpdateActivity(repo)
     }
 
     @After

@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetLatestActivities
 import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
-import paufregi.connectfeed.core.usecases.UpdateActivity
-import paufregi.connectfeed.core.usecases.UpdateStravaActivity
+import paufregi.connectfeed.core.usecases.QuickUpdateActivity
+import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
@@ -23,8 +23,8 @@ class QuickEditViewModel @Inject constructor(
     val getLatestActivities: GetLatestActivities,
     val getLatestStravaActivities: GetLatestStravaActivities,
     getProfiles: GetProfiles,
-    val updateActivity: UpdateActivity,
-    val updateStravaActivity: UpdateStravaActivity
+    val quickUpdateActivity: QuickUpdateActivity,
+    val quickUpdateStravaActivity: QuickUpdateStravaActivity
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(QuickEditState())
@@ -93,7 +93,7 @@ class QuickEditViewModel @Inject constructor(
     private fun saveActivity() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
-        updateActivity(
+        quickUpdateActivity(
             activity = state.value.activity,
             profile = state.value.profile,
             feel = state.value.feel,
@@ -101,7 +101,7 @@ class QuickEditViewModel @Inject constructor(
         ).onFailure { errors.add("activity") }
 
         if (state.value.stravaActivities.isNotEmpty() && state.value.stravaActivity != null) {
-            updateStravaActivity(
+            quickUpdateStravaActivity(
                 activity = state.value.activity,
                 stravaActivity = state.value.stravaActivity,
                 profile = state.value.profile,

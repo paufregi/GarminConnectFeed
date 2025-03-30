@@ -18,9 +18,9 @@ import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class UpdateStravaActivityTest{
+class QuickUpdateStravaActivityTest{
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: UpdateStravaActivity
+    private lateinit var useCase: QuickUpdateStravaActivity
 
     val activity = Activity(
         id = 1,
@@ -47,7 +47,7 @@ class UpdateStravaActivityTest{
 
     @Before
     fun setup(){
-        useCase = UpdateStravaActivity(repo)
+        useCase = QuickUpdateStravaActivity(repo)
     }
 
     @After

@@ -24,8 +24,8 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetLatestActivities
 import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
-import paufregi.connectfeed.core.usecases.UpdateActivity
-import paufregi.connectfeed.core.usecases.UpdateStravaActivity
+import paufregi.connectfeed.core.usecases.QuickUpdateActivity
+import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 import java.time.Instant
@@ -36,8 +36,8 @@ class QuickEditViewModelTest {
     private val getActivities = mockk<GetLatestActivities>()
     private val getStravaActivities = mockk<GetLatestStravaActivities>()
     private val getProfiles = mockk<GetProfiles>()
-    private val updateActivity = mockk<UpdateActivity>()
-    private val updateStravaActivity = mockk<UpdateStravaActivity>()
+    private val quickUpdateActivity = mockk<QuickUpdateActivity>()
+    private val quickUpdateStravaActivity = mockk<QuickUpdateStravaActivity>()
 
     private lateinit var viewModel: QuickEditViewModel
 
@@ -120,7 +120,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(emptyList())
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             val state = awaitItem()
@@ -143,7 +145,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -152,7 +156,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             val state = awaitItem()
@@ -175,7 +181,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -184,7 +192,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             val state = awaitItem()
@@ -207,7 +217,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -216,7 +228,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Failure("error")
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             val state = awaitItem()
@@ -239,7 +253,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -248,7 +264,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Failure("error")
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             val state = awaitItem()
@@ -271,7 +289,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -280,7 +300,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -305,7 +327,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify { getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -314,7 +338,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -339,7 +365,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify { getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -348,7 +376,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -377,7 +407,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -386,7 +418,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -415,7 +449,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -424,7 +460,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -449,7 +487,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify { getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -458,7 +498,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -487,7 +529,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -496,7 +540,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -525,7 +571,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -534,7 +582,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -559,7 +609,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -568,7 +620,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -595,7 +649,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -604,7 +660,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -629,7 +687,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -638,7 +698,9 @@ class QuickEditViewModelTest {
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
-        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
 
         viewModel.state.test {
             awaitItem() // skip initial state
@@ -663,7 +725,9 @@ class QuickEditViewModelTest {
             getStravaActivities()
         }
         verify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
+        )
     }
 
     @Test
@@ -671,15 +735,15 @@ class QuickEditViewModelTest {
         coEvery { getActivities() } returns Result.Success(activities)
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
-        coEvery { updateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { quickUpdateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
 
         viewModel = QuickEditViewModel(
             getActivities,
             getStravaActivities,
             getProfiles,
-            updateActivity,
-            updateStravaActivity
+            quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
         )
 
         viewModel.state.test {
@@ -713,16 +777,16 @@ class QuickEditViewModelTest {
         coVerify {
             getActivities()
             getStravaActivities()
-            updateActivity(activities[0], profiles[0], 50f, 80f)
-            updateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
+            quickUpdateActivity(activities[0], profiles[0], 50f, 80f)
+            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
         }
         verify { getProfiles() }
         confirmVerified(
             getActivities,
             getStravaActivities,
             getProfiles,
-            updateActivity,
-            updateStravaActivity
+            quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
         )
     }
 
@@ -731,9 +795,9 @@ class QuickEditViewModelTest {
         coEvery { getActivities() } returns Result.Success(activities)
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
+        coEvery { quickUpdateActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
         coEvery {
-            updateStravaActivity(
+            quickUpdateStravaActivity(
                 any(),
                 any(),
                 any(),
@@ -745,8 +809,8 @@ class QuickEditViewModelTest {
             getActivities,
             getStravaActivities,
             getProfiles,
-            updateActivity,
-            updateStravaActivity
+            quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
         )
 
         viewModel.state.test {
@@ -780,16 +844,16 @@ class QuickEditViewModelTest {
         coVerify {
             getActivities()
             getStravaActivities()
-            updateActivity(activities[0], profiles[0], 50f, 80f)
-            updateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
+            quickUpdateActivity(activities[0], profiles[0], 50f, 80f)
+            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
         }
         verify { getProfiles() }
         confirmVerified(
             getActivities,
             getStravaActivities,
             getProfiles,
-            updateActivity,
-            updateStravaActivity
+            quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
         )
     }
 
@@ -798,15 +862,15 @@ class QuickEditViewModelTest {
         coEvery { getActivities() } returns Result.Success(activities)
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
-        coEvery { updateStravaActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
+        coEvery { quickUpdateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
 
         viewModel = QuickEditViewModel(
             getActivities,
             getStravaActivities,
             getProfiles,
-            updateActivity,
-            updateStravaActivity
+            quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
         )
 
         viewModel.state.test {
@@ -840,16 +904,16 @@ class QuickEditViewModelTest {
         coVerify {
             getActivities()
             getStravaActivities()
-            updateActivity(activities[0], profiles[0], 50f, 80f)
-            updateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
+            quickUpdateActivity(activities[0], profiles[0], 50f, 80f)
+            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
         }
         verify { getProfiles() }
         confirmVerified(
             getActivities,
             getStravaActivities,
             getProfiles,
-            updateActivity,
-            updateStravaActivity
+            quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
         )
     }
 
@@ -858,15 +922,15 @@ class QuickEditViewModelTest {
         coEvery { getActivities() } returns Result.Success(activities)
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { updateActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
-        coEvery { updateStravaActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
+        coEvery { quickUpdateActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
 
         viewModel = QuickEditViewModel(
             getActivities,
             getStravaActivities,
             getProfiles,
-            updateActivity,
-            updateStravaActivity
+            quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
         )
 
         viewModel.state.test {
@@ -900,16 +964,16 @@ class QuickEditViewModelTest {
         coVerify {
             getActivities()
             getStravaActivities()
-            updateActivity(activities[0], profiles[0], 50f, 80f)
-            updateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
+            quickUpdateActivity(activities[0], profiles[0], 50f, 80f)
+            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
         }
         verify { getProfiles() }
         confirmVerified(
             getActivities,
             getStravaActivities,
             getProfiles,
-            updateActivity,
-            updateStravaActivity
+            quickUpdateActivity,
+            this@QuickEditViewModelTest.quickUpdateStravaActivity
         )
     }
 }
