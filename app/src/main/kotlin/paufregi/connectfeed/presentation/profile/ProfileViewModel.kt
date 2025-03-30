@@ -64,7 +64,6 @@ class ProfileViewModel @Inject constructor(
                 course = if (action.activityType == it.profile.course?.type) it.profile.course else null,
             ))
         }
-
         is ProfileAction.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = action.eventType)) }
         is ProfileAction.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = action.course)) }
         is ProfileAction.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = action.water)) }
@@ -72,10 +71,10 @@ class ProfileViewModel @Inject constructor(
         is ProfileAction.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = action.customWater)) }
         is ProfileAction.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = action.feelAndEffort)) }
         is ProfileAction.SetTrainingEffect -> _state.update { it.copy(profile = it.profile.copy(trainingEffect = action.trainingEffect)) }
-        is ProfileAction.Save -> save()
+        is ProfileAction.Save -> saveAction()
     }
 
-    private fun save() = viewModelScope.launch {
+    private fun saveAction() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         when (val res = saveProfile(state.value.profile)) {
             is Result.Success -> _state.update { it.copy(process = ProcessState.Success("Profile saved")) }

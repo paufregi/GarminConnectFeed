@@ -66,7 +66,6 @@ class QuickEditViewModel @Inject constructor(
                     it.stravaActivity,
             )
         }
-
         is QuickEditAction.SetStravaActivity -> _state.update {
             it.copy(
                 stravaActivity = action.activity,
@@ -77,7 +76,6 @@ class QuickEditViewModel @Inject constructor(
                     it.activity,
             )
         }
-
         is QuickEditAction.SetProfile -> _state.update { it.copy(profile = action.profile) }
         is QuickEditAction.SetDescription -> _state.update { it.copy(description = action.description) }
         is QuickEditAction.SetWater -> _state.update { it.copy(profile = it.profile?.copy(water = action.water)) }
@@ -100,7 +98,7 @@ class QuickEditViewModel @Inject constructor(
             effort = state.value.effort
         ).onFailure { errors.add("activity") }
 
-        if (state.value.stravaActivities.isNotEmpty() && state.value.stravaActivity != null) {
+        if (state.value.hasStrava && state.value.stravaActivity != null) {
             quickUpdateStravaActivity(
                 activity = state.value.activity,
                 stravaActivity = state.value.stravaActivity,

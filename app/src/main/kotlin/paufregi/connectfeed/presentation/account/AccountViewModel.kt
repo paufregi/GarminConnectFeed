@@ -21,8 +21,8 @@ import javax.inject.Inject
 class AccountViewModel @Inject constructor(
     getUser: GetUser,
     isStravaLoggedIn: IsStravaLoggedIn,
-    val refreshUserUseCase: RefreshUser,
-    val signOutUseCase: SignOut,
+    val refreshUser: RefreshUser,
+    val signOut: SignOut,
     val disconnectStrava: DisconnectStrava,
 ) : ViewModel() {
 
@@ -36,25 +36,26 @@ class AccountViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), AccountState())
 
     fun onAction(action: AccountAction) = when (action) {
-        is AccountAction.RefreshUser -> refreshUser()
-        is AccountAction.SignOut -> signOut()
-        is AccountAction.StravaDisconnect -> signOutStrava()
+        is AccountAction.RefreshUser -> refreshUserAction()
+        is AccountAction.SignOut -> signOutAction()
+        is AccountAction.StravaDisconnect -> signOutStravaAction()
         is AccountAction.Reset -> _state.update { AccountState() }
     }
 
-    private fun refreshUser() = viewModelScope.launch {
+    private fun refreshUserAction() = viewModelScope.launch {
         _state.update { AccountState(ProcessState.Processing) }
-        refreshUserUseCase()
+        refreshUser()
             .onSuccess { _state.update { AccountState(ProcessState.Success("User data refreshed")) } }
             .onFailure { err -> _state.update { AccountState(ProcessState.Failure(err)) } }
     }
 
-    private fun signOut() = viewModelScope.launch {
+    private fun signOutAction() = viewModelScope.launch {
         _state.update { AccountState(ProcessState.Processing) }
-        signOutUseCase()
+        signOut()
+        _state.update { AccountState(ProcessState.Idle) }
     }
 
-    private fun signOutStrava() = viewModelScope.launch {
+    private fun signOutStravaAction() = viewModelScope.launch {
         _state.update { AccountState(ProcessState.Processing) }
         disconnectStrava()
         _state.update { AccountState(ProcessState.Idle) }
