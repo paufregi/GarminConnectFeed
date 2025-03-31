@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.account.AccountScreen
+import paufregi.connectfeed.presentation.edit.EditScreen
 import paufregi.connectfeed.presentation.login.LoginScreen
 import paufregi.connectfeed.presentation.profile.ProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
@@ -58,6 +59,7 @@ class MainActivity : ComponentActivity() {
                     navigation<Route.App>(startDestination = Route.Home) {
                         navigation<Route.Home>(startDestination = Route.QuickEdit) {
                             composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }
+                            composable<Route.Edit> { EditScreen(nav = nav) }
                             composable<Route.SyncStrava> { SyncStravaScreen(nav = nav) }
                         }
                         composable<Route.Account> { AccountScreen(stravaAuthUri = stravaAuthUri, nav = nav) }
