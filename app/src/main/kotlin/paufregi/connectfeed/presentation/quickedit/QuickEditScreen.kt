@@ -106,13 +106,11 @@ internal fun QuickEditContent(
             items = Navigation.items,
             selectedIndex = Navigation.HOME,
             bottomBar = {
-                if (state.hasStrava) {
-                    NavigationBar(
-                        items = HomeNavigation.items,
-                        selectedIndex = HomeNavigation.QUICK_EDIT,
-                        nav = nav
-                    )
-                }
+                NavigationBar(
+                    items = HomeNavigation.items(state.hasStrava),
+                    selectedIndex = HomeNavigation.QUICK_EDIT,
+                    nav = nav
+                )
             },
             nav = nav
         ) { QuickEditForm(state, onAction, it) }

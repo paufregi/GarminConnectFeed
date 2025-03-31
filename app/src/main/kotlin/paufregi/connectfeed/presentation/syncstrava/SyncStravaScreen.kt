@@ -94,7 +94,7 @@ internal fun SyncStravaContent(
             selectedIndex = Navigation.HOME,
             bottomBar = {
                 NavigationBar(
-                    items = HomeNavigation.items,
+                    items = HomeNavigation.items(true),
                     selectedIndex = HomeNavigation.SYNC_STRAVA,
                     nav = nav
                 )
