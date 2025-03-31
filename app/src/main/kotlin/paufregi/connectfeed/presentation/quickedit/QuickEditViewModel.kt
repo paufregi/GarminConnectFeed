@@ -15,6 +15,8 @@ import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
+import paufregi.connectfeed.core.utils.getOrMatch
+import paufregi.connectfeed.core.utils.getOrNull
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
@@ -59,21 +61,15 @@ class QuickEditViewModel @Inject constructor(
         is QuickEditAction.SetActivity -> _state.update {
             it.copy(
                 activity = action.activity,
-                profile = if (it.profile?.activityType != action.activity.type) null else it.profile,
-                stravaActivity = if ((it.stravaActivity == null) || (it.stravaActivity.type != action.activity.type))
-                    it.stravaActivities.find { it.match(action.activity) }
-                else
-                    it.stravaActivity,
+                profile = it.profile.getOrNull(action.activity),
+                stravaActivity = it.stravaActivity.getOrMatch(action.activity, it.stravaActivities),
             )
         }
         is QuickEditAction.SetStravaActivity -> _state.update {
             it.copy(
                 stravaActivity = action.activity,
-                profile = if (it.profile?.activityType != action.activity.type) null else it.profile,
-                activity = if ((it.activity == null) || (it.activity.type != action.activity.type))
-                    it.activities.find { it.match(action.activity) }
-                else
-                    it.activity,
+                profile = it.profile.getOrNull(action.activity),
+                activity = it.activity.getOrMatch(action.activity, it.activities),
             )
         }
         is QuickEditAction.SetProfile -> _state.update { it.copy(profile = action.profile) }
