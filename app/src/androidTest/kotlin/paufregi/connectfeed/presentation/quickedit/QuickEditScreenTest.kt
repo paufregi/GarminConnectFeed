@@ -77,7 +77,10 @@ class QuickEditScreenTest {
         }
         composeTestRule.onNodeWithText("Activity").isDisplayed()
         composeTestRule.onNodeWithText("Profile").isDisplayed()
-        composeTestRule.onNodeWithTag("navigation_bar").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Strava Sync").assertIsNotDisplayed()
         composeTestRule.onNodeWithText("Reset").assertIsEnabled()
         composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
@@ -96,6 +99,9 @@ class QuickEditScreenTest {
         composeTestRule.onNodeWithText("Strava").isDisplayed()
         composeTestRule.onNodeWithText("Profile").isDisplayed()
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sync Strava").assertIsDisplayed()
         composeTestRule.onNodeWithText("Reset").assertIsEnabled()
         composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
@@ -113,7 +119,7 @@ class QuickEditScreenTest {
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
         composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
-        composeTestRule.onNodeWithTag("navigation_bar").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Reset").assertIsEnabled()
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
     }
