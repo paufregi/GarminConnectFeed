@@ -125,7 +125,7 @@ class AccountViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Processing)
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.user).isEqualTo(user)
             cancelAndIgnoreRemainingEvents()
         }
