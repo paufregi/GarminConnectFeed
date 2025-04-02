@@ -13,6 +13,7 @@ class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
         ProfileState(process = ProcessState.Success("Profile saved")),
         ProfileState(process = ProcessState.Failure("Error saving profile")),
         ProfileState(
+            process = ProcessState.Idle,
             profile = Profile(
                 name = "Profile running",
                 activityType = ActivityType.Running,
@@ -26,6 +27,7 @@ class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
             ),
         ),
         ProfileState(
+            process = ProcessState.Idle,
             profile = Profile(
                 name = "Profile any",
                 activityType = ActivityType.Any,
@@ -36,6 +38,7 @@ class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
             ),
         ),
         ProfileState(
+            process = ProcessState.Idle,
             profile = Profile(
                 name = "Profile strength",
                 activityType = ActivityType.Strength,

@@ -90,11 +90,10 @@ internal fun ProfileContent(
     }
 }
 
-@Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun ProfileForm(
-    @PreviewParameter(ProfileStatePreview::class) state: ProfileState,
+    state: ProfileState,
     onAction: (ProfileAction) -> Unit = {},
     nav: NavHostController = rememberNavController(),
     paddingValues: PaddingValues = PaddingValues()

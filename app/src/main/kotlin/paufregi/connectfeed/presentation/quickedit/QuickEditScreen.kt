@@ -117,11 +117,10 @@ internal fun QuickEditContent(
     }
 }
 
-@Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun QuickEditForm(
-    @PreviewParameter(QuickEditStatePreview::class) state: QuickEditState,
+    state: QuickEditState,
     onAction: (QuickEditAction) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {

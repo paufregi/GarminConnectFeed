@@ -104,11 +104,10 @@ internal fun SyncStravaContent(
     }
 }
 
-@Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun SyncStravaForm(
-    @PreviewParameter(SyncStravaStatePreview::class) state: SyncStravaState,
+    state: SyncStravaState,
     onAction: (SyncStravaAction) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {

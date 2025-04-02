@@ -58,7 +58,7 @@ internal fun LoginScreen(
 @Composable
 @ExperimentalMaterial3Api
 internal fun LoginContent(
-    @PreviewParameter(LoginContentStatePreview::class) state: LoginState,
+    @PreviewParameter(LoginStatePreview::class) state: LoginState,
     onAction: (LoginAction) -> Unit = {},
     onLogin: () -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
@@ -113,11 +113,10 @@ fun WelcomeInfo(
     }
 }
 
-@Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun LoginForm(
-    @PreviewParameter(LoginFormStatePreview::class) state: LoginState,
+    state: LoginState,
     onAction: (LoginAction) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
