@@ -1,10 +1,11 @@
-package paufregi.connectfeed.presentation.quickedit
+package paufregi.connectfeed.presentation.edit
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -17,13 +18,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.core.models.Course
+import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
 @RunWith(AndroidJUnit4::class)
-class QuickEditScreenTest {
+class EditScreenTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -60,19 +62,24 @@ class QuickEditScreenTest {
         )
     )
 
-    val profiles = listOf(
-        Profile(name = "profile1", activityType = ActivityType.Running),
-        Profile(name = "profile2", activityType = ActivityType.Cycling),
-        Profile(name = "profile3", activityType = ActivityType.Running)
+    val eventTypes = listOf(
+        EventType.Training,
+        EventType.Transportation
+    )
+
+    val courses = listOf(
+        Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
+        Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType.Cycling),
     )
 
     @Test
     fun `Default values`() {
         composeTestRule.setContent {
-            QuickEditContent(state = QuickEditState(
+            EditContent(state = EditState(
                 process = ProcessState.Idle,
                 activities = activities,
-                profiles = profiles,
+                eventTypes = eventTypes,
+                courses = courses
             ))
         }
         composeTestRule.onNodeWithText("Activity").isDisplayed()
@@ -88,11 +95,12 @@ class QuickEditScreenTest {
     @Test
     fun `Default values - with Strava`() {
         composeTestRule.setContent {
-            QuickEditContent(state = QuickEditState(
+            EditContent(state = EditState(
                 process = ProcessState.Idle,
                 activities = activities,
                 stravaActivities = stravaActivities,
-                profiles = profiles,
+                eventTypes = eventTypes,
+                courses = courses
             ))
         }
         composeTestRule.onNodeWithText("Activity").isDisplayed()
@@ -109,16 +117,25 @@ class QuickEditScreenTest {
     @Test
     fun `Values selected`() {
         composeTestRule.setContent {
-            QuickEditContent(state = QuickEditState(
+            EditContent(state = EditState(
                 process = ProcessState.Idle,
                 activities = activities,
-                profiles = profiles,
+                eventTypes = eventTypes,
+                courses = courses,
                 activity = activities[0],
-                profile = profiles[0],
+                eventType = eventTypes[0],
+                course = courses[0],
+                water = 10,
+                feel = 50f,
+                effort = 80f,
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
-        composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
+        composeTestRule.onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
+        composeTestRule.onNodeWithText("Course").assertTextContains(courses[0].name)
+        composeTestRule.onNodeWithText("Water").assertTextContains("10")
+        composeTestRule.onNodeWithTag("feel_text").assertTextContains("Normal")
+        composeTestRule.onNodeWithTag("effort_text").assertTextContains("8 - Very Hard")
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Reset").assertIsEnabled()
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
@@ -127,19 +144,32 @@ class QuickEditScreenTest {
     @Test
     fun `Values selected - with Strava`() {
         composeTestRule.setContent {
-            QuickEditContent(state = QuickEditState(
+            EditContent(state = EditState(
                 process = ProcessState.Idle,
                 activities = activities,
                 stravaActivities = stravaActivities,
-                profiles = profiles,
+                eventTypes = eventTypes,
+                courses = courses,
                 activity = activities[0],
                 stravaActivity = stravaActivities[0],
-                profile = profiles[0],
+                eventType = eventTypes[0],
+                course = courses[0],
+                description = "random text",
+                water = 10,
+                feel = 50f,
+                effort = 80f,
+                trainingEffect = true
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
         composeTestRule.onNodeWithText("Strava activity").assertTextContains(stravaActivities[0].name)
-        composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
+        composeTestRule.onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
+        composeTestRule.onNodeWithText("Course").assertTextContains(courses[0].name)
+        composeTestRule.onNodeWithText("Description").assertTextContains("random text")
+        composeTestRule.onNodeWithText("Water").assertTextContains("10")
+        composeTestRule.onNodeWithTag("feel_text").assertTextContains("Normal")
+        composeTestRule.onNodeWithTag("effort_text").assertTextContains("8 - Very Hard")
+        composeTestRule.onNodeWithTag("training_effect_checkbox").assertIsOn()
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Reset").assertIsEnabled()
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
@@ -148,7 +178,7 @@ class QuickEditScreenTest {
     @Test
     fun `Loading spinner`() {
         composeTestRule.setContent {
-            QuickEditContent(state = QuickEditState(
+            EditContent(state = EditState(
                 process = ProcessState.Processing,
             ))
         }
@@ -158,7 +188,7 @@ class QuickEditScreenTest {
     @Test
     fun `Update - success`() {
         composeTestRule.setContent {
-            QuickEditContent(state = QuickEditState(
+            EditContent(state = EditState(
                 process = ProcessState.Success("Activity updated"),
             ))
         }
@@ -169,7 +199,7 @@ class QuickEditScreenTest {
     @Test
     fun `Update - failure`() {
         composeTestRule.setContent {
-            QuickEditContent(state = QuickEditState(
+            EditContent(state = EditState(
                 process = ProcessState.Failure("Couldn't update activity"),
             ))
         }

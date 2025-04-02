@@ -158,7 +158,7 @@ internal fun QuickEditForm(
         )
         if (state.hasStrava) {
             Dropdown(
-                label = { Text("Strava Activity") },
+                label = { Text("Strava activity") },
                 selected = state.stravaActivity?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
                 items = state.stravaActivities

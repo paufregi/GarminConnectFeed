@@ -141,7 +141,7 @@ internal fun SyncStravaForm(
         )
         if (state.stravaActivities.isNotEmpty()) {
             Dropdown(
-                label = { Text("Strava Activity") },
+                label = { Text("Strava activity") },
                 selected = state.stravaActivity?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
                 items = state.stravaActivities
@@ -167,7 +167,7 @@ internal fun SyncStravaForm(
                 checked = state.trainingEffect,
                 onCheckedChange = { onAction(SyncStravaAction.SetTrainingEffect(it)) },
             )
-            Text("Training Effect")
+            Text(text = "Training effect")
         }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,

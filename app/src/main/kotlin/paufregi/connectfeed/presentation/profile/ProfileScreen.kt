@@ -124,7 +124,7 @@ internal fun ProfileForm(
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
         Dropdown(
-            label = { Text("Activity Type") },
+            label = { Text("Activity type") },
             selected = state.profile.activityType.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
             items = state.activityTypes.map {
@@ -132,7 +132,7 @@ internal fun ProfileForm(
             }
         )
         Dropdown(
-            label = { Text("Event Type") },
+            label = { Text("Event type") },
             selected = state.profile.eventType?.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
             items = state.eventTypes.map {

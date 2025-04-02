@@ -120,11 +120,11 @@ internal fun EditContent(
     }
 }
 
-@Preview
+
 @Composable
 @ExperimentalMaterial3Api
 internal fun EditForm(
-    @PreviewParameter(EditStatePreview::class) state: EditState,
+    state: EditState,
     onAction: (EditAction) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
@@ -161,7 +161,7 @@ internal fun EditForm(
         )
         if (state.hasStrava) {
             Dropdown(
-                label = { Text("Strava Activity") },
+                label = { Text("Strava activity") },
                 selected = state.stravaActivity?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
                 items = state.stravaActivities
@@ -174,7 +174,7 @@ internal fun EditForm(
             )
         }
         Dropdown(
-            label = { Text("Event Type") },
+            label = { Text("Event type") },
             selected = state.eventType?.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
             items = state.eventTypes.map {
@@ -227,6 +227,7 @@ internal fun EditForm(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(vertical = 10.dp)
+                    .testTag("feel_text")
             )
         }
         Column {
@@ -242,7 +243,9 @@ internal fun EditForm(
             )
             TextEffort(
                 state.effort ?: 0f,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .testTag("effort_text")
             )
         }
         if (state.hasStrava) {
