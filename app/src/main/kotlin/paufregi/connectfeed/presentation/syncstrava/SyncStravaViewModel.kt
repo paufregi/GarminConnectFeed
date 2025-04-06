@@ -66,14 +66,11 @@ class SyncStravaViewModel @Inject constructor(
         }
         is SyncStravaAction.SetDescription -> _state.update { it.copy(description = action.description) }
         is SyncStravaAction.SetTrainingEffect -> _state.update { it.copy(trainingEffect = action.trainingEffect) }
-        is SyncStravaAction.Save -> saveActivity()
-        is SyncStravaAction.Restart -> {
-            _state.update { SyncStravaState() }
-            load()
-        }
+        is SyncStravaAction.Save -> saveAction()
+        is SyncStravaAction.Restart -> restartAction()
     }
 
-    private fun saveActivity() = viewModelScope.launch {
+    private fun saveAction() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         when (syncActivity(
             activity = state.value.activity,
@@ -81,8 +78,13 @@ class SyncStravaViewModel @Inject constructor(
             description = state.value.description,
             trainingEffect = state.value.trainingEffect
         )) {
-            is Result.Success -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
-            is Result.Failure -> _state.update { it.copy(process = ProcessState.Failure("Couldn't update activity")) }
+            is Result.Success -> { _state.update { it.copy(process = ProcessState.Success("Activity updated")) } }
+            is Result.Failure -> { _state.update { it.copy(process = ProcessState.Failure("Couldn't update activity")) } }
         }
+    }
+
+    private fun restartAction() {
+        _state.update { SyncStravaState() }
+        load()
     }
 }
