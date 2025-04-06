@@ -7,6 +7,7 @@ import paufregi.connectfeed.core.models.EventType
 sealed interface EditAction {
     data class SetActivity(val activity: Activity) : EditAction
     data class SetStravaActivity(val activity: Activity) : EditAction
+    data class SetName(val name: String?) : EditAction
     data class SetEventType(val eventType: EventType) : EditAction
     data class SetCourse(val course: Course?) : EditAction
     data class SetDescription(val description: String?) : EditAction

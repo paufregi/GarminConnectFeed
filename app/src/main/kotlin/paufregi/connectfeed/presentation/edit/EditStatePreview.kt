@@ -28,6 +28,7 @@ class EditStatePreview : PreviewParameterProvider<EditState> {
                 type = ActivityType.Running,
                 distance = 1230.0,
             ),
+            name = "new activity",
             eventType = EventType.Training,
             course = Course(
                 id = 1,
@@ -69,6 +70,7 @@ class EditStatePreview : PreviewParameterProvider<EditState> {
                 type = ActivityType.Running,
                 distance = 1240.0,
             ),
+            name = "new activity",
             eventType = EventType.Training,
             course = Course(
                 id = 1,

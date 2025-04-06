@@ -173,6 +173,12 @@ internal fun EditForm(
                     }
             )
         }
+        TextField(
+            label = { Text("Name") },
+            value = state.name ?: "",
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            onValueChange = { onAction(EditAction.SetName(it)) }
+        )
         Dropdown(
             label = { Text("Event type") },
             selected = state.eventType?.toDropdownItem { },

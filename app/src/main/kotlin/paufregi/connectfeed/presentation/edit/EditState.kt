@@ -13,6 +13,7 @@ data class EditState(
     val courses: List<Course> = emptyList(),
     val activity: Activity? = null,
     val stravaActivity: Activity? = null,
+    val name: String? = null,
     val eventType: EventType? = null,
     val course: Course? = null,
     val description: String? = null,

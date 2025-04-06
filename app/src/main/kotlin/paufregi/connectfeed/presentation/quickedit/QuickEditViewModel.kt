@@ -77,14 +77,11 @@ class QuickEditViewModel @Inject constructor(
         is QuickEditAction.SetWater -> _state.update { it.copy(profile = it.profile?.copy(water = action.water)) }
         is QuickEditAction.SetEffort -> _state.update { it.copy(effort = if (action.effort == 0f) null else action.effort) }
         is QuickEditAction.SetFeel -> _state.update { it.copy(feel = action.feel) }
-        is QuickEditAction.Save -> saveActivity()
-        is QuickEditAction.Restart -> {
-            _state.update { QuickEditState() }
-            load()
-        }
+        is QuickEditAction.Save -> saveAction()
+        is QuickEditAction.Restart -> restartAction()
     }
 
-    private fun saveActivity() = viewModelScope.launch {
+    private fun saveAction() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
         quickUpdateActivity(
@@ -109,5 +106,10 @@ class QuickEditViewModel @Inject constructor(
                 it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")}"))
             }
         }
+    }
+
+    private fun restartAction() {
+        _state.update { QuickEditState() }
+        load()
     }
 }

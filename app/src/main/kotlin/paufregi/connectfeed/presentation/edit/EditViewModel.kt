@@ -13,8 +13,8 @@ import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetLatestActivities
 import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
-import paufregi.connectfeed.core.usecases.QuickUpdateActivity
-import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
+import paufregi.connectfeed.core.usecases.UpdateActivity
+import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
@@ -25,8 +25,8 @@ class EditViewModel @Inject constructor(
     val getLatestStravaActivities: GetLatestStravaActivities,
     val getEventTypes: GetEventTypes,
     val getCourses: GetCourses,
-    val quickUpdateActivity: QuickUpdateActivity,
-    val quickUpdateStravaActivity: QuickUpdateStravaActivity
+    val updateActivity: UpdateActivity,
+    val updateStravaActivity: UpdateStravaActivity,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditState())
@@ -75,6 +75,7 @@ class EditViewModel @Inject constructor(
             )
         }
         is EditAction.SetDescription -> _state.update { it.copy(description = action.description) }
+        is EditAction.SetName -> _state.update { it.copy(name = action.name) }
         is EditAction.SetEventType -> _state.update { it.copy(eventType = action.eventType) }
         is EditAction.SetCourse -> _state.update { it.copy(course = action.course) }
         is EditAction.SetWater -> _state.update { it.copy(water = action.water) }
