@@ -59,14 +59,18 @@ class ProfileViewModel @Inject constructor(
 
     fun onAction(action: ProfileAction) = when (action) {
         is ProfileAction.SetName -> _state.update { it.copy(profile = it.profile.copy(name = action.name)) }
-        is ProfileAction.SetActivityType -> _state.update {
-            it.copy(profile = it.profile.copy(
+        is ProfileAction.SetActivityType -> _state.update { it.copy(
+            profile = it.profile.copy(
                 activityType = action.activityType,
                 course = it.profile.course.getOrNull(action.activityType)
-            ))
-        }
+            )
+        ) }
         is ProfileAction.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = action.eventType)) }
-        is ProfileAction.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = action.course)) }
+        is ProfileAction.SetCourse -> _state.update { it.copy(
+            profile = it.profile.copy(
+                course = action.course.getOrNull(it.profile.activityType),
+            )
+        ) }
         is ProfileAction.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = action.water)) }
         is ProfileAction.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = action.rename)) }
         is ProfileAction.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = action.customWater)) }
