@@ -137,6 +137,137 @@ class ModelsTest {
     }
 
     @Test
+    fun `Activity - getOrNull - get`() {
+        val activity1 = Activity(
+            id = 1,
+            name = "activity1",
+            type = ActivityType.Running,
+        )
+
+        val result = activity1.getOrNull(ActivityType.Running)
+        assertThat(result).isEqualTo(activity1)
+    }
+
+    @Test
+    fun `Activity - getOrNull - no match`() {
+        val activity1 = Activity(
+            id = 1,
+            name = "activity1",
+            type = ActivityType.Running,
+        )
+
+        val result = activity1.getOrNull(ActivityType.Cycling)
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `Activity - getOrNull - null`() = runTest {
+        val activity: Activity? = null
+
+        val result = activity.getOrNull(ActivityType.Running)
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `Activity - getOrNull profile - get`() {
+        val activity1 = Activity(
+            id = 1,
+            name = "activity1",
+            type = ActivityType.Running,
+        )
+
+        val profile = Profile(
+            name = "profile",
+            activityType = ActivityType.Running,
+        )
+
+        val result = activity1.getOrNull(profile)
+        assertThat(result).isEqualTo(activity1)
+    }
+
+    @Test
+    fun `Activity - getOrNull profile - no match`() {
+        val activity1 = Activity(
+            id = 1,
+            name = "activity1",
+            type = ActivityType.Running,
+        )
+
+        val profile = Profile(
+            name = "profile",
+            activityType = ActivityType.Cycling,
+        )
+
+        val result = activity1.getOrNull(profile)
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `Activity - getOrNull profile - null`() = runTest {
+        val activity: Activity? = null
+
+        val profile = Profile(
+            name = "profile",
+            activityType = ActivityType.Running,
+        )
+
+        val result = activity.getOrNull(profile)
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `Activity - getOrNull course - get`() {
+        val activity1 = Activity(
+            id = 1,
+            name = "activity1",
+            type = ActivityType.Running,
+        )
+
+        val course = Course(
+            id = 1,
+            name = "course",
+            distance = 1.0,
+            type = ActivityType.Running,
+        )
+
+        val result = activity1.getOrNull(course)
+        assertThat(result).isEqualTo(activity1)
+    }
+
+    @Test
+    fun `Activity - getOrNull course - no match`() {
+        val activity1 = Activity(
+            id = 1,
+            name = "activity1",
+            type = ActivityType.Running,
+        )
+
+        val course = Course(
+            id = 1,
+            name = "course",
+            distance = 1.0,
+            type = ActivityType.Cycling,
+        )
+
+        val result = activity1.getOrNull(course)
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `Activity - getOrNull course - null`() = runTest {
+        val activity: Activity? = null
+
+        val course = Course(
+            id = 1,
+            name = "course",
+            distance = 1.0,
+            type = ActivityType.Cycling,
+        )
+        val result = activity.getOrNull(course)
+        assertThat(result).isNull()
+    }
+
+    @Test
     fun `Profile - getOrNull - get`() {
         val profile = Profile(
             name = "profile",
@@ -181,6 +312,40 @@ class ModelsTest {
         )
 
         val result = profile.getOrNull(activity)
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `Course - getOrNull - get`() {
+        val course = Course(
+            id = 1,
+            name = "course",
+            distance = 1.0,
+            type = ActivityType.Running,
+        )
+
+        val result = course.getOrNull(ActivityType.Running)
+        assertThat(result).isEqualTo(course)
+    }
+
+    @Test
+    fun `Course - getOrNull - no match`() {
+        val course = Course(
+            id = 1,
+            name = "course",
+            distance = 1.0,
+            type = ActivityType.Cycling,
+        )
+
+        val result = course.getOrNull(ActivityType.Running)
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `Course - getOrNull - null`() = runTest {
+        val course: Course? = null
+
+        val result = course.getOrNull(ActivityType.Cycling)
         assertThat(result).isNull()
     }
 
@@ -237,36 +402,26 @@ class ModelsTest {
     }
 
     @Test
-    fun `Course - getOrNull type - get`() {
-        val course = Course(
-            id = 1,
-            name = "course",
-            distance = 1.0,
-            type = ActivityType.Running,
-        )
+    fun `Float - getOrNull - get`() {
+        val value = 1.0f
 
-        val result = course.getOrNull(ActivityType.Running)
-        assertThat(result).isEqualTo(course)
+        val result = value.getOrNull()
+        assertThat(result).isEqualTo(value)
     }
 
     @Test
-    fun `Course - getOrNull type - no match`() {
-        val course = Course(
-            id = 1,
-            name = "course",
-            distance = 1.0,
-            type = ActivityType.Cycling,
-        )
+    fun `Float - getOrNull - 0f`() {
+        val value = 0f
 
-        val result = course.getOrNull(ActivityType.Running)
+        val result = value.getOrNull()
         assertThat(result).isNull()
     }
 
     @Test
-    fun `Course - getOrNull type - null`() = runTest {
-        val course: Course? = null
+    fun `Float - getOrNull - null`() {
+        val value: Float? = null
 
-        val result = course.getOrNull(ActivityType.Cycling)
+        val result = value.getOrNull()
         assertThat(result).isNull()
     }
 }
