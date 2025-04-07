@@ -49,10 +49,7 @@ class QuickEditViewModel @Inject constructor(
             .onFailure { errors.add("Strava activities") }
 
         when (errors.isNotEmpty()) {
-            true -> _state.update {
-                it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}"))
-            }
-
+            true -> _state.update { it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}")) }
             false -> _state.update { it.copy(process = ProcessState.Idle) }
         }
     }

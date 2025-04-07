@@ -16,6 +16,7 @@ import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
+import paufregi.connectfeed.core.utils.getOrNull
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
@@ -66,12 +67,14 @@ class EditViewModel @Inject constructor(
             it.copy(
                 activity = action.activity,
                 stravaActivity = it.stravaActivity.getOrMatch(action.activity, it.stravaActivities),
+                course = it.course.getOrNull(action.activity)
             )
         }
         is EditAction.SetStravaActivity -> _state.update {
             it.copy(
                 stravaActivity = action.activity,
                 activity = it.activity.getOrMatch(action.activity, it.activities),
+                course = it.course.getOrNull(action.activity)
             )
         }
         is EditAction.SetDescription -> _state.update { it.copy(description = action.description) }
