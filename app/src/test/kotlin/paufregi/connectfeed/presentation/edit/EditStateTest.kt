@@ -6,14 +6,13 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.presentation.quickedit.QuickEditState
 
 @ExperimentalCoroutinesApi
 class EditStateTest {
 
     @Test
     fun `Has Strava`() = runTest {
-        val state = QuickEditState(
+        val state = EditState(
             stravaActivities = listOf(
                 Activity(
                     id = 1L,
@@ -29,7 +28,7 @@ class EditStateTest {
 
     @Test
     fun `Has not Strava`() = runTest {
-        val state = QuickEditState(stravaActivities = emptyList())
+        val state = EditState(stravaActivities = emptyList())
 
         assertThat(state.hasStrava).isFalse()
     }
