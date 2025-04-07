@@ -69,10 +69,14 @@ class QuickEditViewModel @Inject constructor(
                 activity = it.activity.getOrMatch(action.activity, it.activities),
             )
         }
-        is QuickEditAction.SetProfile -> _state.update { it.copy(profile = action.profile) }
+        is QuickEditAction.SetProfile -> _state.update { it.copy(
+            profile = action.profile,
+            activity = it.activity.getOrNull(action.profile),
+            stravaActivity = it.stravaActivity.getOrNull(action.profile),
+        ) }
         is QuickEditAction.SetDescription -> _state.update { it.copy(description = action.description) }
         is QuickEditAction.SetWater -> _state.update { it.copy(profile = it.profile?.copy(water = action.water)) }
-        is QuickEditAction.SetEffort -> _state.update { it.copy(effort = if (action.effort == 0f) null else action.effort) }
+        is QuickEditAction.SetEffort -> _state.update { it.copy(effort = action.effort.getOrNull()) }
         is QuickEditAction.SetFeel -> _state.update { it.copy(feel = action.feel) }
         is QuickEditAction.Save -> saveAction()
         is QuickEditAction.Restart -> restartAction()
