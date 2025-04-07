@@ -1,6 +1,7 @@
 package paufregi.connectfeed.core.utils
 
 import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.Profile
 
@@ -13,3 +14,6 @@ fun Profile?.getOrNull(activity: Activity): Profile? =
 
 fun Course?.getOrNull(activity: Activity): Course? =
     if(this?.type != activity.type) null else this
+
+fun Course?.getOrNull(type: ActivityType): Course? =
+    if(this?.type != type) null else this

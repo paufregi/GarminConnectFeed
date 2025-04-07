@@ -18,6 +18,7 @@ import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
 import paufregi.connectfeed.core.usecases.SaveProfile
+import paufregi.connectfeed.core.utils.getOrNull
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
@@ -61,7 +62,7 @@ class ProfileViewModel @Inject constructor(
         is ProfileAction.SetActivityType -> _state.update {
             it.copy(profile = it.profile.copy(
                 activityType = action.activityType,
-                course = if (action.activityType == it.profile.course?.type) it.profile.course else null,
+                course = it.profile.course.getOrNull(action.activityType)
             ))
         }
         is ProfileAction.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = action.eventType)) }
