@@ -377,11 +377,12 @@ class ProfileViewModelTest {
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
-            awaitItem() // skip initial state
+            viewModel.onAction(ProfileAction.SetActivityType(ActivityType.Running))
             viewModel.onAction(ProfileAction.SetCourse(course))
+            skipItems(2)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
-            assertThat(state.profile).isEqualTo(Profile(course = course))
+            assertThat(state.profile).isEqualTo(Profile(activityType = ActivityType.Running, course = course))
             assertThat(state.activityTypes).isEqualTo(activityTypes)
             assertThat(state.eventTypes).isEqualTo(eventTypes)
             assertThat(state.courses).isEqualTo(courses)
