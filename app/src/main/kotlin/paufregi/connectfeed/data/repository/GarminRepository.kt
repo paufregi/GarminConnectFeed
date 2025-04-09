@@ -11,11 +11,13 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.core.models.Weight
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.Strava
+import paufregi.connectfeed.data.api.strava.models.UpdateProfile
 import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
@@ -101,6 +103,16 @@ class GarminRepository @Inject constructor(
         )
         return callApi(
             { strava.updateActivity(activity.id, request) },
+            { }
+        )
+    }
+
+    suspend fun updateStravaProfile(
+        weight: Float
+    ): Result<Unit> {
+        val request = UpdateProfile(weight = weight)
+        return callApi(
+            { strava.updateProfile(request) },
             { }
         )
     }

@@ -804,6 +804,16 @@ val stravaLatestActivitiesJson = """
     } ]
 """.trimIndent()
 
+val stravaDetailedAthlete = """
+    {    
+      "id" : 1,
+      "username" : "paufregi"
+      "firstname" : "Paul",
+      "lastname" : "Test",
+      "weight": 76.1
+    }
+""".trimIndent()
+
 const val connectPort = 8081
 const val garminSSOPort = 8082
 const val garthPort = 8083
@@ -908,6 +918,9 @@ val stravaDispatcher: Dispatcher = object : Dispatcher() {
 
             path.startsWith("/activities/") && request.method == "PUT" ->
                 MockResponse().setResponseCode(200)
+
+            path == "/athlete" && request.method == "PUT" ->
+                MockResponse().setResponseCode(200).setBody(stravaDetailedAthlete)
 
             else -> MockResponse().setResponseCode(404)
         }

@@ -37,6 +37,7 @@ import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity as StravaUpdateActivity
+import paufregi.connectfeed.data.api.strava.models.UpdateProfile as StravaUpdateProfile
 
 class GarminRepositoryTest {
 
@@ -579,6 +580,32 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { strava.updateActivity(activity.id, expectedRequest) }
+        confirmVerified(dao, connect, strava)
+    }
+
+    @Test
+    fun `Update strava profile`() = runTest {
+        coEvery { strava.updateProfile(any()) } returns Response.success(Unit)
+
+        val expectedRequest = StravaUpdateProfile(weight = 75.9f)
+
+        val res = repo.updateStravaProfile(weight = 75.9f)
+
+        assertThat(res.isSuccessful).isTrue()
+        coVerify { strava.updateProfile(expectedRequest) }
+        confirmVerified(dao, connect, strava)
+    }
+
+    @Test
+    fun `Update strava profile - failure`() = runTest {
+        coEvery { strava.updateProfile(any(), ) } returns Response.error<Unit>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val expectedRequest = StravaUpdateProfile(weight = 75.9f)
+
+        val res = repo.updateStravaProfile(weight = 75.9f)
+
+        assertThat(res.isSuccessful).isFalse()
+        coVerify { strava.updateProfile(expectedRequest) }
         confirmVerified(dao, connect, strava)
     }
 
