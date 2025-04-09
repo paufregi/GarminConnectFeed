@@ -8,8 +8,8 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 data class ProfileState(
     val process: ProcessState = ProcessState.Processing,
-    val profile: Profile = Profile(),
     val activityTypes: List<ActivityType> = emptyList(),
     val eventTypes: List<EventType> = emptyList(),
     val courses: List<Course> = emptyList(),
+    val profile: Profile = Profile(),
 )

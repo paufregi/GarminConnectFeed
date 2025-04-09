@@ -13,6 +13,7 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetLatestActivities
 import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
 import paufregi.connectfeed.core.usecases.SyncStravaActivity
+import paufregi.connectfeed.core.utils.getOrMatch
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
@@ -54,33 +55,22 @@ class SyncStravaViewModel @Inject constructor(
         is SyncStravaAction.SetActivity -> _state.update {
             it.copy(
                 activity = action.activity,
-                stravaActivity = if ((it.stravaActivity == null) || (it.stravaActivity.type != action.activity.type))
-                    it.stravaActivities.find { it.match(action.activity) }
-                else
-                    it.stravaActivity,
+                stravaActivity = it.stravaActivity.getOrMatch(action.activity, it.stravaActivities),
             )
         }
-
         is SyncStravaAction.SetStravaActivity -> _state.update {
             it.copy(
                 stravaActivity = action.activity,
-                activity = if ((it.activity == null) || (it.activity.type != action.activity.type))
-                    it.activities.find { it.match(action.activity) }
-                else
-                    it.activity,
+                activity = it.activity.getOrMatch(action.activity, it.activities),
             )
         }
-
         is SyncStravaAction.SetDescription -> _state.update { it.copy(description = action.description) }
         is SyncStravaAction.SetTrainingEffect -> _state.update { it.copy(trainingEffect = action.trainingEffect) }
-        is SyncStravaAction.Save -> saveActivity()
-        is SyncStravaAction.Restart -> {
-            _state.update { SyncStravaState() }
-            load()
-        }
+        is SyncStravaAction.Save -> saveAction()
+        is SyncStravaAction.Restart -> restartAction()
     }
 
-    private fun saveActivity() = viewModelScope.launch {
+    private fun saveAction() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         when (syncActivity(
             activity = state.value.activity,
@@ -88,8 +78,13 @@ class SyncStravaViewModel @Inject constructor(
             description = state.value.description,
             trainingEffect = state.value.trainingEffect
         )) {
-            is Result.Success -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
-            is Result.Failure -> _state.update { it.copy(process = ProcessState.Failure("Couldn't update activity")) }
+            is Result.Success -> { _state.update { it.copy(process = ProcessState.Success("Activity updated")) } }
+            is Result.Failure -> { _state.update { it.copy(process = ProcessState.Failure("Couldn't update activity")) } }
         }
+    }
+
+    private fun restartAction() {
+        _state.update { SyncStravaState() }
+        load()
     }
 }

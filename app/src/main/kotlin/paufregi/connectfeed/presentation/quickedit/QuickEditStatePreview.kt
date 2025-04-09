@@ -3,6 +3,7 @@ package paufregi.connectfeed.presentation.quickedit
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
@@ -12,46 +13,158 @@ class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
         QuickEditState(ProcessState.Success("Activity updates")),
         QuickEditState(ProcessState.Failure("Failed to update activity")),
         QuickEditState(
+            process = ProcessState.Idle,
+            activities = listOf(
+                Activity(
+                    id = 1,
+                    name = "activity",
+                    type = ActivityType.Running,
+                    distance = 1230.0,
+                )
+            ),
+            profiles = listOf(
+                Profile(
+                    id = 1,
+                    name = "profile",
+                    activityType = ActivityType.Running,
+                    course = Course(
+                        id = 1,
+                        name = "course",
+                        type = ActivityType.Running,
+                        distance = 1250.0
+                    )
+                )
+            ),
             activity = Activity(
                 id = 1,
                 name = "activity",
                 type = ActivityType.Running,
-                distance = 12345.0
+                distance = 1230.0,
             ),
-            profile = Profile(name = "name", activityType = ActivityType.Running)
+            profile = Profile(
+                id = 1,
+                name = "profile",
+                activityType = ActivityType.Running,
+                course = Course(
+                    id = 1,
+                    name = "course",
+                    type = ActivityType.Running,
+                    distance = 1250.0
+                )
+            )
         ),
         QuickEditState(
-            activity = Activity(
-                id = 2,
-                name = "activity",
-                type = ActivityType.Cycling,
-                distance = 12345.0
+            process = ProcessState.Idle,
+            activities = listOf(
+                Activity(
+                    id = 1,
+                    name = "activity",
+                    type = ActivityType.Running,
+                    distance = 1230.0,
+                )
             ),
-            profile = Profile(name = "name", activityType = ActivityType.Cycling),
+            profiles = listOf(
+                Profile(
+                    id = 1,
+                    name = "profile",
+                    activityType = ActivityType.Running,
+                    water = 10,
+                    customWater = true,
+                    feelAndEffort = true,
+                    course = Course(
+                        id = 1,
+                        name = "course",
+                        type = ActivityType.Running,
+                        distance = 1250.0
+                    )
+                )
+            ),
+            activity = Activity(
+                id = 1,
+                name = "activity",
+                type = ActivityType.Running,
+                distance = 1230.0,
+            ),
+            profile = Profile(
+                id = 1,
+                name = "profile",
+                activityType = ActivityType.Running,
+                water = 10,
+                customWater = true,
+                feelAndEffort = true,
+                course = Course(
+                    id = 1,
+                    name = "course",
+                    type = ActivityType.Running,
+                    distance = 1250.0
+                )
+            ),
             feel = 50f,
             effort = 50f,
         ),
         QuickEditState(
+            process = ProcessState.Idle,
+            activities = listOf(
+                Activity(
+                    id = 1,
+                    name = "activity",
+                    type = ActivityType.Running,
+                    distance = 1230.0,
+                )
+            ),
+            stravaActivities = listOf(
+                Activity(
+                    id = 2,
+                    name = "strava activity",
+                    type = ActivityType.Running,
+                    distance = 1240.0,
+                )
+            ),
+            profiles = listOf(
+                Profile(
+                    id = 1,
+                    name = "profile",
+                    activityType = ActivityType.Running,
+                    water = 10,
+                    customWater = true,
+                    feelAndEffort = true,
+                    course = Course(
+                        id = 1,
+                        name = "course",
+                        type = ActivityType.Running,
+                        distance = 1250.0
+                    )
+                )
+            ),
             activity = Activity(
-                id = 2,
+                id = 1,
                 name = "activity",
-                type = ActivityType.Cycling,
-                distance = 12345.0
+                type = ActivityType.Running,
+                distance = 1230.0,
             ),
             stravaActivity = Activity(
                 id = 2,
-                name = "activity",
-                type = ActivityType.Cycling,
-                distance = 12345.0
+                name = "strava activity",
+                type = ActivityType.Running,
+                distance = 1240.0,
             ),
             profile = Profile(
-                name = "name",
-                activityType = ActivityType.Cycling,
-                water = 1,
-                customWater = true
+                id = 1,
+                name = "profile",
+                activityType = ActivityType.Running,
+                water = 10,
+                customWater = true,
+                feelAndEffort = true,
+                course = Course(
+                    id = 1,
+                    name = "course",
+                    type = ActivityType.Running,
+                    distance = 1250.0
+                )
             ),
             feel = 50f,
             effort = 50f,
-        ),
+            description = "description",
+        )
     )
 }

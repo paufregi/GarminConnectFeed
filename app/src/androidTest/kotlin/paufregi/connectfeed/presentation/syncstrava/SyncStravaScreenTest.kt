@@ -70,6 +70,9 @@ class SyncStravaScreenTest {
         composeTestRule.onNodeWithText("Activity").isDisplayed()
         composeTestRule.onNodeWithText("Strava activity").isDisplayed()
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sync Strava").assertIsDisplayed()
         composeTestRule.onNodeWithText("Reset").assertIsEnabled()
         composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
@@ -86,8 +89,11 @@ class SyncStravaScreenTest {
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
-        composeTestRule.onNodeWithText("Strava Activity").assertTextContains(stravaActivities[0].name)
+        composeTestRule.onNodeWithText("Strava activity").assertTextContains(stravaActivities[0].name)
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sync Strava").assertIsDisplayed()
         composeTestRule.onNodeWithText("Reset").assertIsEnabled()
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
     }

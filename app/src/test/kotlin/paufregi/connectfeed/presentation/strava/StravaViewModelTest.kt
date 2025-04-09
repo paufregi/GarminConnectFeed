@@ -51,10 +51,11 @@ class StravaViewModelTest {
     @Test
     fun `Exchange token`() = runTest {
         coEvery { stravaCodeExchange(any()) } returns Result.Success(Unit)
+
         viewModel.state.test {
-            var state = awaitItem() // Initial state
             viewModel.exchangeToken("code")
-            state = awaitItem()
+            skipItems(1)
+            val state = awaitItem()
             assertThat(state).isEqualTo(StravaState.Success)
             cancelAndIgnoreRemainingEvents()
         }
@@ -66,10 +67,11 @@ class StravaViewModelTest {
     @Test
     fun `Exchange token - failure`() = runTest {
         coEvery { stravaCodeExchange(any()) } returns Result.Failure("error")
+
         viewModel.state.test {
-            var state = awaitItem() // Initial state
             viewModel.exchangeToken("code")
-            state = awaitItem()
+            skipItems(1)
+            val state = awaitItem()
             assertThat(state).isEqualTo(StravaState.Failure)
             cancelAndIgnoreRemainingEvents()
         }

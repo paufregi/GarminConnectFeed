@@ -1,5 +1,6 @@
-package paufregi.connectfeed.presentation.quickedit
+package paufregi.connectfeed.presentation.edit
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -33,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.HomeNavigation
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
@@ -59,19 +62,19 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun QuickEditScreen(nav: NavController = rememberNavController()) {
-    val viewModel = hiltViewModel<QuickEditViewModel>()
+internal fun EditScreen(nav: NavController = rememberNavController()) {
+    val viewModel = hiltViewModel<EditViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    QuickEditContent(state, viewModel::onAction, nav)
+    EditContent(state, viewModel::onAction, nav)
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-internal fun QuickEditContent(
-    @PreviewParameter(QuickEditStatePreview::class) state: QuickEditState,
-    onAction: (QuickEditAction) -> Unit = {},
+internal fun EditContent(
+    @PreviewParameter(EditStatePreview::class) state: EditState,
+    onAction: (EditAction) -> Unit = {},
     nav: NavController = rememberNavController()
 ) {
     when (state.process) {
@@ -83,7 +86,7 @@ internal fun QuickEditContent(
                 actionButton = {
                     Button(
                         text = "Ok",
-                        onClick = { onAction(QuickEditAction.Restart) })
+                        onClick = { onAction(EditAction.Restart) })
                 },
                 paddingValues = it
             )
@@ -96,7 +99,7 @@ internal fun QuickEditContent(
                 actionButton = {
                     Button(
                         text = "Ok",
-                        onClick = { onAction(QuickEditAction.Restart) })
+                        onClick = { onAction(EditAction.Restart) })
                 },
                 paddingValues = it
             )
@@ -108,20 +111,21 @@ internal fun QuickEditContent(
             bottomBar = {
                 NavigationBar(
                     items = HomeNavigation.items(state.hasStrava),
-                    selectedIndex = HomeNavigation.QUICK_EDIT,
+                    selectedIndex = HomeNavigation.EDIT,
                     nav = nav
                 )
             },
             nav = nav
-        ) { QuickEditForm(state, onAction, it) }
+        ) { EditForm(state, onAction, it) }
     }
 }
 
+
 @Composable
 @ExperimentalMaterial3Api
-internal fun QuickEditForm(
-    state: QuickEditState,
-    onAction: (QuickEditAction) -> Unit = {},
+internal fun EditForm(
+    state: EditState,
+    onAction: (EditAction) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -139,7 +143,7 @@ internal fun QuickEditForm(
                 start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr) + 20.dp,
                 end = paddingValues.calculateRightPadding(LayoutDirection.Ltr) + 20.dp,
             )
-            .testTag("quick_edit_form")
+            .testTag("edit_form")
     ) {
         val interactionSource = remember { MutableInteractionSource() }
 
@@ -151,7 +155,7 @@ internal fun QuickEditForm(
                 .filter { state.stravaActivity?.type == null || it.type == state.stravaActivity.type }
                 .map {
                     it.toDropdownItem {
-                        onAction(QuickEditAction.SetActivity(it))
+                        onAction(EditAction.SetActivity(it))
                     }
                 }
         )
@@ -164,76 +168,108 @@ internal fun QuickEditForm(
                     .filter { state.activity?.type == null || it.type == state.activity.type }
                     .map {
                         it.toDropdownItem {
-                            onAction(QuickEditAction.SetStravaActivity(it))
+                            onAction(EditAction.SetStravaActivity(it))
                         }
                     }
             )
         }
-        Dropdown(
-            label = { Text("Profile") },
-            selected = state.profile?.toDropdownItem { },
-            modifier = Modifier.fillMaxWidth(),
-            items = state.profiles
-                .filter {
-                    (state.activity?.type == null || it.activityType == state.activity.type) &&
-                            (state.stravaActivity?.type == null || it.activityType == state.stravaActivity.type)
-                }
-                .map {
-                    it.toDropdownItem { onAction(QuickEditAction.SetProfile(it)) }
-                }
+        TextField(
+            label = { Text("Name") },
+            value = state.name ?: "",
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            onValueChange = { onAction(EditAction.SetName(it)) }
         )
+        Dropdown(
+            label = { Text("Event type") },
+            selected = state.eventType?.toDropdownItem { },
+            modifier = Modifier.fillMaxWidth(),
+            items = state.eventTypes.map {
+                it.toDropdownItem {
+                    onAction(EditAction.SetEventType(it))
+                }
+            },
+        )
+        if (state.activity?.type?.allowCourseInProfile == true) {
+            Dropdown(
+                label = { Text("Course") },
+                selected = state.course?.toDropdownItem { },
+                modifier = Modifier.fillMaxWidth(),
+                items = state.courses
+                    .filter { it.type == state.activity.type || state.activity.type == ActivityType.Any }
+                    .map {
+                        it.toDropdownItem { onAction(EditAction.SetCourse(it)) }
+                    }
+            )
+        }
         if (state.stravaActivity != null) {
             TextField(
                 label = { Text("Description") },
                 value = state.description ?: "",
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                onValueChange = { onAction(QuickEditAction.SetDescription(it)) }
+                onValueChange = { onAction(EditAction.SetDescription(it)) }
             )
         }
-        if (state.profile?.customWater == true) {
-            TextField(
-                label = { Text("Water") },
-                value = state.profile.water?.toString() ?: "",
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                onValueChange = { onAction(QuickEditAction.SetWater(it.toIntOrNull())) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        TextField(
+            label = { Text("Water") },
+            value = state.water?.toString() ?: "",
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            onValueChange = { onAction(EditAction.SetWater(it.toIntOrNull())) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+        Column {
+            IconRadioGroup(
+                options = listOf(
+                    IconRadioItem(0f, Icons.Connect.FaceVerySad),
+                    IconRadioItem(25f, Icons.Connect.FaceSad),
+                    IconRadioItem(50f, Icons.Connect.FaceNormal),
+                    IconRadioItem(75f, Icons.Connect.FaceHappy),
+                    IconRadioItem(100f, Icons.Connect.FaceVeryHappy),
+                ),
+                selected = state.feel,
+                onClick = { onAction(EditAction.SetFeel(it)) }
+            )
+            TextFeel(
+                state.feel,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 10.dp)
+                    .testTag("feel_text")
             )
         }
-        if (state.profile?.feelAndEffort == true) {
-            Column {
-                IconRadioGroup(
-                    options = listOf(
-                        IconRadioItem(0f, Icons.Connect.FaceVerySad),
-                        IconRadioItem(25f, Icons.Connect.FaceSad),
-                        IconRadioItem(50f, Icons.Connect.FaceNormal),
-                        IconRadioItem(75f, Icons.Connect.FaceHappy),
-                        IconRadioItem(100f, Icons.Connect.FaceVeryHappy),
-                    ),
-                    selected = state.feel,
-                    onClick = { onAction(QuickEditAction.SetFeel(it)) }
+        Column {
+            Slider(
+                value = state.effort ?: 0f,
+                onValueChange = { onAction(EditAction.SetEffort(it.toInt().toFloat())) },
+                valueRange = 0f..100f,
+                steps = 9,
+                interactionSource = interactionSource,
+                track = CustomSlider.track,
+                thumb = CustomSlider.thumb(interactionSource),
+                modifier = Modifier.fillMaxWidth()
+            )
+            TextEffort(
+                state.effort ?: 0f,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .testTag("effort_text")
+            )
+        }
+        if (state.stravaActivity != null) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        onClick = { onAction(EditAction.SetTrainingEffect(!state.trainingEffect)) }
+                    )
+            ) {
+                Checkbox(
+                    modifier = Modifier.testTag("training_effect_checkbox"),
+                    checked = state.trainingEffect,
+                    onCheckedChange = { onAction(EditAction.SetTrainingEffect(it)) },
                 )
-                TextFeel(
-                    state.feel,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(vertical = 10.dp)
-                )
-            }
-            Column {
-                Slider(
-                    value = state.effort ?: 0f,
-                    onValueChange = { onAction(QuickEditAction.SetEffort(it.toInt().toFloat())) },
-                    valueRange = 0f..100f,
-                    steps = 9,
-                    interactionSource = interactionSource,
-                    track = CustomSlider.track,
-                    thumb = CustomSlider.thumb(interactionSource),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                TextEffort(
-                    state.effort ?: 0f,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
+                Text(text = "Training effect")
             }
         }
         Row(
@@ -242,17 +278,17 @@ internal fun QuickEditForm(
         ) {
             Button(
                 text = "Reset",
-                onClick = { onAction(QuickEditAction.Restart) }
+                onClick = { onAction(EditAction.Restart) }
             )
 
             Button(
                 text = "Save",
-                enabled = state.activity != null && state.profile != null &&
+                enabled = state.activity != null &&
                         (!state.hasStrava || state.stravaActivity != null),
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()
-                    onAction(QuickEditAction.Save)
+                    onAction(EditAction.Save)
                 }
             )
         }

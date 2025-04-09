@@ -9,7 +9,7 @@ import java.util.Locale
 
 class FormatterTest {
 
-    val zoneId = ZoneId.of("Pacific/Auckland")
+    val zoneId: ZoneId = ZoneId.of("Pacific/Auckland")
 
     @Test
     fun `Formatter date time for filename`() {

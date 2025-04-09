@@ -212,8 +212,8 @@ class SyncStravaViewModelTest {
         viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
 
         viewModel.state.test {
-            awaitItem() // skip initial state
             viewModel.onAction(SyncStravaAction.SetActivity(activities[0]))
+            skipItems(1)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -226,66 +226,6 @@ class SyncStravaViewModelTest {
         }
 
         coVerify {
-            getActivities()
-            getStravaActivities()
-        }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
-    }
-
-    @Test
-    fun `Set activity - matching`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
-
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
-
-        viewModel.state.test {
-            awaitItem() // skip initial state
-            viewModel.onAction(SyncStravaAction.SetStravaActivity(stravaActivities[2]))
-            awaitItem() // skip
-            viewModel.onAction(SyncStravaAction.SetActivity(activities[0]))
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
-            assertThat(state.activities).isEqualTo(activities)
-            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
-            assertThat(state.activity).isEqualTo(activities[0])
-            assertThat(state.stravaActivity).isEqualTo(stravaActivities[2])
-            assertThat(state.description).isNull()
-            assertThat(state.trainingEffect).isFalse()
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify{
-            getActivities()
-            getStravaActivities()
-        }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
-    }
-
-    @Test
-    fun `Set activity - no matching`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
-
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
-
-        viewModel.state.test {
-            awaitItem() // skip initial state
-            viewModel.onAction(SyncStravaAction.SetStravaActivity(stravaActivities[1]))
-            awaitItem() // skip
-            viewModel.onAction(SyncStravaAction.SetActivity(activities[0]))
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
-            assertThat(state.activities).isEqualTo(activities)
-            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
-            assertThat(state.activity).isEqualTo(activities[0])
-            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
-            assertThat(state.description).isNull()
-            assertThat(state.trainingEffect).isFalse()
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify{
             getActivities()
             getStravaActivities()
         }
@@ -300,8 +240,8 @@ class SyncStravaViewModelTest {
         viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
 
         viewModel.state.test {
-            awaitItem() // skip initial state
             viewModel.onAction(SyncStravaAction.SetStravaActivity(stravaActivities[0]))
+            skipItems(1)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -321,17 +261,16 @@ class SyncStravaViewModelTest {
     }
 
     @Test
-    fun `Set Strava activity - matching`() = runTest {
+    fun `Set activity & Strava activity - matching`() = runTest {
         coEvery { getActivities() } returns Result.Success(activities)
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
 
         viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
 
         viewModel.state.test {
-            awaitItem() // skip initial state
             viewModel.onAction(SyncStravaAction.SetActivity(activities[2]))
-            awaitItem() // skip
             viewModel.onAction(SyncStravaAction.SetStravaActivity(stravaActivities[0]))
+            skipItems(2)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -351,17 +290,74 @@ class SyncStravaViewModelTest {
     }
 
     @Test
-    fun `Set Strava activity - no matching`() = runTest {
+    fun `Set activity & Strava activity - no matching`() = runTest {
         coEvery { getActivities() } returns Result.Success(activities)
         coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
 
         viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
 
         viewModel.state.test {
-            awaitItem() // skip initial state
             viewModel.onAction(SyncStravaAction.SetActivity(activities[1]))
-            awaitItem() // skip
             viewModel.onAction(SyncStravaAction.SetStravaActivity(stravaActivities[0]))
+            skipItems(2)
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
+            assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
+            assertThat(state.description).isNull()
+            assertThat(state.trainingEffect).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{
+            getActivities()
+            getStravaActivities()
+        }
+        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
+    }
+
+    @Test
+    fun `Set Strava activity & activity - matching`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+
+        viewModel.state.test {
+            viewModel.onAction(SyncStravaAction.SetStravaActivity(stravaActivities[2]))
+            viewModel.onAction(SyncStravaAction.SetActivity(activities[0]))
+            skipItems(2)
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
+            assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[2])
+            assertThat(state.description).isNull()
+            assertThat(state.trainingEffect).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{
+            getActivities()
+            getStravaActivities()
+        }
+        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
+    }
+
+    @Test
+    fun `Set Strava activity & activity - no matching`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+
+        viewModel.state.test {
+            viewModel.onAction(SyncStravaAction.SetStravaActivity(stravaActivities[1]))
+            viewModel.onAction(SyncStravaAction.SetActivity(activities[0]))
+            skipItems(2)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -388,8 +384,8 @@ class SyncStravaViewModelTest {
         viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
 
         viewModel.state.test {
-            awaitItem() // skip initial state
             viewModel.onAction(SyncStravaAction.SetDescription("description"))
+            skipItems(1)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -416,8 +412,8 @@ class SyncStravaViewModelTest {
         viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
 
         viewModel.state.test {
-            awaitItem() // skip initial state
             viewModel.onAction(SyncStravaAction.SetTrainingEffect(true))
+            skipItems(1)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
@@ -445,14 +441,11 @@ class SyncStravaViewModelTest {
         viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
 
         viewModel.state.test {
-            awaitItem() // skip initial state
             viewModel.onAction(SyncStravaAction.SetActivity(activities[0]))
-            awaitItem() // skip
             viewModel.onAction(SyncStravaAction.SetDescription("description"))
-            awaitItem() // skip
             viewModel.onAction(SyncStravaAction.SetTrainingEffect(true))
-            awaitItem() // skip
             viewModel.onAction(SyncStravaAction.Save)
+            skipItems(4)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Success("Activity updated"))
             assertThat(state.activities).isEqualTo(activities)
@@ -485,14 +478,11 @@ class SyncStravaViewModelTest {
         viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
 
         viewModel.state.test {
-            awaitItem() // skip initial state
             viewModel.onAction(SyncStravaAction.SetActivity(activities[0]))
-            awaitItem() // skip
             viewModel.onAction(SyncStravaAction.SetDescription("description"))
-            awaitItem() // skip
             viewModel.onAction(SyncStravaAction.SetTrainingEffect(true))
-            awaitItem() // skip
             viewModel.onAction(SyncStravaAction.Save)
+            skipItems(4)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't update activity"))
             assertThat(state.activities).isEqualTo(activities)
@@ -514,5 +504,33 @@ class SyncStravaViewModelTest {
             getStravaActivities,
             syncStravaActivity
         )
+    }
+
+    @Test
+    fun `Restart action`() = runTest {
+        coEvery { getActivities() } returns Result.Success(activities)
+        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+
+        viewModel.state.test {
+            viewModel.onAction(SyncStravaAction.Restart)
+            skipItems(2)
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
+            assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isNull()
+            assertThat(state.description).isNull()
+            assertThat(state.trainingEffect).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{
+            getActivities()
+            getStravaActivities()
+        }
+        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 }

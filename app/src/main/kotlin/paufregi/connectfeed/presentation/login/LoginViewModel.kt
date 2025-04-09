@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val signInUseCase: SignIn,
+    private val signIn: SignIn,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
@@ -28,21 +28,14 @@ class LoginViewModel @Inject constructor(
             is LoginAction.SetPassword -> _state.update { it.copy(password = action.password) }
             is LoginAction.ShowPassword -> _state.update { it.copy(showPassword = action.showPassword) }
             is LoginAction.Reset -> _state.update { LoginState() }
-            is LoginAction.SignIn -> signIn()
+            is LoginAction.SignIn -> signInAction()
         }
     }
 
-    private fun signIn() = viewModelScope.launch {
+    private fun signInAction() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
-        signInUseCase(state.value.username, state.value.password)
-            .onSuccess { data ->
-                _state.update {
-                    it.copy(
-                        process = ProcessState.Success(),
-                        user = data
-                    )
-                }
-            }
+        signIn(state.value.username, state.value.password)
+            .onSuccess { data -> _state.update { it.copy(process = ProcessState.Success(), user = data) } }
             .onFailure { err -> _state.update { it.copy(process = ProcessState.Failure(err)) } }
     }
 }

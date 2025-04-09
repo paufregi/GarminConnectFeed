@@ -1,25 +1,26 @@
 package paufregi.connectfeed.core.usecases
 
 import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
-class SyncStravaActivity @Inject constructor(private val garminRepository: GarminRepository) {
+class QuickUpdateStravaActivity @Inject constructor(private val garminRepository: GarminRepository) {
     suspend operator fun invoke(
         activity: Activity?,
         stravaActivity: Activity?,
+        profile: Profile?,
         description: String?,
-        trainingEffect: Boolean
     ): Result<Unit> {
-        if (activity == null || stravaActivity == null) return Result.Failure("Validation error")
+        if (stravaActivity == null || profile == null) return Result.Failure("Validation error")
 
         return garminRepository.updateStravaActivity(
             activity = stravaActivity,
-            name = activity.name,
-            description = Formatter.description(description, activity.trainingEffect, trainingEffect),
-            commute = activity.eventType?.commute
+            name = if (profile.rename) profile.name else activity?.name,
+            description = Formatter.description(description, activity?.trainingEffect, profile.trainingEffect),
+            commute = profile.eventType?.commute
         )
     }
 }

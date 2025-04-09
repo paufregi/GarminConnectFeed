@@ -17,4 +17,10 @@ object Formatter {
 
     @SuppressLint("DefaultLocale")
     val distance = { distance: Double -> String.format("%.2f", distance / 1000) }
+
+    fun description(description: String?, trainingEffect: String?, trainingEffectFlag: Boolean): String? =
+        if (trainingEffectFlag == true && trainingEffect != null)
+            "$description\n\nTraining: $trainingEffect"
+        else
+            description
 }

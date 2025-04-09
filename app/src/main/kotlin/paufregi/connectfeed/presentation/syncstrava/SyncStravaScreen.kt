@@ -94,7 +94,7 @@ internal fun SyncStravaContent(
             selectedIndex = Navigation.HOME,
             bottomBar = {
                 NavigationBar(
-                    items = HomeNavigation.items,
+                    items = HomeNavigation.items(true),
                     selectedIndex = HomeNavigation.SYNC_STRAVA,
                     nav = nav
                 )
@@ -104,11 +104,10 @@ internal fun SyncStravaContent(
     }
 }
 
-@Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun SyncStravaForm(
-    @PreviewParameter(SyncStravaStatePreview::class) state: SyncStravaState,
+    state: SyncStravaState,
     onAction: (SyncStravaAction) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
@@ -141,7 +140,7 @@ internal fun SyncStravaForm(
         )
         if (state.stravaActivities.isNotEmpty()) {
             Dropdown(
-                label = { Text("Strava Activity") },
+                label = { Text("Strava activity") },
                 selected = state.stravaActivity?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
                 items = state.stravaActivities
@@ -167,7 +166,7 @@ internal fun SyncStravaForm(
                 checked = state.trainingEffect,
                 onCheckedChange = { onAction(SyncStravaAction.SetTrainingEffect(it)) },
             )
-            Text("Training Effect")
+            Text(text = "Training effect")
         }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,

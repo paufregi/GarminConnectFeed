@@ -208,9 +208,9 @@ class MainActivityTest {
         composeTestRule.waitUntil(conditionDescription = "profile_form") { composeTestRule.onNodeWithTag("profile_form").isDisplayed() }
 
         composeTestRule.onNodeWithText("Name").performTextInput("Profile 1")
-        composeTestRule.onNodeWithText("Activity Type").performClick()
+        composeTestRule.onNodeWithText("Activity type").performClick()
         composeTestRule.onNodeWithText("Running").performClick()
-        composeTestRule.onNodeWithText("Event Type").performClick()
+        composeTestRule.onNodeWithText("Event type").performClick()
         composeTestRule.onNodeWithText("Race").performClick()
         composeTestRule.onNodeWithText("Course").performClick()
         composeTestRule.onNodeWithText("Course 1").performClick()
@@ -238,9 +238,9 @@ class MainActivityTest {
 
         composeTestRule.onNodeWithText("Name").performTextClearance()
         composeTestRule.onNodeWithText("Name").performTextInput("Profile 2")
-        composeTestRule.onNodeWithText("Activity Type").performClick()
+        composeTestRule.onNodeWithText("Activity type").performClick()
         composeTestRule.onNodeWithText("Cycling").performClick()
-        composeTestRule.onNodeWithText("Event Type").performClick()
+        composeTestRule.onNodeWithText("Event type").performClick()
         composeTestRule.onNodeWithText("Training").performClick()
         composeTestRule.onNodeWithText("Course").performClick()
         composeTestRule.onNodeWithText("Course 2").performClick()
@@ -301,7 +301,7 @@ class MainActivityTest {
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
         composeTestRule.onNodeWithText("Activity").performClick()
         composeTestRule.onNodeWithText("Activity 1").performClick()
-        composeTestRule.onNodeWithText("Strava Activity").performClick()
+        composeTestRule.onNodeWithText("Strava activity").performClick()
         composeTestRule.onNodeWithText("Bondcliff").performClick()
         composeTestRule.onNodeWithText("Profile").performClick()
         composeTestRule.onNodeWithText("Profile 1").performClick()
@@ -324,7 +324,7 @@ class MainActivityTest {
         composeTestRule.waitUntil(conditionDescription = "sync_strava_form") { composeTestRule.onNodeWithTag("sync_strava_form").isDisplayed() }
         composeTestRule.onNodeWithText("Activity").performClick()
         composeTestRule.onNodeWithText("Activity 1").performClick()
-        composeTestRule.onNodeWithText("Strava Activity").performClick()
+        composeTestRule.onNodeWithText("Strava activity").performClick()
         composeTestRule.onNodeWithText("Bondcliff").performClick()
         composeTestRule.onNodeWithText("Save").performClick()
 

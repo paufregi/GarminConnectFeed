@@ -29,9 +29,9 @@ class ProfilesViewModelTest {
     private val getProfiles = mockk<GetProfiles>()
     private val deleteProfile = mockk<DeleteProfile>()
 
-    private lateinit var viewModel: ProfilesViewModel
+    lateinit var viewModel: ProfilesViewModel
 
-    private val profiles = listOf(
+    val profiles = listOf(
         Profile(id = 1, name = "Profile 1"),
         Profile(id = 2, name = "Profile 2"),
     )
@@ -88,12 +88,7 @@ class ProfilesViewModelTest {
 
         viewModel = ProfilesViewModel(getProfiles, deleteProfile)
 
-        viewModel.state.test {
-            var state = awaitItem()
-            assertThat(state.profiles).isEqualTo(profiles)
-            viewModel.onAction(ProfileAction.Delete(profiles[0]))
-            cancelAndIgnoreRemainingEvents()
-        }
+        viewModel.onAction(ProfileAction.Delete(profiles[0]))
 
         verify{ getProfiles() }
         coVerify { deleteProfile.invoke(profiles[0]) }

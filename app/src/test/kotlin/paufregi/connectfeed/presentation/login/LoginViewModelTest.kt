@@ -57,9 +57,10 @@ class LoginViewModelTest {
     @Test
     fun `Set username`() = runTest {
         viewModel = LoginViewModel(signIn)
-        viewModel.onAction(LoginAction.SetUsername("user"))
 
         viewModel.state.test {
+            viewModel.onAction(LoginAction.SetUsername("user"))
+            skipItems(1)
             var state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.username).isEqualTo("user")
@@ -75,9 +76,10 @@ class LoginViewModelTest {
     @Test
     fun `Set password`() = runTest {
         viewModel = LoginViewModel(signIn)
-        viewModel.onAction(LoginAction.SetPassword("pass"))
 
         viewModel.state.test {
+            viewModel.onAction(LoginAction.SetPassword("pass"))
+            skipItems(1)
             var state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.username).isEmpty()
@@ -93,9 +95,10 @@ class LoginViewModelTest {
     @Test
     fun `Show password`() = runTest {
         viewModel = LoginViewModel(signIn)
-        viewModel.onAction(LoginAction.ShowPassword(true))
 
         viewModel.state.test {
+            viewModel.onAction(LoginAction.ShowPassword(true))
+            skipItems(1)
             var state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.username).isEmpty()
@@ -111,12 +114,13 @@ class LoginViewModelTest {
     @Test
     fun `Reset state`() = runTest {
         viewModel = LoginViewModel(signIn)
-        viewModel.onAction(LoginAction.SetUsername("user"))
-        viewModel.onAction(LoginAction.SetPassword("pass"))
-        viewModel.onAction(LoginAction.ShowPassword(true))
-        viewModel.onAction(LoginAction.Reset)
 
         viewModel.state.test {
+            viewModel.onAction(LoginAction.SetUsername("user"))
+            viewModel.onAction(LoginAction.SetPassword("pass"))
+            viewModel.onAction(LoginAction.ShowPassword(true))
+            viewModel.onAction(LoginAction.Reset)
+            skipItems(4)
             var state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.username).isEmpty()
@@ -133,13 +137,14 @@ class LoginViewModelTest {
     fun `Sign in - success`() = runTest {
         val user = User("user", "avatar")
         coEvery { signIn(any(), any()) } returns Result.Success(user)
+
         viewModel = LoginViewModel(signIn)
-        viewModel.onAction(LoginAction.SetUsername("user"))
-        viewModel.onAction(LoginAction.SetPassword("pass"))
 
         viewModel.state.test {
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
+            viewModel.onAction(LoginAction.SetUsername("user"))
+            viewModel.onAction(LoginAction.SetPassword("pass"))
             viewModel.onAction(LoginAction.SignIn)
+            skipItems(3)
             var state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Success())
             assertThat(state.username).isEqualTo("user")
@@ -156,13 +161,14 @@ class LoginViewModelTest {
     @Test
     fun `Sign in - failed`() = runTest {
         coEvery { signIn(any(), any()) } returns Result.Failure("error")
+
         viewModel = LoginViewModel(signIn)
-        viewModel.onAction(LoginAction.SetUsername("user"))
-        viewModel.onAction(LoginAction.SetPassword("pass"))
 
         viewModel.state.test {
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
+            viewModel.onAction(LoginAction.SetUsername("user"))
+            viewModel.onAction(LoginAction.SetPassword("pass"))
             viewModel.onAction(LoginAction.SignIn)
+            skipItems(3)
             var state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Failure("error"))
             assertThat(state.username).isEqualTo("user")

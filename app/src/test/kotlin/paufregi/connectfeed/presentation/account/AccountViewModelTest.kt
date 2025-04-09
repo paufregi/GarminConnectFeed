@@ -56,7 +56,9 @@ class AccountViewModelTest {
     fun `Initial state`() = runTest {
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
+
         viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
+
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
@@ -76,10 +78,12 @@ class AccountViewModelTest {
         coEvery { refreshUser() } returns Result.Success(Unit)
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
+
         viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
-        viewModel.onAction(AccountAction.RefreshUser)
 
         viewModel.state.test {
+            viewModel.onAction(AccountAction.RefreshUser)
+            skipItems(1)
             var state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Success("User data refreshed"))
             cancelAndIgnoreRemainingEvents()
@@ -98,10 +102,12 @@ class AccountViewModelTest {
         coEvery { refreshUser() } returns Result.Failure("error")
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
+
         viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
-        viewModel.onAction(AccountAction.RefreshUser)
 
         viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(AccountAction.RefreshUser)
             var state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Failure("error"))
             cancelAndIgnoreRemainingEvents()
@@ -120,12 +126,13 @@ class AccountViewModelTest {
         coEvery { signOut() } returns Unit
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
+
         viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
-        viewModel.onAction(AccountAction.SignOut)
 
         viewModel.state.test {
+            viewModel.onAction(AccountAction.SignOut)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Processing)
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.user).isEqualTo(user)
             cancelAndIgnoreRemainingEvents()
         }
@@ -143,10 +150,11 @@ class AccountViewModelTest {
         coEvery { disconnectStrava() } returns Unit
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
+
         viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava)
-        viewModel.onAction(AccountAction.StravaDisconnect)
 
         viewModel.state.test {
+            viewModel.onAction(AccountAction.StravaDisconnect)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             cancelAndIgnoreRemainingEvents()

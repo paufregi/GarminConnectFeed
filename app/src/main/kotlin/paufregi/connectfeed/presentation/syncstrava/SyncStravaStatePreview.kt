@@ -11,17 +11,34 @@ class SyncStravaStatePreview : PreviewParameterProvider<SyncStravaState> {
         SyncStravaState(ProcessState.Success("Activity updates")),
         SyncStravaState(ProcessState.Failure("Failed to update activity")),
         SyncStravaState(
+            process = ProcessState.Idle,
+            activities = listOf(
+                Activity(
+                    id = 1,
+                    name = "activity",
+                    type = ActivityType.Running,
+                    distance = 1230.0,
+                )
+            ),
+            stravaActivities = listOf(
+                Activity(
+                    id = 1,
+                    name = "strava activity",
+                    type = ActivityType.Running,
+                    distance = 1240.0,
+                )
+            ),
             activity = Activity(
-                id = 2,
+                id = 1,
                 name = "activity",
-                type = ActivityType.Cycling,
-                distance = 12345.0
+                type = ActivityType.Running,
+                distance = 1230.0,
             ),
             stravaActivity = Activity(
                 id = 2,
-                name = "activity",
-                type = ActivityType.Cycling,
-                distance = 12345.0
+                name = "strava activity",
+                type = ActivityType.Running,
+                distance = 1240.0,
             ),
             description = "description",
             trainingEffect = true,

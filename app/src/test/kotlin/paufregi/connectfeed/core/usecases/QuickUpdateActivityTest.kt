@@ -14,12 +14,13 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class UpdateActivityTest{
+class QuickUpdateActivityTest{
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: UpdateActivity
+    private lateinit var useCase: QuickUpdateActivity
 
     val activity = Activity(
         id = 1,
@@ -28,16 +29,21 @@ class UpdateActivityTest{
         distance = 10234.00,
         trainingEffect = "recovery"
     )
-    val name = "newName"
-    val eventType = EventType.Training
-    val course = Course(id = 1, name = "courseName", distance = 1.0, type = ActivityType.Running)
-    val water = 10
-    val feel = 50f
-    val effort = 90f
+    val profile = Profile(
+        name = "newName",
+        activityType = ActivityType.Running,
+        eventType = EventType.Training,
+        course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
+        water = 500,
+        rename = true,
+        customWater = true,
+        feelAndEffort = true,
+        trainingEffect = true
+    )
 
     @Before
     fun setup(){
-        useCase = UpdateActivity(repo)
+        useCase = QuickUpdateActivity(repo)
     }
 
     @After
@@ -48,17 +54,16 @@ class UpdateActivityTest{
     @Test
     fun `Update activity`() = runTest {
         coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.Success(Unit)
-
-        val res = useCase(activity, name, eventType, course, water, feel, effort)
+        val res = useCase(activity, profile, 50f, 90f)
 
         assertThat(res.isSuccessful).isTrue()
-        coVerify { repo.updateActivity(activity, name, eventType, course, water, feel, effort) }
+        coVerify { repo.updateActivity(activity, profile.name, profile.eventType, profile.course, profile.water, 50f, 90f) }
         confirmVerified(repo)
     }
 
     @Test
     fun `Invalid - no activity`() = runTest {
-        val res = useCase(null, name, eventType, course, water, feel, effort)
+        val res = useCase(null, profile, null, null)
 
         assertThat(res.isSuccessful).isFalse()
         res as Result.Failure
@@ -68,17 +73,19 @@ class UpdateActivityTest{
     }
 
     @Test
-    fun `Invalid - course not allowed`() = runTest {
-        val activity = Activity(
-            id = 1,
-            name = "name",
-            type = ActivityType.Swimming,
-            distance = 1034.00,
-            trainingEffect = "recovery"
-        )
-        val course = Course(id = 1, name = "courseName", distance = 1.0, type = ActivityType.Running)
+    fun `Invalid - no profile`() = runTest {
+        val res = useCase(activity, null, null, null)
 
-        val res = useCase(activity, name, eventType, course, water, feel, effort)
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("Validation error")
+
+        confirmVerified(repo)
+    }
+
+    @Test
+    fun `Invalid - both null`() = runTest {
+        val res = useCase(null, null, null, null)
 
         assertThat(res.isSuccessful).isFalse()
         res as Result.Failure
