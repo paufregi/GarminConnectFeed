@@ -59,9 +59,10 @@ class MainViewModelTest {
         every { isLoggedIn() } returns flowOf(true)
 
         viewModel = MainViewModel(isLoggedIn)
-        viewModel.showLogin()
 
         viewModel.state.test {
+            viewModel.showLogin()
+            skipItems(1)
             val state = awaitItem()
             assertThat(state.loggedIn).isTrue()
             assertThat(state.showLogin).isTrue()
@@ -77,9 +78,10 @@ class MainViewModelTest {
         every { isLoggedIn() } returns flowOf(true)
 
         viewModel = MainViewModel(isLoggedIn)
-        viewModel.hideLogin()
 
         viewModel.state.test {
+            viewModel.hideLogin()
+            skipItems(1)
             val state = awaitItem()
             assertThat(state.loggedIn).isTrue()
             assertThat(state.showLogin).isFalse()

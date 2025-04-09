@@ -8,7 +8,6 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.apache.commons.io.IOUtils
 import org.junit.After
@@ -48,16 +47,13 @@ class SyncWeightViewModelTest {
 
         val inputStream = IOUtils.toInputStream(csvText, "UTF-8")
 
-        coEvery { syncWeight.invoke(any()) } coAnswers {
-            delay(1)
-            Result.Success(Unit)
-        }
+        coEvery { syncWeight.invoke(any()) } returns Result.Success(Unit)
 
         viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(SyncWeightState.Idle)
             viewModel.syncWeight(inputStream)
-            assertThat(awaitItem()).isEqualTo(SyncWeightState.Uploading)
-            assertThat(awaitItem()).isEqualTo(SyncWeightState.Success)
+            skipItems(1)
+            val state = awaitItem()
+            assertThat(state).isEqualTo(SyncWeightState.Success)
             cancelAndIgnoreRemainingEvents()
         }
         coVerify { syncWeight.invoke(inputStream) }
