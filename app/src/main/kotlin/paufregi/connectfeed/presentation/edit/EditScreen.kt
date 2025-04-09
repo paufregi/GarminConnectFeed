@@ -254,7 +254,7 @@ internal fun EditForm(
                     .testTag("effort_text")
             )
         }
-        if (state.hasStrava) {
+        if (state.stravaActivity != null) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically,

@@ -8,6 +8,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -84,6 +85,13 @@ class EditScreenTest {
         }
         composeTestRule.onNodeWithText("Activity").isDisplayed()
         composeTestRule.onNodeWithText("Profile").isDisplayed()
+        composeTestRule.onNodeWithText("Name").isDisplayed()
+        composeTestRule.onNodeWithText("Event type").isDisplayed()
+        composeTestRule.onNodeWithText("Course").isNotDisplayed()
+        composeTestRule.onNodeWithText("Description").isNotDisplayed()
+        composeTestRule.onNodeWithText("Water").isDisplayed()
+        composeTestRule.onNodeWithTag("feel_text").assertTextContains("None selected")
+        composeTestRule.onNodeWithTag("effort_text").assertTextContains("0 - None selected")
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
         composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
@@ -104,8 +112,15 @@ class EditScreenTest {
             ))
         }
         composeTestRule.onNodeWithText("Activity").isDisplayed()
-        composeTestRule.onNodeWithText("Strava").isDisplayed()
         composeTestRule.onNodeWithText("Profile").isDisplayed()
+        composeTestRule.onNodeWithText("Name").isDisplayed()
+        composeTestRule.onNodeWithText("Event type").isDisplayed()
+        composeTestRule.onNodeWithText("Course").isNotDisplayed()
+        composeTestRule.onNodeWithText("Description").isNotDisplayed()
+        composeTestRule.onNodeWithText("Water").isDisplayed()
+        composeTestRule.onNodeWithTag("feel_text").assertTextContains("None selected")
+        composeTestRule.onNodeWithTag("effort_text").assertTextContains("0 - None selected")
+        composeTestRule.onNodeWithTag("training_effect_checkbox").assertIsNotDisplayed()
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
         composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
@@ -120,6 +135,7 @@ class EditScreenTest {
             EditContent(state = EditState(
                 process = ProcessState.Idle,
                 activities = activities,
+                name = "New name",
                 eventTypes = eventTypes,
                 courses = courses,
                 activity = activities[0],
@@ -131,12 +147,17 @@ class EditScreenTest {
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
+        composeTestRule.onNodeWithText("Name").assertTextContains("New name")
         composeTestRule.onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
         composeTestRule.onNodeWithText("Course").assertTextContains(courses[0].name)
+        composeTestRule.onNodeWithText("Description").isNotDisplayed()
         composeTestRule.onNodeWithText("Water").assertTextContains("10")
         composeTestRule.onNodeWithTag("feel_text").assertTextContains("Normal")
         composeTestRule.onNodeWithTag("effort_text").assertTextContains("8 - Very Hard")
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sync Strava").assertIsNotDisplayed()
         composeTestRule.onNodeWithText("Reset").assertIsEnabled()
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
     }
@@ -149,6 +170,7 @@ class EditScreenTest {
                 activities = activities,
                 stravaActivities = stravaActivities,
                 eventTypes = eventTypes,
+                name = "New name",
                 courses = courses,
                 activity = activities[0],
                 stravaActivity = stravaActivities[0],
@@ -163,6 +185,7 @@ class EditScreenTest {
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
         composeTestRule.onNodeWithText("Strava activity").assertTextContains(stravaActivities[0].name)
+        composeTestRule.onNodeWithText("Name").assertTextContains("New name")
         composeTestRule.onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
         composeTestRule.onNodeWithText("Course").assertTextContains(courses[0].name)
         composeTestRule.onNodeWithText("Description").assertTextContains("random text")
@@ -171,6 +194,9 @@ class EditScreenTest {
         composeTestRule.onNodeWithTag("effort_text").assertTextContains("8 - Very Hard")
         composeTestRule.onNodeWithTag("training_effect_checkbox").assertIsOn()
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sync Strava").assertIsDisplayed()
         composeTestRule.onNodeWithText("Reset").assertIsEnabled()
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
     }
