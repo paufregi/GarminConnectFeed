@@ -47,6 +47,6 @@ class StravaModule {
         .appendQueryParameter("redirect_uri", "paufregi.connectfeed://strava/auth")
         .appendQueryParameter("response_type", "code")
         .appendQueryParameter("approval_prompt", "auto")
-        .appendQueryParameter("scope", "activity:read_all,activity:write")
+        .appendQueryParameter("scope", "activity:read_all,activity:write,profile:write")
         .build()
 }
