@@ -663,7 +663,11 @@ val stravaExchangeTokenJson = """
         "refresh_token": "REFRESH_TOKEN",
         "access_token": "ACCESS_TOKEN",
         "athlete": {
-            "id": 1
+            "id" : 1,
+            "username" : "paufregi",
+            "firstname" : "Paul",
+            "lastname" : "Test",
+            "weight": 76.1
         }
     }
     """.trimIndent()

@@ -647,7 +647,7 @@ val stravaExchangeTokenJson = """
         "access_token": "ACCESS_TOKEN",
         "athlete": {
             "id" : 1,
-            "username" : "paufregi"
+            "username" : "paufregi",
             "firstname" : "Paul",
             "lastname" : "Test",
             "weight": 76.1
