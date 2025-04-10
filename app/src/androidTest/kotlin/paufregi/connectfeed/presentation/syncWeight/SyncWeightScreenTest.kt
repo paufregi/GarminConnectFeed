@@ -12,6 +12,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.presentation.syncweight.SyncWeightScreen
 import paufregi.connectfeed.presentation.syncweight.SyncWeightState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
@@ -24,7 +25,7 @@ class SyncWeightScreenTest {
     @Test
     fun `Status idle`() {
         composeTestRule.setContent {
-            SyncWeightScreen(state = SyncWeightState.Idle)
+            SyncWeightScreen(state = SyncWeightState(ProcessState.Idle))
         }
         composeTestRule.onNodeWithText("Don't know what to do").assertIsDisplayed()
     }
@@ -32,7 +33,7 @@ class SyncWeightScreenTest {
     @Test
     fun `Status uploading`() {
         composeTestRule.setContent {
-            SyncWeightScreen(state = SyncWeightState.Uploading)
+            SyncWeightScreen(state = SyncWeightState(ProcessState.Processing))
         }
         composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
     }
@@ -40,7 +41,7 @@ class SyncWeightScreenTest {
     @Test
     fun `Status success`() {
         composeTestRule.setContent {
-            SyncWeightScreen(state = SyncWeightState.Success)
+            SyncWeightScreen(state = SyncWeightState(ProcessState.Success()))
         }
         composeTestRule.onNodeWithText("Sync succeeded").assertIsDisplayed()
     }
@@ -48,7 +49,7 @@ class SyncWeightScreenTest {
     @Test
     fun `Status failure`() {
         composeTestRule.setContent {
-            SyncWeightScreen(state = SyncWeightState.Failure)
+            SyncWeightScreen(state = SyncWeightState(ProcessState.Failure("Sync failed")))
         }
         composeTestRule.onNodeWithText("Sync failed").assertIsDisplayed()
     }

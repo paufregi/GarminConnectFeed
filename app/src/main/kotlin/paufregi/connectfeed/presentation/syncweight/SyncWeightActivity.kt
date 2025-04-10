@@ -23,7 +23,7 @@ class SyncWeightActivity : ComponentActivity() {
         enableEdgeToEdge()
         intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)?.let { uri ->
             contentResolver.openInputStream(uri).let { input ->
-                viewModel.syncWeight(input)
+                viewModel.updateWeight(input)
             }
         }
 
