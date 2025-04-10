@@ -56,9 +56,9 @@ class EditViewModel @Inject constructor(
             .onSuccess { data -> _state.update { it.copy(courses = data) } }
             .onFailure { errors.add("courses") }
 
-        when (errors.isNotEmpty()) {
-            true -> _state.update { it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}")) }
-            false -> _state.update { it.copy(process = ProcessState.Idle) }
+        when (errors.isEmpty()) {
+            true -> _state.update { it.copy(process = ProcessState.Idle) }
+            false -> _state.update { it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}")) }
         }
     }
 
@@ -115,9 +115,9 @@ class EditViewModel @Inject constructor(
             trainingEffectFlag = state.value.trainingEffect
         ).onFailure { errors.add("Strava activity") }
 
-        when (errors.isNotEmpty()) {
-            false -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
-            true -> _state.update { it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")}")) }
+        when (errors.isEmpty()) {
+            true -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
+            false -> _state.update { it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")}")) }
         }
     }
 }
