@@ -17,6 +17,8 @@ import org.junit.Test
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.Activity
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity
+import paufregi.connectfeed.data.api.strava.models.UpdateProfile
+import paufregi.connectfeed.stravaDetailedAthlete
 import paufregi.connectfeed.stravaLatestActivitiesJson
 
 class StravaTest {
@@ -125,6 +127,30 @@ class StravaTest {
             commute = true,
         )
         val res = api.updateActivity(id = 1, updateActivity = updateActivity)
+
+        assertThat(res.isSuccessful).isFalse()
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
+    }
+
+    @Test
+    fun `Update profile`() = runTest {
+        val response = MockResponse().setResponseCode(200).setBody(stravaDetailedAthlete)
+        server.enqueue(response)
+        val updateProfile = UpdateProfile(weight = 75.5f)
+        val res = api.updateProfile(updateProfile = updateProfile)
+
+        assertThat(res.isSuccessful).isTrue()
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
+    }
+
+    @Test
+    fun `Update profile - failure`() = runTest {
+        val response = MockResponse().setResponseCode(400)
+        server.enqueue(response)
+        val updateProfile = UpdateProfile(weight = 75.5f)
+        val res = api.updateProfile(updateProfile = updateProfile)
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }

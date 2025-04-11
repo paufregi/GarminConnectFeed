@@ -9,6 +9,7 @@ import paufregi.connectfeed.presentation.ui.components.Loading
 import paufregi.connectfeed.presentation.ui.components.SimpleScaffold
 import paufregi.connectfeed.presentation.ui.components.StatusInfo
 import paufregi.connectfeed.presentation.ui.components.StatusInfoType
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Preview
 @Composable
@@ -18,23 +19,23 @@ internal fun SyncWeightScreen(
     onComplete: () -> Unit = {},
 ) {
     SimpleScaffold {
-        when (state) {
-            is SyncWeightState.Uploading -> Loading(it)
-            is SyncWeightState.Success -> StatusInfo(
+        when (state.process) {
+            is ProcessState.Processing -> Loading(it)
+            is ProcessState.Success -> StatusInfo(
                 type = StatusInfoType.Success,
-                text = "Sync succeeded",
+                text = state.process.message ?: "Sync succeeded",
                 actionButton = { Button(text = "Ok", onClick = onComplete) },
                 paddingValues = it
             )
 
-            is SyncWeightState.Failure -> StatusInfo(
+            is ProcessState.Failure -> StatusInfo(
                 type = StatusInfoType.Failure,
-                text = "Sync failed",
+                text = state.process.reason,
                 actionButton = { Button(text = "Ok", onClick = onComplete) },
                 paddingValues = it
             )
 
-            else -> StatusInfo(
+            is ProcessState.Idle -> StatusInfo(
                 type = StatusInfoType.Unknown,
                 text = "Don't know what to do",
                 actionButton = { Button(text = "Ok", onClick = onComplete) },

@@ -4,6 +4,7 @@ import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.Activity
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity
+import paufregi.connectfeed.data.api.strava.models.UpdateProfile
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -27,6 +28,11 @@ interface Strava {
     suspend fun updateActivity(
         @Path("id") id: Long,
         @Body updateActivity: UpdateActivity,
+    ): Response<Unit>
+
+    @PUT("athlete")
+    suspend fun updateProfile(
+        @Body updateProfile: UpdateProfile,
     ): Response<Unit>
 
     companion object {

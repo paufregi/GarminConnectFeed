@@ -8,6 +8,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.Profile
 import java.time.Instant
+import java.util.Date
 
 class ModelsTest {
 
@@ -423,5 +424,23 @@ class ModelsTest {
 
         val result = value.getOrNull()
         assertThat(result).isNull()
+    }
+
+    @Test
+    fun `Date - sameDay - same day`() {
+        val date = Date.from(Instant.parse("2025-01-01T10:20:30Z"))
+        val other = Date.from(Instant.parse("2025-01-01T10:22:33Z"))
+
+        val result = date.sameDay(other)
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `Date - sameDay - different day`() {
+        val date = Date.from(Instant.parse("2025-01-01T10:20:30Z"))
+        val other = Date.from(Instant.parse("2025-01-03T10:20:30Z"))
+
+        val result = date.sameDay(other)
+        assertThat(result).isFalse()
     }
 }

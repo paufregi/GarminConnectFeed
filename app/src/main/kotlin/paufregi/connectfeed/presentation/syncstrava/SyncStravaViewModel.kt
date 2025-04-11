@@ -42,12 +42,9 @@ class SyncStravaViewModel @Inject constructor(
             .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
             .onFailure { errors.add("Strava activities") }
 
-        when (errors.isNotEmpty()) {
-            true -> _state.update {
-                it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}"))
-            }
-
-            false -> _state.update { it.copy(process = ProcessState.Idle) }
+        when (errors.isEmpty()) {
+            true -> _state.update { it.copy(process = ProcessState.Idle) }
+            false -> _state.update { it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}")) }
         }
     }
 

@@ -209,6 +209,7 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
     }
+
     @Test
     fun `Update activity`() = runTest {
         authStore.saveConsumer(consumer)
@@ -251,6 +252,15 @@ class GarminRepositoryTest {
             description = description,
             commute = commute
         )
+
+        assertThat(res.isSuccessful).isTrue()
+    }
+
+    @Test
+    fun `Update strava profile`() = runTest {
+        stravaStore.saveToken(stravaToken)
+
+        val res = repo.updateStravaProfile(75.6f)
 
         assertThat(res.isSuccessful).isTrue()
     }

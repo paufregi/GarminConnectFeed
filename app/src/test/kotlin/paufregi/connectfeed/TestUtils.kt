@@ -638,21 +638,6 @@ val coursesJson = """
     ]
 """.trimIndent()
 
-val eventTypesJson = """
-    [
-        {
-            "typeId": 1,
-            "typeKey": "race",
-            "sortOrder": 5
-        },
-        {
-            "typeId": 2,
-            "typeKey": "training",
-            "sortOrder": 4
-        }
-    ]
-    """.trimIndent()
-
 val stravaExchangeTokenJson = """
     {
         "token_type": "Bearer",
@@ -661,7 +646,11 @@ val stravaExchangeTokenJson = """
         "refresh_token": "REFRESH_TOKEN",
         "access_token": "ACCESS_TOKEN",
         "athlete": {
-            "id": 1
+            "id" : 1,
+            "username" : "paufregi",
+            "firstname" : "Paul",
+            "lastname" : "Test",
+            "weight": 76.1
         }
     }
     """.trimIndent()
@@ -800,4 +789,14 @@ val stravaLatestActivitiesJson = """
       "has_kudoed" : false,
       "suffer_score" : 162
     } ]
+""".trimIndent()
+
+val stravaDetailedAthlete = """
+    {    
+      "id" : 1,
+      "username" : "paufregi"
+      "firstname" : "Paul",
+      "lastname" : "Test",
+      "weight": 76.1
+    }
 """.trimIndent()
