@@ -428,8 +428,8 @@ class ModelsTest {
 
     @Test
     fun `Date - sameDay - same day`() {
-        val date = Date.from(Instant.parse("2025-01-01T10:00:00Z"))
-        val other = Instant.parse("2025-01-01T12:00:00Z")
+        val date = Date.from(Instant.parse("2025-01-01T10:20:30Z"))
+        val other = Date.from(Instant.parse("2025-01-01T10:22:33Z"))
 
         val result = date.sameDay(other)
         assertThat(result).isTrue()
@@ -437,8 +437,8 @@ class ModelsTest {
 
     @Test
     fun `Date - sameDay - different day`() {
-        val date = Date.from(Instant.parse("2025-01-01T10:00:00Z"))
-        val other = Instant.parse("2025-01-02T12:00:00Z")
+        val date = Date.from(Instant.parse("2025-01-01T10:20:30Z"))
+        val other = Date.from(Instant.parse("2025-01-03T10:20:30Z"))
 
         val result = date.sameDay(other)
         assertThat(result).isFalse()

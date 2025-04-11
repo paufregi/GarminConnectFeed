@@ -4,8 +4,7 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.Profile
-import java.time.Instant
-import java.time.temporal.ChronoUnit
+import java.util.Calendar
 import java.util.Date
 
 fun Activity?.getOrMatch(other: Activity, pool: List<Activity>): Activity? =
@@ -32,5 +31,10 @@ fun Course?.getOrNull(activity: Activity): Course? =
 fun Float?.getOrNull(): Float? =
     if(this == 0f) null else this
 
-fun Date.sameDay(other: Instant): Boolean =
-    this.toInstant().truncatedTo(ChronoUnit.DAYS) == other.truncatedTo(ChronoUnit.DAYS)
+fun Date.sameDay(other: Date): Boolean {
+    val calendar1 = Calendar.getInstance().apply { time = this@sameDay }
+    val calendar2 = Calendar.getInstance().apply { time = other }
+
+    return calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR) &&
+            calendar1.get(Calendar.DAY_OF_YEAR) == calendar2.get(Calendar.DAY_OF_YEAR)
+}
