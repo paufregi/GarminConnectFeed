@@ -20,7 +20,7 @@ object Formatter {
 
     fun description(description: String?, trainingEffect: String?, trainingEffectFlag: Boolean): String? =
         if (trainingEffectFlag == true && trainingEffect != null)
-            "$description\n\nTraining: $trainingEffect"
+            "${description ?: ""}\n\nTraining: $trainingEffect"
         else
             description
 }

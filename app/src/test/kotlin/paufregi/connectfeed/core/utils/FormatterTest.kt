@@ -24,4 +24,41 @@ class FormatterTest {
         val result = Formatter.dateTimeForImport(Locale.ENGLISH).parse("2024-01-01 10:20:30")
         assertThat(result).isEqualTo(date)
     }
+
+    @Test
+    fun `Formatter distance`() {
+        val distance = 1234567.0
+        val result = Formatter.distance(distance)
+        assertThat(result).isEqualTo("1234.57")
+    }
+
+    @Test
+    fun `Formatter description`() {
+        val description = "Description"
+        val trainingEffect = "recovery"
+        val result = Formatter.description(description, trainingEffect, true)
+        assertThat(result).isEqualTo("Description\n\nTraining: recovery")
+    }
+
+    @Test
+    fun `Formatter description - flag false`() {
+        val description = "Description"
+        val trainingEffect = "recovery"
+        val result = Formatter.description(description, trainingEffect, false)
+        assertThat(result).isEqualTo("Description")
+    }
+
+    @Test
+    fun `Formatter description - null description`() {
+        val trainingEffect = "recovery"
+        val result = Formatter.description(null, trainingEffect, true)
+        assertThat(result).isEqualTo("\n\nTraining: recovery")
+    }
+
+    @Test
+    fun `Formatter description - null training effect`() {
+        val description = "Description"
+        val result = Formatter.description(description, null, true)
+        assertThat(result).isEqualTo("Description")
+    }
 }
