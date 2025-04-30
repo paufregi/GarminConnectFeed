@@ -4,6 +4,7 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.Profile
+import retrofit2.Response
 import java.util.Calendar
 import java.util.Date
 
@@ -38,3 +39,23 @@ fun Date.sameDay(other: Date): Boolean {
     return calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR) &&
             calendar1.get(Calendar.DAY_OF_YEAR) == calendar2.get(Calendar.DAY_OF_YEAR)
 }
+
+fun <T> Response<T>.toResult(): Result<T> =
+    when (this.isSuccessful) {
+        true -> Result.success(this.body()!!)
+        false -> Result.failure(Exception(this.errorBody()?.string() ?: "Unknown error"))
+    }
+
+fun <T> Response<T>.toResult(emptyBody: T): Result<T> =
+    when (this.isSuccessful) {
+        true -> Result.success(this.body() ?: emptyBody)
+        false -> Result.failure(Exception(this.errorBody()?.string() ?: "Unknown error"))
+    }
+
+fun <T> Result.Companion.failure(cause: String): Result<T> = failure(Exception(cause))
+
+fun <T> Result<T>.mapFailure(transform: (exception: Throwable) -> Throwable): Result<T> =
+    when (val exception = exceptionOrNull()) {
+        null -> this
+        else -> Result.failure<T>(transform(exception))
+    }

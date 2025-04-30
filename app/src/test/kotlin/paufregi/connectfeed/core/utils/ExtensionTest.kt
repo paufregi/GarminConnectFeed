@@ -2,6 +2,9 @@ package paufregi.connectfeed.core.utils
 
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
+import okhttp3.ResponseBody.Companion.toResponseBody
+import org.junit.Assert.assertThrows
+import retrofit2.Response
 import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
@@ -10,7 +13,7 @@ import paufregi.connectfeed.core.models.Profile
 import java.time.Instant
 import java.util.Date
 
-class ModelsTest {
+class ExtensionTest {
 
     @Test
     fun `Activity - getOrMatch - get`() {
@@ -442,5 +445,85 @@ class ModelsTest {
 
         val result = date.sameDay(other)
         assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `Response - toResult - success`() {
+        val resp = Response.success("Success")
+
+        val result = resp.toResult()
+
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo("Success")
+    }
+
+    @Test
+    fun `Response - toResult - exception`() {
+        val resp = Response.success(null)
+
+        assertThrows(NullPointerException::class.java) { resp.toResult() }
+    }
+
+    @Test
+    fun `Response - toResult - failure`() {
+        val resp = Response.error<String>(500, "error".toResponseBody())
+
+        val result = resp.toResult()
+
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("error")
+    }
+
+    @Test
+    fun `Response - toResult with empty - success`() {
+        val resp = Response.success<String>("body")
+
+        val result = resp.toResult("empty")
+
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo("body")
+    }
+
+    @Test
+    fun `Response - toResult with empty - success with null body`() {
+        val resp = Response.success<String>(null)
+
+        val result = resp.toResult("empty")
+
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo("empty")
+    }
+
+    @Test
+    fun `Response - toResult with empty - failure`() {
+        val resp = Response.error<String>(500, "error".toResponseBody())
+
+        val result = resp.toResult()
+
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("error")
+    }
+
+    @Test
+    fun `Result - failure`() {
+        val result = Result.failure<String>("error")
+
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("error")
+    }
+
+    @Test
+    fun `Result - mapFailure - success`() {
+        val result = Result.success("ok").mapFailure { Exception("new error") }
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.exceptionOrNull()?.message).isNull()
+    }
+
+    @Test
+    fun `Result - mapFailure - failure`() {
+        val result = Result.failure<String>("error").mapFailure { Exception("new error") }
+
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("new error")
     }
 }
