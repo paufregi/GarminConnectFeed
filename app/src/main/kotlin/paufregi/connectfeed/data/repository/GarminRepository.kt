@@ -1,6 +1,5 @@
 package paufregi.connectfeed.data.repository
 
-import androidx.compose.ui.util.fastMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
@@ -36,7 +35,7 @@ class GarminRepository @Inject constructor(
             .map { it.toCore() }
 
     fun getAllProfiles(): Flow<List<Profile>> =
-        garminDao.getAllProfiles().map { it.fastMap { it.toCore() } }
+        garminDao.getAllProfiles().map { it.map { it.toCore() } }
 
     suspend fun getProfile(id: Long): Profile? =
         garminDao.getProfile(id)?.toCore()
@@ -50,17 +49,17 @@ class GarminRepository @Inject constructor(
     suspend fun getLatestActivities(limit: Int): Result<List<Activity>> =
         garminConnect.getLatestActivities(limit)
             .toResult(emptyList())
-            .map { it.fastMap { it.toCore() } }
+            .map { it.map { it.toCore() } }
 
     suspend fun getLatestStravaActivities(limit: Int): Result<List<Activity>> =
         strava.getLatestActivities(perPage = limit)
             .toResult(emptyList())
-            .map { it.fastMap { it.toCore() } }
+            .map { it.map { it.toCore() } }
 
     suspend fun getCourses(): Result<List<Course>> =
         garminConnect.getCourses()
             .toResult(emptyList())
-            .map { it.fastMap { it.toCore() } }
+            .map { it.map { it.toCore() } }
 
     suspend fun updateActivity(
         activity: Activity,
