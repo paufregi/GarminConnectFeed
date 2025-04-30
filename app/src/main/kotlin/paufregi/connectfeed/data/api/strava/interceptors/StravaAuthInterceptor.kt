@@ -4,12 +4,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
-import okhttp3.Protocol
-import okhttp3.Request
 import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.api.strava.models.Token
+import paufregi.connectfeed.data.api.utils.authRequest
+import paufregi.connectfeed.data.api.utils.failedAuthResponse
 import paufregi.connectfeed.data.repository.StravaAuthRepository
 import javax.inject.Inject
 import javax.inject.Named
@@ -24,7 +23,7 @@ class StravaAuthInterceptor @Inject constructor(
         runBlocking(Dispatchers.IO) {
             getOrRefreshToken().fold(
                 onSuccess = { chain.proceed(authRequest(chain.request(), it.accessToken)) },
-                onFailure = { failedResponse(chain.request(), it.message ?: "Unknown error") }
+                onFailure = { failedAuthResponse(chain.request(), it.message ?: "Unknown error") }
             )
         }
 
@@ -37,18 +36,4 @@ class StravaAuthInterceptor @Inject constructor(
         return stravaRepo.refresh(clientId, clientSecret, token.refreshToken)
             .onSuccess { stravaRepo.saveToken(it) }
     }
-
-    private fun authRequest(request: Request, accessToken: String?): Request =
-        request.newBuilder()
-            .header("Authorization", "Bearer $accessToken")
-            .build()
-
-    private fun failedResponse(request: Request, reason: String): Response =
-        Response.Builder()
-            .request(request)
-            .protocol(Protocol.HTTP_1_1)
-            .code(401)
-            .message("Auth failed")
-            .body(reason.toResponseBody())
-            .build()
 }

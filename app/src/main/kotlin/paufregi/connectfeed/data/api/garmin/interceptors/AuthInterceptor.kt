@@ -4,12 +4,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
-import okhttp3.Protocol
-import okhttp3.Request
 import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.api.garmin.models.OAuth2
+import paufregi.connectfeed.data.api.utils.authRequest
+import paufregi.connectfeed.data.api.utils.failedAuthResponse
 import paufregi.connectfeed.data.repository.AuthRepository
 import javax.inject.Inject
 
@@ -21,7 +20,7 @@ class AuthInterceptor @Inject constructor(
         runBlocking(Dispatchers.IO) {
             getOrFetchOAuth2().fold(
                 onSuccess = { chain.proceed(authRequest(chain.request(), it.accessToken)) },
-                onFailure = { failedResponse(chain.request(), it.message ?: "Unknown error") }
+                onFailure = { failedAuthResponse(chain.request(), it.message ?: "Unknown error") }
             )
         }
 
@@ -34,23 +33,7 @@ class AuthInterceptor @Inject constructor(
         val oAuth1 = authRepository.getOAuth1().firstOrNull()
             ?: return Result.failure("No OAuth1 token found")
 
-        val resOAuth2 = authRepository.exchange(consumer, oAuth1)
+        return authRepository.exchange(consumer, oAuth1)
             .onSuccess { authRepository.saveOAuth2(it) }
-
-        return resOAuth2
     }
-
-    private fun authRequest(request: Request, accessToken: String?): Request =
-        request.newBuilder()
-            .header("Authorization", "Bearer $accessToken")
-            .build()
-
-    private fun failedResponse(request: Request, reason: String): Response =
-        Response.Builder()
-            .request(request)
-            .protocol(Protocol.HTTP_1_1)
-            .code(401)
-            .message("Auth failed")
-            .body(reason.toResponseBody())
-            .build()
 }
