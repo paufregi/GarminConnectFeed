@@ -11,7 +11,6 @@ import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
-import org.apache.commons.io.IOUtils
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -20,7 +19,6 @@ import org.junit.rules.TemporaryFolder
 import paufregi.connectfeed.core.models.Weight
 import paufregi.connectfeed.core.utils.FitWriter
 import paufregi.connectfeed.core.utils.Formatter
-import paufregi.connectfeed.core.utils.RenphoReader
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 import java.time.Instant

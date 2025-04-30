@@ -4,12 +4,12 @@ import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertThrows
-import retrofit2.Response
 import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.Profile
+import retrofit2.Response
 import java.time.Instant
 import java.util.Date
 
