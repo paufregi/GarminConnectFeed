@@ -17,7 +17,6 @@ import org.junit.Test
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.consumer
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.OAuth2
 import paufregi.connectfeed.data.database.GarminDatabase
@@ -129,17 +128,15 @@ class AuthRepositoryTest {
     fun `Authorize user`() = runTest {
         val res = repo.authorize("user", "pass", consumer)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(oauth1)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(oauth1)
     }
 
     @Test
     fun `Exchange token`() = runTest {
         val res = repo.exchange(consumer, oauth1)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(oauth2)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(oauth2)
     }
 }

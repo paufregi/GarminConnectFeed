@@ -15,7 +15,7 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class GetLatestStravaActivitiesTest{
@@ -39,12 +39,11 @@ class GetLatestStravaActivitiesTest{
             Activity(id = 1, name = "name", distance = 10234.00, type = ActivityType.Running)
         )
         every { strava() } returns flowOf(true)
-        coEvery { repo.getLatestStravaActivities(any()) } returns Result.Success(activities)
+        coEvery { repo.getLatestStravaActivities(any()) } returns Result.success(activities)
         val res = useCase()
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(activities)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(activities)
 
         verify { strava() }
         coVerify { repo.getLatestStravaActivities(5) }
@@ -54,10 +53,10 @@ class GetLatestStravaActivitiesTest{
     @Test
     fun `Get latest activities - failed`() = runTest {
         every { strava() } returns flowOf(true)
-        coEvery { repo.getLatestStravaActivities(any()) } returns Result.Failure("Failed")
+        coEvery { repo.getLatestStravaActivities(any()) } returns Result.failure("Failed")
         val res = useCase()
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
 
         verify { strava() }
         coVerify { repo.getLatestStravaActivities(5) }
@@ -69,12 +68,11 @@ class GetLatestStravaActivitiesTest{
         every { strava() } returns flowOf(false)
         val res = useCase()
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEmpty()
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEmpty()
 
         verify { strava() }
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         confirmVerified(repo, strava)
     }
 }

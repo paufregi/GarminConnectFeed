@@ -14,7 +14,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.api.strava.models.Token
 import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.sslSocketFactory
@@ -79,17 +78,15 @@ class StravaAuthRepositoryTest {
     fun `Exchange token`() = runTest {
         val res = repo.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(Token("ACCESS_TOKEN", "REFRESH_TOKEN", 1704067200))
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(Token("ACCESS_TOKEN", "REFRESH_TOKEN", 1704067200))
     }
 
     @Test
     fun `Refresh token`() = runTest {
         val res = repo.refresh("CLIENT_ID", "CLIENT_SECRET", "REFRESH_TOKEN")
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(Token("NEW_ACCESS_TOKEN", "NEW_REFRESH_TOKEN", 1704067200))
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(Token("NEW_ACCESS_TOKEN", "NEW_REFRESH_TOKEN", 1704067200))
     }
 }

@@ -2,8 +2,9 @@ package paufregi.connectfeed.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.core.utils.mapFailure
+import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.garmin.GarminAuth1
 import paufregi.connectfeed.data.api.garmin.GarminAuth2
 import paufregi.connectfeed.data.api.garmin.GarminSSO
@@ -11,7 +12,6 @@ import paufregi.connectfeed.data.api.garmin.Garth
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.OAuth2
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
-import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.datastore.AuthStore
 import javax.inject.Inject
 
@@ -41,16 +41,10 @@ class AuthRepository @Inject constructor(
     suspend fun getOrFetchConsumer(): OAuthConsumer? {
         var consumer = authStore.getConsumer().firstOrNull()
         if (consumer != null) return consumer
-
-        val res = callApi(
-            { garth.getOAuthConsumer() },
-            { res -> res.body()!! }
-        ).onSuccess { authStore.saveConsumer(it) }
-
-        return when (res) {
-            is Result.Success -> res.data
-            is Result.Failure -> null
-        }
+        return garth.getOAuthConsumer()
+            .toResult()
+            .onSuccess { authStore.saveConsumer(it) }
+            .getOrNull()
     }
 
     suspend fun authorize(
@@ -58,28 +52,25 @@ class AuthRepository @Inject constructor(
         password: String,
         consumer: OAuthConsumer
     ): Result<OAuth1> {
-        val resCSRF = garminSSO.getCSRF()
-        if (!resCSRF.isSuccessful) return Result.Failure("Problem with the login page")
-        val csrf = resCSRF.body()!!
+        val csrf = garminSSO.getCSRF().toResult().getOrNull()
+        if (csrf == null) return Result.failure(Exception("Problem with the login page"))
 
-        val resLogin = garminSSO.login(username = username, password = password, csrf = csrf)
-        if (!resLogin.isSuccessful) return Result.Failure("Couldn't login")
-        val ticket = resLogin.body()!!
+        val ticket = garminSSO.login(username = username, password = password, csrf = csrf)
+            .toResult()
+            .getOrNull()
+        if (ticket == null) return Result.failure(Exception("Couldn't login"))
 
         val connect = makeGarminAuth1(consumer)
-        val resOAuth1 = connect.getOauth1(ticket)
-        return when (resOAuth1.isSuccessful) {
-            true -> Result.Success(resOAuth1.body()!!)
-            false -> Result.Failure("Couldn't get OAuth1 token")
-        }
+        return connect.getOauth1(ticket)
+            .toResult()
+            .mapFailure { Exception("Couldn't get OAuth1 token") }
     }
 
     suspend fun exchange(consumer: OAuthConsumer, oauth: OAuth1): Result<OAuth2> {
         val connect = makeGarminAuth2(consumer, oauth)
-        val resOAuth2 = connect.getOauth2()
-        if (!resOAuth2.isSuccessful) return Result.Failure("Couldn't get OAuth2 token")
-        val oAuth2 = resOAuth2.body()!!
-        authStore.saveOAuth2(oAuth2)
-        return Result.Success(oAuth2)
+        return connect.getOauth2()
+            .toResult()
+            .onSuccess { authStore.saveOAuth2(it) }
+            .mapFailure { Exception("Couldn't get OAuth2 token") }
     }
 }

@@ -20,12 +20,12 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetLatestActivities
 import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 import java.time.Instant
@@ -116,8 +116,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Initial state`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(emptyList())
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(emptyList())
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -148,8 +148,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Initial state - with Strava`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -180,8 +180,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Fails to load activities`() = runTest {
-        coEvery { getActivities() } returns Result.Failure("error")
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.failure("error")
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -212,8 +212,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Fails to load strava activities`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Failure("error")
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.failure("error")
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -244,8 +244,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Fails to load all activities`() = runTest {
-        coEvery { getActivities() } returns Result.Failure("error")
-        coEvery { getStravaActivities() } returns Result.Failure("error")
+        coEvery { getActivities() } returns Result.failure("error")
+        coEvery { getStravaActivities() } returns Result.failure("error")
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -276,8 +276,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Set profile`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -310,8 +310,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Set activity`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -344,8 +344,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Set Strava activity`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -378,8 +378,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Set activity & Strava activity - matching`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -414,8 +414,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Set activity & Strava activity - no matching`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -450,8 +450,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Set Strava activity & activity - matching`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -486,8 +486,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Set Strava activity & activity - no matching`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -522,8 +522,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Set description`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -556,8 +556,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Set water`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -591,8 +591,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Set effort`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -625,8 +625,8 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Set feel`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
@@ -659,11 +659,11 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Save activity`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { quickUpdateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
-        coEvery { quickUpdateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { quickUpdateActivity(any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
 
@@ -702,11 +702,11 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Save activity - failure`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { quickUpdateActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
-        coEvery { quickUpdateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { quickUpdateActivity(any(), any(), any(), any()) } returns Result.failure("failure")
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
 
@@ -745,11 +745,11 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Save activity - strava failure`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { quickUpdateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
-        coEvery { quickUpdateStravaActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
+        coEvery { quickUpdateActivity(any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any()) } returns Result.failure("failure")
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
 
@@ -788,11 +788,11 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Save activity - both failure`() = runTest {
-        coEvery { getActivities() } returns Result.Success(activities)
-        coEvery { getStravaActivities() } returns Result.Success(stravaActivities)
+        coEvery { getActivities() } returns Result.success(activities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { quickUpdateActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
-        coEvery { quickUpdateStravaActivity(any(), any(), any(), any()) } returns Result.Failure("failure")
+        coEvery { quickUpdateActivity(any(), any(), any(), any()) } returns Result.failure("failure")
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any()) } returns Result.failure("failure")
 
         viewModel = QuickEditViewModel(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
 

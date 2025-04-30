@@ -18,11 +18,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.Weight
 import paufregi.connectfeed.core.usecases.SyncStravaWeight
 import paufregi.connectfeed.core.usecases.SyncWeight
 import paufregi.connectfeed.core.utils.RenphoReader
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 import java.time.Instant
@@ -73,8 +73,8 @@ class SyncWeightViewModelTest {
         ))
 
         every { RenphoReader.read(any()) } returns weights
-        coEvery { syncWeight.invoke(any()) } returns Result.Success(Unit)
-        coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.Success(Unit)
+        coEvery { syncWeight.invoke(any()) } returns Result.success(Unit)
+        coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.success(Unit)
 
         viewModel.state.test {
             viewModel.updateWeight(inputStream)
@@ -141,8 +141,8 @@ class SyncWeightViewModelTest {
         ))
 
         every { RenphoReader.read(any()) } returns weights
-        coEvery { syncWeight.invoke(any()) } returns Result.Failure("error")
-        coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.Success(Unit)
+        coEvery { syncWeight.invoke(any()) } returns Result.failure("error")
+        coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.success(Unit)
 
         viewModel.state.test {
             viewModel.updateWeight(inputStream)
@@ -180,8 +180,8 @@ class SyncWeightViewModelTest {
         ))
 
         every { RenphoReader.read(any()) } returns weights
-        coEvery { syncWeight.invoke(any()) } returns Result.Success(Unit)
-        coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.Failure("error")
+        coEvery { syncWeight.invoke(any()) } returns Result.success(Unit)
+        coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.failure("error")
 
         viewModel.state.test {
             viewModel.updateWeight(inputStream)
@@ -219,8 +219,8 @@ class SyncWeightViewModelTest {
         ))
 
         every { RenphoReader.read(any()) } returns weights
-        coEvery { syncWeight.invoke(any()) } returns Result.Failure("error")
-        coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.Failure("error")
+        coEvery { syncWeight.invoke(any()) } returns Result.failure("error")
+        coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.failure("error")
 
         viewModel.state.test {
             viewModel.updateWeight(inputStream)

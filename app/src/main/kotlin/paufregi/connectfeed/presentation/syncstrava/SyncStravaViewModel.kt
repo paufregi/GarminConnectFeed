@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetLatestActivities
 import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
 import paufregi.connectfeed.core.usecases.SyncStravaActivity
@@ -69,15 +68,14 @@ class SyncStravaViewModel @Inject constructor(
 
     private fun saveAction() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
-        when (syncActivity(
+        syncActivity(
             activity = state.value.activity,
             stravaActivity = state.value.stravaActivity,
             description = state.value.description,
             trainingEffect = state.value.trainingEffect
-        )) {
-            is Result.Success -> { _state.update { it.copy(process = ProcessState.Success("Activity updated")) } }
-            is Result.Failure -> { _state.update { it.copy(process = ProcessState.Failure("Couldn't update activity")) } }
-        }
+        )
+            .onSuccess { _state.update { it.copy(process = ProcessState.Success("Activity updated")) } }
+            .onFailure { _state.update { it.copy(process = ProcessState.Failure("Couldn't update activity")) } }
     }
 
     private fun restartAction() {

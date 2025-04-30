@@ -4,12 +4,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
-import okhttp3.Protocol
-import okhttp3.Request
 import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
-import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.api.strava.models.Token
+import paufregi.connectfeed.data.api.utils.authRequest
+import paufregi.connectfeed.data.api.utils.failedAuthResponse
 import paufregi.connectfeed.data.repository.StravaAuthRepository
 import javax.inject.Inject
 import javax.inject.Named
@@ -20,38 +19,21 @@ class StravaAuthInterceptor @Inject constructor(
     @Named("StravaClientSecret") val clientSecret: String,
 ) : Interceptor {
 
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request()
-
-        val res = runBlocking(Dispatchers.IO) { getOrRefreshToken() }
-
-        return when (res) {
-            is Result.Failure -> failedResponse(request, res.reason)
-            is Result.Success -> chain.proceed(authRequest(request, res.data.accessToken))
+    override fun intercept(chain: Interceptor.Chain): Response =
+        runBlocking(Dispatchers.IO) {
+            getOrRefreshToken().fold(
+                onSuccess = { chain.proceed(authRequest(chain.request(), it.accessToken)) },
+                onFailure = { failedAuthResponse(chain.request(), it.message ?: "Unknown error") }
+            )
         }
-    }
 
     private suspend fun getOrRefreshToken(): Result<Token> {
         val token = stravaRepo.getToken().firstOrNull()
 
-        if (token == null) return Result.Failure("No token found")
-        if (!token.isExpired()) return Result.Success(token)
+        if (token == null) return Result.failure("No token found")
+        if (!token.isExpired()) return Result.success(token)
 
         return stravaRepo.refresh(clientId, clientSecret, token.refreshToken)
             .onSuccess { stravaRepo.saveToken(it) }
     }
-
-    private fun authRequest(request: Request, accessToken: String?): Request =
-        request.newBuilder()
-            .header("Authorization", "Bearer $accessToken")
-            .build()
-
-    private fun failedResponse(request: Request, reason: String): Response =
-        Response.Builder()
-            .request(request)
-            .protocol(Protocol.HTTP_1_1)
-            .code(401)
-            .message("Auth failed")
-            .body(reason.toResponseBody())
-            .build()
 }

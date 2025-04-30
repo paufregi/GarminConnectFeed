@@ -22,12 +22,12 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetActivityTypes
 import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
 import paufregi.connectfeed.core.usecases.SaveProfile
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
@@ -69,7 +69,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns profile
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -101,7 +101,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -133,7 +133,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Failure<List<Course>>("error")
+        coEvery { getCourses() } returns Result.failure("error")
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -165,7 +165,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -199,7 +199,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -233,7 +233,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns profile
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -268,7 +268,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns profile
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -303,7 +303,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -337,7 +337,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -372,7 +372,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -406,7 +406,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -440,7 +440,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -474,7 +474,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -508,7 +508,7 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
+        coEvery { getCourses() } returns Result.success(courses)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -542,8 +542,8 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
-        coEvery { saveProfile(any()) } returns Result.Success(Unit)
+        coEvery { getCourses() } returns Result.success(courses)
+        coEvery { saveProfile(any()) } returns Result.success(Unit)
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
@@ -578,8 +578,8 @@ class ProfileViewModelTest {
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes() } returns activityTypes
         every { getEventTypes() } returns eventTypes
-        coEvery { getCourses() } returns Result.Success(courses)
-        coEvery { saveProfile(any()) } returns Result.Failure("error")
+        coEvery { getCourses() } returns Result.success(courses)
+        coEvery { saveProfile(any()) } returns Result.failure("error")
 
         viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 

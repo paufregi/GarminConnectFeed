@@ -14,7 +14,6 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class UpdateActivityTest{
@@ -47,11 +46,11 @@ class UpdateActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val res = useCase(activity, name, eventType, course, water, feel, effort)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateActivity(activity, name, eventType, course, water, feel, effort) }
         confirmVerified(repo)
     }
@@ -60,9 +59,8 @@ class UpdateActivityTest{
     fun `Invalid - no activity`() = runTest {
         val res = useCase(null, name, eventType, course, water, feel, effort)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }
@@ -80,9 +78,8 @@ class UpdateActivityTest{
 
         val res = useCase(activity, name, eventType, course, water, feel, effort)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }

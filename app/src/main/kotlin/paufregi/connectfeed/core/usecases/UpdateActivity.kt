@@ -3,7 +3,7 @@ package paufregi.connectfeed.core.usecases
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
@@ -18,7 +18,7 @@ class UpdateActivity @Inject constructor(private val garminRepository: GarminRep
         effort: Float?
     ): Result<Unit> {
         if (activity == null || name == null || (course != null && !activity.type.allowCourseInProfile))
-            return Result.Failure("Validation error")
+            return Result.failure("Validation error")
 
         return garminRepository.updateActivity(
             activity = activity,

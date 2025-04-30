@@ -1,6 +1,5 @@
 package paufregi.connectfeed.data.repository
 
-import androidx.compose.ui.util.fastMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
@@ -9,15 +8,14 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.models.UpdateProfile
-import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
@@ -32,13 +30,12 @@ class GarminRepository @Inject constructor(
     private val strava: Strava,
 ) {
     suspend fun fetchUser(): Result<User> =
-        callApi(
-            { garminConnect.getUserProfile() },
-            { res -> res.body()!!.toCore() }
-        )
+        garminConnect.getUserProfile()
+            .toResult()
+            .map { it.toCore() }
 
     fun getAllProfiles(): Flow<List<Profile>> =
-        garminDao.getAllProfiles().map { it.fastMap { it.toCore() } }
+        garminDao.getAllProfiles().map { it.map { it.toCore() } }
 
     suspend fun getProfile(id: Long): Profile? =
         garminDao.getProfile(id)?.toCore()
@@ -50,22 +47,19 @@ class GarminRepository @Inject constructor(
         garminDao.deleteProfile(profile.toEntity())
 
     suspend fun getLatestActivities(limit: Int): Result<List<Activity>> =
-        callApi(
-            { garminConnect.getLatestActivities(limit) },
-            { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
-        )
+        garminConnect.getLatestActivities(limit)
+            .toResult(emptyList())
+            .map { it.map { it.toCore() } }
 
     suspend fun getLatestStravaActivities(limit: Int): Result<List<Activity>> =
-        callApi(
-            { strava.getLatestActivities(perPage = limit) },
-            { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
-        )
+        strava.getLatestActivities(perPage = limit)
+            .toResult(emptyList())
+            .map { it.map { it.toCore() } }
 
     suspend fun getCourses(): Result<List<Course>> =
-        callApi(
-            { garminConnect.getCourses() },
-            { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
-        )
+        garminConnect.getCourses()
+            .toResult(emptyList())
+            .map { it.map { it.toCore() } }
 
     suspend fun updateActivity(
         activity: Activity,
@@ -83,10 +77,7 @@ class GarminRepository @Inject constructor(
             metadata = Metadata(course?.id),
             summary = Summary(water, feel, effort)
         )
-        return callApi(
-            { garminConnect.updateActivity(activity.id, request) },
-            { }
-        )
+        return garminConnect.updateActivity(activity.id, request).toResult()
     }
 
     suspend fun updateStravaActivity(
@@ -100,28 +91,19 @@ class GarminRepository @Inject constructor(
             description = description,
             commute = commute
         )
-        return callApi(
-            { strava.updateActivity(activity.id, request) },
-            { }
-        )
+        return strava.updateActivity(activity.id, request).toResult()
     }
 
     suspend fun updateStravaProfile(
         weight: Float
     ): Result<Unit> {
         val request = UpdateProfile(weight = weight)
-        return callApi(
-            { strava.updateProfile(request) },
-            { }
-        )
+        return strava.updateProfile(request).toResult()
     }
 
     suspend fun uploadFile(file: File): Result<Unit> {
         val multipartBody =
             MultipartBody.Part.createFormData("fit", file.name, file.asRequestBody())
-        return callApi(
-            { garminConnect.uploadFile(multipartBody) },
-            { }
-        )
+        return garminConnect.uploadFile(multipartBody).toResult()
     }
 }

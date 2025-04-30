@@ -13,9 +13,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.usecases.SignIn
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
@@ -136,7 +136,7 @@ class LoginViewModelTest {
     @Test
     fun `Sign in - success`() = runTest {
         val user = User("user", "avatar")
-        coEvery { signIn(any(), any()) } returns Result.Success(user)
+        coEvery { signIn(any(), any()) } returns Result.success(user)
 
         viewModel = LoginViewModel(signIn)
 
@@ -160,7 +160,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Sign in - failed`() = runTest {
-        coEvery { signIn(any(), any()) } returns Result.Failure("error")
+        coEvery { signIn(any(), any()) } returns Result.failure("error")
 
         viewModel = LoginViewModel(signIn)
 

@@ -10,7 +10,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.createStravaToken
 import paufregi.connectfeed.data.repository.StravaAuthRepository
 import paufregi.connectfeed.tomorrow
@@ -33,12 +33,12 @@ class StravaCodeExchangeTest{
     fun `Exchange code`() = runTest{
         val token = createStravaToken(tomorrow)
 
-        coEvery { repo.exchange(any(), any(), any()) } returns Result.Success(token)
+        coEvery { repo.exchange(any(), any(), any()) } returns Result.success(token)
         coEvery { repo.saveToken(any()) } returns Unit
 
         val result = useCase("code")
 
-        assertThat(result.isSuccessful).isTrue()
+        assertThat(result.isSuccess).isTrue()
 
         coVerify {
             repo.exchange("CLIENT_ID", "CLIENT_SECRET", "code")
@@ -49,13 +49,12 @@ class StravaCodeExchangeTest{
 
     @Test
     fun `Exchange code - failure`() = runTest{
-        coEvery { repo.exchange(any(), any(), any()) } returns Result.Failure("error")
+        coEvery { repo.exchange(any(), any(), any()) } returns Result.failure("error")
 
         val result = useCase("code")
 
-        assertThat(result.isSuccessful).isFalse()
-        result as Result.Failure
-        assertThat(result.reason).isEqualTo("error")
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("error")
 
 
         coVerify {

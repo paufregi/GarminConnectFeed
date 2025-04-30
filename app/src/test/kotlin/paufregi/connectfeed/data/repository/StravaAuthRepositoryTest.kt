@@ -16,7 +16,6 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.createStravaToken
 import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.datastore.StravaStore
@@ -81,9 +80,8 @@ class StravaAuthRepositoryTest {
 
         val res = repo.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(token)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(token)
 
         coVerify { auth.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE") }
         confirmVerified(store, auth)
@@ -95,7 +93,7 @@ class StravaAuthRepositoryTest {
 
         val res = repo.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
 
         coVerify { auth.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE") }
         confirmVerified(store, auth)
@@ -108,9 +106,8 @@ class StravaAuthRepositoryTest {
 
         val res = repo.refresh("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(token)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(token)
 
         coVerify { auth.refreshAccessToken("CLIENT_ID", "CLIENT_SECRET", "CODE") }
         confirmVerified(store, auth)
@@ -122,7 +119,7 @@ class StravaAuthRepositoryTest {
 
         val res = repo.refresh("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
 
         coVerify { auth.refreshAccessToken("CLIENT_ID", "CLIENT_SECRET", "CODE") }
         confirmVerified(store, auth)

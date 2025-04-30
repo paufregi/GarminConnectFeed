@@ -12,7 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
-import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class GetCoursesTest {
@@ -36,22 +36,21 @@ class GetCoursesTest {
             Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
             Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType.Cycling),
         )
-        coEvery { repo.getCourses() } returns Result.Success(courses)
+        coEvery { repo.getCourses() } returns Result.success(courses)
         val res = useCase()
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(courses)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(courses)
         coVerify { repo.getCourses() }
         confirmVerified(repo)
     }
 
     @Test
     fun `Get courses - failure`() = runTest {
-        coEvery { repo.getCourses() } returns Result.Failure("Failed")
+        coEvery { repo.getCourses() } returns Result.failure("Failed")
         val res = useCase()
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
         coVerify { repo.getCourses() }
         confirmVerified(repo)
     }

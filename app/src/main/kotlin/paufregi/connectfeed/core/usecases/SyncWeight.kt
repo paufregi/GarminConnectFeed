@@ -1,9 +1,9 @@
 package paufregi.connectfeed.core.usecases
 
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.Weight
 import paufregi.connectfeed.core.utils.FitWriter
 import paufregi.connectfeed.core.utils.Formatter
+import paufregi.connectfeed.core.utils.mapFailure
 import paufregi.connectfeed.data.repository.GarminRepository
 import java.io.File
 import java.time.Instant
@@ -23,9 +23,6 @@ class SyncWeight @Inject constructor(
         val res = garminRepository.uploadFile(file)
         file.delete()
 
-        return res.fold(
-            onSuccess = { },
-            onFailure = { "Failed to upload file" }
-        )
+        return res.mapFailure { Exception("Failed to upload file") }
     }
 }

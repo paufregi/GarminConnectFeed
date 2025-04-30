@@ -15,7 +15,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.models.Activity
@@ -64,9 +63,8 @@ class GarminRepositoryTest {
 
         val res = repo.fetchUser()
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(user)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(user)
 
         coVerify { connect.getUserProfile() }
         confirmVerified(dao, connect, strava)
@@ -78,8 +76,7 @@ class GarminRepositoryTest {
 
         val res = repo.fetchUser()
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
+        assertThat(res.isSuccess).isFalse()
 
         coVerify { connect.getUserProfile() }
         confirmVerified(dao, connect, strava)
@@ -271,9 +268,8 @@ class GarminRepositoryTest {
 
         val res = repo.getLatestActivities(limit = 5)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(expected)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
         coVerify { connect.getLatestActivities(5) }
         confirmVerified(dao, connect, strava)
     }
@@ -284,9 +280,8 @@ class GarminRepositoryTest {
 
         val res = repo.getLatestActivities(limit = 5)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
         coVerify { connect.getLatestActivities(5) }
         confirmVerified(dao, connect, strava)
     }
@@ -297,9 +292,8 @@ class GarminRepositoryTest {
 
         val res = repo.getLatestActivities(limit = 5)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
         coVerify { connect.getLatestActivities(5) }
         confirmVerified(dao, connect, strava)
     }
@@ -310,7 +304,7 @@ class GarminRepositoryTest {
 
         val res = repo.getLatestActivities(limit = 5)
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
         coVerify { connect.getLatestActivities(5) }
         confirmVerified(dao, connect, strava)
     }
@@ -339,9 +333,8 @@ class GarminRepositoryTest {
 
         val res = repo.getLatestStravaActivities(limit = 5)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(expected)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
         coVerify { strava.getLatestActivities(perPage = 5) }
         confirmVerified(dao, connect, strava)
     }
@@ -352,9 +345,8 @@ class GarminRepositoryTest {
 
         val res = repo.getLatestStravaActivities(limit = 5)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
         coVerify { strava.getLatestActivities(perPage = 5) }
         confirmVerified(dao, connect, strava)
     }
@@ -365,9 +357,8 @@ class GarminRepositoryTest {
 
         val res = repo.getLatestStravaActivities(limit = 5)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
         coVerify { strava.getLatestActivities(perPage = 5) }
         confirmVerified(dao, connect, strava)
     }
@@ -378,7 +369,7 @@ class GarminRepositoryTest {
 
         val res = repo.getLatestStravaActivities(limit = 5)
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
         coVerify { strava.getLatestActivities(perPage = 5) }
         confirmVerified(dao, connect, strava)
     }
@@ -398,9 +389,8 @@ class GarminRepositoryTest {
 
         val res = repo.getCourses()
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(expected)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
         coVerify { connect.getCourses() }
         confirmVerified(dao, connect, strava)
     }
@@ -411,9 +401,8 @@ class GarminRepositoryTest {
 
         val res = repo.getCourses()
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(emptyList<CoreCourse>())
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreCourse>())
         coVerify { connect.getCourses() }
         confirmVerified(dao, connect, strava)
     }
@@ -424,9 +413,8 @@ class GarminRepositoryTest {
 
         val res = repo.getCourses()
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(emptyList<CoreCourse>())
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreCourse>())
         coVerify { connect.getCourses() }
         confirmVerified(dao, connect, strava)
     }
@@ -437,7 +425,7 @@ class GarminRepositoryTest {
 
         val res = repo.getCourses()
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
         coVerify { connect.getCourses() }
         confirmVerified(dao, connect, strava)
     }
@@ -477,7 +465,7 @@ class GarminRepositoryTest {
             feel = feel
         )
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { connect.updateActivity(activity.id, expectedRequest) }
         confirmVerified(dao, connect, strava)
     }
@@ -514,7 +502,7 @@ class GarminRepositoryTest {
             feel = null
         )
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
         coVerify { connect.updateActivity(activity.id, expectedRequest) }
         confirmVerified(dao, connect, strava)
     }
@@ -546,7 +534,7 @@ class GarminRepositoryTest {
             commute = commute
         )
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { strava.updateActivity(activity.id, expectedRequest) }
         confirmVerified(dao, connect, strava)
     }
@@ -578,7 +566,7 @@ class GarminRepositoryTest {
             commute = commute
         )
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
         coVerify { strava.updateActivity(activity.id, expectedRequest) }
         confirmVerified(dao, connect, strava)
     }
@@ -591,7 +579,7 @@ class GarminRepositoryTest {
 
         val res = repo.updateStravaProfile(weight = 75.9f)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { strava.updateProfile(expectedRequest) }
         confirmVerified(dao, connect, strava)
     }
@@ -604,7 +592,7 @@ class GarminRepositoryTest {
 
         val res = repo.updateStravaProfile(weight = 75.9f)
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
         coVerify { strava.updateProfile(expectedRequest) }
         confirmVerified(dao, connect, strava)
     }
@@ -617,7 +605,7 @@ class GarminRepositoryTest {
 
         val res = repo.uploadFile(testFile)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { connect.uploadFile(any()) }
         confirmVerified(dao, connect, strava)
     }
@@ -630,7 +618,7 @@ class GarminRepositoryTest {
 
         val res = repo.uploadFile(testFile)
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
         coVerify { connect.uploadFile(any()) }
         confirmVerified(dao, connect, strava)
     }

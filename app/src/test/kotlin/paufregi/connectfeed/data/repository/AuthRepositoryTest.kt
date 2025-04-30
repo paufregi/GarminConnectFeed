@@ -17,7 +17,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.consumer
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.api.garmin.GarminAuth1
 import paufregi.connectfeed.data.api.garmin.GarminAuth2
 import paufregi.connectfeed.data.api.garmin.GarminSSO
@@ -189,9 +188,9 @@ class AuthRepositoryTest {
 
         val res = repo.authorize("user", "pass", consumer)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(oauth1)
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(oauth1)
 
         coVerify{
             garminSSO.getCSRF()
@@ -212,7 +211,7 @@ class AuthRepositoryTest {
 
         val res = repo.authorize("user", "pass", consumer)
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
 
         coVerify{
             garminSSO.getCSRF()
@@ -228,7 +227,7 @@ class AuthRepositoryTest {
 
         val res = repo.authorize("user", "pas", consumer)
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
 
         coVerify{
             garminSSO.getCSRF()
@@ -245,7 +244,7 @@ class AuthRepositoryTest {
 
         val res = repo.authorize("user", "pass", consumer)
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
 
         coVerify{
             garminSSO.getCSRF()
@@ -261,9 +260,8 @@ class AuthRepositoryTest {
 
         val res = repo.exchange(consumer, oauth1)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(oauth2)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(oauth2)
 
         coVerify {
             garminAuth2.getOauth2()
@@ -278,7 +276,7 @@ class AuthRepositoryTest {
 
         val res = repo.exchange(consumer, oauth1)
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
 
         coVerify {
             garminAuth2.getOauth2()
