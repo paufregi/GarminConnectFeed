@@ -18,7 +18,6 @@ import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.consumer
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.datastore.AuthStore
@@ -108,9 +107,8 @@ class GarminRepositoryTest {
 
         val res = repo.fetchUser()
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(expected)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
     }
 
     @Test
@@ -159,9 +157,8 @@ class GarminRepositoryTest {
 
         val res = repo.getLatestActivities(5)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(expected)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
     }
 
     @Test
@@ -187,9 +184,8 @@ class GarminRepositoryTest {
 
         val res = repo.getLatestStravaActivities(5)
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(expected)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
     }
 
     @Test
@@ -205,9 +201,8 @@ class GarminRepositoryTest {
 
         val res = repo.getCourses()
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(expected)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
     }
 
     @Test
@@ -234,7 +229,7 @@ class GarminRepositoryTest {
             feel = feel
         )
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
     }
 
     @Test
@@ -253,7 +248,7 @@ class GarminRepositoryTest {
             commute = commute
         )
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
     }
 
     @Test
@@ -262,7 +257,7 @@ class GarminRepositoryTest {
 
         val res = repo.updateStravaProfile(75.6f)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
     }
 
     @Test
@@ -275,6 +270,6 @@ class GarminRepositoryTest {
         testFile.deleteOnExit()
         val res = repo.uploadFile(testFile)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
     }
 }

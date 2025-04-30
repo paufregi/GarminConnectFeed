@@ -12,7 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class GetLatestActivitiesTest{
@@ -34,22 +34,21 @@ class GetLatestActivitiesTest{
         val activities = listOf(
             Activity(id = 1, name = "name", distance = 10234.00, type = ActivityType.Running)
         )
-        coEvery { repo.getLatestActivities(any()) } returns Result.Success(activities)
+        coEvery { repo.getLatestActivities(any()) } returns Result.success(activities)
         val res = useCase()
 
-        assertThat(res.isSuccessful).isTrue()
-        res as Result.Success
-        assertThat(res.data).isEqualTo(activities)
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(activities)
         coVerify { repo.getLatestActivities(5) }
         confirmVerified(repo)
     }
 
     @Test
     fun `Get latest activities - failed`() = runTest {
-        coEvery { repo.getLatestActivities(any()) } returns Result.Failure("Failed")
+        coEvery { repo.getLatestActivities(any()) } returns Result.failure("Failed")
         val res = useCase()
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
         coVerify { repo.getLatestActivities(5) }
         confirmVerified(repo)
     }

@@ -15,7 +15,6 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class QuickUpdateActivityTest{
@@ -53,10 +52,10 @@ class QuickUpdateActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         val res = useCase(activity, profile, 50f, 90f)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateActivity(activity, profile.name, profile.eventType, profile.course, profile.water, 50f, 90f) }
         confirmVerified(repo)
     }
@@ -65,9 +64,8 @@ class QuickUpdateActivityTest{
     fun `Invalid - no activity`() = runTest {
         val res = useCase(null, profile, null, null)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }
@@ -76,9 +74,8 @@ class QuickUpdateActivityTest{
     fun `Invalid - no profile`() = runTest {
         val res = useCase(activity, null, null, null)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }
@@ -87,9 +84,8 @@ class QuickUpdateActivityTest{
     fun `Invalid - both null`() = runTest {
         val res = useCase(null, null, null, null)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }

@@ -2,8 +2,8 @@ package paufregi.connectfeed.core.usecases
 
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.utils.Formatter
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
@@ -17,7 +17,7 @@ class UpdateStravaActivity @Inject constructor(private val garminRepository: Gar
         trainingEffectFlag: Boolean,
     ): Result<Unit> {
         if (stravaActivity == null || name == null)
-            return Result.Failure("Validation error")
+            return Result.failure("Validation error")
 
         return garminRepository.updateStravaActivity(
             activity = stravaActivity,

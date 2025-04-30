@@ -14,7 +14,6 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class SaveProfileTest{
@@ -46,7 +45,7 @@ class SaveProfileTest{
 
         val res = useCase(profile)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
 
         coVerify { repo.saveProfile(profile) }
         confirmVerified(repo)
@@ -66,9 +65,8 @@ class SaveProfileTest{
 
         val res = useCase(profile)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Name cannot be empty")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Name cannot be empty")
     }
 
     @Test
@@ -85,9 +83,8 @@ class SaveProfileTest{
 
         val res = useCase(profile)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Can't have course for Strength activity type")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Can't have course for Strength activity type")
     }
 
     @Test
@@ -104,9 +101,8 @@ class SaveProfileTest{
 
         val res = useCase(profile)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Can't have course for Any activity type")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Can't have course for Any activity type")
     }
 
     @Test
@@ -123,8 +119,7 @@ class SaveProfileTest{
 
         val res = useCase(profile)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Course must match activity type")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Course must match activity type")
     }
 }

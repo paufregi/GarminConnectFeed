@@ -1,6 +1,5 @@
 package paufregi.connectfeed.core.usecases
 
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.StravaAuthRepository
 import javax.inject.Inject
 import javax.inject.Named

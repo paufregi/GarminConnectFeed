@@ -17,7 +17,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.consumer
-import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.createOAuth2
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.repository.AuthRepository
@@ -86,7 +86,7 @@ class AuthInterceptorTest {
         every { authRepo.getOAuth2() } returns flowOf(expiredToken)
         coEvery { authRepo.getOrFetchConsumer() } returns consumer
         every { authRepo.getOAuth1() } returns flowOf(oauth1)
-        coEvery { authRepo.exchange(any(), any()) } returns Result.Success(validToken)
+        coEvery { authRepo.exchange(any(), any()) } returns Result.success(validToken)
         coEvery { authRepo.saveOAuth2(any()) } returns Unit
 
         api.test()
@@ -113,7 +113,7 @@ class AuthInterceptorTest {
         every { authRepo.getOAuth2() } returns flowOf(null)
         coEvery { authRepo.getOrFetchConsumer() } returns consumer
         every { authRepo.getOAuth1() } returns flowOf(oauth1)
-        coEvery { authRepo.exchange(any(), any()) } returns Result.Success(validToken)
+        coEvery { authRepo.exchange(any(), any()) } returns Result.success(validToken)
         coEvery { authRepo.saveOAuth2(any()) } returns Unit
 
         api.test()
@@ -177,7 +177,7 @@ class AuthInterceptorTest {
         every { authRepo.getOAuth2() } returns flowOf(null)
         coEvery { authRepo.getOrFetchConsumer() } returns consumer
         every { authRepo.getOAuth1() } returns flowOf(oauth1)
-        coEvery { authRepo.exchange(any(), any()) } returns Result.Failure("Couldn't exchange token")
+        coEvery { authRepo.exchange(any(), any()) } returns Result.failure("Couldn't exchange token")
 
         val res = api.test()
 

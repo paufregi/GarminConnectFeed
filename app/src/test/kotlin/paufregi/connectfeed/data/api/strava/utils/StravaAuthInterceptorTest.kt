@@ -16,7 +16,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.createStravaToken
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.repository.StravaAuthRepository
@@ -82,7 +82,7 @@ class StravaAuthInterceptorTest {
         val validToken = createStravaToken(yesterday)
 
         every { authRepo.getToken() } returns flowOf(expiredToken)
-        coEvery { authRepo.refresh(any(), any(), any()) } returns Result.Success(validToken)
+        coEvery { authRepo.refresh(any(), any(), any()) } returns Result.success(validToken)
         coEvery { authRepo.saveToken(any()) } returns Unit
 
         api.test()
@@ -115,7 +115,7 @@ class StravaAuthInterceptorTest {
         val expiredToken = createStravaToken(yesterday)
 
         every { authRepo.getToken() } returns flowOf(expiredToken)
-        coEvery { authRepo.refresh(any(), any(), any()) } returns Result.Failure("error")
+        coEvery { authRepo.refresh(any(), any(), any()) } returns Result.failure("error")
 
         val res = api.test()
 

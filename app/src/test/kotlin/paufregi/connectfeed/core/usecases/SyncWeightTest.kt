@@ -17,11 +17,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.Weight
 import paufregi.connectfeed.core.utils.FitWriter
 import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.core.utils.RenphoReader
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 import java.time.Instant
 import java.util.Date
@@ -67,11 +67,11 @@ class SyncWeightTest {
 
         every { Formatter.dateTimeForFilename(any()).format(any()) } returns "20240101_000000"
         every { FitWriter.weights(any(), any()) } returns Unit
-        coEvery { repo.uploadFile(any()) } returns Result.Success(Unit)
+        coEvery { repo.uploadFile(any()) } returns Result.success(Unit)
 
         val res = useCase(weights)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         verify {
             Formatter.dateTimeForFilename(any()).format(any())
             FitWriter.weights(any(), weights)
@@ -84,11 +84,11 @@ class SyncWeightTest {
     fun `Upload empty list`() = runTest {
         every { Formatter.dateTimeForFilename(any()).format(any()) } returns "20240101_000000"
         every { FitWriter.weights(any(), any()) } returns Unit
-        coEvery { repo.uploadFile(any()) } returns Result.Success(Unit)
+        coEvery { repo.uploadFile(any()) } returns Result.success(Unit)
 
         val res = useCase(emptyList<Weight>())
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         verify {
             Formatter.dateTimeForFilename(any()).format(any())
             FitWriter.weights(any(), emptyList())
@@ -101,7 +101,7 @@ class SyncWeightTest {
     fun `Failed upload`() = runTest {
         every { Formatter.dateTimeForFilename(any()).format(any()) } returns "20240101_000000"
         every { FitWriter.weights(any(), any()) } returns Unit
-        coEvery { repo.uploadFile(any()) } returns Result.Failure("Failed to upload file")
+        coEvery { repo.uploadFile(any()) } returns Result.failure("Failed to upload file")
 
         val weights = listOf(Weight(
             timestamp = Date.from(Instant.ofEpochMilli(1704057630000)),
@@ -118,9 +118,8 @@ class SyncWeightTest {
 
         val res = useCase(weights)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Failed to upload file")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Failed to upload file")
         verify {
             Formatter.dateTimeForFilename(any()).format(any())
             FitWriter.weights(any(), weights)

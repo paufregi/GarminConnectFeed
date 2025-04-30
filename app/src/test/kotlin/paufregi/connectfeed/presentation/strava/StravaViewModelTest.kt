@@ -13,8 +13,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.StravaCodeExchange
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
@@ -50,7 +50,7 @@ class StravaViewModelTest {
 
     @Test
     fun `Exchange token`() = runTest {
-        coEvery { stravaCodeExchange(any()) } returns Result.Success(Unit)
+        coEvery { stravaCodeExchange(any()) } returns Result.success(Unit)
 
         viewModel.state.test {
             viewModel.exchangeToken("code")
@@ -66,7 +66,7 @@ class StravaViewModelTest {
 
     @Test
     fun `Exchange token - failure`() = runTest {
-        coEvery { stravaCodeExchange(any()) } returns Result.Failure("error")
+        coEvery { stravaCodeExchange(any()) } returns Result.failure("error")
 
         viewModel.state.test {
             viewModel.exchangeToken("code")

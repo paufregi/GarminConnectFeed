@@ -36,6 +36,6 @@ class LoginViewModel @Inject constructor(
         _state.update { it.copy(process = ProcessState.Processing) }
         signIn(state.value.username, state.value.password)
             .onSuccess { data -> _state.update { it.copy(process = ProcessState.Success(), user = data) } }
-            .onFailure { err -> _state.update { it.copy(process = ProcessState.Failure(err)) } }
+            .onFailure { err -> _state.update { it.copy(process = ProcessState.Failure(err.message ?: "Error")) } }
     }
 }

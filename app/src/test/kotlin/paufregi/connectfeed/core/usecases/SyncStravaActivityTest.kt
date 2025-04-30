@@ -13,7 +13,6 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class SyncStravaActivityTest{
@@ -48,30 +47,30 @@ class SyncStravaActivityTest{
 
     @Test
     fun `Sync activity`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nTraining: recovery"
         val res = useCase(activity, stravaActivity, description, true)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, activity.name, expectedDescription, true) }
         confirmVerified(repo)
     }
 
     @Test
     fun `Update activity - no training effect`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val res = useCase(activity, stravaActivity, description, false)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, activity.name, description, true) }
         confirmVerified(repo)
     }
 
     @Test
     fun `Update activity - no commute`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val activity = Activity(
             id = 1,
@@ -84,7 +83,7 @@ class SyncStravaActivityTest{
 
         val res = useCase(activity, stravaActivity, description, false)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, activity.name, description, false) }
         confirmVerified(repo)
     }
@@ -93,9 +92,8 @@ class SyncStravaActivityTest{
     fun `Invalid - no strava activity`() = runTest {
         val res = useCase(activity, null, description, true)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }
@@ -104,9 +102,8 @@ class SyncStravaActivityTest{
     fun `Invalid - no activity`() = runTest {
         val res = useCase(null, stravaActivity, description, true)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }
@@ -115,9 +112,8 @@ class SyncStravaActivityTest{
     fun `Invalid - all nulls`() = runTest {
         val res = useCase(null, null, description, true)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }

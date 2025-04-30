@@ -1,8 +1,8 @@
 package paufregi.connectfeed.data.repository
 
+import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.api.strava.models.Token
-import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.datastore.StravaStore
 
 class StravaAuthRepository(
@@ -16,14 +16,8 @@ class StravaAuthRepository(
     suspend fun clear() = stravaStore.clear()
 
     suspend fun exchange(clientId: String, clientSecret: String, code: String) =
-        callApi(
-            { stravaAuth.exchange(clientId, clientSecret, code) },
-            { res -> res.body()!! }
-        )
+        stravaAuth.exchange(clientId, clientSecret, code).toResult()
 
     suspend fun refresh(clientId: String, clientSecret: String, refreshToken: String) =
-        callApi(
-            { stravaAuth.refreshAccessToken(clientId, clientSecret, refreshToken) },
-            { res -> res.body()!! }
-        )
+        stravaAuth.refreshAccessToken(clientId, clientSecret, refreshToken).toResult()
 }

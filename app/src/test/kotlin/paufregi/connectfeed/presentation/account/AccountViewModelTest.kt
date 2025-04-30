@@ -16,13 +16,13 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.usecases.DisconnectStrava
 import paufregi.connectfeed.core.usecases.GetUser
 import paufregi.connectfeed.core.usecases.IsStravaLoggedIn
 import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
@@ -75,7 +75,7 @@ class AccountViewModelTest {
 
     @Test
     fun `Refresh user - success`() = runTest {
-        coEvery { refreshUser() } returns Result.Success(Unit)
+        coEvery { refreshUser() } returns Result.success(Unit)
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
 
@@ -99,7 +99,7 @@ class AccountViewModelTest {
 
     @Test
     fun `Refresh user - failure`() = runTest {
-        coEvery { refreshUser() } returns Result.Failure("error")
+        coEvery { refreshUser() } returns Result.failure("error")
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
 

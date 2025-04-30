@@ -15,8 +15,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.models.Weight
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 import java.time.Instant
 import java.util.Date
@@ -74,11 +74,11 @@ class SyncStravaWeightTest {
             )
         )
 
-        coEvery { repo.updateStravaProfile(any()) } returns Result.Success(Unit)
+        coEvery { repo.updateStravaProfile(any()) } returns Result.success(Unit)
 
         val res = useCase(weights, date)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
 
         verify { isStravaLoggedIn.invoke() }
         coVerify { repo.updateStravaProfile(any()) }
@@ -121,7 +121,7 @@ class SyncStravaWeightTest {
 
         val res = useCase(weights, date)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
 
         verify { isStravaLoggedIn.invoke() }
         confirmVerified(repo, isStravaLoggedIn)
@@ -146,11 +146,11 @@ class SyncStravaWeightTest {
             metabolicAge = 35,
         ))
 
-        coEvery { repo.updateStravaProfile(any()) } returns Result.Success(Unit)
+        coEvery { repo.updateStravaProfile(any()) } returns Result.success(Unit)
 
         val res = useCase(weights, date)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
 
         verify { isStravaLoggedIn.invoke() }
         confirmVerified(repo, isStravaLoggedIn)
@@ -163,7 +163,7 @@ class SyncStravaWeightTest {
 
         val res = useCase(emptyList<Weight>(), date)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         verify { isStravaLoggedIn.invoke() }
         confirmVerified(repo, isStravaLoggedIn)
     }
@@ -188,11 +188,11 @@ class SyncStravaWeightTest {
             )
         )
 
-        coEvery { repo.updateStravaProfile(any()) } returns Result.Failure("error")
+        coEvery { repo.updateStravaProfile(any()) } returns Result.failure("error")
 
         val res = useCase(weights, date)
 
-        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.isSuccess).isFalse()
 
         coVerify { repo.updateStravaProfile(any()) }
         verify { isStravaLoggedIn.invoke() }

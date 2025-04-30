@@ -46,7 +46,7 @@ class AccountViewModel @Inject constructor(
         _state.update { AccountState(ProcessState.Processing) }
         refreshUser()
             .onSuccess { _state.update { AccountState(ProcessState.Success("User data refreshed")) } }
-            .onFailure { err -> _state.update { AccountState(ProcessState.Failure(err)) } }
+            .onFailure { err -> _state.update { AccountState(ProcessState.Failure(err.message ?: "Error")) } }
     }
 
     private fun signOutAction() = viewModelScope.launch {

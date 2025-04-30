@@ -15,7 +15,6 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class QuickUpdateStravaActivityTest{
@@ -57,19 +56,19 @@ class QuickUpdateStravaActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nTraining: recovery"
         val res = useCase(activity, stravaActivity, profile, description)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true) }
         confirmVerified(repo)
     }
 
     @Test
     fun `Update activity - no rename`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val profile = Profile(
             name = "newName",
@@ -83,14 +82,14 @@ class QuickUpdateStravaActivityTest{
         val expectedDescription = "$description\n\nTraining: recovery"
         val res = useCase(activity, stravaActivity, profile, description)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, activity.name, expectedDescription, true) }
         confirmVerified(repo)
     }
 
     @Test
     fun `Update activity - no training effect`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val profile = Profile(
             name = "newName",
@@ -103,14 +102,14 @@ class QuickUpdateStravaActivityTest{
 
         val res = useCase(activity, stravaActivity, profile, description)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, profile.name, description, true) }
         confirmVerified(repo)
     }
 
     @Test
     fun `Update activity - no commute`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val profile = Profile(
             name = "newName",
@@ -123,7 +122,7 @@ class QuickUpdateStravaActivityTest{
 
         val res = useCase(activity, stravaActivity, profile, description)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, profile.name, description, false) }
         confirmVerified(repo)
     }
@@ -132,9 +131,8 @@ class QuickUpdateStravaActivityTest{
     fun `Invalid - no strava activity`() = runTest {
         val res = useCase(activity, null, profile, description)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }
@@ -143,9 +141,8 @@ class QuickUpdateStravaActivityTest{
     fun `Invalid - no profile`() = runTest {
         val res = useCase(activity, null, null, null)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }
@@ -154,9 +151,8 @@ class QuickUpdateStravaActivityTest{
     fun `Invalid - all nulls`() = runTest {
         val res = useCase(null, null, null, null)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }

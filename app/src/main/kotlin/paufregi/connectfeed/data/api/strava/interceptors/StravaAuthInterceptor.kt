@@ -8,7 +8,7 @@ import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
-import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.api.strava.models.Token
 import paufregi.connectfeed.data.repository.StravaAuthRepository
 import javax.inject.Inject
@@ -25,17 +25,17 @@ class StravaAuthInterceptor @Inject constructor(
 
         val res = runBlocking(Dispatchers.IO) { getOrRefreshToken() }
 
-        return when (res) {
-            is Result.Failure -> failedResponse(request, res.reason)
-            is Result.Success -> chain.proceed(authRequest(request, res.data.accessToken))
+        return when (res.isSuccess) {
+            true -> chain.proceed(authRequest(request, res.getOrNull()?.accessToken))
+            false -> failedResponse(request, res.exceptionOrNull()?.message ?: "Unknown error")
         }
     }
 
     private suspend fun getOrRefreshToken(): Result<Token> {
         val token = stravaRepo.getToken().firstOrNull()
 
-        if (token == null) return Result.Failure("No token found")
-        if (!token.isExpired()) return Result.Success(token)
+        if (token == null) return Result.failure("No token found")
+        if (!token.isExpired()) return Result.success(token)
 
         return stravaRepo.refresh(clientId, clientSecret, token.refreshToken)
             .onSuccess { stravaRepo.saveToken(it) }

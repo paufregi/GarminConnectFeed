@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetActivityTypes
 import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
@@ -81,9 +80,8 @@ class ProfileViewModel @Inject constructor(
 
     private fun saveAction() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
-        when (val res = saveProfile(state.value.profile)) {
-            is Result.Success -> _state.update { it.copy(process = ProcessState.Success("Profile saved")) }
-            is Result.Failure -> _state.update { it.copy(process = ProcessState.Failure(res.reason)) }
-        }
+        saveProfile(state.value.profile)
+            .onSuccess { _state.update { it.copy(process = ProcessState.Success("Profile saved")) }}
+            .onFailure { err -> _state.update { it.copy(process = ProcessState.Failure(err.message ?: "Error")) }}
     }
 }

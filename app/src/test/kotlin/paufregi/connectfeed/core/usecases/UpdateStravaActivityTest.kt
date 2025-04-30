@@ -13,7 +13,6 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class UpdateStravaActivityTest{
@@ -44,23 +43,23 @@ class UpdateStravaActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.Success(Unit)
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nTraining: $trainingEffect"
         val res = useCase(activity, name, description, eventType, trainingEffect, trainingEffectFlag)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
         confirmVerified(repo)
     }
 
     @Test
     fun `Update activity - no training effect`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.Success(Unit)
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
         val res = useCase(activity, name, description, eventType, trainingEffect, false)
 
-        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(activity, name, description, true) }
         confirmVerified(repo)
     }
@@ -69,9 +68,8 @@ class UpdateStravaActivityTest{
     fun `Invalid - no strava activity`() = runTest {
         val res = useCase(null, name, description, eventType, trainingEffect, trainingEffectFlag)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }
@@ -80,9 +78,8 @@ class UpdateStravaActivityTest{
     fun `Invalid - no name`() = runTest {
         val res = useCase(activity, null, description, eventType, trainingEffect, trainingEffectFlag)
 
-        assertThat(res.isSuccessful).isFalse()
-        res as Result.Failure
-        assertThat(res.reason).isEqualTo("Validation error")
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
 
         confirmVerified(repo)
     }
