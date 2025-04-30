@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+      description:
+        description: 'Describe this release'
+        required: true
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    env:
+      TZ: 'Pacific/Auckland'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Update versionCode and versionName
+        run: |
+          versionCode=$(grep 'versionCode =' app/build.gradle.kts | awk '{print $3}')
+          newVersionCode=$((versionCode + 1))
+          sed -i "s/versionCode = $versionCode/versionCode = $newVersionCode/" app/build.gradle.kts
+          sed -i "s/versionName = \".*\"/versionName = \"${{ github.event.inputs.version }}\"/" app/build.gradle.kts
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add app/build.gradle.kts
+          git commit -m "Release version v${{ github.event.inputs.version }}"
+          git push origin main
+
+      - name: Build signed APK
+        run: ./gradlew assembleRelease
+
+      - name: Rename APK
+        run: |
+          mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/ConnectFeed-v${{ github.event.inputs.version }}.apk
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          release_name: v${{ github.event.inputs.version }}
+          body: ${{ github.event.inputs.description }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload APK to Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: app/build/outputs/apk/release/ConnectFeed-v${{ github.event.inputs.version }}.apk
+          asset_name: ConnectFeed-v${{ github.event.inputs.version }}.apk
+          asset_content_type: application/vnd.android.package-archive
