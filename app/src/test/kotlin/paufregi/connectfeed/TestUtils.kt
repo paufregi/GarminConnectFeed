@@ -6,14 +6,14 @@ import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.OAuth2
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
-import paufregi.connectfeed.data.api.strava.models.Token
+import paufregi.connectfeed.data.api.strava.models.AuthToken
 import java.util.Date
 
 fun createOAuth2(expiresAt: Date) = OAuth2(
     accessToken = JWT.create().withExpiresAt(expiresAt).sign(Algorithm.none()),
 )
 
-fun createStravaToken(expiresAt: Date) = Token(
+fun createStravaToken(expiresAt: Date) = AuthToken(
     accessToken = "ACCCESS_TOKEN",
     refreshToken = "REFRESH_TOKEN",
     expiresAt = expiresAt.time / 1000

@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.byteArrayPreferencesKey
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.map
-import paufregi.connectfeed.data.api.strava.models.Token
+import paufregi.connectfeed.data.api.strava.models.AuthToken
 import paufregi.connectfeed.data.utils.Crypto
 
 class StravaStore(val dataStore: DataStore<Preferences>) {
@@ -20,7 +20,7 @@ class StravaStore(val dataStore: DataStore<Preferences>) {
         it[ACCESS_TOKEN]?.let { accessToken ->
             it[REFRESH_TOKEN]?.let { refreshToken ->
                 it[EXPIRE_AT]?.let { expireAt ->
-                    Token(
+                    AuthToken(
                         accessToken = Crypto.decrypt(accessToken),
                         refreshToken = Crypto.decrypt(refreshToken),
                         expiresAt = Crypto.decrypt(expireAt).toLong()
@@ -30,11 +30,11 @@ class StravaStore(val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun saveToken(token: Token) {
+    suspend fun saveToken(authToken: AuthToken) {
         dataStore.edit {
-            it[ACCESS_TOKEN] = Crypto.encrypt(token.accessToken)
-            it[REFRESH_TOKEN] = Crypto.encrypt(token.refreshToken)
-            it[EXPIRE_AT] = Crypto.encrypt(token.expiresAt.toString())
+            it[ACCESS_TOKEN] = Crypto.encrypt(authToken.accessToken)
+            it[REFRESH_TOKEN] = Crypto.encrypt(authToken.refreshToken)
+            it[EXPIRE_AT] = Crypto.encrypt(authToken.expiresAt.toString())
         }
     }
 

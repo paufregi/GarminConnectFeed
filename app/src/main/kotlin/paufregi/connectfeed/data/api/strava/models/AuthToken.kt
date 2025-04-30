@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import java.time.Instant
 
 @Keep
-data class Token(
+data class AuthToken(
     @SerializedName("access_token")
     val accessToken: String,
     @SerializedName("refresh_token")

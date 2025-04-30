@@ -2,7 +2,7 @@ package paufregi.connectfeed.data.repository
 
 import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.strava.StravaAuth
-import paufregi.connectfeed.data.api.strava.models.Token
+import paufregi.connectfeed.data.api.strava.models.AuthToken
 import paufregi.connectfeed.data.datastore.StravaStore
 
 class StravaAuthRepository(
@@ -11,7 +11,7 @@ class StravaAuthRepository(
 ) {
     fun getToken() = stravaStore.getToken()
 
-    suspend fun saveToken(token: Token) = stravaStore.saveToken(token)
+    suspend fun saveToken(authToken: AuthToken) = stravaStore.saveToken(authToken)
 
     suspend fun clear() = stravaStore.clear()
 
