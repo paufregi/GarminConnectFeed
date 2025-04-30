@@ -20,16 +20,13 @@ class StravaAuthInterceptor @Inject constructor(
     @Named("StravaClientSecret") val clientSecret: String,
 ) : Interceptor {
 
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request()
-
-        val res = runBlocking(Dispatchers.IO) { getOrRefreshToken() }
-
-        return when (res.isSuccess) {
-            true -> chain.proceed(authRequest(request, res.getOrNull()?.accessToken))
-            false -> failedResponse(request, res.exceptionOrNull()?.message ?: "Unknown error")
+    override fun intercept(chain: Interceptor.Chain): Response =
+        runBlocking(Dispatchers.IO) {
+            getOrRefreshToken().fold(
+                onSuccess = { chain.proceed(authRequest(chain.request(), it.accessToken)) },
+                onFailure = { failedResponse(chain.request(), it.message ?: "Unknown error") }
+            )
         }
-    }
 
     private suspend fun getOrRefreshToken(): Result<Token> {
         val token = stravaRepo.getToken().firstOrNull()

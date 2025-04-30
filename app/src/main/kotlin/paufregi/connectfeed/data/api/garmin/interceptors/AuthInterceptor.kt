@@ -17,15 +17,13 @@ class AuthInterceptor @Inject constructor(
     private val authRepository: AuthRepository
 ) : Interceptor {
 
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request()
-
-        return runBlocking(Dispatchers.IO) { getOrFetchOAuth2() }
-            .fold(
-                onSuccess = { chain.proceed(authRequest(request, it.accessToken)) },
-                onFailure = { failedResponse(request, it.message ?: "Unknown error") }
+    override fun intercept(chain: Interceptor.Chain): Response  =
+        runBlocking(Dispatchers.IO) {
+            getOrFetchOAuth2().fold(
+                onSuccess = { chain.proceed(authRequest(chain.request(), it.accessToken)) },
+                onFailure = { failedResponse(chain.request(), it.message ?: "Unknown error") }
             )
-    }
+        }
 
     private suspend fun getOrFetchOAuth2(): Result<OAuth2> {
         val oAuth2 = authRepository.getOAuth2().firstOrNull()
