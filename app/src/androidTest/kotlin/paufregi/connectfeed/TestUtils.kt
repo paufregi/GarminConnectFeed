@@ -1,28 +1,26 @@
 package paufregi.connectfeed
 
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.garmin.models.OAuth1
-import paufregi.connectfeed.data.api.garmin.models.OAuth2
-import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
-import paufregi.connectfeed.data.api.strava.models.Token
+import paufregi.connectfeed.data.api.garmin.models.AuthToken
+import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.test.R
 import java.net.URLDecoder
 import java.util.Date
+import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
-fun createOAuth2(expiresAt: Date) = OAuth2(
-    accessToken = JWT.create().withExpiresAt(expiresAt).sign(Algorithm.none()),
+fun createAuthToken(expiresAt: Date) = AuthToken(
+    accessToken = "ACCESS_TOKEN",
+    expiresAt = expiresAt.time / 1000
 )
 
-fun createStravaToken(expiresAt: Date) = Token(
-    accessToken = "ACCCESS_TOKEN",
+fun createStravaToken(expiresAt: Date) = StravaAuthToken(
+    accessToken = "ACCESS_TOKEN",
     refreshToken = "REFRESH_TOKEN",
     expiresAt = expiresAt.time / 1000
 )
@@ -31,28 +29,21 @@ fun createStravaToken(expiresAt: Date) = Token(
 val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
 
 val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
-val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
-val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
-val oauth2 = createOAuth2(tomorrow)
+val preAuthToken = PreAuthToken("TOKEN", "SECRET")
+val authToken = createAuthToken(tomorrow)
 val stravaToken = createStravaToken(tomorrow)
 
-val oauth1Body = "oauth_token=${oauth1.token}&oauth_token_secret=${oauth1.secret}"
+val preAuthTokenBody = "oauth_token=${preAuthToken.token}&oauth_token_secret=${preAuthToken.secret}"
 
-val consumerJson = """
-    {
-    "consumer_key":"${consumer.key}",
-    "consumer_secret":"${consumer.secret}"
-    }
-    """.trimIndent()
-
-val oauth2Json = """
+val authTokenJson = """
     {
     "scope": "SCOPE",
     "jti": "JTI",
-    "access_token": "${oauth2.accessToken}",
+    "access_token": "${authToken.accessToken}",
     "token_type": "TOKEN_TYPE",
     "refresh_token": "REFRESH_TOKEN",
     "expires_in": 0,
+    "expires_at": ${authToken.expiresAt},
     "refresh_token_expires_in": 0
     }
     """.trimIndent()
@@ -655,7 +646,7 @@ val coursesJson = """
     ]
 """.trimIndent()
 
-val stravaExchangeTokenJson = """
+val stravaAuthTokenJson = """
     {
         "token_type": "Bearer",
         "expires_at": 1704067200,
@@ -820,8 +811,7 @@ val stravaDetailedAthlete = """
 
 const val connectPort = 8081
 const val garminSSOPort = 8082
-const val garthPort = 8083
-const val stravaPort = 8084
+const val stravaPort = 8083
 
 fun RecordedRequest.getFields(): Map<String, String> {
     val body = body.readUtf8()
@@ -847,10 +837,10 @@ val connectDispatcher: Dispatcher = object : Dispatcher() {
         val path = request.path ?: ""
         return when {
             path.startsWith("/oauth-service/oauth/preauthorized") && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(oauth1Body)
+                MockResponse().setResponseCode(200).setBody(preAuthTokenBody)
 
             path == "/oauth-service/oauth/exchange/user/2.0" && request.method == "POST" ->
-                MockResponse().setResponseCode(200).setBody(oauth2Json)
+                MockResponse().setResponseCode(200).setBody(authTokenJson)
 
             path == "/upload-service/upload" && request.method == "POST" ->
                 MockResponse().setResponseCode(200)
@@ -866,18 +856,6 @@ val connectDispatcher: Dispatcher = object : Dispatcher() {
 
             (path.startsWith("/activity-service/activity") && request.method == "PUT") ->
                 MockResponse().setResponseCode(200)
-
-            else -> MockResponse().setResponseCode(404)
-        }
-    }
-}
-
-val garthDispatcher: Dispatcher = object : Dispatcher() {
-    override fun dispatch(request: RecordedRequest): MockResponse {
-        val path = request.path ?: ""
-        return when {
-            path == "/oauth_consumer.json" && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(consumerJson)
 
             else -> MockResponse().setResponseCode(404)
         }
@@ -909,7 +887,7 @@ val stravaDispatcher: Dispatcher = object : Dispatcher() {
                     .setHeader("Location", "paufregi.connectfeed://strava/auth?code=123456")
 
             path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "authorization_code" ->
-                MockResponse().setResponseCode(200).setBody(stravaExchangeTokenJson)
+                MockResponse().setResponseCode(200).setBody(stravaAuthTokenJson)
 
             path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "refresh_token" ->
                 MockResponse().setResponseCode(200).setBody(stravaRefreshTokenJson)

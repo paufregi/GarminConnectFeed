@@ -2,33 +2,34 @@ package paufregi.connectfeed.data.api.garmin
 
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
-import paufregi.connectfeed.data.api.garmin.models.OAuth1
-import paufregi.connectfeed.data.api.garmin.models.OAuth2
-import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.garmin.models.Ticket
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
 import retrofit2.http.Headers
-import retrofit2.http.POST
+import retrofit2.http.Query
 import se.akerfeldt.okhttp.signpost.OkHttpOAuthConsumer
 import se.akerfeldt.okhttp.signpost.SigningInterceptor
 
 
-interface GarminAuth2 {
+interface GarminPreAuth {
 
-    @POST("/oauth-service/oauth/exchange/user/2.0")
+    @GET("/oauth-service/oauth/preauthorized")
     @Headers(
-        "User-Agent: com.garmin.android.apps.connectmobile",
-        "Content-Type: application/x-www-form-urlencoded"
+        "User-Agent: com.garmin.android.apps.connectmobile"
     )
-    suspend fun getOauth2(): Response<OAuth2>
+    suspend fun preauthorize(
+        @Query("ticket") ticket: Ticket,
+        @Query("login-url") loginUrl: String = "https://sso.garmin.com/sso/embed"
+    ): Response<PreAuthToken>
 
     companion object {
         const val BASE_URL = "https://connectapi.garmin.com"
 
-        fun client(oauthConsumer: OAuthConsumer, oauth: OAuth1, url: String): GarminAuth2 {
-            val consumer = OkHttpOAuthConsumer(oauthConsumer.key, oauthConsumer.secret)
-            consumer.setTokenWithSecret(oauth.token, oauth.secret)
+        fun client(consumerKey: String, consumerSecret: String, url: String): GarminPreAuth {
+            val consumer = OkHttpOAuthConsumer(consumerKey, consumerSecret)
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(SigningInterceptor(consumer))
@@ -39,7 +40,7 @@ interface GarminAuth2 {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client.build())
                 .build()
-                .create(GarminAuth2::class.java)
+                .create(GarminPreAuth::class.java)
         }
     }
 }

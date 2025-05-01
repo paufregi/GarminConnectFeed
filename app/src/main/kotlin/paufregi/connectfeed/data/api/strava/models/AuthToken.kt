@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import java.time.Instant
 
 @Keep
-data class Token(
+data class AuthToken(
     @SerializedName("access_token")
     val accessToken: String,
     @SerializedName("refresh_token")
@@ -13,7 +13,5 @@ data class Token(
     @SerializedName("expires_at")
     val expiresAt: Long,
 ) {
-    fun isExpired(date: Long = Instant.now().epochSecond): Boolean {
-        return expiresAt < date
-    }
+    fun isExpired(date: Long = Instant.now().epochSecond): Boolean = expiresAt < date
 }

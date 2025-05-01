@@ -1,20 +1,19 @@
 package paufregi.connectfeed.data.api.garmin.models
 
 import androidx.annotation.Keep
-import com.auth0.jwt.JWT
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
-import java.util.Date
+import java.time.Instant
 
 @Keep
 @Serializable
-data class OAuth2(
+data class AuthToken(
     @SerializedName("access_token")
     val accessToken: String,
+    @SerializedName("expires_at")
+    val expiresAt: Long,
 ) {
-    fun isExpired(date: Date = Date()): Boolean {
-        return accessToken.isBlank() || JWT.decode(accessToken).expiresAt.before(date)
-    }
+    fun isExpired(date: Long = Instant.now().epochSecond): Boolean = expiresAt < date
 }
 
 

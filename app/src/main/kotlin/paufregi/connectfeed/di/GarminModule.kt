@@ -4,17 +4,27 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import paufregi.connectfeed.data.api.garmin.GarminAuth1
-import paufregi.connectfeed.data.api.garmin.GarminAuth2
+import paufregi.connectfeed.BuildConfig
+import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
-import paufregi.connectfeed.data.api.garmin.Garth
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class UrlModule {
+class GarminModule {
+
+    @Provides
+    @Singleton
+    @Named("GarminConsumerKey")
+    fun provideGarminConsumerKey(): String = BuildConfig.GARMIN_CONSUMER_KEY
+
+    @Provides
+    @Singleton
+    @Named("GarminConsumerSecret")
+    fun provideGarminConsumerSecret(): String = BuildConfig.GARMIN_CONSUMER_SECRET
 
     @Provides
     @Singleton
@@ -23,21 +33,16 @@ class UrlModule {
 
     @Provides
     @Singleton
-    @Named("GarminConnectOAuth1Url")
-    fun provideGarminConnectOAuth1Url(): String = GarminAuth1.BASE_URL
+    @Named("GarminPreAuthUrl")
+    fun provideGarminPreAuthUrl(): String = GarminPreAuth.BASE_URL
 
     @Provides
     @Singleton
-    @Named("GarminConnectOAuth2Url")
-    fun provideGarminConnectOAuth2Url(): String = GarminAuth2.BASE_URL
+    @Named("GarminAuthUrl")
+    fun provideGarminAuthUrl(): String = GarminAuth.BASE_URL
 
     @Provides
     @Singleton
     @Named("GarminSSOUrl")
     fun provideGarminSSOUrl(): String = GarminSSO.BASE_URL
-
-    @Provides
-    @Singleton
-    @Named("GarthUrl")
-    fun provideGarthUrl(): String = Garth.BASE_URL
 }

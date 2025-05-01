@@ -16,12 +16,11 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.consumer
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.createOAuth2
+import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.repository.AuthRepository
-import paufregi.connectfeed.oauth1
+import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.tomorrow
 import paufregi.connectfeed.yesterday
 import retrofit2.Response
@@ -64,57 +63,29 @@ class AuthInterceptorTest {
     }
 
     @Test
-    fun `Success - cached oauth2`() = runTest {
-        val oauth2 = createOAuth2(tomorrow)
+    fun `Success - cached AuthToken`() = runTest {
+        val token = createAuthToken(tomorrow)
 
-        every { authRepo.getOAuth2() } returns flowOf(oauth2)
-
-        api.test()
-
-        val req = server.takeRequest()
-        assertThat(req.headers["Authorization"]).isEqualTo("Bearer ${oauth2.accessToken}")
-
-        verify { authRepo.getOAuth2() }
-        confirmVerified(authRepo)
-    }
-
-    @Test
-    fun `Success - no oauth2`() = runTest {
-        val expiredToken = createOAuth2(yesterday)
-        val validToken = createOAuth2(tomorrow)
-
-        every { authRepo.getOAuth2() } returns flowOf(expiredToken)
-        coEvery { authRepo.getOrFetchConsumer() } returns consumer
-        every { authRepo.getOAuth1() } returns flowOf(oauth1)
-        coEvery { authRepo.exchange(any(), any()) } returns Result.success(validToken)
-        coEvery { authRepo.saveOAuth2(any()) } returns Unit
+        every { authRepo.getAuthToken() } returns flowOf(token)
 
         api.test()
 
         val req = server.takeRequest()
-        assertThat(req.headers["Authorization"]).isEqualTo("Bearer ${validToken.accessToken}")
+        assertThat(req.headers["Authorization"]).isEqualTo("Bearer ${token.accessToken}")
 
-        verify {
-            authRepo.getOAuth1()
-            authRepo.getOAuth2()
-        }
-        coVerify {
-            authRepo.getOrFetchConsumer()
-            authRepo.exchange(consumer, oauth1)
-            authRepo.saveOAuth2(validToken)
-        }
+        verify { authRepo.getAuthToken() }
         confirmVerified(authRepo)
     }
 
     @Test
-    fun `Success - exchange no oauth2`() = runTest {
-        val validToken = createOAuth2(tomorrow)
+    fun `Success - no AuthToken`() = runTest {
+        val expiredToken = createAuthToken(yesterday)
+        val validToken = createAuthToken(tomorrow)
 
-        every { authRepo.getOAuth2() } returns flowOf(null)
-        coEvery { authRepo.getOrFetchConsumer() } returns consumer
-        every { authRepo.getOAuth1() } returns flowOf(oauth1)
-        coEvery { authRepo.exchange(any(), any()) } returns Result.success(validToken)
-        coEvery { authRepo.saveOAuth2(any()) } returns Unit
+        every { authRepo.getAuthToken() } returns flowOf(expiredToken)
+        every { authRepo.getPreAuth() } returns flowOf(preAuthToken)
+        coEvery { authRepo.exchange(any()) } returns Result.success(validToken)
+        coEvery { authRepo.saveAuthToken(any()) } returns Unit
 
         api.test()
 
@@ -122,74 +93,73 @@ class AuthInterceptorTest {
         assertThat(req.headers["Authorization"]).isEqualTo("Bearer ${validToken.accessToken}")
 
         verify {
-            authRepo.getOAuth1()
-            authRepo.getOAuth2()
+            authRepo.getPreAuth()
+            authRepo.getAuthToken()
         }
         coVerify {
-            authRepo.getOrFetchConsumer()
-            authRepo.exchange(consumer, oauth1)
-            authRepo.saveOAuth2(validToken)
+            authRepo.exchange(preAuthToken)
+            authRepo.saveAuthToken(validToken)
         }
         confirmVerified(authRepo)
     }
 
     @Test
-    fun `Failure - no consumer`() = runTest {
-        every { authRepo.getOAuth2() } returns flowOf(null)
-        coEvery { authRepo.getOrFetchConsumer() } returns null
+    fun `Success - exchange no AuthToken`() = runTest {
+        val validToken = createAuthToken(tomorrow)
+
+        every { authRepo.getAuthToken() } returns flowOf(null)
+        every { authRepo.getPreAuth() } returns flowOf(preAuthToken)
+        coEvery { authRepo.exchange(any()) } returns Result.success(validToken)
+        coEvery { authRepo.saveAuthToken(any()) } returns Unit
+
+        api.test()
+
+        val req = server.takeRequest()
+        assertThat(req.headers["Authorization"]).isEqualTo("Bearer ${validToken.accessToken}")
+
+        verify {
+            authRepo.getPreAuth()
+            authRepo.getAuthToken()
+        }
+        coVerify {
+            authRepo.exchange(preAuthToken)
+            authRepo.saveAuthToken(validToken)
+        }
+        confirmVerified(authRepo)
+    }
+
+    @Test
+    fun `Failure - no PreAuthToken`() = runTest {
+        every { authRepo.getAuthToken() } returns flowOf(null)
+        every { authRepo.getPreAuth() } returns flowOf(null)
 
         val res = api.test()
 
         assertThat(res.isSuccessful).isFalse()
 
         verify {
-            authRepo.getOAuth2()
-        }
-        coVerify {
-            authRepo.getOrFetchConsumer()
+            authRepo.getPreAuth()
+            authRepo.getAuthToken()
         }
         confirmVerified(authRepo)
     }
-
-    @Test
-    fun `Failure - no oauth1`() = runTest {
-        every { authRepo.getOAuth2() } returns flowOf(null)
-        coEvery { authRepo.getOrFetchConsumer() } returns consumer
-        every { authRepo.getOAuth1() } returns flowOf(null)
-
-        val res = api.test()
-
-        assertThat(res.isSuccessful).isFalse()
-
-        verify {
-            authRepo.getOAuth1()
-            authRepo.getOAuth2()
-        }
-        coVerify {
-            authRepo.getOrFetchConsumer()
-        }
-        confirmVerified(authRepo)
-    }
-
 
     @Test
     fun `Failure - exchange`() = runTest {
-        every { authRepo.getOAuth2() } returns flowOf(null)
-        coEvery { authRepo.getOrFetchConsumer() } returns consumer
-        every { authRepo.getOAuth1() } returns flowOf(oauth1)
-        coEvery { authRepo.exchange(any(), any()) } returns Result.failure("Couldn't exchange token")
+        every { authRepo.getAuthToken() } returns flowOf(null)
+        every { authRepo.getPreAuth() } returns flowOf(preAuthToken)
+        coEvery { authRepo.exchange(any()) } returns Result.failure("Couldn't exchange token")
 
         val res = api.test()
 
         assertThat(res.isSuccessful).isFalse()
 
         verify {
-            authRepo.getOAuth1()
-            authRepo.getOAuth2()
+            authRepo.getPreAuth()
+            authRepo.getAuthToken()
         }
         coVerify {
-            authRepo.getOrFetchConsumer()
-            authRepo.exchange(consumer, oauth1)
+            authRepo.exchange(preAuthToken)
         }
         confirmVerified(authRepo)
     }

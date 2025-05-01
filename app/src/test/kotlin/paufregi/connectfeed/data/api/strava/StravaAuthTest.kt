@@ -7,9 +7,9 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.data.api.strava.models.Token
+import paufregi.connectfeed.data.api.strava.models.AuthToken
+import paufregi.connectfeed.stravaAuthTokenJson
 import paufregi.connectfeed.stravaDeauthorizationJson
-import paufregi.connectfeed.stravaExchangeTokenJson
 import paufregi.connectfeed.stravaRefreshTokenJson
 
 class StravaAuthTest {
@@ -32,7 +32,7 @@ class StravaAuthTest {
     fun `Exchange token`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
-            .setBody(stravaExchangeTokenJson)
+            .setBody(stravaAuthTokenJson)
         server.enqueue(response)
 
         val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
@@ -42,7 +42,7 @@ class StravaAuthTest {
         assertThat(request.method).isEqualTo("POST")
         assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/api/v3/oauth/token")
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(Token(accessToken = "ACCESS_TOKEN", refreshToken = "REFRESH_TOKEN", expiresAt = 1704067200))
+        assertThat(res.body()).isEqualTo(AuthToken(accessToken = "ACCESS_TOKEN", refreshToken = "REFRESH_TOKEN", expiresAt = 1704067200))
     }
 
     @Test
@@ -71,7 +71,7 @@ class StravaAuthTest {
         assertThat(request.method).isEqualTo("POST")
         assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/api/v3/oauth/token")
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(Token(accessToken = "NEW_ACCESS_TOKEN", refreshToken = "NEW_REFRESH_TOKEN", expiresAt = 1704067200))
+        assertThat(res.body()).isEqualTo(AuthToken(accessToken = "NEW_ACCESS_TOKEN", refreshToken = "NEW_REFRESH_TOKEN", expiresAt = 1704067200))
     }
 
     @Test

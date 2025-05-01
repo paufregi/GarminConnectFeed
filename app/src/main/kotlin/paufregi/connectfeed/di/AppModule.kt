@@ -9,14 +9,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import paufregi.connectfeed.data.api.garmin.GarminAuth1
-import paufregi.connectfeed.data.api.garmin.GarminAuth2
+import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
-import paufregi.connectfeed.data.api.garmin.Garth
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
-import paufregi.connectfeed.data.api.garmin.models.OAuth1
-import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
@@ -54,27 +52,18 @@ class AppModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        garth: Garth,
         garminSSO: GarminSSO,
         authDatastore: AuthStore,
-        @Named("GarminConnectOAuth1Url") garminConnectOAuth1Url: String,
-        @Named("GarminConnectOAuth2Url") garminConnectOAuth2Url: String,
+        @Named("GarminConsumerKey") consumerKey: String,
+        @Named("GarminConsumerSecret") consumerSecret: String,
+        @Named("GarminPreAuthUrl") garminPreAuthUrl: String,
+        @Named("GarminAuthUrl") garminAuthUrl: String,
     ): AuthRepository = AuthRepository(
-        garth,
-        garminSSO,
-        authDatastore,
-        makeGarminAuth1 = { oauthConsumer: OAuthConsumer ->
-            GarminAuth1.client(
-                oauthConsumer,
-                garminConnectOAuth1Url
-            )
-        },
-        makeGarminAuth2 = { oauthConsumer: OAuthConsumer, oauth: OAuth1 ->
-            GarminAuth2.client(
-                oauthConsumer,
-                oauth,
-                garminConnectOAuth2Url
-            )
+        garminSSO = garminSSO,
+        authStore = authDatastore,
+        preAuth = GarminPreAuth.client(consumerKey, consumerSecret, garminPreAuthUrl),
+        makeGarminAuth = { oauth: PreAuthToken ->
+            GarminAuth.client(consumerKey, consumerSecret, oauth, garminAuthUrl)
         }
     )
 
@@ -114,12 +103,6 @@ class AppModule {
     fun provideGarminSSO(
         @Named("GarminSSOUrl") url: String
     ): GarminSSO = GarminSSO.client(url)
-
-    @Provides
-    @Singleton
-    fun provideGarth(
-        @Named("GarthUrl") url: String
-    ): Garth = Garth.client(url)
 
     @Provides
     @Singleton

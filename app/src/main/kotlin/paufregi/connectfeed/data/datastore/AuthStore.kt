@@ -7,61 +7,54 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.map
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.garmin.models.OAuth1
-import paufregi.connectfeed.data.api.garmin.models.OAuth2
-import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.AuthToken
+import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.utils.Crypto
 
 class AuthStore(val dataStore: DataStore<Preferences>) {
 
     companion object {
-        private val OAUTH_CONSUMER_KEY = stringPreferencesKey("oauthConsumerKey")
-        private val OAUTH_CONSUMER_SECRET = stringPreferencesKey("oauthConsumerSecret")
-        private val OAUTH1_TOKEN = byteArrayPreferencesKey("oauth1Token")
-        private val OAUTH1_SECRET = byteArrayPreferencesKey("oauth1Secret")
-        private val OAUTH2_TOKEN = byteArrayPreferencesKey("oauth2Token")
+        private val PRE_AUTH_TOKEN = byteArrayPreferencesKey("preAuthToken")
+        private val PRE_AUTH_SECRET = byteArrayPreferencesKey("preAuthSecret")
+        private val AUTH_TOKEN_ACCESS_TOKEN = byteArrayPreferencesKey("authTokenAccessToken")
+        private val AUTH_TOKEN_EXPIRES_AT = byteArrayPreferencesKey("authTokenExpiresAt")
         private val USER_NAME = stringPreferencesKey("userName")
         private val USER_PROFILE_IMAGE_URL = stringPreferencesKey("userProfileImageUrl")
     }
 
-    fun getConsumer() = dataStore.data.map {
-        it[OAUTH_CONSUMER_KEY]?.let { key ->
-            it[OAUTH_CONSUMER_SECRET]?.let { secret ->
-                OAuthConsumer(key = key, secret = secret)
+    fun getPreAuthToken() = dataStore.data.map {
+        it[PRE_AUTH_TOKEN]?.let { token ->
+            it[PRE_AUTH_SECRET]?.let { secret ->
+                PreAuthToken(
+                    token = Crypto.decrypt(token),
+                    secret = Crypto.decrypt(secret)
+                )
             }
         }
     }
 
-    suspend fun saveConsumer(consumer: OAuthConsumer) {
+    suspend fun savePreAuthToken(token: PreAuthToken) {
         dataStore.edit { preferences ->
-            preferences[OAUTH_CONSUMER_KEY] = consumer.key
-            preferences[OAUTH_CONSUMER_SECRET] = consumer.secret
+            preferences[PRE_AUTH_TOKEN] = Crypto.encrypt(token.token)
+            preferences[PRE_AUTH_SECRET] = Crypto.encrypt(token.secret)
         }
     }
 
-    fun getOAuth1() = dataStore.data.map {
-        it[OAUTH1_TOKEN]?.let { token ->
-            it[OAUTH1_SECRET]?.let { secret ->
-                OAuth1(token = Crypto.decrypt(token), secret = Crypto.decrypt(secret))
+    fun getAuthToken() = dataStore.data.map {
+        it[AUTH_TOKEN_ACCESS_TOKEN]?.let { accessToken ->
+            it[AUTH_TOKEN_EXPIRES_AT]?.let { expiresAt ->
+                AuthToken(
+                    accessToken = Crypto.decrypt(accessToken),
+                    expiresAt = Crypto.decrypt(expiresAt).toLong()
+                )
             }
         }
     }
 
-    suspend fun saveOAuth1(token: OAuth1) {
+    suspend fun saveAuthToken(token: AuthToken) {
         dataStore.edit { preferences ->
-            preferences[OAUTH1_TOKEN] = Crypto.encrypt(token.token)
-            preferences[OAUTH1_SECRET] = Crypto.encrypt(token.secret)
-        }
-    }
-
-    fun getOAuth2() = dataStore.data.map {
-        it[OAUTH2_TOKEN]
-            ?.let { OAuth2(Crypto.decrypt(it)) }
-    }
-
-    suspend fun saveOAuth2(token: OAuth2) {
-        dataStore.edit { preferences ->
-            preferences[OAUTH2_TOKEN] = Crypto.encrypt(token.accessToken)
+            preferences[AUTH_TOKEN_ACCESS_TOKEN] = Crypto.encrypt(token.accessToken)
+            preferences[AUTH_TOKEN_EXPIRES_AT] = Crypto.encrypt(token.expiresAt.toString())
         }
     }
 

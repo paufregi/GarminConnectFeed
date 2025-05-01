@@ -2,7 +2,7 @@ package paufregi.connectfeed.data.api.garmin.converters
 
 import okhttp3.ResponseBody
 import paufregi.connectfeed.data.api.garmin.models.CSRF
-import paufregi.connectfeed.data.api.garmin.models.OAuth1
+import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import retrofit2.Converter
 import retrofit2.Retrofit
@@ -30,7 +30,7 @@ class GarminConverterFactory : Converter.Factory() {
         return when (type) {
             CSRF::class.java -> CSRFExtractor()
             Ticket::class.java -> TicketExtractor()
-            OAuth1::class.java -> Oauth1Extractor()
+            PreAuthToken::class.java -> PreAuthTokenExtractor()
             else -> null
         }
     }

@@ -21,6 +21,8 @@ jobs:
 
       - name: Create local.properties
         run: |
+          echo "garmin.consumer_key=${{ secrets.GARMIN_CONSUMER_KEY }}" >> local.properties
+          echo "garmin.consumer_secret=${{ secrets.GARMIN_CONSUMER_SECRET }}" >> local.properties
           echo "strava.client_id=${{ secrets.STRAVA_CLIENT_ID }}" >> local.properties
           echo "strava.client_secret=${{ secrets.STRAVA_CLIENT_SECRET }}" >> local.properties
 

@@ -3,11 +3,11 @@ package paufregi.connectfeed.data.api.strava.models
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
-class TokenTest {
+class AuthTokenTest {
 
     @Test
     fun `Valid access token`() {
-        val token = Token(
+        val authToken = AuthToken(
             accessToken = "ACCESS_TOKEN",
             refreshToken = "REFRESH_TOKEN",
             expiresAt = 1704067200, // 2024-01-01T00:00
@@ -15,12 +15,12 @@ class TokenTest {
 
         val date = 1672531200L // 2023-01-01T00:00
 
-        assertThat(token.isExpired(date)).isFalse()
+        assertThat(authToken.isExpired(date)).isFalse()
     }
 
     @Test
     fun `Expired access token`() {
-        val token = Token(
+        val authToken = AuthToken(
             accessToken = "ACCESS_TOKEN",
             refreshToken = "REFRESH_TOKEN",
             expiresAt = 1672531200, // 2023-01-01T00:00
@@ -28,6 +28,6 @@ class TokenTest {
 
         val date = 1704067200L // 2024-01-01T00:00
 
-        assertThat(token.isExpired(date)).isTrue()
+        assertThat(authToken.isExpired(date)).isTrue()
     }
 }

@@ -13,15 +13,12 @@ class SignIn @Inject constructor(
     suspend operator fun invoke(username: String, password: String): Result<User> {
         if (username.isBlank() || password.isBlank()) return Result.failure("Validation error")
 
-        val consumer = authRepository.getOrFetchConsumer()
-            ?: return Result.failure("Couldn't get OAuth Consumer")
-
-        val resOAuth1 = authRepository.authorize(username, password, consumer)
-            .onSuccess { authRepository.saveOAuth1(it) }
+        val preAuth = authRepository.authorize(username, password)
+            .onSuccess { authRepository.savePreAuth(it) }
             .onFailure { authRepository.clear() }
             .exceptionOrNull()
 
-        if (resOAuth1 != null) return Result.failure(resOAuth1)
+        if (preAuth != null) return Result.failure(preAuth)
 
         val resUser = garminRepository.fetchUser()
             .onSuccess { authRepository.saveUser(it) }
