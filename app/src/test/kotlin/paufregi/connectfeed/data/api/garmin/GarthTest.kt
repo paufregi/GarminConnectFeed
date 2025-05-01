@@ -7,7 +7,8 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.consumer
+import paufregi.connectfeed.consumerJson
 
 class GarthTest {
 
@@ -29,7 +30,7 @@ class GarthTest {
     fun `Get OAuth consumer`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
-            .setBody("""{"consumer_key":"KEY","consumer_secret":"SECRET"}""")
+            .setBody(consumerJson)
         server.enqueue(response)
 
         val res = api.getOAuthConsumer()
@@ -39,7 +40,7 @@ class GarthTest {
         assertThat(request.method).isEqualTo("GET")
         assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/oauth_consumer.json")
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(OAuthConsumer(key="KEY", secret="SECRET"))
+        assertThat(res.body()).isEqualTo(consumer)
     }
 
     @Test

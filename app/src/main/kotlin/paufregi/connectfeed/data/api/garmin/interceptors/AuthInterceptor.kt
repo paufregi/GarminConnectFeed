@@ -30,10 +30,10 @@ class AuthInterceptor @Inject constructor(
 
         val consumer = authRepository.getOrFetchConsumer()
             ?: return Result.failure("Could not get OAuth Consumer")
-        val oAuth1 = authRepository.getOAuth1().firstOrNull()
-            ?: return Result.failure("No OAuth1 token found")
+        val preAuth = authRepository.getPreAuth().firstOrNull()
+            ?: return Result.failure("No PreAuth token found")
 
-        return authRepository.exchange(consumer, oAuth1)
+        return authRepository.exchange(consumer, preAuth)
             .onSuccess { authRepository.saveAuthToken(it) }
     }
 }

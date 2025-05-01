@@ -7,9 +7,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.map
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.utils.Crypto
 
 class AuthStore(val dataStore: DataStore<Preferences>) {
@@ -17,8 +17,8 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
     companion object {
         private val OAUTH_CONSUMER_KEY = stringPreferencesKey("oauthConsumerKey")
         private val OAUTH_CONSUMER_SECRET = stringPreferencesKey("oauthConsumerSecret")
-        private val OAUTH1_TOKEN = byteArrayPreferencesKey("oauth1Token")
-        private val OAUTH1_SECRET = byteArrayPreferencesKey("oauth1Secret")
+        private val PRE_AUTH_TOKEN = byteArrayPreferencesKey("preAuthToken")
+        private val PRE_AUTH_SECRET = byteArrayPreferencesKey("preAuthSecret")
         private val AUTH_TOKEN_ACCESS_TOKEN = byteArrayPreferencesKey("authTokenAccessToken")
         private val AUTH_TOKEN_EXPIRES_AT = byteArrayPreferencesKey("authTokenExpiresAt")
         private val USER_NAME = stringPreferencesKey("userName")
@@ -40,18 +40,21 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
         }
     }
 
-    fun getOAuth1() = dataStore.data.map {
-        it[OAUTH1_TOKEN]?.let { token ->
-            it[OAUTH1_SECRET]?.let { secret ->
-                OAuth1(token = Crypto.decrypt(token), secret = Crypto.decrypt(secret))
+    fun getPreAuthToken() = dataStore.data.map {
+        it[PRE_AUTH_TOKEN]?.let { token ->
+            it[PRE_AUTH_SECRET]?.let { secret ->
+                PreAuthToken(
+                    token = Crypto.decrypt(token),
+                    secret = Crypto.decrypt(secret)
+                )
             }
         }
     }
 
-    suspend fun saveOAuth1(token: OAuth1) {
+    suspend fun savePreAuthToken(token: PreAuthToken) {
         dataStore.edit { preferences ->
-            preferences[OAUTH1_TOKEN] = Crypto.encrypt(token.token)
-            preferences[OAUTH1_SECRET] = Crypto.encrypt(token.secret)
+            preferences[PRE_AUTH_TOKEN] = Crypto.encrypt(token.token)
+            preferences[PRE_AUTH_SECRET] = Crypto.encrypt(token.secret)
         }
     }
 

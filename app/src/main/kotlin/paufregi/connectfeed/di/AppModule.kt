@@ -9,14 +9,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import paufregi.connectfeed.data.api.garmin.GarminAuth1
 import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
 import paufregi.connectfeed.data.api.garmin.Garth
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
-import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
@@ -57,19 +57,19 @@ class AppModule {
         garth: Garth,
         garminSSO: GarminSSO,
         authDatastore: AuthStore,
-        @Named("GarminConnectOAuth1Url") garminConnectOAuth1Url: String,
+        @Named("GarminPreAuthUrl") garminPreAuthUrl: String,
         @Named("GarminAuthUrl") garminAuthUrl: String,
     ): AuthRepository = AuthRepository(
         garth,
         garminSSO,
         authDatastore,
-        makeGarminAuth1 = { oauthConsumer: OAuthConsumer ->
-            GarminAuth1.client(
+        makeGarminPreAuth = { oauthConsumer: OAuthConsumer ->
+            GarminPreAuth.client(
                 oauthConsumer,
-                garminConnectOAuth1Url
+                garminPreAuthUrl
             )
         },
-        makeGarminAuth = { oauthConsumer: OAuthConsumer, oauth: OAuth1 ->
+        makeGarminAuth = { oauthConsumer: OAuthConsumer, oauth: PreAuthToken ->
             GarminAuth.client(
                 oauthConsumer,
                 oauth,

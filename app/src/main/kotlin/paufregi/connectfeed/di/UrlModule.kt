@@ -4,9 +4,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import paufregi.connectfeed.data.api.garmin.GarminAuth1
 import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
 import paufregi.connectfeed.data.api.garmin.Garth
 import javax.inject.Named
@@ -23,8 +23,8 @@ class UrlModule {
 
     @Provides
     @Singleton
-    @Named("GarminConnectOAuth1Url")
-    fun provideGarminConnectOAuth1Url(): String = GarminAuth1.BASE_URL
+    @Named("GarminPreAuthUrl")
+    fun provideGarminPreAuthUrl(): String = GarminPreAuth.BASE_URL
 
     @Provides
     @Singleton

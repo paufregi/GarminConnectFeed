@@ -7,13 +7,13 @@ import okhttp3.mockwebserver.RecordedRequest
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
-import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
+import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.test.R
 import java.net.URLDecoder
 import java.util.Date
+import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
 fun createAuthToken(expiresAt: Date) = AuthToken(
     accessToken = "ACCESS_TOKEN",
@@ -31,11 +31,11 @@ val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
 
 val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
 val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
-val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
+val preAuthToken = PreAuthToken("TOKEN", "SECRET")
 val authToken = createAuthToken(tomorrow)
 val stravaToken = createStravaToken(tomorrow)
 
-val oauth1Body = "oauth_token=${oauth1.token}&oauth_token_secret=${oauth1.secret}"
+val preAuthTokenBody = "oauth_token=${preAuthToken.token}&oauth_token_secret=${preAuthToken.secret}"
 
 val consumerJson = """
     {
@@ -48,10 +48,10 @@ val authTokenJson = """
     {
     "scope": "SCOPE",
     "jti": "JTI",
-    "access_token": "ACCESS_TOKEN",
+    "access_token": "${authToken.accessToken}",
     "token_type": "TOKEN_TYPE",
     "refresh_token": "REFRESH_TOKEN",
-    "expires_in": 0,
+    "expires_in": ${authToken.expiresAt},
     "refresh_token_expires_in": 0
     }
     """.trimIndent()
@@ -846,7 +846,7 @@ val connectDispatcher: Dispatcher = object : Dispatcher() {
         val path = request.path ?: ""
         return when {
             path.startsWith("/oauth-service/oauth/preauthorized") && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(oauth1Body)
+                MockResponse().setResponseCode(200).setBody(preAuthTokenBody)
 
             path == "/oauth-service/oauth/exchange/user/2.0" && request.method == "POST" ->
                 MockResponse().setResponseCode(200).setBody(authTokenJson)

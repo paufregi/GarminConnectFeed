@@ -14,7 +14,7 @@ import paufregi.connectfeed.consumer
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
-import paufregi.connectfeed.oauth1
+import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.user
 
 class SignInTest{
@@ -35,8 +35,8 @@ class SignInTest{
     @Test
     fun `SignIn - success`() = runTest {
         coEvery { authRepo.getOrFetchConsumer() } returns consumer
-        coEvery { authRepo.authorize(any(), any(), any()) } returns Result.success(oauth1)
-        coEvery { authRepo.saveOAuth1(any()) } returns Unit
+        coEvery { authRepo.authorize(any(), any(), any()) } returns Result.success(preAuthToken)
+        coEvery { authRepo.savePreAuth(any()) } returns Unit
         coEvery { garminRepo.fetchUser() } returns Result.success(user)
         coEvery { authRepo.saveUser(any()) } returns Unit
 
@@ -47,7 +47,7 @@ class SignInTest{
         coVerify {
             authRepo.getOrFetchConsumer()
             authRepo.authorize("user", "pass", consumer)
-            authRepo.saveOAuth1(oauth1)
+            authRepo.savePreAuth(preAuthToken)
             garminRepo.fetchUser()
             authRepo.saveUser(user)
         }
@@ -116,8 +116,8 @@ class SignInTest{
     @Test
     fun `Failure - fetch user`() = runTest {
         coEvery { authRepo.getOrFetchConsumer() } returns consumer
-        coEvery { authRepo.authorize(any(), any(), any()) } returns Result.success(oauth1)
-        coEvery { authRepo.saveOAuth1(any()) } returns Unit
+        coEvery { authRepo.authorize(any(), any(), any()) } returns Result.success(preAuthToken)
+        coEvery { authRepo.savePreAuth(any()) } returns Unit
         coEvery { garminRepo.fetchUser() } returns Result.failure("Couldn't fetch user")
         coEvery { authRepo.clear() } returns Unit
 
@@ -128,7 +128,7 @@ class SignInTest{
         coVerify {
             authRepo.getOrFetchConsumer()
             authRepo.authorize("user", "pass", consumer)
-            authRepo.saveOAuth1(oauth1)
+            authRepo.savePreAuth(preAuthToken)
             garminRepo.fetchUser()
             authRepo.clear()
         }

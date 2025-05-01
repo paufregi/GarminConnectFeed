@@ -14,6 +14,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.consumer
@@ -26,8 +27,7 @@ import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
 import paufregi.connectfeed.garthPort
-import paufregi.connectfeed.oauth1
-import paufregi.connectfeed.authToken
+import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
@@ -100,7 +100,7 @@ class GarminRepositoryTest {
     @Test
     fun `Fetch user`() = runTest {
         authStore.saveConsumer(consumer)
-        authStore.saveOAuth1(oauth1)
+        authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
         val expected = User("Paul", "https://profile.image.com/large.jpg")
@@ -131,7 +131,7 @@ class GarminRepositoryTest {
     @Test
     fun `Get latest activities`() = runTest {
         authStore.saveConsumer(consumer)
-        authStore.saveOAuth1(oauth1)
+        authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
         val expected = listOf(
@@ -191,7 +191,7 @@ class GarminRepositoryTest {
     @Test
     fun `Get courses`() = runTest {
         authStore.saveConsumer(consumer)
-        authStore.saveOAuth1(oauth1)
+        authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
         val expected = listOf(
@@ -208,7 +208,7 @@ class GarminRepositoryTest {
     @Test
     fun `Update activity`() = runTest {
         authStore.saveConsumer(consumer)
-        authStore.saveOAuth1(oauth1)
+        authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
         val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, trainingEffect = "", type = CoreActivityType.Cycling)
@@ -263,7 +263,7 @@ class GarminRepositoryTest {
     @Test
     fun `Upload file`() = runTest {
         authStore.saveConsumer(consumer)
-        authStore.saveOAuth1(oauth1)
+        authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
         val testFile = File.createTempFile("test", "test")

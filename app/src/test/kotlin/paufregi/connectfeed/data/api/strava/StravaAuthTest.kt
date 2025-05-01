@@ -8,8 +8,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.data.api.strava.models.AuthToken
-import paufregi.connectfeed.stravaDeauthorizationJson
 import paufregi.connectfeed.stravaAuthTokenJson
+import paufregi.connectfeed.stravaDeauthorizationJson
 import paufregi.connectfeed.stravaRefreshTokenJson
 
 class StravaAuthTest {

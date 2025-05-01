@@ -5,13 +5,13 @@ import kotlinx.coroutines.flow.firstOrNull
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.utils.mapFailure
 import paufregi.connectfeed.core.utils.toResult
-import paufregi.connectfeed.data.api.garmin.GarminAuth1
 import paufregi.connectfeed.data.api.garmin.GarminAuth
+import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
 import paufregi.connectfeed.data.api.garmin.Garth
-import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.datastore.AuthStore
 import javax.inject.Inject
 
@@ -19,12 +19,12 @@ class AuthRepository @Inject constructor(
     private val garth: Garth,
     private val garminSSO: GarminSSO,
     private val authStore: AuthStore,
-    private val makeGarminAuth1: (consumer: OAuthConsumer) -> GarminAuth1,
-    private val makeGarminAuth: (consumer: OAuthConsumer, oauth: OAuth1) -> GarminAuth,
+    private val makeGarminPreAuth: (consumer: OAuthConsumer) -> GarminPreAuth,
+    private val makeGarminAuth: (consumer: OAuthConsumer, oauth: PreAuthToken) -> GarminAuth,
 ) {
-    fun getOAuth1() = authStore.getOAuth1()
+    fun getPreAuth() = authStore.getPreAuthToken()
 
-    suspend fun saveOAuth1(token: OAuth1) = authStore.saveOAuth1(token)
+    suspend fun savePreAuth(token: PreAuthToken) = authStore.savePreAuthToken(token)
 
     fun getAuthToken() = authStore.getAuthToken()
 
@@ -51,7 +51,7 @@ class AuthRepository @Inject constructor(
         username: String,
         password: String,
         consumer: OAuthConsumer
-    ): Result<OAuth1> {
+    ): Result<PreAuthToken> {
         val csrf = garminSSO.getCSRF().toResult().getOrNull()
         if (csrf == null) return Result.failure(Exception("Problem with the login page"))
 
@@ -60,17 +60,17 @@ class AuthRepository @Inject constructor(
             .getOrNull()
         if (ticket == null) return Result.failure(Exception("Couldn't login"))
 
-        val connect = makeGarminAuth1(consumer)
-        return connect.getOauth1(ticket)
+        val connect = makeGarminPreAuth(consumer)
+        return connect.preauthorize(ticket)
             .toResult()
-            .mapFailure { Exception("Couldn't get OAuth1 token") }
+            .mapFailure { Exception("Couldn't get PreAuth token") }
     }
 
-    suspend fun exchange(consumer: OAuthConsumer, oauth: OAuth1): Result<AuthToken> {
+    suspend fun exchange(consumer: OAuthConsumer, oauth: PreAuthToken): Result<AuthToken> {
         val connect = makeGarminAuth(consumer, oauth)
         return connect.exchange()
             .toResult()
             .onSuccess { authStore.saveAuthToken(it) }
-            .mapFailure { Exception("Couldn't get OAuth2 token") }
+            .mapFailure { Exception("Couldn't get Auth token") }
     }
 }

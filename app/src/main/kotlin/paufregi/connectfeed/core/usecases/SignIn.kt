@@ -16,12 +16,12 @@ class SignIn @Inject constructor(
         val consumer = authRepository.getOrFetchConsumer()
             ?: return Result.failure("Couldn't get OAuth Consumer")
 
-        val resOAuth1 = authRepository.authorize(username, password, consumer)
-            .onSuccess { authRepository.saveOAuth1(it) }
+        val preAuth = authRepository.authorize(username, password, consumer)
+            .onSuccess { authRepository.savePreAuth(it) }
             .onFailure { authRepository.clear() }
             .exceptionOrNull()
 
-        if (resOAuth1 != null) return Result.failure(resOAuth1)
+        if (preAuth != null) return Result.failure(preAuth)
 
         val resUser = garminRepository.fetchUser()
             .onSuccess { authRepository.saveUser(it) }

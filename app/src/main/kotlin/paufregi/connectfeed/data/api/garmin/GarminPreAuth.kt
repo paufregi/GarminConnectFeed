@@ -2,8 +2,8 @@ package paufregi.connectfeed.data.api.garmin
 
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
-import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -15,21 +15,21 @@ import se.akerfeldt.okhttp.signpost.OkHttpOAuthConsumer
 import se.akerfeldt.okhttp.signpost.SigningInterceptor
 
 
-interface GarminAuth1 {
+interface GarminPreAuth {
 
     @GET("/oauth-service/oauth/preauthorized")
     @Headers(
         "User-Agent: com.garmin.android.apps.connectmobile"
     )
-    suspend fun getOauth1(
+    suspend fun preauthorize(
         @Query("ticket") ticket: Ticket,
         @Query("login-url") loginUrl: String = "https://sso.garmin.com/sso/embed"
-    ): Response<OAuth1>
+    ): Response<PreAuthToken>
 
     companion object {
         const val BASE_URL = "https://connectapi.garmin.com"
 
-        fun client(oauthConsumer: OAuthConsumer, url: String): GarminAuth1 {
+        fun client(oauthConsumer: OAuthConsumer, url: String): GarminPreAuth {
             val consumer = OkHttpOAuthConsumer(oauthConsumer.key, oauthConsumer.secret)
 
             val client = OkHttpClient.Builder()
@@ -41,7 +41,7 @@ interface GarminAuth1 {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client.build())
                 .build()
-                .create(GarminAuth1::class.java)
+                .create(GarminPreAuth::class.java)
         }
     }
 }

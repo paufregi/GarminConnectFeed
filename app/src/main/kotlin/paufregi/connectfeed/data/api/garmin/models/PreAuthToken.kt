@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Keep
 @Serializable
-data class OAuth1(
+data class PreAuthToken(
     val token: String,
     val secret: String,
 ) {

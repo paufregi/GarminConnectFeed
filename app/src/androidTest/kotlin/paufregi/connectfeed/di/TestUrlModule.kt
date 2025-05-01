@@ -23,8 +23,8 @@ class TestUrlModule {
 
     @Provides
     @Singleton
-    @Named("GarminConnectOAuth1Url")
-    fun provideGarminConnectOAuth1Url(): String = "https://localhost:${connectPort}/"
+    @Named("GarminPreAuthUrl")
+    fun provideGarminPreAuthUrl(): String = "https://localhost:${connectPort}/"
 
     @Provides
     @Singleton

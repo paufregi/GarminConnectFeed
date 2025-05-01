@@ -14,19 +14,19 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.consumer
-import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
+import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
 import paufregi.connectfeed.garthPort
-import paufregi.connectfeed.oauth1
-import paufregi.connectfeed.authToken
+import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.sslSocketFactory
 import javax.inject.Inject
 
@@ -79,14 +79,14 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `Store oAuth1`() = runTest {
-        val token1 = OAuth1(token = "TOKEN_1", secret = "SECRET_1")
-        val token2 = OAuth1(token = "TOKEN_2", secret = "SECRET_2")
-        repo.getOAuth1().test{
+    fun `Store PreAuthToken`() = runTest {
+        val token1 = PreAuthToken(token = "TOKEN_1", secret = "SECRET_1")
+        val token2 = PreAuthToken(token = "TOKEN_2", secret = "SECRET_2")
+        repo.getPreAuth().test{
             assertThat(awaitItem()).isNull()
-            repo.saveOAuth1(token1)
+            repo.savePreAuth(token1)
             assertThat(awaitItem()).isEqualTo(token1)
-            repo.saveOAuth1(token2)
+            repo.savePreAuth(token2)
             assertThat(awaitItem()).isEqualTo(token2)
             repo.clear()
             assertThat(awaitItem()).isNull()
@@ -95,7 +95,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `Store oAuth2`() = runTest {
+    fun `Store AuthToken`() = runTest {
         val token1 = AuthToken(accessToken = "ACCESS_TOKEN_1", expiresAt = 1)
         val token2 = AuthToken(accessToken = "ACCESS_TOKEN_2", expiresAt = 2)
         repo.getAuthToken().test{
@@ -129,12 +129,12 @@ class AuthRepositoryTest {
         val res = repo.authorize("user", "pass", consumer)
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(oauth1)
+        assertThat(res.getOrNull()).isEqualTo(preAuthToken)
     }
 
     @Test
     fun `Exchange token`() = runTest {
-        val res = repo.exchange(consumer, oauth1)
+        val res = repo.exchange(consumer, preAuthToken)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(authToken)

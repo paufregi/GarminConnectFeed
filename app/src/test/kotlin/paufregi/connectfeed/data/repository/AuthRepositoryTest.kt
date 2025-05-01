@@ -16,16 +16,16 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.connectfeed.authToken
 import paufregi.connectfeed.consumer
-import paufregi.connectfeed.data.api.garmin.GarminAuth1
 import paufregi.connectfeed.data.api.garmin.GarminAuth
+import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
 import paufregi.connectfeed.data.api.garmin.Garth
 import paufregi.connectfeed.data.api.garmin.models.CSRF
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import paufregi.connectfeed.data.datastore.AuthStore
-import paufregi.connectfeed.oauth1
-import paufregi.connectfeed.authToken
+import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.user
 import retrofit2.Response
 
@@ -35,7 +35,7 @@ class AuthRepositoryTest {
     private val garth = mockk<Garth>()
     private val garminSSO = mockk<GarminSSO>()
     private val authDatastore = mockk<AuthStore>()
-    private val garminAuth1 = mockk<GarminAuth1>()
+    private val garminPreAuth = mockk<GarminPreAuth>()
     private val garminAuth = mockk<GarminAuth>()
 
     @Before
@@ -44,7 +44,7 @@ class AuthRepositoryTest {
             garth,
             garminSSO,
             authDatastore,
-            { _ -> garminAuth1},
+            { _ -> garminPreAuth},
             { _, _ -> garminAuth}
         )
     }
@@ -55,30 +55,30 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `Get oauth1`() = runTest {
-        every { authDatastore.getOAuth1() } returns flowOf(oauth1)
+    fun `Get PreAuthToken`() = runTest {
+        every { authDatastore.getPreAuthToken() } returns flowOf(preAuthToken)
 
-        repo.getOAuth1().test {
-            assertThat(awaitItem()).isEqualTo(oauth1)
+        repo.getPreAuth().test {
+            assertThat(awaitItem()).isEqualTo(preAuthToken)
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { authDatastore.getOAuth1() }
+        verify { authDatastore.getPreAuthToken() }
         confirmVerified(garth, garminSSO, authDatastore)
     }
 
     @Test
-    fun `Save oauth1`() = runTest {
-        coEvery { authDatastore.saveOAuth1(any()) } returns Unit
+    fun `Save PreAuthToken`() = runTest {
+        coEvery { authDatastore.savePreAuthToken(any()) } returns Unit
 
-        repo.saveOAuth1(oauth1)
+        repo.savePreAuth(preAuthToken)
 
-        coVerify { authDatastore.saveOAuth1(oauth1) }
+        coVerify { authDatastore.savePreAuthToken(preAuthToken) }
         confirmVerified(garth, garminSSO, authDatastore)
     }
 
     @Test
-    fun `Get oauth2`() = runTest {
+    fun `Get AuthToken`() = runTest {
         every { authDatastore.getAuthToken() } returns flowOf(authToken)
 
         repo.getAuthToken().test {
@@ -91,7 +91,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `Save oauth2`() = runTest {
+    fun `Save AuthToken`() = runTest {
         coEvery { authDatastore.saveAuthToken(any()) } returns Unit
 
         repo.saveAuthToken(authToken)
@@ -184,18 +184,18 @@ class AuthRepositoryTest {
 
         coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
-        coEvery { garminAuth1.getOauth1(any()) } returns Response.success(oauth1)
+        coEvery { garminPreAuth.preauthorize(any()) } returns Response.success(preAuthToken)
 
         val res = repo.authorize("user", "pass", consumer)
 
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(oauth1)
+        assertThat(res.getOrNull()).isEqualTo(preAuthToken)
 
         coVerify{
             garminSSO.getCSRF()
             garminSSO.login("user", "pass", csrf)
-            garminAuth1.getOauth1(ticket)
+            garminPreAuth.preauthorize(ticket)
         }
         confirmVerified(garth, garminSSO, authDatastore)
     }
@@ -207,7 +207,7 @@ class AuthRepositoryTest {
 
         coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
-        coEvery { garminAuth1.getOauth1(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { garminPreAuth.preauthorize(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.authorize("user", "pass", consumer)
 
@@ -216,7 +216,7 @@ class AuthRepositoryTest {
         coVerify{
             garminSSO.getCSRF()
             garminSSO.login("user", "pass", csrf)
-            garminAuth1.getOauth1(ticket)
+            garminPreAuth.preauthorize(ticket)
         }
         confirmVerified(garth, garminSSO, authDatastore)
     }
@@ -258,7 +258,7 @@ class AuthRepositoryTest {
         coEvery { garminAuth.exchange() } returns Response.success(authToken)
         coEvery { authDatastore.saveAuthToken(any()) } returns Unit
 
-        val res = repo.exchange(consumer, oauth1)
+        val res = repo.exchange(consumer, preAuthToken)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(authToken)
@@ -274,7 +274,7 @@ class AuthRepositoryTest {
     fun `Exchange failure`() = runTest {
         coEvery { garminAuth.exchange() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.exchange(consumer, oauth1)
+        val res = repo.exchange(consumer, preAuthToken)
 
         assertThat(res.isSuccess).isFalse()
 
