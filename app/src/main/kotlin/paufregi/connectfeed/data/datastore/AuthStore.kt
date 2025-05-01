@@ -8,7 +8,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.map
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
-import paufregi.connectfeed.data.api.garmin.models.OAuth2
+import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
 import paufregi.connectfeed.data.utils.Crypto
 
@@ -19,7 +19,8 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
         private val OAUTH_CONSUMER_SECRET = stringPreferencesKey("oauthConsumerSecret")
         private val OAUTH1_TOKEN = byteArrayPreferencesKey("oauth1Token")
         private val OAUTH1_SECRET = byteArrayPreferencesKey("oauth1Secret")
-        private val OAUTH2_TOKEN = byteArrayPreferencesKey("oauth2Token")
+        private val AUTH_TOKEN_ACCESS_TOKEN = byteArrayPreferencesKey("authTokenAccessToken")
+        private val AUTH_TOKEN_EXPIRES_AT = byteArrayPreferencesKey("authTokenExpiresAt")
         private val USER_NAME = stringPreferencesKey("userName")
         private val USER_PROFILE_IMAGE_URL = stringPreferencesKey("userProfileImageUrl")
     }
@@ -54,14 +55,21 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
         }
     }
 
-    fun getOAuth2() = dataStore.data.map {
-        it[OAUTH2_TOKEN]
-            ?.let { OAuth2(Crypto.decrypt(it)) }
+    fun getAuthToken() = dataStore.data.map {
+        it[AUTH_TOKEN_ACCESS_TOKEN]?.let { accessToken ->
+            it[AUTH_TOKEN_EXPIRES_AT]?.let { expiresAt ->
+                AuthToken(
+                    accessToken = Crypto.decrypt(accessToken),
+                    expiresAt = Crypto.decrypt(expiresAt).toLong()
+                )
+            }
+        }
     }
 
-    suspend fun saveOAuth2(token: OAuth2) {
+    suspend fun saveAuthToken(token: AuthToken) {
         dataStore.edit { preferences ->
-            preferences[OAUTH2_TOKEN] = Crypto.encrypt(token.accessToken)
+            preferences[AUTH_TOKEN_ACCESS_TOKEN] = Crypto.encrypt(token.accessToken)
+            preferences[AUTH_TOKEN_EXPIRES_AT] = Crypto.encrypt(token.expiresAt.toString())
         }
     }
 

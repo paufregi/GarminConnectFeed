@@ -9,7 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.data.api.strava.models.AuthToken
 import paufregi.connectfeed.stravaDeauthorizationJson
-import paufregi.connectfeed.stravaExchangeTokenJson
+import paufregi.connectfeed.stravaAuthTokenJson
 import paufregi.connectfeed.stravaRefreshTokenJson
 
 class StravaAuthTest {
@@ -32,7 +32,7 @@ class StravaAuthTest {
     fun `Exchange token`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
-            .setBody(stravaExchangeTokenJson)
+            .setBody(stravaAuthTokenJson)
         server.enqueue(response)
 
         val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")

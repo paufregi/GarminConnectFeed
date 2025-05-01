@@ -9,20 +9,20 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
-import paufregi.connectfeed.oauth2
-import paufregi.connectfeed.oauth2Json
+import paufregi.connectfeed.authToken
+import paufregi.connectfeed.authTokenJson
 
-class GarminAuth2Test {
+class GarminAuthTest {
 
     private var server: MockWebServer = MockWebServer()
-    private lateinit var api: GarminAuth2
+    private lateinit var api: GarminAuth
     private val consumer = OAuthConsumer("KEY", "SECRET")
     private val oauth = OAuth1("TOKEN", "SECRET")
 
     @Before
     fun setup() {
         server.start()
-        api = GarminAuth2.client(consumer, oauth, server.url("/").toString())
+        api = GarminAuth.client(consumer, oauth, server.url("/").toString())
     }
 
     @After
@@ -31,13 +31,13 @@ class GarminAuth2Test {
     }
 
     @Test
-    fun `Get OAuth2 token`() = runTest {
+    fun `Get auth token`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
-            .setBody(oauth2Json)
+            .setBody(authTokenJson)
         server.enqueue(response)
 
-        val res = api.getOauth2()
+        val res = api.exchange()
 
         val request = server.takeRequest()
 
@@ -50,16 +50,16 @@ class GarminAuth2Test {
         assertThat(request.headers["authorization"]).contains("""oauth_signature""")
         assertThat(request.headers["authorization"]).contains("""oauth_version="1.0"""")
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(oauth2)
+        assertThat(res.body()).isEqualTo(authToken)
     }
 
     @Test
-    fun `Get OAuth2 token - failure`() = runTest {
+    fun `Get auth token - failure`() = runTest {
         val response = MockResponse()
             .setResponseCode(400)
         server.enqueue(response)
 
-        val res = api.getOauth2()
+        val res = api.exchange()
 
         assertThat(res.isSuccessful).isFalse()
         assertThat(res.body()).isNull()

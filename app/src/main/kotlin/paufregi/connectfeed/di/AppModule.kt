@@ -10,7 +10,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import paufregi.connectfeed.data.api.garmin.GarminAuth1
-import paufregi.connectfeed.data.api.garmin.GarminAuth2
+import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.GarminSSO
 import paufregi.connectfeed.data.api.garmin.Garth
@@ -58,7 +58,7 @@ class AppModule {
         garminSSO: GarminSSO,
         authDatastore: AuthStore,
         @Named("GarminConnectOAuth1Url") garminConnectOAuth1Url: String,
-        @Named("GarminConnectOAuth2Url") garminConnectOAuth2Url: String,
+        @Named("GarminAuthUrl") garminAuthUrl: String,
     ): AuthRepository = AuthRepository(
         garth,
         garminSSO,
@@ -69,11 +69,11 @@ class AppModule {
                 garminConnectOAuth1Url
             )
         },
-        makeGarminAuth2 = { oauthConsumer: OAuthConsumer, oauth: OAuth1 ->
-            GarminAuth2.client(
+        makeGarminAuth = { oauthConsumer: OAuthConsumer, oauth: OAuth1 ->
+            GarminAuth.client(
                 oauthConsumer,
                 oauth,
-                garminConnectOAuth2Url
+                garminAuthUrl
             )
         }
     )

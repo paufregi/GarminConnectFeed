@@ -13,7 +13,5 @@ data class AuthToken(
     @SerializedName("expires_at")
     val expiresAt: Long,
 ) {
-    fun isExpired(date: Long = Instant.now().epochSecond): Boolean {
-        return expiresAt < date
-    }
+    fun isExpired(date: Long = Instant.now().epochSecond): Boolean = expiresAt < date
 }

@@ -40,7 +40,7 @@ import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
 import paufregi.connectfeed.garthPort
 import paufregi.connectfeed.oauth1
-import paufregi.connectfeed.oauth2
+import paufregi.connectfeed.authToken
 import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
@@ -127,7 +127,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
@@ -145,7 +145,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
@@ -161,7 +161,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
         stravaStore.saveToken(stravaToken)
 
         ActivityScenario.launch(MainActivity::class.java)
@@ -181,7 +181,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
@@ -197,7 +197,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
@@ -225,7 +225,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
         dao.saveProfile(ProfileEntity(id = 5, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
@@ -256,7 +256,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
         dao.saveProfile(ProfileEntity(id = 10, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
@@ -274,7 +274,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
         dao.saveProfile(ProfileEntity(name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
@@ -293,7 +293,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
         stravaStore.saveToken(stravaToken)
         dao.saveProfile(ProfileEntity(name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType.Race))
 
@@ -315,7 +315,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
         stravaStore.saveToken(stravaToken)
 
         ActivityScenario.launch(MainActivity::class.java)

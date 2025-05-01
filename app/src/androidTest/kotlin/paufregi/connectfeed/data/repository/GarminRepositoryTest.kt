@@ -27,7 +27,7 @@ import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
 import paufregi.connectfeed.garthPort
 import paufregi.connectfeed.oauth1
-import paufregi.connectfeed.oauth2
+import paufregi.connectfeed.authToken
 import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
@@ -101,7 +101,7 @@ class GarminRepositoryTest {
     fun `Fetch user`() = runTest {
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
 
         val expected = User("Paul", "https://profile.image.com/large.jpg")
 
@@ -132,7 +132,7 @@ class GarminRepositoryTest {
     fun `Get latest activities`() = runTest {
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
 
         val expected = listOf(
             CoreActivity(
@@ -192,7 +192,7 @@ class GarminRepositoryTest {
     fun `Get courses`() = runTest {
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
 
         val expected = listOf(
             CoreCourse(id = 1, name = "Course 1", distance = 10235.00, type = CoreActivityType.Running),
@@ -209,7 +209,7 @@ class GarminRepositoryTest {
     fun `Update activity`() = runTest {
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
 
         val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, trainingEffect = "", type = CoreActivityType.Cycling)
         val name = "newName"
@@ -264,7 +264,7 @@ class GarminRepositoryTest {
     fun `Upload file`() = runTest {
         authStore.saveConsumer(consumer)
         authStore.saveOAuth1(oauth1)
-        authStore.saveOAuth2(oauth2)
+        authStore.saveAuthToken(authToken)
 
         val testFile = File.createTempFile("test", "test")
         testFile.deleteOnExit()

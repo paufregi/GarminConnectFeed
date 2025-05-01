@@ -18,7 +18,7 @@ import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.consumer
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
-import paufregi.connectfeed.data.api.garmin.models.OAuth2
+import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.garminSSODispatcher
@@ -26,7 +26,7 @@ import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
 import paufregi.connectfeed.garthPort
 import paufregi.connectfeed.oauth1
-import paufregi.connectfeed.oauth2
+import paufregi.connectfeed.authToken
 import paufregi.connectfeed.sslSocketFactory
 import javax.inject.Inject
 
@@ -96,13 +96,13 @@ class AuthRepositoryTest {
 
     @Test
     fun `Store oAuth2`() = runTest {
-        val token1 = OAuth2(accessToken = "ACCESS_TOKEN_1")
-        val token2 = OAuth2(accessToken = "ACCESS_TOKEN_2")
-        repo.getOAuth2().test{
+        val token1 = AuthToken(accessToken = "ACCESS_TOKEN_1", expiresAt = 1)
+        val token2 = AuthToken(accessToken = "ACCESS_TOKEN_2", expiresAt = 2)
+        repo.getAuthToken().test{
             assertThat(awaitItem()).isNull()
-            repo.saveOAuth2(token1)
+            repo.saveAuthToken(token1)
             assertThat(awaitItem()).isEqualTo(token1)
-            repo.saveOAuth2(token2)
+            repo.saveAuthToken(token2)
             assertThat(awaitItem()).isEqualTo(token2)
             repo.clear()
             assertThat(awaitItem()).isNull()
@@ -137,6 +137,6 @@ class AuthRepositoryTest {
         val res = repo.exchange(consumer, oauth1)
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(oauth2)
+        assertThat(res.getOrNull()).isEqualTo(authToken)
     }
 }

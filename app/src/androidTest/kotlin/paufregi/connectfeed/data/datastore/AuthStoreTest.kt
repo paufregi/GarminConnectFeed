@@ -16,7 +16,7 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
-import paufregi.connectfeed.data.api.garmin.models.OAuth2
+import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
 import javax.inject.Inject
 
@@ -78,15 +78,15 @@ class AuthStoreTest {
     }
 
     @Test
-    fun `Save retrieve and delete OAuth2`() = runTest {
-        val token1 = OAuth2(accessToken = "ACCESS_TOKEN_1")
-        val token2 = OAuth2(accessToken = "ACCESS_TOKEN_2")
+    fun `Save retrieve and delete AuthToken`() = runTest {
+        val token1 = AuthToken(accessToken = "ACCESS_TOKEN_1", expiresAt = 1)
+        val token2 = AuthToken(accessToken = "ACCESS_TOKEN_2", expiresAt = 2)
 
-        dataStore.getOAuth2().test {
+        dataStore.getAuthToken().test {
             assertThat(awaitItem()).isNull()
-            dataStore.saveOAuth2(token1)
+            dataStore.saveAuthToken(token1)
             assertThat(awaitItem()).isEqualTo(token1)
-            dataStore.saveOAuth2(token2)
+            dataStore.saveAuthToken(token2)
             assertThat(awaitItem()).isEqualTo(token2)
             dataStore.clear()
             assertThat(awaitItem()).isNull()

@@ -1,19 +1,18 @@
 package paufregi.connectfeed
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.models.OAuth1
-import paufregi.connectfeed.data.api.garmin.models.OAuth2
+import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
-import paufregi.connectfeed.data.api.strava.models.AuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 import java.util.Date
 
-fun createOAuth2(expiresAt: Date) = OAuth2(
-    accessToken = JWT.create().withExpiresAt(expiresAt).sign(Algorithm.none()),
+fun createAuthToken(expiresAt: Date) = AuthToken(
+    accessToken = "ACCCESS_TOKEN",
+    expiresAt = expiresAt.time / 1000
 )
 
-fun createStravaToken(expiresAt: Date) = AuthToken(
+fun createStravaToken(expiresAt: Date) = StravaAuthToken(
     accessToken = "ACCCESS_TOKEN",
     refreshToken = "REFRESH_TOKEN",
     expiresAt = expiresAt.time / 1000
@@ -26,13 +25,13 @@ val yesterday = Date(Date().time - (1000 * 60 * 60 * 24))
 val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
 val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
-val oauth2 = createOAuth2(tomorrow)
+val authToken = createAuthToken(tomorrow)
 
-val oauth2Json = """
+val authTokenJson = """
     {
         "scope": "SCOPE",
         "jti": "JTI",
-        "access_token": "${oauth2.accessToken}",
+        "access_token": "ACCESS_TOKEN",
         "token_type": "TOKEN_TYPE",
         "refresh_token": "REFRESH_TOKEN",
         "expires_in": 0,
@@ -638,7 +637,7 @@ val coursesJson = """
     ]
 """.trimIndent()
 
-val stravaExchangeTokenJson = """
+val stravaAuthTokenJson = """
     {
         "token_type": "Bearer",
         "expires_at": 1704067200,
