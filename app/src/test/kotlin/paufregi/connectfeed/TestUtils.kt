@@ -2,7 +2,6 @@ package paufregi.connectfeed
 
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
-import paufregi.connectfeed.data.api.garmin.models.Consumer
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import java.util.Date
 import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
@@ -23,18 +22,10 @@ val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
 val yesterday = Date(Date().time - (1000 * 60 * 60 * 24))
 
 val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
-val consumer = Consumer("CONSUMER_KEY", "CONSUMER_SECRET")
 val preAuthToken = PreAuthToken("TOKEN", "SECRET")
 val authToken = createAuthToken(tomorrow)
 
 val preAuthTokenBody = "oauth_token=${preAuthToken.token}&oauth_token_secret=${preAuthToken.secret}"
-
-val consumerJson = """
-    {
-    "consumer_key":"${consumer.key}",
-    "consumer_secret":"${consumer.secret}"
-    }
-    """.trimIndent()
 
 val authTokenJson = """
     {

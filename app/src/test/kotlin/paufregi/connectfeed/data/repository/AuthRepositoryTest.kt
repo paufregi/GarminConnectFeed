@@ -17,11 +17,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.authToken
-import paufregi.connectfeed.consumer
 import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
-import paufregi.connectfeed.data.api.garmin.Garth
 import paufregi.connectfeed.data.api.garmin.models.CSRF
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import paufregi.connectfeed.data.datastore.AuthStore
@@ -32,7 +30,6 @@ import retrofit2.Response
 class AuthRepositoryTest {
 
     private lateinit var repo: AuthRepository
-    private val garth = mockk<Garth>()
     private val garminSSO = mockk<GarminSSO>()
     private val authDatastore = mockk<AuthStore>()
     private val garminPreAuth = mockk<GarminPreAuth>()
@@ -41,11 +38,10 @@ class AuthRepositoryTest {
     @Before
     fun setup(){
         repo = AuthRepository(
-            garth,
             garminSSO,
             authDatastore,
-            { _ -> garminPreAuth},
-            { _, _ -> garminAuth}
+            garminPreAuth,
+            { _ -> garminAuth}
         )
     }
 
@@ -64,7 +60,7 @@ class AuthRepositoryTest {
         }
 
         verify { authDatastore.getPreAuthToken() }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -74,7 +70,7 @@ class AuthRepositoryTest {
         repo.savePreAuth(preAuthToken)
 
         coVerify { authDatastore.savePreAuthToken(preAuthToken) }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -87,7 +83,7 @@ class AuthRepositoryTest {
         }
 
         verify { authDatastore.getAuthToken() }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -97,7 +93,7 @@ class AuthRepositoryTest {
         repo.saveAuthToken(authToken)
 
         coVerify { authDatastore.saveAuthToken(authToken) }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -110,7 +106,7 @@ class AuthRepositoryTest {
         }
 
         verify { authDatastore.getUser() }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -120,7 +116,7 @@ class AuthRepositoryTest {
         repo.saveUser(user)
 
         coVerify { authDatastore.saveUser(user) }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -130,51 +126,7 @@ class AuthRepositoryTest {
         repo.clear()
 
         coVerify { authDatastore.clear() }
-        confirmVerified(garth, garminSSO, authDatastore)
-    }
-
-    @Test
-    fun `Get consumer`() = runTest {
-        every { authDatastore.getConsumer() } returns flowOf(consumer)
-
-        val res = repo.getOrFetchConsumer()
-
-        assertThat(res).isEqualTo(consumer)
-
-        verify { authDatastore.getConsumer() }
-        confirmVerified(garth, garminSSO, authDatastore)
-    }
-
-    @Test
-    fun `Fetch consumer`() = runTest {
-        every { authDatastore.getConsumer() } returns flowOf(null)
-        coEvery { garth.getConsumer() } returns Response.success(consumer)
-        coEvery { authDatastore.saveConsumer(any()) } returns Unit
-
-        val res = repo.getOrFetchConsumer()
-
-        assertThat(res).isEqualTo(consumer)
-
-        verify { authDatastore.getConsumer() }
-        coVerify {
-            garth.getConsumer()
-            authDatastore.saveConsumer(consumer)
-        }
-        confirmVerified(garth, garminSSO, authDatastore)
-    }
-
-    @Test
-    fun `Fetch consumer failure`() = runTest {
-        every { authDatastore.getConsumer() } returns flowOf(null)
-        coEvery { garth.getConsumer() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val res = repo.getOrFetchConsumer()
-
-        assertThat(res).isNull()
-
-        verify { authDatastore.getConsumer() }
-        coVerify { garth.getConsumer() }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -186,7 +138,7 @@ class AuthRepositoryTest {
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
         coEvery { garminPreAuth.preauthorize(any()) } returns Response.success(preAuthToken)
 
-        val res = repo.authorize("user", "pass", consumer)
+        val res = repo.authorize("user", "pass")
 
 
         assertThat(res.isSuccess).isTrue()
@@ -197,7 +149,7 @@ class AuthRepositoryTest {
             garminSSO.login("user", "pass", csrf)
             garminPreAuth.preauthorize(ticket)
         }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -209,7 +161,7 @@ class AuthRepositoryTest {
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
         coEvery { garminPreAuth.preauthorize(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.authorize("user", "pass", consumer)
+        val res = repo.authorize("user", "pass")
 
         assertThat(res.isSuccess).isFalse()
 
@@ -218,21 +170,21 @@ class AuthRepositoryTest {
             garminSSO.login("user", "pass", csrf)
             garminPreAuth.preauthorize(ticket)
         }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
     fun `Authorize failure - login page`() = runTest {
         coEvery { garminSSO.getCSRF() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.authorize("user", "pas", consumer)
+        val res = repo.authorize("user", "pas")
 
         assertThat(res.isSuccess).isFalse()
 
         coVerify{
             garminSSO.getCSRF()
         }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -242,7 +194,7 @@ class AuthRepositoryTest {
         coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.authorize("user", "pass", consumer)
+        val res = repo.authorize("user", "pass")
 
         assertThat(res.isSuccess).isFalse()
 
@@ -250,7 +202,7 @@ class AuthRepositoryTest {
             garminSSO.getCSRF()
             garminSSO.login("user", "pass", csrf)
         }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -258,7 +210,7 @@ class AuthRepositoryTest {
         coEvery { garminAuth.exchange() } returns Response.success(authToken)
         coEvery { authDatastore.saveAuthToken(any()) } returns Unit
 
-        val res = repo.exchange(consumer, preAuthToken)
+        val res = repo.exchange(preAuthToken)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(authToken)
@@ -267,20 +219,20 @@ class AuthRepositoryTest {
             garminAuth.exchange()
             authDatastore.saveAuthToken(authToken)
         }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified( garminSSO, authDatastore)
     }
 
     @Test
     fun `Exchange failure`() = runTest {
         coEvery { garminAuth.exchange() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.exchange(consumer, preAuthToken)
+        val res = repo.exchange(preAuthToken)
 
         assertThat(res.isSuccess).isFalse()
 
         coVerify {
             garminAuth.exchange()
         }
-        confirmVerified(garth, garminSSO, authDatastore)
+        confirmVerified(garminSSO, authDatastore)
     }
 }

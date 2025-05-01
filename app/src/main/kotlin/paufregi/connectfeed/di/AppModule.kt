@@ -13,9 +13,7 @@ import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
-import paufregi.connectfeed.data.api.garmin.Garth
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
-import paufregi.connectfeed.data.api.garmin.models.Consumer
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.StravaAuth
@@ -54,27 +52,18 @@ class AppModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        garth: Garth,
         garminSSO: GarminSSO,
         authDatastore: AuthStore,
+        @Named("GarminConsumerKey") consumerKey: String,
+        @Named("GarminConsumerSecret") consumerSecret: String,
         @Named("GarminPreAuthUrl") garminPreAuthUrl: String,
         @Named("GarminAuthUrl") garminAuthUrl: String,
     ): AuthRepository = AuthRepository(
-        garth,
-        garminSSO,
-        authDatastore,
-        makeGarminPreAuth = { consumer: Consumer ->
-            GarminPreAuth.client(
-                consumer,
-                garminPreAuthUrl
-            )
-        },
-        makeGarminAuth = { consumer: Consumer, oauth: PreAuthToken ->
-            GarminAuth.client(
-                consumer,
-                oauth,
-                garminAuthUrl
-            )
+        garminSSO = garminSSO,
+        authStore = authDatastore,
+        preAuth = GarminPreAuth.client(consumerKey, consumerSecret, garminPreAuthUrl),
+        makeGarminAuth = { oauth: PreAuthToken ->
+            GarminAuth.client(consumerKey, consumerSecret, oauth, garminAuthUrl)
         }
     )
 
@@ -114,12 +103,6 @@ class AppModule {
     fun provideGarminSSO(
         @Named("GarminSSOUrl") url: String
     ): GarminSSO = GarminSSO.client(url)
-
-    @Provides
-    @Singleton
-    fun provideGarth(
-        @Named("GarthUrl") url: String
-    ): Garth = Garth.client(url)
 
     @Provides
     @Singleton

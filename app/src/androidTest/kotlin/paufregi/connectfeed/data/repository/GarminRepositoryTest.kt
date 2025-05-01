@@ -17,7 +17,6 @@ import org.junit.Test
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
-import paufregi.connectfeed.consumer
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.database.GarminDatabase
@@ -25,8 +24,6 @@ import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
-import paufregi.connectfeed.garthDispatcher
-import paufregi.connectfeed.garthPort
 import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaDispatcher
@@ -63,7 +60,6 @@ class GarminRepositoryTest {
 
     private val connectServer = MockWebServer()
     private val garminSSOServer = MockWebServer()
-    private val garthServer = MockWebServer()
     private val stravaServer = MockWebServer()
 
     @Before
@@ -73,13 +69,10 @@ class GarminRepositoryTest {
         connectServer.start(connectPort)
         garminSSOServer.useHttps(sslSocketFactory, false)
         garminSSOServer.start(garminSSOPort)
-        garthServer.useHttps(sslSocketFactory, false)
-        garthServer.start(garthPort)
         stravaServer.useHttps(sslSocketFactory, false)
         stravaServer.start(stravaPort)
 
         connectServer.dispatcher = connectDispatcher
-        garthServer.dispatcher = garthDispatcher
         garminSSOServer.dispatcher = garminSSODispatcher
         stravaServer.dispatcher = stravaDispatcher
     }
@@ -88,7 +81,6 @@ class GarminRepositoryTest {
     fun tearDown() {
         connectServer.shutdown()
         garminSSOServer.shutdown()
-        garthServer.shutdown()
         stravaServer.shutdown()
         database.close()
         runBlocking(Dispatchers.IO){
@@ -99,7 +91,6 @@ class GarminRepositoryTest {
 
     @Test
     fun `Fetch user`() = runTest {
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
@@ -130,7 +121,6 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get latest activities`() = runTest {
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
@@ -190,7 +180,6 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get courses`() = runTest {
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
@@ -207,7 +196,6 @@ class GarminRepositoryTest {
 
     @Test
     fun `Update activity`() = runTest {
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
@@ -262,7 +250,6 @@ class GarminRepositoryTest {
 
     @Test
     fun `Upload file`() = runTest {
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 

@@ -8,7 +8,6 @@ import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
-import paufregi.connectfeed.data.api.garmin.models.Consumer
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.test.R
 import java.net.URLDecoder
@@ -30,19 +29,11 @@ fun createStravaToken(expiresAt: Date) = StravaAuthToken(
 val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
 
 val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
-val consumer = Consumer("CONSUMER_KEY", "CONSUMER_SECRET")
 val preAuthToken = PreAuthToken("TOKEN", "SECRET")
 val authToken = createAuthToken(tomorrow)
 val stravaToken = createStravaToken(tomorrow)
 
 val preAuthTokenBody = "oauth_token=${preAuthToken.token}&oauth_token_secret=${preAuthToken.secret}"
-
-val consumerJson = """
-    {
-    "consumer_key":"${consumer.key}",
-    "consumer_secret":"${consumer.secret}"
-    }
-    """.trimIndent()
 
 val authTokenJson = """
     {
@@ -820,8 +811,7 @@ val stravaDetailedAthlete = """
 
 const val connectPort = 8081
 const val garminSSOPort = 8082
-const val garthPort = 8083
-const val stravaPort = 8084
+const val stravaPort = 8083
 
 fun RecordedRequest.getFields(): Map<String, String> {
     val body = body.readUtf8()
@@ -866,18 +856,6 @@ val connectDispatcher: Dispatcher = object : Dispatcher() {
 
             (path.startsWith("/activity-service/activity") && request.method == "PUT") ->
                 MockResponse().setResponseCode(200)
-
-            else -> MockResponse().setResponseCode(404)
-        }
-    }
-}
-
-val garthDispatcher: Dispatcher = object : Dispatcher() {
-    override fun dispatch(request: RecordedRequest): MockResponse {
-        val path = request.path ?: ""
-        return when {
-            path == "/oauth_consumer.json" && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(consumerJson)
 
             else -> MockResponse().setResponseCode(404)
         }

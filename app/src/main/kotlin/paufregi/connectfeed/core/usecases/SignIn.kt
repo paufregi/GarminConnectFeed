@@ -13,10 +13,7 @@ class SignIn @Inject constructor(
     suspend operator fun invoke(username: String, password: String): Result<User> {
         if (username.isBlank() || password.isBlank()) return Result.failure("Validation error")
 
-        val consumer = authRepository.getOrFetchConsumer()
-            ?: return Result.failure("Couldn't get Consumer")
-
-        val preAuth = authRepository.authorize(username, password, consumer)
+        val preAuth = authRepository.authorize(username, password)
             .onSuccess { authRepository.savePreAuth(it) }
             .onFailure { authRepository.clear() }
             .exceptionOrNull()

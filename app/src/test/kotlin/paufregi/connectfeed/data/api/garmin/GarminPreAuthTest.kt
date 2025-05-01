@@ -7,7 +7,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.data.api.garmin.models.Consumer
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.preAuthTokenBody
@@ -16,12 +15,13 @@ class GarminPreAuthTest {
 
     private var server: MockWebServer = MockWebServer()
     private lateinit var api: GarminPreAuth
-    private val consumer = Consumer("KEY", "SECRET")
+    private val consumerKey = "CONSUMER_KEY"
+    private val consumerSecret = "CONSUMER_SECRET"
 
     @Before
     fun setup() {
         server.start()
-        api = GarminPreAuth.client(consumer, server.url("/").toString())
+        api = GarminPreAuth.client(consumerKey, consumerSecret, server.url("/").toString())
     }
 
     @After
@@ -45,7 +45,7 @@ class GarminPreAuthTest {
         assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/oauth-service/oauth/preauthorized")
         assertThat(request.requestUrl?.queryParameterValues("ticket")).isEqualTo(listOf("TICKET"))
         assertThat(request.headers["authorization"]).contains("OAuth")
-        assertThat(request.headers["authorization"]).contains("""oauth_consumer_key="KEY"""")
+        assertThat(request.headers["authorization"]).contains("""oauth_consumer_key="CONSUMER_KEY"""")
         assertThat(request.headers["authorization"]).contains("""oauth_signature_method="HMAC-SHA1"""")
         assertThat(request.headers["authorization"]).contains("""oauth_signature""")
         assertThat(request.headers["authorization"]).contains("""oauth_version="1.0"""")

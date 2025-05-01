@@ -9,20 +9,20 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.authTokenJson
-import paufregi.connectfeed.data.api.garmin.models.Consumer
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 
 class GarminAuthTest {
 
     private var server: MockWebServer = MockWebServer()
     private lateinit var api: GarminAuth
-    private val consumer = Consumer("KEY", "SECRET")
+    private val consumerKey = "CONSUMER_KEY"
+    private val consumerSecret = "CONSUMER_SECRET"
     private val oauth = PreAuthToken("TOKEN", "SECRET")
 
     @Before
     fun setup() {
         server.start()
-        api = GarminAuth.client(consumer, oauth, server.url("/").toString())
+        api = GarminAuth.client(consumerKey, consumerSecret, oauth, server.url("/").toString())
     }
 
     @After
@@ -44,7 +44,7 @@ class GarminAuthTest {
         assertThat(request.method).isEqualTo("POST")
         assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/oauth-service/oauth/exchange/user/2.0")
         assertThat(request.headers["authorization"]).contains("OAuth")
-        assertThat(request.headers["authorization"]).contains("""oauth_consumer_key="KEY"""")
+        assertThat(request.headers["authorization"]).contains("""oauth_consumer_key="CONSUMER_KEY"""")
         assertThat(request.headers["authorization"]).contains("""oauth_token="TOKEN"""")
         assertThat(request.headers["authorization"]).contains("""oauth_signature_method="HMAC-SHA1"""")
         assertThat(request.headers["authorization"]).contains("""oauth_signature""")

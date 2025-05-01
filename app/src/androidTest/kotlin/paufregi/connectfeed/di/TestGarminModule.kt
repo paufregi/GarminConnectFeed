@@ -6,16 +6,26 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.garminSSOPort
-import paufregi.connectfeed.garthPort
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [UrlModule::class]
+    replaces = [GarminModule::class]
 )
-class TestUrlModule {
+class TestGarminModule {
+
+    @Provides
+    @Singleton
+    @Named("GarminConsumerKey")
+    fun provideGarminConsumerKey(): String = "00000000-0000-0000-0000-000000000000"
+
+    @Provides
+    @Singleton
+    @Named("GarminConsumerSecret")
+    fun provideGarminConsumerSecret(): String = "abcdefghijklmopqrstuvwxyz"
+
     @Provides
     @Singleton
     @Named("GarminConnectUrl")
@@ -35,9 +45,4 @@ class TestUrlModule {
     @Singleton
     @Named("GarminSSOUrl")
     fun provideGarminSSOUrl(): String = "https://localhost:${garminSSOPort}/"
-
-    @Provides
-    @Singleton
-    @Named("GarthUrl")
-    fun provideGarthUrl(): String = "https://localhost:${garthPort}/"
 }

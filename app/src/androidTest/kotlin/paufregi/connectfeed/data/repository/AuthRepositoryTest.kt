@@ -17,15 +17,12 @@ import org.junit.Test
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
-import paufregi.connectfeed.consumer
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
-import paufregi.connectfeed.garthDispatcher
-import paufregi.connectfeed.garthPort
 import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.sslSocketFactory
 import javax.inject.Inject
@@ -49,27 +46,22 @@ class AuthRepositoryTest {
     lateinit var database: GarminDatabase
 
     private val garminSSOServer = MockWebServer()
-    private val garthServer = MockWebServer()
     private val connectServer = MockWebServer()
 
     @Before
     fun setup() {
         hiltRule.inject()
-        garthServer.useHttps(sslSocketFactory, false)
-        garthServer.start(garthPort)
         garminSSOServer.useHttps(sslSocketFactory, false)
         garminSSOServer.start(garminSSOPort)
         connectServer.useHttps(sslSocketFactory, false)
         connectServer.start(connectPort)
 
-        garthServer.dispatcher = garthDispatcher
         garminSSOServer.dispatcher = garminSSODispatcher
         connectServer.dispatcher = connectDispatcher
     }
 
     @After
     fun tearDown() {
-        garthServer.shutdown()
         garminSSOServer.shutdown()
         connectServer.shutdown()
         database.close()
@@ -111,22 +103,8 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `Get consumer`() = runTest {
-        authStore.saveConsumer(consumer)
-
-        val res = repo.getOrFetchConsumer()
-        assertThat(res).isEqualTo(consumer)
-    }
-
-    @Test
-    fun `Fetch consumer`() = runTest {
-        val res = repo.getOrFetchConsumer()
-        assertThat(res).isEqualTo(consumer)
-    }
-
-    @Test
     fun `Authorize user`() = runTest {
-        val res = repo.authorize("user", "pass", consumer)
+        val res = repo.authorize("user", "pass")
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(preAuthToken)
@@ -134,7 +112,7 @@ class AuthRepositoryTest {
 
     @Test
     fun `Exchange token`() = runTest {
-        val res = repo.exchange(consumer, preAuthToken)
+        val res = repo.exchange(preAuthToken)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(authToken)

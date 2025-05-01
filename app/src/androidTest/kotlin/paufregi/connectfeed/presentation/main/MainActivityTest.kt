@@ -28,7 +28,6 @@ import org.junit.runner.RunWith
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
-import paufregi.connectfeed.consumer
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.data.database.GarminDao
@@ -38,8 +37,6 @@ import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
-import paufregi.connectfeed.garthDispatcher
-import paufregi.connectfeed.garthPort
 import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaDispatcher
@@ -73,7 +70,6 @@ class MainActivityTest {
 
     private val connectServer = MockWebServer()
     private val garminSSOServer = MockWebServer()
-    private val garthServer = MockWebServer()
     private val strava = MockWebServer()
 
     @Before
@@ -83,13 +79,10 @@ class MainActivityTest {
         connectServer.start(connectPort)
         garminSSOServer.useHttps(sslSocketFactory, false)
         garminSSOServer.start(garminSSOPort)
-        garthServer.useHttps(sslSocketFactory, false)
-        garthServer.start(garthPort)
         strava.useHttps(sslSocketFactory, false)
         strava.start(stravaPort)
 
         connectServer.dispatcher = connectDispatcher
-        garthServer.dispatcher = garthDispatcher
         garminSSOServer.dispatcher = garminSSODispatcher
         strava.dispatcher = stravaDispatcher
     }
@@ -98,7 +91,6 @@ class MainActivityTest {
     fun tearDown() {
         connectServer.shutdown()
         garminSSOServer.shutdown()
-        garthServer.shutdown()
         strava.shutdown()
         strava.shutdown()
         database.close()
@@ -125,7 +117,6 @@ class MainActivityTest {
     @Test
     fun `Sign out`() = runTest {
         authStore.saveUser(user)
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
@@ -143,7 +134,6 @@ class MainActivityTest {
     @Test
     fun `Connect Strava`() = runTest {
         authStore.saveUser(user)
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
@@ -159,7 +149,6 @@ class MainActivityTest {
     @Test
     fun `Disconnect Strava`() = runTest {
         authStore.saveUser(user)
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         stravaStore.saveToken(stravaToken)
@@ -179,7 +168,6 @@ class MainActivityTest {
     @Test
     fun `Refresh user`() = runTest {
         authStore.saveUser(user)
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
@@ -195,7 +183,6 @@ class MainActivityTest {
     @Test
     fun `Create profile`() = runTest {
         authStore.saveUser(user)
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
@@ -223,7 +210,6 @@ class MainActivityTest {
     @Test
     fun `Update profile`() = runTest {
         authStore.saveUser(user)
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         dao.saveProfile(ProfileEntity(id = 5, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType.Race))
@@ -254,7 +240,6 @@ class MainActivityTest {
     @Test
     fun `Delete profile`() = runTest {
         authStore.saveUser(user)
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         dao.saveProfile(ProfileEntity(id = 10, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType.Race))
@@ -272,7 +257,6 @@ class MainActivityTest {
     @Test
     fun `Update activity`() = runTest {
         authStore.saveUser(user)
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         dao.saveProfile(ProfileEntity(name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType.Race))
@@ -291,7 +275,6 @@ class MainActivityTest {
     @Test
     fun `Update activity - with Strava`() = runTest {
         authStore.saveUser(user)
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         stravaStore.saveToken(stravaToken)
@@ -313,7 +296,6 @@ class MainActivityTest {
     @Test
     fun `Sync Strava activity`() = runTest {
         authStore.saveUser(user)
-        authStore.saveConsumer(consumer)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         stravaStore.saveToken(stravaToken)

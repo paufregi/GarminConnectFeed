@@ -16,7 +16,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.consumer
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
@@ -84,9 +83,8 @@ class AuthInterceptorTest {
         val validToken = createAuthToken(tomorrow)
 
         every { authRepo.getAuthToken() } returns flowOf(expiredToken)
-        coEvery { authRepo.getOrFetchConsumer() } returns consumer
         every { authRepo.getPreAuth() } returns flowOf(preAuthToken)
-        coEvery { authRepo.exchange(any(), any()) } returns Result.success(validToken)
+        coEvery { authRepo.exchange(any()) } returns Result.success(validToken)
         coEvery { authRepo.saveAuthToken(any()) } returns Unit
 
         api.test()
@@ -99,8 +97,7 @@ class AuthInterceptorTest {
             authRepo.getAuthToken()
         }
         coVerify {
-            authRepo.getOrFetchConsumer()
-            authRepo.exchange(consumer, preAuthToken)
+            authRepo.exchange(preAuthToken)
             authRepo.saveAuthToken(validToken)
         }
         confirmVerified(authRepo)
@@ -111,9 +108,8 @@ class AuthInterceptorTest {
         val validToken = createAuthToken(tomorrow)
 
         every { authRepo.getAuthToken() } returns flowOf(null)
-        coEvery { authRepo.getOrFetchConsumer() } returns consumer
         every { authRepo.getPreAuth() } returns flowOf(preAuthToken)
-        coEvery { authRepo.exchange(any(), any()) } returns Result.success(validToken)
+        coEvery { authRepo.exchange(any()) } returns Result.success(validToken)
         coEvery { authRepo.saveAuthToken(any()) } returns Unit
 
         api.test()
@@ -126,27 +122,8 @@ class AuthInterceptorTest {
             authRepo.getAuthToken()
         }
         coVerify {
-            authRepo.getOrFetchConsumer()
-            authRepo.exchange(consumer, preAuthToken)
+            authRepo.exchange(preAuthToken)
             authRepo.saveAuthToken(validToken)
-        }
-        confirmVerified(authRepo)
-    }
-
-    @Test
-    fun `Failure - no consumer`() = runTest {
-        every { authRepo.getAuthToken() } returns flowOf(null)
-        coEvery { authRepo.getOrFetchConsumer() } returns null
-
-        val res = api.test()
-
-        assertThat(res.isSuccessful).isFalse()
-
-        verify {
-            authRepo.getAuthToken()
-        }
-        coVerify {
-            authRepo.getOrFetchConsumer()
         }
         confirmVerified(authRepo)
     }
@@ -154,7 +131,6 @@ class AuthInterceptorTest {
     @Test
     fun `Failure - no PreAuthToken`() = runTest {
         every { authRepo.getAuthToken() } returns flowOf(null)
-        coEvery { authRepo.getOrFetchConsumer() } returns consumer
         every { authRepo.getPreAuth() } returns flowOf(null)
 
         val res = api.test()
@@ -165,19 +141,14 @@ class AuthInterceptorTest {
             authRepo.getPreAuth()
             authRepo.getAuthToken()
         }
-        coVerify {
-            authRepo.getOrFetchConsumer()
-        }
         confirmVerified(authRepo)
     }
-
 
     @Test
     fun `Failure - exchange`() = runTest {
         every { authRepo.getAuthToken() } returns flowOf(null)
-        coEvery { authRepo.getOrFetchConsumer() } returns consumer
         every { authRepo.getPreAuth() } returns flowOf(preAuthToken)
-        coEvery { authRepo.exchange(any(), any()) } returns Result.failure("Couldn't exchange token")
+        coEvery { authRepo.exchange(any()) } returns Result.failure("Couldn't exchange token")
 
         val res = api.test()
 
@@ -188,8 +159,7 @@ class AuthInterceptorTest {
             authRepo.getAuthToken()
         }
         coVerify {
-            authRepo.getOrFetchConsumer()
-            authRepo.exchange(consumer, preAuthToken)
+            authRepo.exchange(preAuthToken)
         }
         confirmVerified(authRepo)
     }
