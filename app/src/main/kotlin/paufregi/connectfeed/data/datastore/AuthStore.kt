@@ -8,15 +8,15 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.map
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
-import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.Consumer
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.utils.Crypto
 
 class AuthStore(val dataStore: DataStore<Preferences>) {
 
     companion object {
-        private val OAUTH_CONSUMER_KEY = stringPreferencesKey("oauthConsumerKey")
-        private val OAUTH_CONSUMER_SECRET = stringPreferencesKey("oauthConsumerSecret")
+        private val CONSUMER_KEY = stringPreferencesKey("consumerKey")
+        private val CONSUMER_SECRET = stringPreferencesKey("consumerSecret")
         private val PRE_AUTH_TOKEN = byteArrayPreferencesKey("preAuthToken")
         private val PRE_AUTH_SECRET = byteArrayPreferencesKey("preAuthSecret")
         private val AUTH_TOKEN_ACCESS_TOKEN = byteArrayPreferencesKey("authTokenAccessToken")
@@ -26,17 +26,17 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
     }
 
     fun getConsumer() = dataStore.data.map {
-        it[OAUTH_CONSUMER_KEY]?.let { key ->
-            it[OAUTH_CONSUMER_SECRET]?.let { secret ->
-                OAuthConsumer(key = key, secret = secret)
+        it[CONSUMER_KEY]?.let { key ->
+            it[CONSUMER_SECRET]?.let { secret ->
+                Consumer(key = key, secret = secret)
             }
         }
     }
 
-    suspend fun saveConsumer(consumer: OAuthConsumer) {
+    suspend fun saveConsumer(consumer: Consumer) {
         dataStore.edit { preferences ->
-            preferences[OAUTH_CONSUMER_KEY] = consumer.key
-            preferences[OAUTH_CONSUMER_SECRET] = consumer.secret
+            preferences[CONSUMER_KEY] = consumer.key
+            preferences[CONSUMER_SECRET] = consumer.secret
         }
     }
 

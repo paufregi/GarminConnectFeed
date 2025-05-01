@@ -14,7 +14,7 @@ class SignIn @Inject constructor(
         if (username.isBlank() || password.isBlank()) return Result.failure("Validation error")
 
         val consumer = authRepository.getOrFetchConsumer()
-            ?: return Result.failure("Couldn't get OAuth Consumer")
+            ?: return Result.failure("Couldn't get Consumer")
 
         val preAuth = authRepository.authorize(username, password, consumer)
             .onSuccess { authRepository.savePreAuth(it) }

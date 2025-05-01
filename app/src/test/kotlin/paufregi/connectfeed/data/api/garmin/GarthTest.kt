@@ -27,13 +27,13 @@ class GarthTest {
     }
 
     @Test
-    fun `Get OAuth consumer`() = runTest {
+    fun `Get consumer`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
             .setBody(consumerJson)
         server.enqueue(response)
 
-        val res = api.getOAuthConsumer()
+        val res = api.getConsumer()
 
         val request = server.takeRequest()
 
@@ -44,12 +44,12 @@ class GarthTest {
     }
 
     @Test
-    fun `Get OAuth consumer - failure`() = runTest {
+    fun `Get consumer - failure`() = runTest {
         val response = MockResponse()
             .setResponseCode(400)
         server.enqueue(response)
 
-        val res = api.getOAuthConsumer()
+        val res = api.getConsumer()
 
         assertThat(res.isSuccessful).isFalse()
         assertThat(res.body()).isNull()

@@ -3,7 +3,7 @@ package paufregi.connectfeed.data.api.garmin
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
-import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.Consumer
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -26,12 +26,12 @@ interface GarminAuth {
     companion object {
         const val BASE_URL = "https://connectapi.garmin.com"
 
-        fun client(oauthConsumer: OAuthConsumer, oauth: PreAuthToken, url: String): GarminAuth {
-            val consumer = OkHttpOAuthConsumer(oauthConsumer.key, oauthConsumer.secret)
-            consumer.setTokenWithSecret(oauth.token, oauth.secret)
+        fun client(consumer: Consumer, token: PreAuthToken, url: String): GarminAuth {
+            val oAuthConsumer = OkHttpOAuthConsumer(consumer.key, consumer.secret)
+            oAuthConsumer.setTokenWithSecret(token.token, token.secret)
 
             val client = OkHttpClient.Builder()
-                .addInterceptor(SigningInterceptor(consumer))
+                .addInterceptor(SigningInterceptor(oAuthConsumer))
 
             return Retrofit.Builder()
                 .baseUrl(url)

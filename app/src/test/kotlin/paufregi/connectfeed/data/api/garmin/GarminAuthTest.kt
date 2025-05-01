@@ -9,14 +9,14 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.authTokenJson
-import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.Consumer
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 
 class GarminAuthTest {
 
     private var server: MockWebServer = MockWebServer()
     private lateinit var api: GarminAuth
-    private val consumer = OAuthConsumer("KEY", "SECRET")
+    private val consumer = Consumer("KEY", "SECRET")
     private val oauth = PreAuthToken("TOKEN", "SECRET")
 
     @Before

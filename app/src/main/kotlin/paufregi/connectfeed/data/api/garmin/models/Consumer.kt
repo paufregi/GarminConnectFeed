@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Keep
 @Serializable
-data class OAuthConsumer(
+data class Consumer(
     @SerializedName("consumer_key")
     val key: String,
     @SerializedName("consumer_secret")

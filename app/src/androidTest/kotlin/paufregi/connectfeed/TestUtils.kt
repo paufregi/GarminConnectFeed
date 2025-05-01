@@ -8,7 +8,7 @@ import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
-import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.Consumer
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.test.R
 import java.net.URLDecoder
@@ -30,7 +30,7 @@ fun createStravaToken(expiresAt: Date) = StravaAuthToken(
 val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
 
 val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
-val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
+val consumer = Consumer("CONSUMER_KEY", "CONSUMER_SECRET")
 val preAuthToken = PreAuthToken("TOKEN", "SECRET")
 val authToken = createAuthToken(tomorrow)
 val stravaToken = createStravaToken(tomorrow)

@@ -148,7 +148,7 @@ class AuthRepositoryTest {
     @Test
     fun `Fetch consumer`() = runTest {
         every { authDatastore.getConsumer() } returns flowOf(null)
-        coEvery { garth.getOAuthConsumer() } returns Response.success(consumer)
+        coEvery { garth.getConsumer() } returns Response.success(consumer)
         coEvery { authDatastore.saveConsumer(any()) } returns Unit
 
         val res = repo.getOrFetchConsumer()
@@ -157,7 +157,7 @@ class AuthRepositoryTest {
 
         verify { authDatastore.getConsumer() }
         coVerify {
-            garth.getOAuthConsumer()
+            garth.getConsumer()
             authDatastore.saveConsumer(consumer)
         }
         confirmVerified(garth, garminSSO, authDatastore)
@@ -166,14 +166,14 @@ class AuthRepositoryTest {
     @Test
     fun `Fetch consumer failure`() = runTest {
         every { authDatastore.getConsumer() } returns flowOf(null)
-        coEvery { garth.getOAuthConsumer() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { garth.getConsumer() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getOrFetchConsumer()
 
         assertThat(res).isNull()
 
         verify { authDatastore.getConsumer() }
-        coVerify { garth.getOAuthConsumer() }
+        coVerify { garth.getConsumer() }
         confirmVerified(garth, garminSSO, authDatastore)
     }
 

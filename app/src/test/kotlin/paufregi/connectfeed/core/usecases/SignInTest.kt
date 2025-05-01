@@ -87,7 +87,7 @@ class SignInTest{
 
         val res = useCase("user", "pass")
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't get OAuth Consumer")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't get Consumer")
 
         coVerify {
             authRepo.getOrFetchConsumer()

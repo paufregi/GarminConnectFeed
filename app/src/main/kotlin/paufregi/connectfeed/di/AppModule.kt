@@ -15,7 +15,7 @@ import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
 import paufregi.connectfeed.data.api.garmin.Garth
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
-import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.Consumer
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.StravaAuth
@@ -63,15 +63,15 @@ class AppModule {
         garth,
         garminSSO,
         authDatastore,
-        makeGarminPreAuth = { oauthConsumer: OAuthConsumer ->
+        makeGarminPreAuth = { consumer: Consumer ->
             GarminPreAuth.client(
-                oauthConsumer,
+                consumer,
                 garminPreAuthUrl
             )
         },
-        makeGarminAuth = { oauthConsumer: OAuthConsumer, oauth: PreAuthToken ->
+        makeGarminAuth = { consumer: Consumer, oauth: PreAuthToken ->
             GarminAuth.client(
-                oauthConsumer,
+                consumer,
                 oauth,
                 garminAuthUrl
             )

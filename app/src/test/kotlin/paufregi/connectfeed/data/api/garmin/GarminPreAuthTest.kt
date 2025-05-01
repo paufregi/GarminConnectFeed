@@ -7,7 +7,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.data.api.garmin.models.OAuthConsumer
+import paufregi.connectfeed.data.api.garmin.models.Consumer
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.preAuthTokenBody
@@ -16,7 +16,7 @@ class GarminPreAuthTest {
 
     private var server: MockWebServer = MockWebServer()
     private lateinit var api: GarminPreAuth
-    private val consumer = OAuthConsumer("KEY", "SECRET")
+    private val consumer = Consumer("KEY", "SECRET")
 
     @Before
     fun setup() {
