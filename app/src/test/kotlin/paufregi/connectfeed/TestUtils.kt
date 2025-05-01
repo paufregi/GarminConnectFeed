@@ -40,10 +40,11 @@ val authTokenJson = """
     {
         "scope": "SCOPE",
         "jti": "JTI",
-        "access_token": "ACCESS_TOKEN",
+        "access_token": "${authToken.accessToken}",
         "token_type": "TOKEN_TYPE",
         "refresh_token": "REFRESH_TOKEN",
         "expires_in": 0,
+        "expires_at": ${authToken.expiresAt},
         "refresh_token_expires_in": 0
     }
     """.trimIndent()
