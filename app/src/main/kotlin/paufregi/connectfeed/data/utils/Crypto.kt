@@ -42,6 +42,7 @@ object Crypto {
             }.generateKey()
     }
 
+    @Synchronized
     fun encrypt(data: String): ByteArray {
         cipher.init(Cipher.ENCRYPT_MODE, getKey())
         val iv = cipher.iv
@@ -49,6 +50,7 @@ object Crypto {
         return iv + encrypted
     }
 
+    @Synchronized
     fun decrypt(bytes: ByteArray): String {
         val iv = bytes.copyOfRange(0, IV_SIZE)
         val data = bytes.copyOfRange(IV_SIZE, bytes.size)
