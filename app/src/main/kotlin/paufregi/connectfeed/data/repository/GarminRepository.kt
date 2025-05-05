@@ -35,12 +35,6 @@ class GarminRepository @Inject constructor(
     val courseCache: Cache<Result<List<Course>>> = Cache()
     val stravaActivityCache: Cache<Result<List<Activity>>> = Cache()
 
-    fun invalidateCaches() {
-        activitiesCache.invalidate()
-        courseCache.invalidate()
-        stravaActivityCache.invalidate()
-    }
-
     suspend fun fetchUser(): Result<User> =
         garminConnect.getUserProfile()
             .toResult()
@@ -58,22 +52,22 @@ class GarminRepository @Inject constructor(
     suspend fun deleteProfile(profile: Profile) =
         garminDao.deleteProfile(profile.toEntity())
 
-    suspend fun getActivities(limit: Int): Result<List<Activity>> =
-        withCache(activitiesCache) {
+    suspend fun getActivities(limit: Int, force: Boolean = false): Result<List<Activity>> =
+        withCache(activitiesCache, force) {
             garminConnect.getActivities(limit)
                 .toResult(emptyList())
                 .map { it.map { it.toCore() } }
         }.onFailure { activitiesCache.invalidate() }
 
-    suspend fun getStravaActivities(limit: Int): Result<List<Activity>> =
-        withCache(stravaActivityCache) {
+    suspend fun getStravaActivities(limit: Int, force: Boolean = false): Result<List<Activity>> =
+        withCache(stravaActivityCache, force) {
             strava.getActivities(perPage = limit)
                 .toResult(emptyList())
                 .map { it.map { it.toCore() } }
         }.onFailure { stravaActivityCache.invalidate() }
 
-    suspend fun getCourses(): Result<List<Course>> =
-        withCache(courseCache) {
+    suspend fun getCourses(force: Boolean = false): Result<List<Course>> =
+        withCache(courseCache, force) {
             garminConnect.getCourses()
                 .toResult(emptyList())
                 .map { it.map { it.toCore() } }

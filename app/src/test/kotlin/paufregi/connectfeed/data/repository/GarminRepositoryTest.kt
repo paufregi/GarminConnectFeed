@@ -312,6 +312,43 @@ class GarminRepositoryTest {
     }
 
     @Test
+    fun `Get activities - force refresh`() = runTest {
+        val activities = listOf(
+            Activity(
+                id = 1,
+                name = "activity_1",
+                distance = 10234.00,
+                trainingEffectLabel = "recovery",
+                type = ActivityType(id = 1, key = "running"),
+                eventType = EventType(id = 4, key = "training"),
+                beginTimestamp = 1729754100000
+            ),
+            Activity(
+                id = 2,
+                name = "activity_2",
+                distance = 17759.00,
+                trainingEffectLabel = "recovery",
+                type = ActivityType(id = 10, key = "road_biking"),
+                eventType = EventType(id = 4, key = "training"),
+                beginTimestamp = 1729705968000
+            )
+        )
+        coEvery { connect.getActivities(any()) } returns Response.success(activities)
+
+        val expected = activities.map { it.toCore() }
+
+        val res = repo.getActivities(limit = 5)
+        val res2 = repo.getActivities(limit = 5, force = true)
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+        assertThat(res2.isSuccess).isTrue()
+        assertThat(res2.getOrNull()).isEqualTo(expected)
+        coVerify(exactly = 2) { connect.getActivities(5) }
+        confirmVerified(dao, connect, strava)
+    }
+
+    @Test
     fun `Get activities - empty list`() = runTest {
         coEvery { connect.getActivities(any()) } returns Response.success(emptyList<Activity>())
 
@@ -423,6 +460,39 @@ class GarminRepositoryTest {
     }
 
     @Test
+    fun `Get Strava activities - force refresh`() = runTest {
+        val activities = listOf(
+            StravaActivity(
+                id = 1,
+                name = "activity_1",
+                distance = 10234.00,
+                sportType = "Run",
+                startDate = "2018-05-02T12:15:09Z"
+            ),
+            StravaActivity(
+                id = 2,
+                name = "activity_2",
+                distance = 17759.00,
+                sportType = "Ride",
+                startDate = "2018-04-30T12:35:51Z"
+            )
+        )
+        coEvery { strava.getActivities(perPage = any()) } returns Response.success(activities)
+
+        val expected = activities.map { it.toCore() }
+
+        val res = repo.getStravaActivities(limit = 5)
+        val res2 = repo.getStravaActivities(limit = 5, force = true)
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+        assertThat(res2.isSuccess).isTrue()
+        assertThat(res2.getOrNull()).isEqualTo(expected)
+        coVerify(exactly = 2) { strava.getActivities(perPage = 5) }
+        confirmVerified(dao, connect, strava)
+    }
+
+    @Test
     fun `Get Strava activities - empty list`() = runTest {
         coEvery { strava.getActivities(perPage = any()) } returns Response.success(emptyList<StravaActivity>())
 
@@ -509,6 +579,27 @@ class GarminRepositoryTest {
         assertThat(res2.isSuccess).isTrue()
         assertThat(res2.getOrNull()).isEqualTo(expected)
         coVerify(exactly = 1) { connect.getCourses() }
+        confirmVerified(dao, connect, strava)
+    }
+
+    @Test
+    fun `Get courses - force refresh`() = runTest {
+        val courses = listOf(
+            Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType(id = 1, key = "running")),
+            Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType(id = 10, key = "road_biking"))
+        )
+        coEvery { connect.getCourses() } returns Response.success(courses)
+
+        val expected = courses.map { it.toCore() }
+
+        val res = repo.getCourses()
+        val res2 = repo.getCourses(true)
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+        assertThat(res2.isSuccess).isTrue()
+        assertThat(res2.getOrNull()).isEqualTo(expected)
+        coVerify(exactly = 2) { connect.getCourses() }
         confirmVerified(dao, connect, strava)
     }
 
