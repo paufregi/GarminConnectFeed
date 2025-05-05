@@ -12,7 +12,6 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.Profile
 import retrofit2.Response
-import java.lang.Thread.sleep
 import java.time.Instant
 import java.util.Date
 import java.util.concurrent.Semaphore
