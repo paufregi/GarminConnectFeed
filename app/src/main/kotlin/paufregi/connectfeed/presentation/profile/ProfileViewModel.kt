@@ -53,7 +53,6 @@ class ProfileViewModel @Inject constructor(
         getCourses()
             .onSuccess { data -> _state.update { it.copy(courses = data, process = ProcessState.Idle) } }
             .onFailure { _state.update { it.copy(process = ProcessState.Failure("Couldn't load courses")) } }
-
     }
 
     fun onAction(action: ProfileAction) = when (action) {

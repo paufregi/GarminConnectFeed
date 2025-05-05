@@ -3,6 +3,8 @@ package paufregi.connectfeed.presentation.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -11,8 +13,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
-import paufregi.connectfeed.core.usecases.GetLatestActivities
-import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
+import paufregi.connectfeed.core.usecases.GetActivities
+import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
@@ -22,8 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditViewModel @Inject constructor(
-    val getLatestActivities: GetLatestActivities,
-    val getLatestStravaActivities: GetLatestStravaActivities,
+    val getActivities: GetActivities,
+    val getStravaActivities: GetStravaActivities,
     val getEventTypes: GetEventTypes,
     val getCourses: GetCourses,
     val updateActivity: UpdateActivity,
@@ -44,17 +46,22 @@ class EditViewModel @Inject constructor(
 
         val errors = mutableListOf<String>()
 
-        getLatestActivities()
-            .onSuccess { data -> _state.update { it.copy(activities = data) } }
-            .onFailure { errors.add("activities") }
+        coroutineScope {
+            async { getActivities() }
+                .await()
+                .onSuccess { data -> _state.update { it.copy(activities = data) } }
+                .onFailure { errors.add("activities") }
 
-        getLatestStravaActivities()
-            .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
-            .onFailure { errors.add("Strava activities") }
+            async { getStravaActivities() }
+                .await()
+                .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
+                .onFailure { errors.add("Strava activities") }
 
-        getCourses()
-            .onSuccess { data -> _state.update { it.copy(courses = data) } }
-            .onFailure { errors.add("courses") }
+            async { getCourses() }
+                .await()
+                .onSuccess { data -> _state.update { it.copy(courses = data) } }
+                .onFailure { errors.add("courses") }
+        }
 
         when (errors.isEmpty()) {
             true -> _state.update { it.copy(process = ProcessState.Idle) }

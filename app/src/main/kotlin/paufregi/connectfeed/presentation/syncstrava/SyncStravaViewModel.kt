@@ -3,14 +3,16 @@ package paufregi.connectfeed.presentation.syncstrava
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.connectfeed.core.usecases.GetLatestActivities
-import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
+import paufregi.connectfeed.core.usecases.GetActivities
+import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.SyncStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
 import paufregi.connectfeed.presentation.ui.models.ProcessState
@@ -18,8 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SyncStravaViewModel @Inject constructor(
-    val getLatestActivities: GetLatestActivities,
-    val getLatestStravaActivities: GetLatestStravaActivities,
+    val getActivities: GetActivities,
+    val getStravaActivities: GetStravaActivities,
     val syncActivity: SyncStravaActivity,
 ) : ViewModel() {
 
@@ -33,13 +35,17 @@ class SyncStravaViewModel @Inject constructor(
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
 
-        getLatestActivities()
-            .onSuccess { data -> _state.update { it.copy(activities = data) } }
-            .onFailure { errors.add("activities") }
+        coroutineScope {
+            async { getActivities() }
+                .await()
+                .onSuccess { data -> _state.update { it.copy(activities = data) } }
+                .onFailure { errors.add("activities") }
 
-        getLatestStravaActivities()
-            .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
-            .onFailure { errors.add("Strava activities") }
+            async { getStravaActivities() }
+                .await()
+                .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
+                .onFailure { errors.add("Strava activities") }
+        }
 
         when (errors.isEmpty()) {
             true -> _state.update { it.copy(process = ProcessState.Idle) }
