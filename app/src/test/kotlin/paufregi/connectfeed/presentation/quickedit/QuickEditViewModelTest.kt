@@ -20,8 +20,8 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.usecases.GetLatestActivities
-import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
+import paufregi.connectfeed.core.usecases.GetActivities
+import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
@@ -33,8 +33,8 @@ import java.time.Instant
 @ExperimentalCoroutinesApi
 class QuickEditViewModelTest {
 
-    private val getActivities = mockk<GetLatestActivities>()
-    private val getStravaActivities = mockk<GetLatestStravaActivities>()
+    private val getActivities = mockk<GetActivities>()
+    private val getStravaActivities = mockk<GetStravaActivities>()
     private val getProfiles = mockk<GetProfiles>()
     private val quickUpdateActivity = mockk<QuickUpdateActivity>()
     private val quickUpdateStravaActivity = mockk<QuickUpdateStravaActivity>()

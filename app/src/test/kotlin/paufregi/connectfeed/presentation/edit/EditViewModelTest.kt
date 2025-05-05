@@ -21,8 +21,8 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
-import paufregi.connectfeed.core.usecases.GetLatestActivities
-import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
+import paufregi.connectfeed.core.usecases.GetActivities
+import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.core.utils.failure
@@ -33,8 +33,8 @@ import java.time.Instant
 @ExperimentalCoroutinesApi
 class EditViewModelTest {
 
-    private val getActivities = mockk<GetLatestActivities>()
-    private val getStravaActivities = mockk<GetLatestStravaActivities>()
+    private val getActivities = mockk<GetActivities>()
+    private val getStravaActivities = mockk<GetStravaActivities>()
     private val getEventTypes = mockk<GetEventTypes>()
     private val getCourses = mockk<GetCourses>()
     private val updateActivity = mockk<UpdateActivity>()

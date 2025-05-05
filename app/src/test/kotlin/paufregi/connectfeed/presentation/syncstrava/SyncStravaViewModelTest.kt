@@ -16,8 +16,8 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.core.usecases.GetLatestActivities
-import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
+import paufregi.connectfeed.core.usecases.GetActivities
+import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.SyncStravaActivity
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.models.ProcessState
@@ -27,8 +27,8 @@ import java.time.Instant
 @ExperimentalCoroutinesApi
 class SyncStravaViewModelTest {
 
-    private val getActivities = mockk<GetLatestActivities>()
-    private val getStravaActivities = mockk<GetLatestStravaActivities>()
+    private val getActivities = mockk<GetActivities>()
+    private val getStravaActivities = mockk<GetStravaActivities>()
     private val syncStravaActivity = mockk<SyncStravaActivity>()
 
     private lateinit var viewModel: SyncStravaViewModel
