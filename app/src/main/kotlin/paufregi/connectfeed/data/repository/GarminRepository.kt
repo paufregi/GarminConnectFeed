@@ -70,14 +70,14 @@ class GarminRepository @Inject constructor(
             strava.getActivities(perPage = limit)
                 .toResult(emptyList())
                 .map { it.map { it.toCore() } }
-        }.onFailure { activitiesCache.invalidate() }
+        }.onFailure { stravaActivityCache.invalidate() }
 
     suspend fun getCourses(): Result<List<Course>> =
         withCache(courseCache) {
             garminConnect.getCourses()
                 .toResult(emptyList())
                 .map { it.map { it.toCore() } }
-        }.onFailure { activitiesCache.invalidate() }
+        }.onFailure { courseCache.invalidate() }
 
 
     suspend fun updateActivity(
