@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
+import paufregi.connectfeed.core.usecases.InvalidateCache
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
@@ -28,7 +29,8 @@ class QuickEditViewModel @Inject constructor(
     val getStravaActivities: GetStravaActivities,
     getProfiles: GetProfiles,
     val quickUpdateActivity: QuickUpdateActivity,
-    val quickUpdateStravaActivity: QuickUpdateStravaActivity
+    val quickUpdateStravaActivity: QuickUpdateStravaActivity,
+    val invalidateCache: InvalidateCache
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(QuickEditState())
@@ -66,6 +68,7 @@ class QuickEditViewModel @Inject constructor(
                 activity = action.activity,
                 profile = it.profile.getOrNull(action.activity),
                 stravaActivity = it.stravaActivity.getOrMatch(action.activity, it.stravaActivities),
+                water = if (it.profile.getOrNull(action.activity) == null) null else it.water,
             )
         }
         is QuickEditAction.SetStravaActivity -> _state.update {
@@ -73,15 +76,17 @@ class QuickEditViewModel @Inject constructor(
                 stravaActivity = action.activity,
                 profile = it.profile.getOrNull(action.activity),
                 activity = it.activity.getOrMatch(action.activity, it.activities),
+                water = if (it.profile.getOrNull(action.activity) == null) null else it.water,
             )
         }
         is QuickEditAction.SetProfile -> _state.update { it.copy(
             profile = action.profile,
             activity = it.activity.getOrNull(action.profile),
             stravaActivity = it.stravaActivity.getOrNull(action.profile),
+            water = action.profile.water,
         ) }
         is QuickEditAction.SetDescription -> _state.update { it.copy(description = action.description) }
-        is QuickEditAction.SetWater -> _state.update { it.copy(profile = it.profile?.copy(water = action.water)) }
+        is QuickEditAction.SetWater -> _state.update { it.copy(water = action.water) }
         is QuickEditAction.SetEffort -> _state.update { it.copy(effort = action.effort.getOrNull()) }
         is QuickEditAction.SetFeel -> _state.update { it.copy(feel = action.feel) }
         is QuickEditAction.Save -> saveAction()
@@ -94,6 +99,7 @@ class QuickEditViewModel @Inject constructor(
         quickUpdateActivity(
             activity = state.value.activity,
             profile = state.value.profile,
+            water = state.value.water,
             feel = state.value.feel,
             effort = state.value.effort
         ).onFailure { errors.add("activity") }
@@ -117,6 +123,7 @@ class QuickEditViewModel @Inject constructor(
 
     private fun restartAction() {
         _state.update { QuickEditState() }
+        invalidateCache()
         load()
     }
 }

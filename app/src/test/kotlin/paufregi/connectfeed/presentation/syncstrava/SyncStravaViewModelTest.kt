@@ -6,6 +6,7 @@ import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -18,6 +19,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetStravaActivities
+import paufregi.connectfeed.core.usecases.InvalidateCache
 import paufregi.connectfeed.core.usecases.SyncStravaActivity
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.models.ProcessState
@@ -30,6 +32,7 @@ class SyncStravaViewModelTest {
     private val getActivities = mockk<GetActivities>()
     private val getStravaActivities = mockk<GetStravaActivities>()
     private val syncStravaActivity = mockk<SyncStravaActivity>()
+    private val invalidateCache = mockk<InvalidateCache>()
 
     private lateinit var viewModel: SyncStravaViewModel
 
@@ -105,7 +108,7 @@ class SyncStravaViewModelTest {
         coEvery { getActivities() } returns Result.success(activities)
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -123,7 +126,7 @@ class SyncStravaViewModelTest {
             getActivities()
             getStravaActivities()
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
     }
 
     @Test
@@ -131,7 +134,7 @@ class SyncStravaViewModelTest {
         coEvery { getActivities() } returns Result.failure("error")
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -149,7 +152,7 @@ class SyncStravaViewModelTest {
             getActivities()
             getStravaActivities()
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
     }
 
     @Test
@@ -157,7 +160,7 @@ class SyncStravaViewModelTest {
         coEvery { getActivities() } returns Result.success(activities)
         coEvery { getStravaActivities() } returns Result.failure("error")
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -175,7 +178,7 @@ class SyncStravaViewModelTest {
             getActivities()
             getStravaActivities()
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
     }
 
     @Test
@@ -183,7 +186,7 @@ class SyncStravaViewModelTest {
         coEvery { getActivities() } returns Result.failure("error")
         coEvery { getStravaActivities() } returns Result.failure("error")
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -201,7 +204,7 @@ class SyncStravaViewModelTest {
             getActivities()
             getStravaActivities()
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
     }
 
     @Test
@@ -209,7 +212,7 @@ class SyncStravaViewModelTest {
         coEvery { getActivities() } returns Result.success(activities)
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.SetActivity(activities[0]))
@@ -229,7 +232,7 @@ class SyncStravaViewModelTest {
             getActivities()
             getStravaActivities()
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
     }
 
     @Test
@@ -237,7 +240,7 @@ class SyncStravaViewModelTest {
         coEvery { getActivities() } returns Result.success(activities)
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.SetStravaActivity(stravaActivities[0]))
@@ -257,7 +260,7 @@ class SyncStravaViewModelTest {
             getActivities()
             getStravaActivities()
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
     }
 
     @Test
@@ -265,7 +268,7 @@ class SyncStravaViewModelTest {
         coEvery { getActivities() } returns Result.success(activities)
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.SetActivity(activities[2]))
@@ -294,7 +297,7 @@ class SyncStravaViewModelTest {
         coEvery { getActivities() } returns Result.success(activities)
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.SetActivity(activities[1]))
@@ -323,7 +326,7 @@ class SyncStravaViewModelTest {
         coEvery { getActivities() } returns Result.success(activities)
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.SetStravaActivity(stravaActivities[2]))
@@ -352,7 +355,7 @@ class SyncStravaViewModelTest {
         coEvery { getActivities() } returns Result.success(activities)
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.SetStravaActivity(stravaActivities[1]))
@@ -381,7 +384,7 @@ class SyncStravaViewModelTest {
         coEvery { getActivities() } returns Result.success(activities)
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.SetDescription("description"))
@@ -409,7 +412,7 @@ class SyncStravaViewModelTest {
         coEvery { getActivities() } returns Result.success(activities)
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.SetTrainingEffect(true))
@@ -438,7 +441,7 @@ class SyncStravaViewModelTest {
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         coEvery { syncStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.SetActivity(activities[0]))
@@ -475,7 +478,7 @@ class SyncStravaViewModelTest {
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         coEvery { syncStravaActivity(any(), any(), any(), any()) } returns Result.failure("failure")
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.SetActivity(activities[0]))
@@ -510,8 +513,9 @@ class SyncStravaViewModelTest {
     fun `Restart action`() = runTest {
         coEvery { getActivities() } returns Result.success(activities)
         coEvery { getStravaActivities() } returns Result.success(stravaActivities)
+        every { invalidateCache() } returns Unit
 
-        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity)
+        viewModel = SyncStravaViewModel(getActivities, getStravaActivities, syncStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.Restart)

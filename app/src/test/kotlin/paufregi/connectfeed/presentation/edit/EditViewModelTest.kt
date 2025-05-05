@@ -23,6 +23,7 @@ import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetStravaActivities
+import paufregi.connectfeed.core.usecases.InvalidateCache
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.core.utils.failure
@@ -39,6 +40,7 @@ class EditViewModelTest {
     private val getCourses = mockk<GetCourses>()
     private val updateActivity = mockk<UpdateActivity>()
     private val updateStravaActivity = mockk<UpdateStravaActivity>()
+    private val invalidateCache = mockk<InvalidateCache>()
 
     private lateinit var viewModel: EditViewModel
 
@@ -132,7 +134,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -168,7 +171,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -185,7 +189,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -221,7 +226,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -238,7 +244,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -274,7 +281,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -291,7 +299,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -327,7 +336,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -344,7 +354,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -380,7 +391,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -397,7 +409,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -450,7 +463,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -488,7 +502,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -505,7 +520,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -545,7 +561,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -562,7 +579,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -602,7 +620,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -619,7 +638,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -657,7 +677,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -674,7 +695,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -714,7 +736,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -731,7 +754,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -771,7 +795,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -788,7 +813,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -826,7 +852,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -843,7 +870,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -883,7 +911,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -900,7 +929,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -940,7 +970,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -957,7 +988,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -995,7 +1027,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
     }
@@ -1013,7 +1046,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -1051,7 +1085,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
     }
@@ -1069,7 +1104,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
 
         viewModel.state.test {
@@ -1107,7 +1143,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            invalidateCache
         )
     }
 
@@ -1118,7 +1155,7 @@ class EditViewModelTest {
         coEvery { getCourses() } returns Result.success(courses)
         every { getEventTypes() } returns eventTypes
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache )
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetWater(100))
@@ -1149,7 +1186,7 @@ class EditViewModelTest {
             getCourses()
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
     }
 
@@ -1160,7 +1197,7 @@ class EditViewModelTest {
         coEvery { getCourses() } returns Result.success(courses)
         every { getEventTypes() } returns eventTypes
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetEffort(50f))
@@ -1191,7 +1228,7 @@ class EditViewModelTest {
             getCourses()
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
     }
 
@@ -1202,7 +1239,7 @@ class EditViewModelTest {
         coEvery { getCourses() } returns Result.success(courses)
         every { getEventTypes() } returns eventTypes
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetFeel(80f))
@@ -1233,7 +1270,7 @@ class EditViewModelTest {
             getCourses()
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
     }
 
@@ -1244,7 +1281,7 @@ class EditViewModelTest {
         coEvery { getCourses() } returns Result.success(courses)
         every { getEventTypes() } returns eventTypes
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetTrainingEffect(true))
@@ -1275,7 +1312,7 @@ class EditViewModelTest {
             getCourses()
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
     }
 
@@ -1288,7 +1325,7 @@ class EditViewModelTest {
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetActivity(activities[0]))
@@ -1331,7 +1368,7 @@ class EditViewModelTest {
             updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true)
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
     }
 
@@ -1344,7 +1381,7 @@ class EditViewModelTest {
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
         coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetActivity(activities[0]))
@@ -1387,7 +1424,7 @@ class EditViewModelTest {
             updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true)
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
     }
 
@@ -1400,7 +1437,7 @@ class EditViewModelTest {
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetActivity(activities[0]))
@@ -1443,7 +1480,7 @@ class EditViewModelTest {
             updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true)
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
     }
 
     @Test
@@ -1455,7 +1492,7 @@ class EditViewModelTest {
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
         coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetActivity(activities[0]))
@@ -1498,6 +1535,6 @@ class EditViewModelTest {
             updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true)
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, invalidateCache)
     }
 }
