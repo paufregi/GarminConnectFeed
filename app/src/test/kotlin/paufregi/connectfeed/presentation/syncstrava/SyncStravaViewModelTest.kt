@@ -519,7 +519,7 @@ class SyncStravaViewModelTest {
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.Restart)
-            skipItems(2)
+            skipItems(3)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)

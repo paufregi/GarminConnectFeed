@@ -508,7 +508,7 @@ class GarminRepositoryTest {
         assertThat(res.getOrNull()).isEqualTo(expected)
         assertThat(res2.isSuccess).isTrue()
         assertThat(res2.getOrNull()).isEqualTo(expected)
-        coVerify(exactly = 2) { connect.getCourses() }
+        coVerify(exactly = 1) { connect.getCourses() }
         confirmVerified(dao, connect, strava)
     }
 
