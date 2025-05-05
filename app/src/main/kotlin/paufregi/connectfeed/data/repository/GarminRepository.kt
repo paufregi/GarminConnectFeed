@@ -35,6 +35,11 @@ class GarminRepository @Inject constructor(
     val courseCache: Cache<Result<List<Course>>> = Cache()
     val stravaActivityCache: Cache<Result<List<Activity>>> = Cache()
 
+    fun invalidateCaches() {
+        activitiesCache.invalidate()
+        courseCache.invalidate()
+        stravaActivityCache.invalidate()
+    }
 
     suspend fun fetchUser(): Result<User> =
         garminConnect.getUserProfile()
