@@ -193,7 +193,7 @@ internal fun QuickEditForm(
         if (state.profile?.customWater == true) {
             TextField(
                 label = { Text("Water") },
-                value = state.profile.water?.toString() ?: "",
+                value = state.water?.toString() ?: "",
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 onValueChange = { onAction(QuickEditAction.SetWater(it.toIntOrNull())) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)

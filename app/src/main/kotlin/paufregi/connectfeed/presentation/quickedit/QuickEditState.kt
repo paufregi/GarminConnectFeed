@@ -13,6 +13,7 @@ data class QuickEditState(
     val stravaActivity: Activity? = null,
     val profile: Profile? = null,
     val description: String? = null,
+    val water: Int? = null,
     val effort: Float? = null,
     val feel: Float? = null
 ) {
