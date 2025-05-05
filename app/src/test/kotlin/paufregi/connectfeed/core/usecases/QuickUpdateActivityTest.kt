@@ -53,16 +53,16 @@ class QuickUpdateActivityTest{
     @Test
     fun `Update activity`() = runTest {
         coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
-        val res = useCase(activity, profile, 50f, 90f)
+        val res = useCase(activity, profile, 20, 50f, 90f)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateActivity(activity, profile.name, profile.eventType, profile.course, profile.water, 50f, 90f) }
+        coVerify { repo.updateActivity(activity, profile.name, profile.eventType, profile.course, 20, 50f, 90f) }
         confirmVerified(repo)
     }
 
     @Test
     fun `Invalid - no activity`() = runTest {
-        val res = useCase(null, profile, null, null)
+        val res = useCase(null, profile, null, null, null)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -72,7 +72,7 @@ class QuickUpdateActivityTest{
 
     @Test
     fun `Invalid - no profile`() = runTest {
-        val res = useCase(activity, null, null, null)
+        val res = useCase(activity, null, null, null, null)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -82,7 +82,7 @@ class QuickUpdateActivityTest{
 
     @Test
     fun `Invalid - both null`() = runTest {
-        val res = useCase(null, null, null, null)
+        val res = useCase(null, null, null, null, null)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
