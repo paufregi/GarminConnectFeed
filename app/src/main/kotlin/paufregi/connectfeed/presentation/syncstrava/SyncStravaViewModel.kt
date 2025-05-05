@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetStravaActivities
+import paufregi.connectfeed.core.usecases.InvalidateCache
 import paufregi.connectfeed.core.usecases.SyncStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
 import paufregi.connectfeed.presentation.ui.models.ProcessState
@@ -23,6 +24,7 @@ class SyncStravaViewModel @Inject constructor(
     val getActivities: GetActivities,
     val getStravaActivities: GetStravaActivities,
     val syncActivity: SyncStravaActivity,
+    val invalidateCache: InvalidateCache
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SyncStravaState())
@@ -86,6 +88,7 @@ class SyncStravaViewModel @Inject constructor(
 
     private fun restartAction() {
         _state.update { SyncStravaState() }
+        invalidateCache()
         load()
     }
 }
