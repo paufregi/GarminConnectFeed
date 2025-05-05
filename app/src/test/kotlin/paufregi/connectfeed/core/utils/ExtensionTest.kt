@@ -1,6 +1,8 @@
 package paufregi.connectfeed.core.utils
 
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertThrows
@@ -10,8 +12,10 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.Profile
 import retrofit2.Response
+import java.lang.Thread.sleep
 import java.time.Instant
 import java.util.Date
+import java.util.concurrent.Semaphore
 
 class ExtensionTest {
 
@@ -525,5 +529,31 @@ class ExtensionTest {
 
         assertThat(result.isSuccess).isFalse()
         assertThat(result.exceptionOrNull()?.message).isEqualTo("new error")
+    }
+
+    @Test
+    fun `Semaphore - withPermit - executes action within permit`() {
+        val semaphore = Semaphore(1)
+        var result = 0
+
+        semaphore.withPermit { result = 42 }
+
+        assertThat(result).isEqualTo(42)
+    }
+
+    @Test
+    fun `Semaphore - withPermit - blocks when no permits are available`() = runTest{
+        val semaphore = Semaphore(1)
+        var actionExecuted = false
+
+        coroutineScope {
+            semaphore.acquire()
+            val action = async { semaphore.withPermit { actionExecuted = true } }
+
+            assertThat(actionExecuted).isFalse()
+            semaphore.release()
+            action.await()
+            assertThat(actionExecuted).isTrue()
+        }
     }
 }
