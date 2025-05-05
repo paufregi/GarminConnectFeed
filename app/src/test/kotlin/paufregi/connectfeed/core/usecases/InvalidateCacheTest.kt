@@ -3,8 +3,8 @@ package paufregi.connectfeed.core.usecases
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.verify
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before

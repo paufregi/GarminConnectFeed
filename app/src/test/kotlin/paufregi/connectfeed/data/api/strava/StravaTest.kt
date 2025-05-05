@@ -18,8 +18,8 @@ import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.Activity
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateProfile
-import paufregi.connectfeed.stravaDetailedAthlete
 import paufregi.connectfeed.stravaActivitiesJson
+import paufregi.connectfeed.stravaDetailedAthlete
 
 class StravaTest {
 

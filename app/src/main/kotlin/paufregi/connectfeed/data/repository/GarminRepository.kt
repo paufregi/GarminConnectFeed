@@ -16,11 +16,11 @@ import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.models.UpdateProfile
-import paufregi.connectfeed.data.utils.Cache
-import paufregi.connectfeed.data.utils.withCache
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
+import paufregi.connectfeed.data.utils.Cache
+import paufregi.connectfeed.data.utils.withCache
 import java.io.File
 import javax.inject.Inject
 import paufregi.connectfeed.data.api.garmin.models.EventType as DataEventType

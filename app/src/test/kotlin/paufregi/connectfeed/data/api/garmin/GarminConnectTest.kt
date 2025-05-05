@@ -16,6 +16,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.connectfeed.activitiesJson
 import paufregi.connectfeed.coursesJson
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.Activity
@@ -26,7 +27,6 @@ import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
-import paufregi.connectfeed.activitiesJson
 import paufregi.connectfeed.userProfileJson
 import java.io.File
 
