@@ -12,10 +12,10 @@ class Cache<T>(
     private var timestamp: Instant? = null
     private val semaphore = Semaphore(1)
 
-    suspend fun get(fetch: suspend () -> T): T =
+    suspend fun get(force: Boolean = false, fetch: suspend () -> T): T =
         semaphore.withPermit {
             val now = Instant.now()
-            if (data == null || this.timestamp == null || Duration.between(this.timestamp, now) > ttl) {
+            if (force == true || data == null || this.timestamp == null || Duration.between(this.timestamp, now) > ttl) {
                 data = fetch()
                 timestamp = now
             }
@@ -30,4 +30,4 @@ class Cache<T>(
         }
 }
 
-suspend fun <T> withCache(c: Cache<T>, action: suspend () -> T): T = c.get { action() }
+suspend fun <T> withCache(cache: Cache<T>, force: Boolean = false, action: suspend () -> T): T = cache.get(force) { action() }
