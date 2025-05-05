@@ -18,7 +18,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class GetLatestStravaActivitiesTest{
+class GetStravaActivitiesTest{
     private val repo = mockk<GarminRepository>()
     private val strava = mockk<IsStravaLoggedIn>()
     private lateinit var useCase: GetStravaActivities
@@ -34,7 +34,7 @@ class GetLatestStravaActivitiesTest{
     }
 
     @Test
-    fun `Get latest activities`() = runTest {
+    fun `Get activities`() = runTest {
         val activities = listOf(
             Activity(id = 1, name = "name", distance = 10234.00, type = ActivityType.Running)
         )
@@ -51,7 +51,7 @@ class GetLatestStravaActivitiesTest{
     }
 
     @Test
-    fun `Get latest activities - failed`() = runTest {
+    fun `Get activities - failed`() = runTest {
         every { strava() } returns flowOf(true)
         coEvery { repo.getStravaActivities(any()) } returns Result.failure("Failed")
         val res = useCase()
@@ -64,7 +64,7 @@ class GetLatestStravaActivitiesTest{
     }
 
     @Test
-    fun `Get latest activities - not logged in strava`() = runTest {
+    fun `Get activities - not logged in strava`() = runTest {
         every { strava() } returns flowOf(false)
         val res = useCase()
 

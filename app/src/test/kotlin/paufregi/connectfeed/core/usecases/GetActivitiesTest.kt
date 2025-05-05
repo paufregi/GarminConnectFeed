@@ -15,7 +15,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class GetLatestActivitiesTest{
+class GetActivitiesTest{
     private val repo = mockk<GarminRepository>()
     private lateinit var useCase: GetActivities
 
@@ -30,7 +30,7 @@ class GetLatestActivitiesTest{
     }
 
     @Test
-    fun `Get latest activities`() = runTest {
+    fun `Get activities`() = runTest {
         val activities = listOf(
             Activity(id = 1, name = "name", distance = 10234.00, type = ActivityType.Running)
         )
@@ -44,7 +44,7 @@ class GetLatestActivitiesTest{
     }
 
     @Test
-    fun `Get latest activities - failed`() = runTest {
+    fun `Get activities - failed`() = runTest {
         coEvery { repo.getActivities(any()) } returns Result.failure("Failed")
         val res = useCase()
 
