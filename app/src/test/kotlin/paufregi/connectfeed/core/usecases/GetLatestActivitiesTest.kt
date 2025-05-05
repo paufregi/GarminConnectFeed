@@ -17,11 +17,11 @@ import paufregi.connectfeed.data.repository.GarminRepository
 
 class GetLatestActivitiesTest{
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: GetLatestActivities
+    private lateinit var useCase: GetActivities
 
     @Before
     fun setup(){
-        useCase = GetLatestActivities(repo)
+        useCase = GetActivities(repo)
     }
 
     @After
@@ -34,22 +34,22 @@ class GetLatestActivitiesTest{
         val activities = listOf(
             Activity(id = 1, name = "name", distance = 10234.00, type = ActivityType.Running)
         )
-        coEvery { repo.getLatestActivities(any()) } returns Result.success(activities)
+        coEvery { repo.getActivities(any()) } returns Result.success(activities)
         val res = useCase()
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(activities)
-        coVerify { repo.getLatestActivities(5) }
+        coVerify { repo.getActivities(5) }
         confirmVerified(repo)
     }
 
     @Test
     fun `Get latest activities - failed`() = runTest {
-        coEvery { repo.getLatestActivities(any()) } returns Result.failure("Failed")
+        coEvery { repo.getActivities(any()) } returns Result.failure("Failed")
         val res = useCase()
 
         assertThat(res.isSuccess).isFalse()
-        coVerify { repo.getLatestActivities(5) }
+        coVerify { repo.getActivities(5) }
         confirmVerified(repo)
     }
 }

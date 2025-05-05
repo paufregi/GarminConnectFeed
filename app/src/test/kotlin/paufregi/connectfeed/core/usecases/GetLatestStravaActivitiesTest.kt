@@ -21,11 +21,11 @@ import paufregi.connectfeed.data.repository.GarminRepository
 class GetLatestStravaActivitiesTest{
     private val repo = mockk<GarminRepository>()
     private val strava = mockk<IsStravaLoggedIn>()
-    private lateinit var useCase: GetLatestStravaActivities
+    private lateinit var useCase: GetStravaActivities
 
     @Before
     fun setup(){
-        useCase = GetLatestStravaActivities(repo, strava)
+        useCase = GetStravaActivities(repo, strava)
     }
 
     @After
@@ -39,27 +39,27 @@ class GetLatestStravaActivitiesTest{
             Activity(id = 1, name = "name", distance = 10234.00, type = ActivityType.Running)
         )
         every { strava() } returns flowOf(true)
-        coEvery { repo.getLatestStravaActivities(any()) } returns Result.success(activities)
+        coEvery { repo.getStravaActivities(any()) } returns Result.success(activities)
         val res = useCase()
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(activities)
 
         verify { strava() }
-        coVerify { repo.getLatestStravaActivities(5) }
+        coVerify { repo.getStravaActivities(5) }
         confirmVerified(repo, strava)
     }
 
     @Test
     fun `Get latest activities - failed`() = runTest {
         every { strava() } returns flowOf(true)
-        coEvery { repo.getLatestStravaActivities(any()) } returns Result.failure("Failed")
+        coEvery { repo.getStravaActivities(any()) } returns Result.failure("Failed")
         val res = useCase()
 
         assertThat(res.isSuccess).isFalse()
 
         verify { strava() }
-        coVerify { repo.getLatestStravaActivities(5) }
+        coVerify { repo.getStravaActivities(5) }
         confirmVerified(repo, strava)
     }
 
