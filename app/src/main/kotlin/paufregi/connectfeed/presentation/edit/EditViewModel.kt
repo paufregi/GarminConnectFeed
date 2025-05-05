@@ -15,6 +15,7 @@ import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetStravaActivities
+import paufregi.connectfeed.core.usecases.InvalidateCache
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
@@ -30,6 +31,7 @@ class EditViewModel @Inject constructor(
     val getCourses: GetCourses,
     val updateActivity: UpdateActivity,
     val updateStravaActivity: UpdateStravaActivity,
+    val invalidateCache: InvalidateCache
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditState())
@@ -92,14 +94,11 @@ class EditViewModel @Inject constructor(
         is EditAction.SetEffort -> _state.update { it.copy(effort = action.effort.getOrNull()) }
         is EditAction.SetFeel -> _state.update { it.copy(feel = action.feel) }
         is EditAction.SetTrainingEffect -> _state.update { it.copy(trainingEffect = action.trainingEffect) }
-        is EditAction.Save -> saveActivity()
-        is EditAction.Restart -> {
-            _state.update { EditState() }
-            load()
-        }
+        is EditAction.Save -> saveAction()
+        is EditAction.Restart -> restartAction()
     }
 
-    private fun saveActivity() = viewModelScope.launch {
+    private fun saveAction() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
 
@@ -126,5 +125,11 @@ class EditViewModel @Inject constructor(
             true -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
             false -> _state.update { it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")}")) }
         }
+    }
+
+    private fun restartAction() {
+        _state.update { EditState() }
+        invalidateCache()
+        load()
     }
 }
