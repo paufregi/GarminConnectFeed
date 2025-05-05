@@ -39,27 +39,27 @@ class GetStravaActivitiesTest{
             Activity(id = 1, name = "name", distance = 10234.00, type = ActivityType.Running)
         )
         every { strava() } returns flowOf(true)
-        coEvery { repo.getStravaActivities(any()) } returns Result.success(activities)
-        val res = useCase()
+        coEvery { repo.getStravaActivities(any(), any()) } returns Result.success(activities)
+        val res = useCase(true)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(activities)
 
         verify { strava() }
-        coVerify { repo.getStravaActivities(5) }
+        coVerify { repo.getStravaActivities(5, true) }
         confirmVerified(repo, strava)
     }
 
     @Test
     fun `Get activities - failed`() = runTest {
         every { strava() } returns flowOf(true)
-        coEvery { repo.getStravaActivities(any()) } returns Result.failure("Failed")
+        coEvery { repo.getStravaActivities(any(), any()) } returns Result.failure("Failed")
         val res = useCase()
 
         assertThat(res.isSuccess).isFalse()
 
         verify { strava() }
-        coVerify { repo.getStravaActivities(5) }
+        coVerify { repo.getStravaActivities(5, false) }
         confirmVerified(repo, strava)
     }
 

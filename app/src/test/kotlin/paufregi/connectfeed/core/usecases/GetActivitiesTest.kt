@@ -34,22 +34,22 @@ class GetActivitiesTest{
         val activities = listOf(
             Activity(id = 1, name = "name", distance = 10234.00, type = ActivityType.Running)
         )
-        coEvery { repo.getActivities(any()) } returns Result.success(activities)
-        val res = useCase()
+        coEvery { repo.getActivities(any(), any()) } returns Result.success(activities)
+        val res = useCase(true)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(activities)
-        coVerify { repo.getActivities(5) }
+        coVerify { repo.getActivities(5, true) }
         confirmVerified(repo)
     }
 
     @Test
     fun `Get activities - failed`() = runTest {
-        coEvery { repo.getActivities(any()) } returns Result.failure("Failed")
+        coEvery { repo.getActivities(any(), any()) } returns Result.failure("Failed")
         val res = useCase()
 
         assertThat(res.isSuccess).isFalse()
-        coVerify { repo.getActivities(5) }
+        coVerify { repo.getActivities(5, false) }
         confirmVerified(repo)
     }
 }

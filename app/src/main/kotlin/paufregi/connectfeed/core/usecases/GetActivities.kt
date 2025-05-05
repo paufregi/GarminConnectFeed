@@ -5,6 +5,6 @@ import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
 class GetActivities @Inject constructor(private val garminRepository: GarminRepository) {
-    suspend operator fun invoke(): Result<List<Activity>> =
-        garminRepository.getActivities(limit = 5)
+    suspend operator fun invoke(force: Boolean = false): Result<List<Activity>> =
+        garminRepository.getActivities(limit = 5, force = force)
 }

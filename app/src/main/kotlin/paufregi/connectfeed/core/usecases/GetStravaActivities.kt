@@ -9,9 +9,9 @@ class GetStravaActivities @Inject constructor(
     private val repo: GarminRepository,
     private val isStravaLoggedIn: IsStravaLoggedIn
 ) {
-    suspend operator fun invoke(): Result<List<Activity>> =
+    suspend operator fun invoke(force: Boolean = false): Result<List<Activity>> =
         when (isStravaLoggedIn().first()) {
-            true -> repo.getStravaActivities(5)
+            true -> repo.getStravaActivities(5, force)
             false -> Result.success(emptyList())
         }
 }

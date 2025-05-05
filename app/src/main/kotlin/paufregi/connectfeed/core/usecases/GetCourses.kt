@@ -5,8 +5,8 @@ import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
 class GetCourses @Inject constructor(private val garminRepository: GarminRepository) {
-    suspend operator fun invoke(): Result<List<Course>> =
-        garminRepository.getCourses().map { data ->
+    suspend operator fun invoke(force: Boolean = false): Result<List<Course>> =
+        garminRepository.getCourses(force = force).map { data ->
             data.sortedWith(compareBy({ it.type.order }, { it.name }))
         }
 }
