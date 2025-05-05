@@ -120,7 +120,7 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Get latest activities`() = runTest {
+    fun `Get activities`() = runTest {
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
@@ -145,14 +145,14 @@ class GarminRepositoryTest {
             )
         )
 
-        val res = repo.getLatestActivities(5)
+        val res = repo.getActivities(5)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(expected)
     }
 
     @Test
-    fun `Get latest Strava activities`() = runTest {
+    fun `Get Strava activities`() = runTest {
         stravaStore.saveToken(stravaToken)
 
         val expected = listOf(
@@ -172,7 +172,7 @@ class GarminRepositoryTest {
                 )
         )
 
-        val res = repo.getLatestStravaActivities(5)
+        val res = repo.getStravaActivities(5)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(expected)

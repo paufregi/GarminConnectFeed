@@ -241,7 +241,7 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Get latest activities`() = runTest {
+    fun `Get activities`() = runTest {
         val activities = listOf(
             Activity(
                 id = 1,
@@ -262,55 +262,55 @@ class GarminRepositoryTest {
                 beginTimestamp = 1729705968000
             )
         )
-        coEvery { connect.getLatestActivities(any()) } returns Response.success(activities)
+        coEvery { connect.getActivities(any()) } returns Response.success(activities)
 
         val expected = activities.map { it.toCore() }
 
-        val res = repo.getLatestActivities(limit = 5)
+        val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(expected)
-        coVerify { connect.getLatestActivities(5) }
+        coVerify { connect.getActivities(5) }
         confirmVerified(dao, connect, strava)
     }
 
     @Test
-    fun `Get latest activities - empty list`() = runTest {
-        coEvery { connect.getLatestActivities(any()) } returns Response.success(emptyList<Activity>())
+    fun `Get activities - empty list`() = runTest {
+        coEvery { connect.getActivities(any()) } returns Response.success(emptyList<Activity>())
 
-        val res = repo.getLatestActivities(limit = 5)
+        val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
-        coVerify { connect.getLatestActivities(5) }
+        coVerify { connect.getActivities(5) }
         confirmVerified(dao, connect, strava)
     }
 
     @Test
-    fun `Get latest activities - null`() = runTest {
-        coEvery { connect.getLatestActivities(any()) } returns Response.success(null)
+    fun `Get activities - null`() = runTest {
+        coEvery { connect.getActivities(any()) } returns Response.success(null)
 
-        val res = repo.getLatestActivities(limit = 5)
+        val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
-        coVerify { connect.getLatestActivities(5) }
+        coVerify { connect.getActivities(5) }
         confirmVerified(dao, connect, strava)
     }
 
     @Test
-    fun `Get latest activities - failure`() = runTest {
-        coEvery { connect.getLatestActivities(any()) } returns Response.error<List<Activity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+    fun `Get activities - failure`() = runTest {
+        coEvery { connect.getActivities(any()) } returns Response.error<List<Activity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.getLatestActivities(limit = 5)
+        val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isFalse()
-        coVerify { connect.getLatestActivities(5) }
+        coVerify { connect.getActivities(5) }
         confirmVerified(dao, connect, strava)
     }
 
     @Test
-    fun `Get latest Strava activities`() = runTest {
+    fun `Get Strava activities`() = runTest {
         val activities = listOf(
             StravaActivity(
                 id = 1,
@@ -327,50 +327,50 @@ class GarminRepositoryTest {
                 startDate = "2018-04-30T12:35:51Z"
             )
         )
-        coEvery { strava.getLatestActivities(perPage = any()) } returns Response.success(activities)
+        coEvery { strava.getActivities(perPage = any()) } returns Response.success(activities)
 
         val expected = activities.map { it.toCore() }
 
-        val res = repo.getLatestStravaActivities(limit = 5)
+        val res = repo.getStravaActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(expected)
-        coVerify { strava.getLatestActivities(perPage = 5) }
+        coVerify { strava.getActivities(perPage = 5) }
         confirmVerified(dao, connect, strava)
     }
 
     @Test
-    fun `Get latest Strava activities - empty list`() = runTest {
-        coEvery { strava.getLatestActivities(perPage = any()) } returns Response.success(emptyList<StravaActivity>())
+    fun `Get Strava activities - empty list`() = runTest {
+        coEvery { strava.getActivities(perPage = any()) } returns Response.success(emptyList<StravaActivity>())
 
-        val res = repo.getLatestStravaActivities(limit = 5)
+        val res = repo.getStravaActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
-        coVerify { strava.getLatestActivities(perPage = 5) }
+        coVerify { strava.getActivities(perPage = 5) }
         confirmVerified(dao, connect, strava)
     }
 
     @Test
-    fun `Get latest Strava activities - null`() = runTest {
-        coEvery { strava.getLatestActivities(perPage = any()) } returns Response.success(null)
+    fun `Get Strava activities - null`() = runTest {
+        coEvery { strava.getActivities(perPage = any()) } returns Response.success(null)
 
-        val res = repo.getLatestStravaActivities(limit = 5)
+        val res = repo.getStravaActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
-        coVerify { strava.getLatestActivities(perPage = 5) }
+        coVerify { strava.getActivities(perPage = 5) }
         confirmVerified(dao, connect, strava)
     }
 
     @Test
-    fun `Get latest Strava activities - failure`() = runTest {
-        coEvery { strava.getLatestActivities(perPage = any()) } returns Response.error<List<StravaActivity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+    fun `Get Strava activities - failure`() = runTest {
+        coEvery { strava.getActivities(perPage = any()) } returns Response.error<List<StravaActivity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.getLatestStravaActivities(limit = 5)
+        val res = repo.getStravaActivities(limit = 5)
 
         assertThat(res.isSuccess).isFalse()
-        coVerify { strava.getLatestActivities(perPage = 5) }
+        coVerify { strava.getActivities(perPage = 5) }
         confirmVerified(dao, connect, strava)
     }
 

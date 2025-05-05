@@ -17,7 +17,7 @@ import retrofit2.http.Query
 interface Strava {
 
     @GET("athlete/activities")
-    suspend fun getLatestActivities(
+    suspend fun getActivities(
         @Query("before") before: Long? = null,
         @Query("after") after: Long? = null,
         @Query("page") page: Int? = 1,

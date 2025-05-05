@@ -28,7 +28,7 @@ interface GarminConnect {
     suspend fun uploadFile(@Part file: MultipartBody.Part): Response<Unit>
 
     @GET("/activitylist-service/activities/search/activities")
-    suspend fun getLatestActivities(
+    suspend fun getActivities(
         @Query("limit") limit: Int,
         @Query("start") start: Int = 0,
     ): Response<List<Activity>>
