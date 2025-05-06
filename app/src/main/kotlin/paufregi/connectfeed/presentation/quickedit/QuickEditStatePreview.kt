@@ -162,6 +162,7 @@ class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
                     distance = 1250.0
                 )
             ),
+            water = 20,
             feel = 50f,
             effort = 50f,
             description = "description",

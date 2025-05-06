@@ -18,8 +18,8 @@ import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.Activity
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateProfile
+import paufregi.connectfeed.stravaActivitiesJson
 import paufregi.connectfeed.stravaDetailedAthlete
-import paufregi.connectfeed.stravaLatestActivitiesJson
 
 class StravaTest {
 
@@ -47,11 +47,11 @@ class StravaTest {
     }
 
     @Test
-    fun `Get latest activities`() = runTest {
-        val response = MockResponse().setResponseCode(200).setBody(stravaLatestActivitiesJson)
+    fun `Get activities`() = runTest {
+        val response = MockResponse().setResponseCode(200).setBody(stravaActivitiesJson)
         server.enqueue(response)
 
-        val res = api.getLatestActivities(perPage = 3)
+        val res = api.getActivities(perPage = 3)
 
         val expected = listOf(
             Activity(
@@ -77,11 +77,11 @@ class StravaTest {
     }
 
     @Test
-    fun `Get latest activities - empty`() = runTest {
+    fun `Get activities - empty`() = runTest {
         val response = MockResponse().setResponseCode(200).setBody("[]")
         server.enqueue(response)
 
-        val res = api.getLatestActivities(perPage = 3)
+        val res = api.getActivities(perPage = 3)
 
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(emptyList<Activity>())
@@ -90,11 +90,11 @@ class StravaTest {
     }
 
     @Test
-    fun `Get latest activities - failure`() = runTest {
+    fun `Get activities - failure`() = runTest {
         val response = MockResponse().setResponseCode(400)
         server.enqueue(response)
 
-        val res = api.getLatestActivities(perPage = 3)
+        val res = api.getActivities(perPage = 3)
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }

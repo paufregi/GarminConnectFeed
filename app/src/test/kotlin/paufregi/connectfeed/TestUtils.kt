@@ -245,7 +245,7 @@ val userProfileJson = """
 }
 """.trimIndent()
 
-val latestActivitiesJson = """
+val activitiesJson = """
     [
         {
             "activityId": 1,
@@ -671,7 +671,7 @@ val stravaDeauthorizationJson = """
     }
     """.trimIndent()
 
-val stravaLatestActivitiesJson = """
+val stravaActivitiesJson = """
     [ {
       "resource_state" : 2,
       "athlete" : {

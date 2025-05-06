@@ -78,7 +78,7 @@ class SyncWeightViewModelTest {
 
         viewModel.state.test {
             viewModel.updateWeight(inputStream)
-            skipItems(1)
+            skipItems(2)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Success())
             cancelAndIgnoreRemainingEvents()
@@ -146,7 +146,7 @@ class SyncWeightViewModelTest {
 
         viewModel.state.test {
             viewModel.updateWeight(inputStream)
-            skipItems(1)
+            skipItems(2)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Failure("Garmin sync failed"))
             cancelAndIgnoreRemainingEvents()
@@ -185,7 +185,7 @@ class SyncWeightViewModelTest {
 
         viewModel.state.test {
             viewModel.updateWeight(inputStream)
-            skipItems(1)
+            skipItems(2)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Failure("Strava sync failed"))
             cancelAndIgnoreRemainingEvents()
@@ -224,7 +224,7 @@ class SyncWeightViewModelTest {
 
         viewModel.state.test {
             viewModel.updateWeight(inputStream)
-            skipItems(1)
+            skipItems(2)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Failure("Garmin & Strava sync failed"))
             cancelAndIgnoreRemainingEvents()

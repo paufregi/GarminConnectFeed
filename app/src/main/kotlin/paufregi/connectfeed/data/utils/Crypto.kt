@@ -2,7 +2,9 @@ package paufregi.connectfeed.data.utils
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import paufregi.connectfeed.core.utils.withPermit
 import java.security.KeyStore
+import java.util.concurrent.Semaphore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -21,6 +23,8 @@ object Crypto {
     private val keyStore = KeyStore
         .getInstance(ANDROID_KEY_STORE)
         .apply { load(null) }
+
+    private val semaphore = Semaphore(1)
 
     private fun getKey(): SecretKey {
         val existingKey = keyStore.getEntry(ALIAS, null) as? KeyStore.SecretKeyEntry
@@ -42,18 +46,20 @@ object Crypto {
             }.generateKey()
     }
 
-    fun encrypt(data: String): ByteArray {
-        cipher.init(Cipher.ENCRYPT_MODE, getKey())
-        val iv = cipher.iv
-        val encrypted = cipher.doFinal(data.encodeToByteArray())
-        return iv + encrypted
-    }
+    fun encrypt(data: String): ByteArray =
+        semaphore.withPermit {
+            cipher.init(Cipher.ENCRYPT_MODE, getKey())
+            val iv = cipher.iv
+            val encrypted = cipher.doFinal(data.encodeToByteArray())
+            return iv + encrypted
+        }
 
-    fun decrypt(bytes: ByteArray): String {
-        val iv = bytes.copyOfRange(0, IV_SIZE)
-        val data = bytes.copyOfRange(IV_SIZE, bytes.size)
+    fun decrypt(bytes: ByteArray): String =
+        semaphore.withPermit {
+            val iv = bytes.copyOfRange(0, IV_SIZE)
+            val data = bytes.copyOfRange(IV_SIZE, bytes.size)
 
-        cipher.init(Cipher.DECRYPT_MODE, getKey(), GCMParameterSpec(128, iv))
-        return cipher.doFinal(data).decodeToString()
-    }
+            cipher.init(Cipher.DECRYPT_MODE, getKey(), GCMParameterSpec(128, iv))
+            return cipher.doFinal(data).decodeToString()
+        }
 }

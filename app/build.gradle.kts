@@ -67,6 +67,11 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    kotlin {
+        sourceSets.all {
+            languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
+        }
+    }
 
 
     composeOptions {
@@ -110,7 +115,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
     implementation(libs.retrofit)
-    implementation(libs.converter.gson)
+    implementation(libs.retrofit.converter)
     implementation(libs.okhttp)
     implementation(libs.okhttp.signpost)
     implementation(libs.java.jwt)

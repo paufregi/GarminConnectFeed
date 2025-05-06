@@ -1,21 +1,21 @@
 package paufregi.connectfeed.data.api.garmin.models
 
-import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import kotlin.math.round
 import paufregi.connectfeed.core.models.Course as CoreCourse
 
-@Keep
 @Serializable
+@JsonIgnoreUnknownKeys
 data class Course(
-    @SerializedName("courseId")
+    @SerialName("courseId")
     val id: Long,
-    @SerializedName("courseName")
+    @SerialName("courseName")
     val name: String,
-    @SerializedName("distanceInMeters")
+    @SerialName("distanceInMeters")
     val distance: Double,
-    @SerializedName("activityType")
+    @SerialName("activityType")
     val type: ActivityType
 ) {
     fun toCore(): CoreCourse =

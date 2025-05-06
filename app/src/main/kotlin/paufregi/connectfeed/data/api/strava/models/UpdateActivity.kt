@@ -1,16 +1,14 @@
 package paufregi.connectfeed.data.api.strava.models
 
-import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Keep
 @Serializable
 data class UpdateActivity(
-    @SerializedName("name")
+    @SerialName("name")
     val name: String?,
-    @SerializedName("description")
+    @SerialName("description")
     val description: String?,
-    @SerializedName("commute")
+    @SerialName("commute")
     val commute: Boolean?,
 )

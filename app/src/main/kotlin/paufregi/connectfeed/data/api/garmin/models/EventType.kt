@@ -1,16 +1,16 @@
 package paufregi.connectfeed.data.api.garmin.models
 
-import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 
-@Keep
 @Serializable
+@JsonIgnoreUnknownKeys
 data class EventType(
-    @SerializedName("typeId")
+    @SerialName("typeId")
     val id: Long?,
-    @SerializedName("typeKey")
+    @SerialName("typeKey")
     val key: String?,
 ) {
     fun toCore(): CoreEventType? = when (this.id) {

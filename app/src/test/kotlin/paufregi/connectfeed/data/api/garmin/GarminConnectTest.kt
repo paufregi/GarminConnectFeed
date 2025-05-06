@@ -16,6 +16,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.connectfeed.activitiesJson
 import paufregi.connectfeed.coursesJson
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.Activity
@@ -26,7 +27,6 @@ import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
-import paufregi.connectfeed.latestActivitiesJson
 import paufregi.connectfeed.userProfileJson
 import java.io.File
 
@@ -112,11 +112,11 @@ class GarminConnectTest {
     }
 
     @Test
-    fun `Get latest activities`() = runTest {
-        val response = MockResponse().setResponseCode(200).setBody(latestActivitiesJson)
+    fun `Get activities`() = runTest {
+        val response = MockResponse().setResponseCode(200).setBody(activitiesJson)
         server.enqueue(response)
 
-        val res = api.getLatestActivities(limit = 3)
+        val res = api.getActivities(limit = 3)
 
         val expected = listOf(
             Activity(
@@ -146,11 +146,11 @@ class GarminConnectTest {
     }
 
     @Test
-    fun `Get latest activities - empty`() = runTest {
+    fun `Get activities - empty`() = runTest {
         val response = MockResponse().setResponseCode(200).setBody("[]")
         server.enqueue(response)
 
-        val res = api.getLatestActivities(limit = 3)
+        val res = api.getActivities(limit = 3)
 
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(emptyList<Activity>())
@@ -159,11 +159,11 @@ class GarminConnectTest {
     }
 
     @Test
-    fun `Get latest activities - failure`() = runTest {
+    fun `Get activities - failure`() = runTest {
         val response = MockResponse().setResponseCode(400)
         server.enqueue(response)
 
-        val res = api.getLatestActivities(limit = 3)
+        val res = api.getActivities(limit = 3)
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }

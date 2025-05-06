@@ -19,6 +19,8 @@ import paufregi.connectfeed.data.api.strava.models.UpdateProfile
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
+import paufregi.connectfeed.data.utils.Cache
+import paufregi.connectfeed.data.utils.withCache
 import java.io.File
 import javax.inject.Inject
 import paufregi.connectfeed.data.api.garmin.models.EventType as DataEventType
@@ -29,6 +31,10 @@ class GarminRepository @Inject constructor(
     private val garminConnect: GarminConnect,
     private val strava: Strava,
 ) {
+    val activitiesCache: Cache<Result<List<Activity>>> = Cache()
+    val courseCache: Cache<Result<List<Course>>> = Cache()
+    val stravaActivityCache: Cache<Result<List<Activity>>> = Cache()
+
     suspend fun fetchUser(): Result<User> =
         garminConnect.getUserProfile()
             .toResult()
@@ -46,20 +52,27 @@ class GarminRepository @Inject constructor(
     suspend fun deleteProfile(profile: Profile) =
         garminDao.deleteProfile(profile.toEntity())
 
-    suspend fun getLatestActivities(limit: Int): Result<List<Activity>> =
-        garminConnect.getLatestActivities(limit)
-            .toResult(emptyList())
-            .map { it.map { it.toCore() } }
+    suspend fun getActivities(limit: Int, force: Boolean = false): Result<List<Activity>> =
+        withCache(activitiesCache, force) {
+            garminConnect.getActivities(limit)
+                .toResult(emptyList())
+                .map { it.map { it.toCore() } }
+        }.onFailure { activitiesCache.invalidate() }
 
-    suspend fun getLatestStravaActivities(limit: Int): Result<List<Activity>> =
-        strava.getLatestActivities(perPage = limit)
-            .toResult(emptyList())
-            .map { it.map { it.toCore() } }
+    suspend fun getStravaActivities(limit: Int, force: Boolean = false): Result<List<Activity>> =
+        withCache(stravaActivityCache, force) {
+            strava.getActivities(perPage = limit)
+                .toResult(emptyList())
+                .map { it.map { it.toCore() } }
+        }.onFailure { stravaActivityCache.invalidate() }
 
-    suspend fun getCourses(): Result<List<Course>> =
-        garminConnect.getCourses()
-            .toResult(emptyList())
-            .map { it.map { it.toCore() } }
+    suspend fun getCourses(force: Boolean = false): Result<List<Course>> =
+        withCache(courseCache, force) {
+            garminConnect.getCourses()
+                .toResult(emptyList())
+                .map { it.map { it.toCore() } }
+        }.onFailure { courseCache.invalidate() }
+
 
     suspend fun updateActivity(
         activity: Activity,
@@ -77,7 +90,9 @@ class GarminRepository @Inject constructor(
             metadata = Metadata(course?.id),
             summary = Summary(water, feel, effort)
         )
-        return garminConnect.updateActivity(activity.id, request).toResult()
+        return garminConnect.updateActivity(activity.id, request)
+            .toResult()
+            .onSuccess { activitiesCache.invalidate() }
     }
 
     suspend fun updateStravaActivity(
@@ -91,7 +106,9 @@ class GarminRepository @Inject constructor(
             description = description,
             commute = commute
         )
-        return strava.updateActivity(activity.id, request).toResult()
+        return strava.updateActivity(activity.id, request)
+            .toResult()
+            .onSuccess { stravaActivityCache.invalidate() }
     }
 
     suspend fun updateStravaProfile(

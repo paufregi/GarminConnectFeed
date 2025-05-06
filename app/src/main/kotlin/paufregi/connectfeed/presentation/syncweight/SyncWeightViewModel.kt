@@ -3,6 +3,8 @@ package paufregi.connectfeed.presentation.syncweight
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -39,11 +41,15 @@ class SyncWeightViewModel @Inject constructor(
 
         val errors = mutableListOf<String>()
 
-        syncWeight(weights)
-            .onFailure { errors.add("Garmin") }
+        coroutineScope {
+            async { syncWeight(weights) }
+                .await()
+                .onFailure { errors.add("Garmin") }
 
-        syncStravaWeight(weights)
-            .onFailure { errors.add("Strava") }
+            async { syncStravaWeight(weights) }
+                .await()
+                .onFailure { errors.add("Strava") }
+        }
 
         when (errors.isEmpty()) {
             true -> _state.update { SyncWeightState(ProcessState.Success()) }

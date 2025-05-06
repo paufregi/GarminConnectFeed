@@ -7,6 +7,7 @@ import paufregi.connectfeed.core.models.Profile
 import retrofit2.Response
 import java.util.Calendar
 import java.util.Date
+import java.util.concurrent.Semaphore
 
 fun Activity?.getOrMatch(other: Activity, pool: List<Activity>): Activity? =
     if(this?.type != other.type) pool.find { it.match(other) } else this
@@ -59,3 +60,14 @@ fun <T> Result<T>.mapFailure(transform: (exception: Throwable) -> Throwable): Re
         null -> this
         else -> Result.failure<T>(transform(exception))
     }
+
+inline fun <T> Semaphore.withPermit(action: () -> T): T {
+    acquire()
+    return try {
+        action()
+    } finally {
+        release()
+    }
+}
+
+

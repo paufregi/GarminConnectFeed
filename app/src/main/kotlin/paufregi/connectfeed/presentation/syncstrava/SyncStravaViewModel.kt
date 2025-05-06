@@ -3,14 +3,16 @@ package paufregi.connectfeed.presentation.syncstrava
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.connectfeed.core.usecases.GetLatestActivities
-import paufregi.connectfeed.core.usecases.GetLatestStravaActivities
+import paufregi.connectfeed.core.usecases.GetActivities
+import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.SyncStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
 import paufregi.connectfeed.presentation.ui.models.ProcessState
@@ -18,8 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SyncStravaViewModel @Inject constructor(
-    val getLatestActivities: GetLatestActivities,
-    val getLatestStravaActivities: GetLatestStravaActivities,
+    val getActivities: GetActivities,
+    val getStravaActivities: GetStravaActivities,
     val syncActivity: SyncStravaActivity,
 ) : ViewModel() {
 
@@ -29,21 +31,25 @@ class SyncStravaViewModel @Inject constructor(
         .onStart { load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), SyncStravaState())
 
-    private fun load() = viewModelScope.launch {
+    private fun load(force: Boolean = false) = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
 
-        getLatestActivities()
-            .onSuccess { data -> _state.update { it.copy(activities = data) } }
-            .onFailure { errors.add("activities") }
+        coroutineScope {
+            async { getActivities(force) }
+                .await()
+                .onSuccess { data -> _state.update { it.copy(activities = data) } }
+                .onFailure { errors.add("Garmin") }
 
-        getLatestStravaActivities()
-            .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
-            .onFailure { errors.add("Strava activities") }
+            async { getStravaActivities(force) }
+                .await()
+                .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
+                .onFailure { errors.add("Strava") }
+        }
 
         when (errors.isEmpty()) {
             true -> _state.update { it.copy(process = ProcessState.Idle) }
-            false -> _state.update { it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}")) }
+            false -> _state.update { it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")} activities")) }
         }
     }
 
@@ -74,12 +80,12 @@ class SyncStravaViewModel @Inject constructor(
             description = state.value.description,
             trainingEffect = state.value.trainingEffect
         )
-            .onSuccess { _state.update { it.copy(process = ProcessState.Success("Activity updated")) } }
-            .onFailure { _state.update { it.copy(process = ProcessState.Failure("Couldn't update activity")) } }
+            .onSuccess { _state.update { it.copy(process = ProcessState.Success("Strava activity updated")) } }
+            .onFailure { _state.update { it.copy(process = ProcessState.Failure("Couldn't update Strava activity")) } }
     }
 
     private fun restartAction() {
         _state.update { SyncStravaState() }
-        load()
+        load(true)
     }
 }

@@ -10,6 +10,7 @@ class QuickUpdateActivity @Inject constructor(private val garminRepository: Garm
     suspend operator fun invoke(
         activity: Activity?,
         profile: Profile?,
+        water: Int?,
         feel: Float?,
         effort: Float?
     ): Result<Unit> {
@@ -20,7 +21,7 @@ class QuickUpdateActivity @Inject constructor(private val garminRepository: Garm
             name = if (profile.rename) profile.name else null,
             eventType = profile.eventType,
             course = profile.course,
-            water = profile.water,
+            water = water,
             feel = feel,
             effort = effort
         )

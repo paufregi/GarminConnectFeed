@@ -10,6 +10,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -24,7 +26,7 @@ import paufregi.connectfeed.tomorrow
 import paufregi.connectfeed.yesterday
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.GET
 
 class StravaAuthInterceptorTest {
@@ -49,7 +51,7 @@ class StravaAuthInterceptorTest {
         server.enqueue(MockResponse().setResponseCode(200))
         api = Retrofit.Builder()
             .baseUrl(server.url("/"))
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .client(OkHttpClient.Builder().addInterceptor(auth).build())
             .build()
             .create(TestApi::class.java)

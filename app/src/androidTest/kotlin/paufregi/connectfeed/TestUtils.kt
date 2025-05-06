@@ -253,7 +253,7 @@ val userProfileJson = """
 }
 """.trimIndent()
 
-val latestActivitiesJson = """
+val activitiesJson = """
     [
         {
             "activityId": 1,
@@ -679,7 +679,7 @@ val stravaDeauthorizationJson = """
     }
     """.trimIndent()
 
-val stravaLatestActivitiesJson = """
+val stravaActivitiesJson = """
     [ {
       "resource_state" : 2,
       "athlete" : {
@@ -852,7 +852,7 @@ val connectDispatcher: Dispatcher = object : Dispatcher() {
                 MockResponse().setResponseCode(200).setBody(coursesJson)
 
             (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
-                MockResponse().setResponseCode(200).setBody(latestActivitiesJson)
+                MockResponse().setResponseCode(200).setBody(activitiesJson)
 
             (path.startsWith("/activity-service/activity") && request.method == "PUT") ->
                 MockResponse().setResponseCode(200)
@@ -896,7 +896,7 @@ val stravaDispatcher: Dispatcher = object : Dispatcher() {
                 MockResponse().setResponseCode(200).setBody(stravaDeauthorizationJson)
 
             path.startsWith("/athlete/activities") && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(stravaLatestActivitiesJson)
+                MockResponse().setResponseCode(200).setBody(stravaActivitiesJson)
 
             path.startsWith("/activities/") && request.method == "PUT" ->
                 MockResponse().setResponseCode(200)
