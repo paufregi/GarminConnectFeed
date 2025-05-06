@@ -1,29 +1,29 @@
 package paufregi.connectfeed.data.api.garmin.models
 
-import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import paufregi.connectfeed.data.api.garmin.converters.TrainingEffectConverter
 import java.time.Instant
 import kotlin.math.round
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 
-@Keep
 @Serializable
+@JsonIgnoreUnknownKeys
 data class Activity(
-    @SerializedName("activityId")
+    @SerialName("activityId")
     val id: Long,
-    @SerializedName("activityName")
+    @SerialName("activityName")
     val name: String,
-    @SerializedName("activityType")
+    @SerialName("activityType")
     val type: ActivityType,
-    @SerializedName("eventType")
+    @SerialName("eventType")
     val eventType: EventType?,
-    @SerializedName("distance")
+    @SerialName("distance")
     val distance: Double,
-    @SerializedName("trainingEffectLabel")
+    @SerialName("trainingEffectLabel")
     val trainingEffectLabel: String?,
-    @SerializedName("beginTimestamp")
+    @SerialName("beginTimestamp")
     val beginTimestamp: Long?,
 ) {
     fun toCore(): CoreActivity =

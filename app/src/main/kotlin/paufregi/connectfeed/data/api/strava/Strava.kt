@@ -1,5 +1,7 @@
 package paufregi.connectfeed.data.api.strava
 
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.Activity
@@ -7,7 +9,7 @@ import paufregi.connectfeed.data.api.strava.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateProfile
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PUT
@@ -43,7 +45,7 @@ interface Strava {
 
             return Retrofit.Builder()
                 .baseUrl(url)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
                 .client(client.build())
                 .build()
                 .create(Strava::class.java)

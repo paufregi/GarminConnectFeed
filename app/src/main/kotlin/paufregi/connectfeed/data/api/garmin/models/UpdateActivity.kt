@@ -1,20 +1,20 @@
 package paufregi.connectfeed.data.api.garmin.models
 
-import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 
-@Keep
 @Serializable
+@JsonIgnoreUnknownKeys
 data class UpdateActivity(
-    @SerializedName("activityId")
+    @SerialName("activityId")
     val id: Long,
-    @SerializedName("activityName")
+    @SerialName("activityName")
     val name: String?,
-    @SerializedName("eventTypeDTO")
+    @SerialName("eventTypeDTO")
     val eventType: EventType,
-    @SerializedName("metadataDTO")
+    @SerialName("metadataDTO")
     val metadata: Metadata?,
-    @SerializedName("summaryDTO")
+    @SerialName("summaryDTO")
     val summary: Summary?
 )

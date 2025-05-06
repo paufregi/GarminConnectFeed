@@ -1,25 +1,25 @@
 package paufregi.connectfeed.data.api.strava.models
 
-import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import paufregi.connectfeed.data.api.strava.converters.SportTypeConverter
 import java.time.Instant
 import kotlin.math.round
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 
-@Keep
 @Serializable
+@JsonIgnoreUnknownKeys
 data class Activity(
-    @SerializedName("id")
+    @SerialName("id")
     val id: Long,
-    @SerializedName("name")
+    @SerialName("name")
     val name: String,
-    @SerializedName("sport_type")
+    @SerialName("sport_type")
     val sportType: String,
-    @SerializedName("distance")
+    @SerialName("distance")
     val distance: Double,
-    @SerializedName("start_date")
+    @SerialName("start_date")
     val startDate: String?,
 ) {
     fun toCore(): CoreActivity = CoreActivity(

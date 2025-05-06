@@ -55,7 +55,7 @@ androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref= 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 commons-csv = { module = "org.apache.commons:commons-csv", version.ref = "commonsCsv" }
-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+retrofit-converter = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 android-core-testing = { module = "android.arch.core:core-testing", version.ref = "coreTesting" }
 fit = { module = "com.garmin:fit", version.ref = "fit" }
 hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }

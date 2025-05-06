@@ -1,5 +1,7 @@
 package paufregi.connectfeed.data.api.garmin
 
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
@@ -10,7 +12,7 @@ import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -19,7 +21,6 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
-
 
 interface GarminConnect {
 
@@ -54,7 +55,7 @@ interface GarminConnect {
             return Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(GarminConverterFactory())
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
                 .client(client.build())
                 .build()
                 .create(GarminConnect::class.java)

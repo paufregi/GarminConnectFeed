@@ -1,16 +1,16 @@
 package paufregi.connectfeed.data.api.garmin.models
 
-import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 
-@Keep
 @Serializable
+@JsonIgnoreUnknownKeys
 data class ActivityType(
-    @SerializedName("typeId")
+    @SerialName("typeId")
     val id: Long,
-    @SerializedName("typeKey")
+    @SerialName("typeKey")
     val key: String
 ) {
     fun toCore(): CoreActivityType = when (this.id) {

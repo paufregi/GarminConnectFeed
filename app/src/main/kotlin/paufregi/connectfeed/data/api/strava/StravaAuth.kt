@@ -1,9 +1,11 @@
 package paufregi.connectfeed.data.api.strava
 
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import paufregi.connectfeed.data.api.strava.models.AuthToken
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Headers
@@ -43,7 +45,7 @@ interface StravaAuth {
         fun client(url: String): StravaAuth {
             return Retrofit.Builder()
                 .baseUrl(url)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
                 .build()
                 .create(StravaAuth::class.java)
         }
