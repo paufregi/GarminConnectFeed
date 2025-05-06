@@ -310,6 +310,6 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Bondcliff").performClick()
         composeTestRule.onNodeWithText("Save").performClick()
 
-        composeTestRule.waitUntil(conditionDescription = "Activity updated") { composeTestRule.onNodeWithText("Activity updated").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "Strava activity updated") { composeTestRule.onNodeWithText("Strava activity updated").isDisplayed() }
     }
 }

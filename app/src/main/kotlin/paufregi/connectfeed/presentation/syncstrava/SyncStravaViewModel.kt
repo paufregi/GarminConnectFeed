@@ -39,17 +39,17 @@ class SyncStravaViewModel @Inject constructor(
             async { getActivities(force) }
                 .await()
                 .onSuccess { data -> _state.update { it.copy(activities = data) } }
-                .onFailure { errors.add("activities") }
+                .onFailure { errors.add("Garmin") }
 
             async { getStravaActivities(force) }
                 .await()
                 .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
-                .onFailure { errors.add("Strava activities") }
+                .onFailure { errors.add("Strava") }
         }
 
         when (errors.isEmpty()) {
             true -> _state.update { it.copy(process = ProcessState.Idle) }
-            false -> _state.update { it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}")) }
+            false -> _state.update { it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")} activities")) }
         }
     }
 
@@ -80,8 +80,8 @@ class SyncStravaViewModel @Inject constructor(
             description = state.value.description,
             trainingEffect = state.value.trainingEffect
         )
-            .onSuccess { _state.update { it.copy(process = ProcessState.Success("Activity updated")) } }
-            .onFailure { _state.update { it.copy(process = ProcessState.Failure("Couldn't update activity")) } }
+            .onSuccess { _state.update { it.copy(process = ProcessState.Success("Strava activity updated")) } }
+            .onFailure { _state.update { it.copy(process = ProcessState.Failure("Couldn't update Strava activity")) } }
     }
 
     private fun restartAction() {

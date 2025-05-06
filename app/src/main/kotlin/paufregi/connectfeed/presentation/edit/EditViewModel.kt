@@ -45,23 +45,30 @@ class EditViewModel @Inject constructor(
         ) }
 
         val errors = mutableListOf<String>()
+        val activitiesErrors = mutableListOf<String>()
+        val courseError = mutableListOf<String>()
 
         coroutineScope {
             async { getActivities(force) }
                 .await()
                 .onSuccess { data -> _state.update { it.copy(activities = data) } }
-                .onFailure { errors.add("activities") }
+                .onFailure { activitiesErrors.add("Garmin") }
 
             async { getStravaActivities(force) }
                 .await()
                 .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
-                .onFailure { errors.add("Strava activities") }
+                .onFailure { activitiesErrors.add("Strava") }
 
             async { getCourses(force) }
                 .await()
                 .onSuccess { data -> _state.update { it.copy(courses = data) } }
-                .onFailure { errors.add("courses") }
+                .onFailure { courseError.add("courses") }
         }
+
+        if (activitiesErrors.isNotEmpty()) {
+            errors.add("${activitiesErrors.joinToString(" & ")} activities")
+        }
+        errors.addAll(courseError)
 
         when (errors.isEmpty()) {
             true -> _state.update { it.copy(process = ProcessState.Idle) }
@@ -100,28 +107,38 @@ class EditViewModel @Inject constructor(
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
 
-        updateActivity(
-            activity = state.value.activity,
-            name = state.value.name,
-            eventType = state.value.eventType,
-            course = state.value.course,
-            water = state.value.water,
-            feel = state.value.feel,
-            effort = state.value.effort
-        ).onFailure { errors.add("activity") }
+        coroutineScope {
+            async {
+                updateActivity(
+                    activity = state.value.activity,
+                    name = state.value.name,
+                    eventType = state.value.eventType,
+                    course = state.value.course,
+                    water = state.value.water,
+                    feel = state.value.feel,
+                    effort = state.value.effort
+                )
+            }.await()
+                .onFailure { errors.add("Garmin") }
 
-        updateStravaActivity(
-            stravaActivity = state.value.stravaActivity,
-            name = state.value.name,
-            description = state.value.description,
-            eventType = state.value.eventType,
-            trainingEffect = state.value.activity?.trainingEffect,
-            trainingEffectFlag = state.value.trainingEffect
-        ).onFailure { errors.add("Strava activity") }
+            if (state.value.hasStrava && state.value.stravaActivity != null) {
+                async {
+                    updateStravaActivity(
+                        stravaActivity = state.value.stravaActivity,
+                        name = state.value.name,
+                        description = state.value.description,
+                        eventType = state.value.eventType,
+                        trainingEffect = state.value.activity?.trainingEffect,
+                        trainingEffectFlag = state.value.trainingEffect
+                    )
+                }.await()
+                    .onFailure { errors.add("Strava") }
+            }
+        }
 
         when (errors.isEmpty()) {
             true -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
-            false -> _state.update { it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")}")) }
+            false -> _state.update { it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")} activity")) }
         }
     }
 

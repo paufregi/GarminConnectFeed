@@ -94,27 +94,36 @@ class QuickEditViewModel @Inject constructor(
     private fun saveAction() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
-        quickUpdateActivity(
-            activity = state.value.activity,
-            profile = state.value.profile,
-            water = state.value.water,
-            feel = state.value.feel,
-            effort = state.value.effort
-        ).onFailure { errors.add("activity") }
 
-        if (state.value.hasStrava && state.value.stravaActivity != null) {
-            quickUpdateStravaActivity(
-                activity = state.value.activity,
-                stravaActivity = state.value.stravaActivity,
-                profile = state.value.profile,
-                description = state.value.description,
-            ).onFailure { errors.add("Strava activity") }
+        coroutineScope {
+            async {
+                quickUpdateActivity(
+                    activity = state.value.activity,
+                    profile = state.value.profile,
+                    water = state.value.water,
+                    feel = state.value.feel,
+                    effort = state.value.effort
+                )
+            }.await()
+                .onFailure { errors.add("Garmin") }
+
+            if (state.value.hasStrava && state.value.stravaActivity != null) {
+                async {
+                    quickUpdateStravaActivity(
+                        activity = state.value.activity,
+                        stravaActivity = state.value.stravaActivity,
+                        profile = state.value.profile,
+                        description = state.value.description,
+                    )
+                }.await()
+                    .onFailure { errors.add("Strava") }
+            }
         }
 
         when (errors.isEmpty()) {
             true -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
             false -> _state.update {
-                it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")}"))
+                it.copy(process = ProcessState.Failure("Couldn't update ${errors.joinToString(" & ")} activity"))
             }
         }
     }

@@ -135,7 +135,7 @@ class SyncStravaViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't load activities"))
+            assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't load Garmin activities"))
             assertThat(state.activities).isEmpty()
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.activity).isNull()
@@ -187,7 +187,7 @@ class SyncStravaViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't load activities & Strava activities"))
+            assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't load Garmin & Strava activities"))
             assertThat(state.activities).isEmpty()
             assertThat(state.stravaActivities).isEmpty()
             assertThat(state.activity).isNull()
@@ -447,7 +447,7 @@ class SyncStravaViewModelTest {
             viewModel.onAction(SyncStravaAction.Save)
             skipItems(4)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Success("Activity updated"))
+            assertThat(state.process).isEqualTo(ProcessState.Success("Strava activity updated"))
             assertThat(state.activities).isEqualTo(activities)
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.activity).isEqualTo(activities[0])
@@ -484,7 +484,7 @@ class SyncStravaViewModelTest {
             viewModel.onAction(SyncStravaAction.Save)
             skipItems(4)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't update activity"))
+            assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't update Strava activity"))
             assertThat(state.activities).isEqualTo(activities)
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.activity).isEqualTo(activities[0])
