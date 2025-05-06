@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetStravaActivities
-import paufregi.connectfeed.core.usecases.InvalidateCache
 import paufregi.connectfeed.core.usecases.SyncStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
 import paufregi.connectfeed.presentation.ui.models.ProcessState
@@ -24,7 +23,6 @@ class SyncStravaViewModel @Inject constructor(
     val getActivities: GetActivities,
     val getStravaActivities: GetStravaActivities,
     val syncActivity: SyncStravaActivity,
-    val invalidateCache: InvalidateCache
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SyncStravaState())
@@ -33,17 +31,17 @@ class SyncStravaViewModel @Inject constructor(
         .onStart { load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), SyncStravaState())
 
-    private fun load() = viewModelScope.launch {
+    private fun load(force: Boolean = false) = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
 
         coroutineScope {
-            async { getActivities() }
+            async { getActivities(force) }
                 .await()
                 .onSuccess { data -> _state.update { it.copy(activities = data) } }
                 .onFailure { errors.add("activities") }
 
-            async { getStravaActivities() }
+            async { getStravaActivities(force) }
                 .await()
                 .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
                 .onFailure { errors.add("Strava activities") }
@@ -88,7 +86,6 @@ class SyncStravaViewModel @Inject constructor(
 
     private fun restartAction() {
         _state.update { SyncStravaState() }
-        invalidateCache()
-        load()
+        load(true)
     }
 }

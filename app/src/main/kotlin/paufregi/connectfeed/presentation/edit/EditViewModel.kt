@@ -15,7 +15,6 @@ import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetStravaActivities
-import paufregi.connectfeed.core.usecases.InvalidateCache
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
@@ -31,7 +30,6 @@ class EditViewModel @Inject constructor(
     val getCourses: GetCourses,
     val updateActivity: UpdateActivity,
     val updateStravaActivity: UpdateStravaActivity,
-    val invalidateCache: InvalidateCache
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditState())
@@ -40,7 +38,7 @@ class EditViewModel @Inject constructor(
         .onStart { load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), EditState())
 
-    private fun load() = viewModelScope.launch {
+    private fun load(force: Boolean = false) = viewModelScope.launch {
         _state.update { it.copy(
             process = ProcessState.Processing,
             eventTypes = getEventTypes()
@@ -49,17 +47,17 @@ class EditViewModel @Inject constructor(
         val errors = mutableListOf<String>()
 
         coroutineScope {
-            async { getActivities() }
+            async { getActivities(force) }
                 .await()
                 .onSuccess { data -> _state.update { it.copy(activities = data) } }
                 .onFailure { errors.add("activities") }
 
-            async { getStravaActivities() }
+            async { getStravaActivities(force) }
                 .await()
                 .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
                 .onFailure { errors.add("Strava activities") }
 
-            async { getCourses() }
+            async { getCourses(force) }
                 .await()
                 .onSuccess { data -> _state.update { it.copy(courses = data) } }
                 .onFailure { errors.add("courses") }
@@ -129,7 +127,6 @@ class EditViewModel @Inject constructor(
 
     private fun restartAction() {
         _state.update { EditState() }
-        invalidateCache()
-        load()
+        load(true)
     }
 }

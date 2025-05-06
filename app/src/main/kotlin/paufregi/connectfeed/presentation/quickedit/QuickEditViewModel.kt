@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.GetStravaActivities
-import paufregi.connectfeed.core.usecases.InvalidateCache
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
@@ -30,7 +29,6 @@ class QuickEditViewModel @Inject constructor(
     getProfiles: GetProfiles,
     val quickUpdateActivity: QuickUpdateActivity,
     val quickUpdateStravaActivity: QuickUpdateStravaActivity,
-    val invalidateCache: InvalidateCache
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(QuickEditState())
@@ -40,17 +38,17 @@ class QuickEditViewModel @Inject constructor(
             .onStart { load() }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), QuickEditState())
 
-    private fun load() = viewModelScope.launch {
+    private fun load(force: Boolean = false) = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
 
         coroutineScope {
-            async { getActivities() }
+            async { getActivities(force) }
                 .await()
                 .onSuccess { data -> _state.update { it.copy(activities = data) } }
                 .onFailure { errors.add("activities") }
 
-            async { getStravaActivities() }
+            async { getStravaActivities(force) }
                 .await()
                 .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
                 .onFailure { errors.add("Strava activities") }
@@ -123,7 +121,6 @@ class QuickEditViewModel @Inject constructor(
 
     private fun restartAction() {
         _state.update { QuickEditState() }
-        invalidateCache()
-        load()
+        load(true)
     }
 }
