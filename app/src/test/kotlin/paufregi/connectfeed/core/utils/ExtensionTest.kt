@@ -461,6 +461,16 @@ class ExtensionTest {
     }
 
     @Test
+    fun `Response - toResult - success unit`() {
+        val resp = Response.success(Unit)
+
+        val result = resp.toResult()
+
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(Unit)
+    }
+
+    @Test
     fun `Response - toResult - exception`() {
         val resp = Response.success(null)
 
