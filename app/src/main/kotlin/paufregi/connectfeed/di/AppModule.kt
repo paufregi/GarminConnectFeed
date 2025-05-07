@@ -1,8 +1,6 @@
 package paufregi.connectfeed.di
 
 import android.content.Context
-import android.net.Uri
-import androidx.core.net.toUri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
