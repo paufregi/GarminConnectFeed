@@ -35,8 +35,7 @@ class AccountViewModelTest {
     private val signOut = mockk<SignOut>()
     private val isStravaLoggedIn = mockk<IsStravaLoggedIn>()
     private val disconnectStrava = mockk<DisconnectStrava>()
-
-    private val stravaAuthUri = Uri.EMPTY
+    private val stravaUri = mockk<Uri>()
 
     private lateinit var viewModel: AccountViewModel
 
@@ -60,7 +59,7 @@ class AccountViewModelTest {
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
 
-        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaAuthUri)
+        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaUri)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -73,7 +72,7 @@ class AccountViewModelTest {
             getUser()
             isStravaLoggedIn()
         }
-        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaAuthUri)
+        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaUri)
     }
 
     @Test
@@ -82,7 +81,7 @@ class AccountViewModelTest {
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
 
-        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaAuthUri)
+        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaUri)
 
         viewModel.state.test {
             viewModel.onAction(AccountAction.RefreshUser)
@@ -97,7 +96,7 @@ class AccountViewModelTest {
             isStravaLoggedIn()
         }
         coVerify { refreshUser() }
-        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaAuthUri)
+        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaUri)
     }
 
     @Test
@@ -106,7 +105,7 @@ class AccountViewModelTest {
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
 
-        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaAuthUri)
+        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaUri)
 
         viewModel.state.test {
             skipItems(1)
@@ -121,7 +120,7 @@ class AccountViewModelTest {
             isStravaLoggedIn()
         }
         coVerify { refreshUser() }
-        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaAuthUri)
+        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaUri)
     }
 
     @Test
@@ -130,7 +129,7 @@ class AccountViewModelTest {
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
 
-        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaAuthUri)
+        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaUri)
 
         viewModel.state.test {
             viewModel.onAction(AccountAction.SignOut)
@@ -145,7 +144,7 @@ class AccountViewModelTest {
             isStravaLoggedIn()
         }
         coVerify { signOut() }
-        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaAuthUri)
+        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaUri)
     }
 
     @Test
@@ -154,7 +153,7 @@ class AccountViewModelTest {
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
 
-        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaAuthUri)
+        viewModel = AccountViewModel(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaUri)
 
         viewModel.state.test {
             viewModel.onAction(AccountAction.StravaDisconnect)
@@ -168,6 +167,6 @@ class AccountViewModelTest {
             isStravaLoggedIn()
         }
         coVerify { disconnectStrava() }
-        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaAuthUri)
+        confirmVerified(getUser, isStravaLoggedIn, refreshUser, signOut, disconnectStrava, stravaUri)
     }
 }
