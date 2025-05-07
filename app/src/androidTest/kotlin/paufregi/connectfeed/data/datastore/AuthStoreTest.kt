@@ -61,8 +61,8 @@ class AuthStoreTest {
 
     @Test
     fun `Save retrieve and delete AuthToken`() = runTest {
-        val token1 = AuthToken(accessToken = "ACCESS_TOKEN_1", expiresAt = 1)
-        val token2 = AuthToken(accessToken = "ACCESS_TOKEN_2", expiresAt = 2)
+        val token1 = AuthToken(accessToken = "ACCESS_TOKEN_1")
+        val token2 = AuthToken(accessToken = "ACCESS_TOKEN_2")
 
         dataStore.getAuthToken().test {
             assertThat(awaitItem()).isNull()

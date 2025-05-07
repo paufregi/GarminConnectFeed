@@ -88,8 +88,8 @@ class AuthRepositoryTest {
 
     @Test
     fun `Store AuthToken`() = runTest {
-        val token1 = AuthToken(accessToken = "ACCESS_TOKEN_1", expiresAt = 1)
-        val token2 = AuthToken(accessToken = "ACCESS_TOKEN_2", expiresAt = 2)
+        val token1 = AuthToken(accessToken = "ACCESS_TOKEN_1")
+        val token2 = AuthToken(accessToken = "ACCESS_TOKEN_2")
         repo.getAuthToken().test{
             assertThat(awaitItem()).isNull()
             repo.saveAuthToken(token1)
