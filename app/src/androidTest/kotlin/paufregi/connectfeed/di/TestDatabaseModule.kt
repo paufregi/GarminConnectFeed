@@ -16,7 +16,7 @@ import javax.inject.Singleton
     components = [SingletonComponent::class],
     replaces = [DatabaseModule::class]
 )
-class TestDatabaseModule {
+object TestDatabaseModule {
     @Provides
     @Singleton
     fun provideGarminDatabase(@ApplicationContext context: Context): GarminDatabase =

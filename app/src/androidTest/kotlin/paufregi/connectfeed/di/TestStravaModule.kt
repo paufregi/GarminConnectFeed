@@ -1,6 +1,7 @@
 package paufregi.connectfeed.di
 
 import android.net.Uri
+import androidx.core.net.toUri
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -14,7 +15,7 @@ import javax.inject.Singleton
     components = [SingletonComponent::class],
     replaces = [StravaModule::class]
 )
-class TestStravaModule {
+object TestStravaModule {
 
     @Provides
     @Singleton
@@ -39,7 +40,7 @@ class TestStravaModule {
     @Provides
     @Singleton
     @Named("StravaAuthUri")
-    fun provideStravaUri(): Uri =
+    fun provideStravaAuthUri(): Uri =
         Uri.parse("paufregi.connectfeed://strava/auth")
             .buildUpon()
             .appendQueryParameter("code", "123456")
