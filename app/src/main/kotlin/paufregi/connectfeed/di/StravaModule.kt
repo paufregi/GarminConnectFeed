@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class StravaModule {
+object StravaModule {
 
     @Provides
     @Singleton
@@ -39,7 +39,7 @@ class StravaModule {
     @Provides
     @Singleton
     @Named("StravaAuthUri")
-    fun provideStravaUri(
+    fun provideStravaAuthUri(
         @Named("StravaClientId") clientId: String,
     ): Uri = "https://www.strava.com/oauth/mobile/authorize".toUri()
         .buildUpon()

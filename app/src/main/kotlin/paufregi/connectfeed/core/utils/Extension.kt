@@ -41,9 +41,9 @@ fun Date.sameDay(other: Date): Boolean {
             calendar1.get(Calendar.DAY_OF_YEAR) == calendar2.get(Calendar.DAY_OF_YEAR)
 }
 
-fun <T> Response<T>.toResult(): Result<T> =
+inline fun <reified T> Response<T>.toResult(): Result<T> =
     when (this.isSuccessful) {
-        true -> Result.success(this.body()!!)
+        true -> Result.success(this.body() ?: Unit as T)
         false -> Result.failure(Exception(this.errorBody()?.string() ?: "Unknown error"))
     }
 

@@ -461,10 +461,13 @@ class ExtensionTest {
     }
 
     @Test
-    fun `Response - toResult - exception`() {
-        val resp = Response.success(null)
+    fun `Response - toResult - success unit`() {
+        val resp = Response.success(Unit)
 
-        assertThrows(NullPointerException::class.java) { resp.toResult() }
+        val result = resp.toResult()
+
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(Unit)
     }
 
     @Test

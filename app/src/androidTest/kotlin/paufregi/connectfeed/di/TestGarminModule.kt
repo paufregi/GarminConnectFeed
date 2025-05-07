@@ -14,7 +14,7 @@ import javax.inject.Singleton
     components = [SingletonComponent::class],
     replaces = [GarminModule::class]
 )
-class TestGarminModule {
+object TestGarminModule {
 
     @Provides
     @Singleton

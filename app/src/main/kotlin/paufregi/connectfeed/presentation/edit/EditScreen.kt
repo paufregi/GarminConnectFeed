@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
@@ -59,6 +60,7 @@ import paufregi.connectfeed.presentation.ui.icons.FaceSad
 import paufregi.connectfeed.presentation.ui.icons.FaceVeryHappy
 import paufregi.connectfeed.presentation.ui.icons.FaceVerySad
 import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.utils.launchStrava
 
 @Composable
 @ExperimentalMaterial3Api
@@ -77,6 +79,7 @@ internal fun EditContent(
     onAction: (EditAction) -> Unit = {},
     nav: NavController = rememberNavController()
 ) {
+    val context = LocalContext.current
     when (state.process) {
         is ProcessState.Processing -> SimpleScaffold { Loading(it) }
         is ProcessState.Success -> SimpleScaffold {
@@ -86,7 +89,11 @@ internal fun EditContent(
                 actionButton = {
                     Button(
                         text = "Ok",
-                        onClick = { onAction(EditAction.Restart) })
+                        onClick = {
+                            onAction(EditAction.Restart)
+                            launchStrava(context, state.stravaActivity)
+                        }
+                    )
                 },
                 paddingValues = it
             )

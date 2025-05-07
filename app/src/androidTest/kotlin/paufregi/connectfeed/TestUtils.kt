@@ -1,6 +1,8 @@
 package paufregi.connectfeed
 
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
@@ -15,10 +17,8 @@ import java.util.Date
 import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
 fun createAuthToken(expiresAt: Date) = AuthToken(
-    accessToken = "ACCESS_TOKEN",
-    expiresAt = expiresAt.time / 1000
+    accessToken = JWT.create().withExpiresAt(expiresAt).sign(Algorithm.none()),
 )
-
 fun createStravaToken(expiresAt: Date) = StravaAuthToken(
     accessToken = "ACCESS_TOKEN",
     refreshToken = "REFRESH_TOKEN",
@@ -43,7 +43,6 @@ val authTokenJson = """
     "token_type": "TOKEN_TYPE",
     "refresh_token": "REFRESH_TOKEN",
     "expires_in": 0,
-    "expires_at": ${authToken.expiresAt},
     "refresh_token_expires_in": 0
     }
     """.trimIndent()

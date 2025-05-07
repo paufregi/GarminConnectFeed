@@ -33,7 +33,7 @@ val Context.stravaStore: DataStore<Preferences> by preferencesDataStore(name = "
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AppModule {
+object AppModule {
 
     @Provides
     @Singleton
