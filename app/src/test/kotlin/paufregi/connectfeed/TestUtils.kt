@@ -1,5 +1,7 @@
 package paufregi.connectfeed
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
@@ -7,8 +9,7 @@ import java.util.Date
 import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
 fun createAuthToken(expiresAt: Date) = AuthToken(
-    accessToken = "ACCCESS_TOKEN",
-    expiresAt = expiresAt.time / 1000
+    accessToken = JWT.create().withExpiresAt(expiresAt).sign(Algorithm.none()),
 )
 
 fun createStravaToken(expiresAt: Date) = StravaAuthToken(
@@ -35,7 +36,6 @@ val authTokenJson = """
         "token_type": "TOKEN_TYPE",
         "refresh_token": "REFRESH_TOKEN",
         "expires_in": 0,
-        "expires_at": ${authToken.expiresAt},
         "refresh_token_expires_in": 0
     }
     """.trimIndent()
