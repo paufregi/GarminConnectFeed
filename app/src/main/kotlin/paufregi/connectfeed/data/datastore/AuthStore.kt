@@ -17,7 +17,6 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
         private val PRE_AUTH_TOKEN = byteArrayPreferencesKey("preAuthToken")
         private val PRE_AUTH_SECRET = byteArrayPreferencesKey("preAuthSecret")
         private val AUTH_TOKEN_ACCESS_TOKEN = byteArrayPreferencesKey("authTokenAccessToken")
-        private val AUTH_TOKEN_EXPIRES_AT = byteArrayPreferencesKey("authTokenExpiresAt")
         private val USER_NAME = stringPreferencesKey("userName")
         private val USER_PROFILE_IMAGE_URL = stringPreferencesKey("userProfileImageUrl")
     }
@@ -42,19 +41,15 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
 
     fun getAuthToken() = dataStore.data.map {
         it[AUTH_TOKEN_ACCESS_TOKEN]?.let { accessToken ->
-            it[AUTH_TOKEN_EXPIRES_AT]?.let { expiresAt ->
-                AuthToken(
-                    accessToken = Crypto.decrypt(accessToken),
-                    expiresAt = Crypto.decrypt(expiresAt).toLong()
-                )
-            }
+            AuthToken(
+                accessToken = Crypto.decrypt(accessToken),
+            )
         }
     }
 
     suspend fun saveAuthToken(token: AuthToken) {
         dataStore.edit { preferences ->
             preferences[AUTH_TOKEN_ACCESS_TOKEN] = Crypto.encrypt(token.accessToken)
-            preferences[AUTH_TOKEN_EXPIRES_AT] = Crypto.encrypt(token.expiresAt.toString())
         }
     }
 
