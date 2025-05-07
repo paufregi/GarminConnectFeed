@@ -11,6 +11,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -60,6 +61,7 @@ class ProfileViewModelTest {
     @After
     fun tearDown(){
         clearAllMocks()
+        unmockkStatic("androidx.navigation.SavedStateHandleKt")
     }
 
     @Test
