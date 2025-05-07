@@ -1,5 +1,6 @@
 package paufregi.connectfeed.presentation.account
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +17,7 @@ import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class AccountViewModel @Inject constructor(
@@ -24,6 +26,7 @@ class AccountViewModel @Inject constructor(
     val refreshUser: RefreshUser,
     val signOut: SignOut,
     val disconnectStrava: DisconnectStrava,
+    @Named("StravaAuthUri")val stravaAuthUri: Uri
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AccountState())

@@ -49,14 +49,11 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun AccountScreen(
-    stravaAuthUri: Uri,
-    nav: NavController = rememberNavController()
-) {
+internal fun AccountScreen(nav: NavController = rememberNavController()) {
     val viewModel = hiltViewModel<AccountViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    AccountContent(state, stravaAuthUri, viewModel::onAction, nav)
+    AccountContent(state, viewModel::onAction, viewModel.stravaAuthUri, nav)
 }
 
 @Preview
@@ -64,8 +61,8 @@ internal fun AccountScreen(
 @ExperimentalMaterial3Api
 internal fun AccountContent(
     @PreviewParameter(AccountStatePreview::class) state: AccountState,
-    stravaAuthUri: Uri = Uri.EMPTY,
     onAction: (AccountAction) -> Unit = {},
+    stravaAuthUri: Uri = Uri.EMPTY,
     nav: NavController = rememberNavController()
 ) {
     when (state.process) {
@@ -92,7 +89,7 @@ internal fun AccountContent(
             items = Navigation.items,
             selectedIndex = Navigation.ACCOUNT,
             nav = nav
-        ) { AccountForm(state, stravaAuthUri, onAction, it) }
+        ) { AccountForm(state, onAction, stravaAuthUri, it) }
     }
 }
 
@@ -101,8 +98,8 @@ internal fun AccountContent(
 @ExperimentalMaterial3Api
 internal fun AccountForm(
     state: AccountState,
-    stravaAuthUri: Uri,
     onAction: (AccountAction) -> Unit = {},
+    stravaAuthUri: Uri = Uri.EMPTY,
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     val context = LocalContext.current
