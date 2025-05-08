@@ -15,8 +15,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
+import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import java.time.Instant
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -61,8 +62,9 @@ class AuthStoreTest {
 
     @Test
     fun `Save retrieve and delete AuthToken`() = runTest {
-        val token1 = AuthToken(accessToken = "ACCESS_TOKEN_1")
-        val token2 = AuthToken(accessToken = "ACCESS_TOKEN_2")
+        val date = Instant.parse("2025-01-01T01:00:00Z")
+        val token1 = createAuthToken(date)
+        val token2 = createAuthToken(date.plusSeconds(60))
 
         dataStore.getAuthToken().test {
             assertThat(awaitItem()).isNull()
