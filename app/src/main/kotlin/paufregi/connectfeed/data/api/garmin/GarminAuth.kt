@@ -9,6 +9,8 @@ import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import se.akerfeldt.okhttp.signpost.OkHttpOAuthConsumer
@@ -22,6 +24,13 @@ interface GarminAuth {
         "Content-Type: application/x-www-form-urlencoded"
     )
     suspend fun exchange(): Response<AuthToken>
+
+    @FormUrlEncoded
+    @POST("/oauth-service/oauth/exchange/user/2.0")
+    @Headers("Content-Type: application/x-www-form-urlencoded")
+    suspend fun refresh(
+        @Field("refresh_token") refreshToken: String,
+    ): Response<AuthToken>
 
     companion object {
         const val BASE_URL = "https://connectapi.garmin.com"

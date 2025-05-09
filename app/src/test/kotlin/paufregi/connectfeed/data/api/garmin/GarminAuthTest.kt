@@ -64,4 +64,39 @@ class GarminAuthTest {
         assertThat(res.isSuccessful).isFalse()
         assertThat(res.body()).isNull()
     }
+
+    @Test
+    fun `Refresh AuthToken`() = runTest {
+        val response = MockResponse()
+            .setResponseCode(200)
+            .setBody(authTokenJson)
+        server.enqueue(response)
+
+        val res = api.refresh("REFRESH_TOKEN")
+
+        val request = server.takeRequest()
+
+        assertThat(request.method).isEqualTo("POST")
+        assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/oauth-service/oauth/exchange/user/2.0")
+        assertThat(request.headers["authorization"]).contains("OAuth")
+        assertThat(request.headers["authorization"]).contains("""oauth_consumer_key="CONSUMER_KEY"""")
+        assertThat(request.headers["authorization"]).contains("""oauth_token="TOKEN"""")
+        assertThat(request.headers["authorization"]).contains("""oauth_signature_method="HMAC-SHA1"""")
+        assertThat(request.headers["authorization"]).contains("""oauth_signature""")
+        assertThat(request.headers["authorization"]).contains("""oauth_version="1.0"""")
+        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.body()).isEqualTo(authToken)
+    }
+
+    @Test
+    fun `Refresh AuthToken - failure`() = runTest {
+        val response = MockResponse()
+            .setResponseCode(400)
+        server.enqueue(response)
+
+        val res = api.refresh("REFRESH_TOKEN")
+
+        assertThat(res.isSuccessful).isFalse()
+        assertThat(res.body()).isNull()
+    }
 }
