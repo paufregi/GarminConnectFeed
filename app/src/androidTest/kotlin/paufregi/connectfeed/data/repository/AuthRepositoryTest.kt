@@ -120,4 +120,12 @@ class AuthRepositoryTest {
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(authToken)
     }
+
+    @Test
+    fun `Refresh token`() = runTest {
+        val res = repo.refresh(preAuthToken, authToken.refreshToken)
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(authToken)
+    }
 }

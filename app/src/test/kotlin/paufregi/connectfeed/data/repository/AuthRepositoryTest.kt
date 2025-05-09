@@ -235,4 +235,35 @@ class AuthRepositoryTest {
         }
         confirmVerified(garminSSO, authDatastore)
     }
+
+    @Test
+    fun `Refresh success`() = runTest {
+        coEvery { garminAuth.refresh(any()) } returns Response.success(authToken)
+        coEvery { authDatastore.saveAuthToken(any()) } returns Unit
+
+        val res = repo.refresh(preAuthToken, authToken.refreshToken)
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(authToken)
+
+        coVerify {
+            garminAuth.refresh(authToken.refreshToken)
+            authDatastore.saveAuthToken(authToken)
+        }
+        confirmVerified( garminSSO, authDatastore)
+    }
+
+    @Test
+    fun `Refresh failure`() = runTest {
+        coEvery { garminAuth.refresh(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.refresh(preAuthToken, authToken.refreshToken)
+
+        assertThat(res.isSuccess).isFalse()
+
+        coVerify {
+            garminAuth.refresh(authToken.refreshToken)
+        }
+        confirmVerified(garminSSO, authDatastore)
+    }
 }
