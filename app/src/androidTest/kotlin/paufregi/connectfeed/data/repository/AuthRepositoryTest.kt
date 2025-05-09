@@ -17,7 +17,7 @@ import org.junit.Test
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
+import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.datastore.AuthStore
@@ -25,6 +25,7 @@ import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.sslSocketFactory
+import java.time.Instant
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -88,8 +89,10 @@ class AuthRepositoryTest {
 
     @Test
     fun `Store AuthToken`() = runTest {
-        val token1 = AuthToken(accessToken = "ACCESS_TOKEN_1")
-        val token2 = AuthToken(accessToken = "ACCESS_TOKEN_2")
+        val date = Instant.parse("2025-01-01T01:00:00Z")
+        val token1 = createAuthToken(date)
+        val token2 = createAuthToken(date.plusSeconds(60))
+
         repo.getAuthToken().test{
             assertThat(awaitItem()).isNull()
             repo.saveAuthToken(token1)

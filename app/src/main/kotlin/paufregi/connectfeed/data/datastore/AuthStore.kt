@@ -28,10 +28,11 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun savePreAuthToken(token: PreAuthToken) =
+    suspend fun savePreAuthToken(token: PreAuthToken) {
         dataStore.edit { preferences ->
             preferences[PRE_AUTH_TOKEN] = Crypto.encrypt(Json.encodeToString(token))
         }
+    }
 
     fun getAuthToken() = dataStore.data.map {
         it[AUTH_TOKEN]?.let { tokenBytes  ->
@@ -53,13 +54,15 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun saveUser(user: User) =
+    suspend fun saveUser(user: User) {
         dataStore.edit { preferences ->
             preferences[USER] = Json.encodeToString(user)
         }
+    }
 
-    suspend fun clear() =
+    suspend fun clear() {
         dataStore.edit {
             it.clear()
         }
+    }
 }
