@@ -18,20 +18,27 @@ class AuthInterceptor @Inject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response  =
         runBlocking(Dispatchers.IO) {
-            getOrFetchAuthToken().fold(
+            obtainAuthToken().fold(
                 onSuccess = { chain.proceed(authRequest(chain.request(), it.accessToken)) },
                 onFailure = { failedAuthResponse(chain.request(), it.message ?: "Unknown error") }
             )
         }
 
-    private suspend fun getOrFetchAuthToken(): Result<AuthToken> {
+    private suspend fun obtainAuthToken(): Result<AuthToken> {
         val token = authRepository.getAuthToken().firstOrNull()
         if (token != null && !token.isExpired()) return Result.success(token)
 
         val preAuth = authRepository.getPreAuth().firstOrNull()
             ?: return Result.failure("No PreAuth token found")
 
+        if (token != null && !token.isRefreshExpired()) {
+            return authRepository.refresh(preAuth, token.refreshToken)
+                .recoverCatching { authRepository.exchange(preAuth).getOrThrow() }
+                .onSuccess { authRepository.saveAuthToken(it) }
+        }
+
         return authRepository.exchange(preAuth)
             .onSuccess { authRepository.saveAuthToken(it) }
     }
+
 }
