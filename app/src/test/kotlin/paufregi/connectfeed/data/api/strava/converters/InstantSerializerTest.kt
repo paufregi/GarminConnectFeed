@@ -15,7 +15,7 @@ class InstantSerializerTest {
     fun `Serialize Instant to JSON`() {
         val res = json.encodeToString(InstantSerializer, instant)
 
-        assertThat(res).isEqualTo(instant.toEpochMilli())
+        assertThat(res.toLong()).isEqualTo(instant.toEpochMilli())
     }
 
     @Test

@@ -2,32 +2,22 @@ package paufregi.connectfeed.data.api.strava.models
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import paufregi.connectfeed.createStravaToken
+import paufregi.connectfeed.today
 
 class AuthTokenTest {
 
+    private val token = createStravaToken(today)
+
     @Test
     fun `Valid access token`() {
-        val authToken = AuthToken(
-            accessToken = "ACCESS_TOKEN",
-            refreshToken = "REFRESH_TOKEN",
-            expiresAt = 1704067200, // 2024-01-01T00:00
-        )
-
-        val date = 1672531200L // 2023-01-01T00:00
-
-        assertThat(authToken.isExpired(date)).isFalse()
+        val now = today.minusSeconds(10)
+        assertThat(token.isExpired(now)).isFalse()
     }
 
     @Test
     fun `Expired access token`() {
-        val authToken = AuthToken(
-            accessToken = "ACCESS_TOKEN",
-            refreshToken = "REFRESH_TOKEN",
-            expiresAt = 1672531200, // 2023-01-01T00:00
-        )
-
-        val date = 1704067200L // 2024-01-01T00:00
-
-        assertThat(authToken.isExpired(date)).isTrue()
+        val now = today.plusSeconds(10)
+        assertThat(token.isExpired(now)).isTrue()
     }
 }
