@@ -17,8 +17,12 @@ import org.junit.Test
 import paufregi.connectfeed.data.api.strava.models.AuthToken
 import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.sslSocketFactory
+import paufregi.connectfeed.stravaAuthToken
 import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
+import paufregi.connectfeed.stravaRefreshedAuthToken
+import paufregi.connectfeed.today
+import paufregi.connectfeed.tomorrow
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -60,8 +64,8 @@ class StravaAuthRepositoryTest {
 
     @Test
     fun `Store token`() = runTest {
-        val authToken1 = AuthToken("ACCESS_TOKEN_1", "REFRESH_TOKEN_1", 3600)
-        val authToken2 = AuthToken("ACCESS_TOKEN_2", "REFRESH_TOKEN_2", 5600)
+        val authToken1 = AuthToken("ACCESS_TOKEN_1", "REFRESH_TOKEN_1", today)
+        val authToken2 = AuthToken("ACCESS_TOKEN_2", "REFRESH_TOKEN_2", tomorrow)
         repo.getToken().test{
             assertThat(awaitItem()).isNull()
             repo.saveToken(authToken1)
@@ -79,7 +83,7 @@ class StravaAuthRepositoryTest {
         val res = repo.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(AuthToken("ACCESS_TOKEN", "REFRESH_TOKEN", 1704067200))
+        assertThat(res.getOrNull()).isEqualTo(stravaAuthToken)
     }
 
     @Test
@@ -87,6 +91,6 @@ class StravaAuthRepositoryTest {
         val res = repo.refresh("CLIENT_ID", "CLIENT_SECRET", "REFRESH_TOKEN")
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(AuthToken("NEW_ACCESS_TOKEN", "NEW_REFRESH_TOKEN", 1704067200))
+        assertThat(res.getOrNull()).isEqualTo(stravaRefreshedAuthToken)
     }
 }

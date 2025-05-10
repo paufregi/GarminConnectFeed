@@ -30,7 +30,7 @@ val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/larg
 val preAuthToken = PreAuthToken("TOKEN", "SECRET")
 val authToken = createAuthToken(tomorrow)
 
-val stravaAuthToken = StravaAuthToken(accessToken = "ACCESS_TOKEN", refreshToken = "REFRESH_TOKEN", expiresAt = today)
+val stravaAuthToken = createStravaToken(today)
 val stravaRefreshedAuthToken = StravaAuthToken(accessToken = "NEW_ACCESS_TOKEN", refreshToken = "NEW_REFRESH_TOKEN", expiresAt = tomorrow)
 
 val preAuthTokenBody = "oauth_token=${preAuthToken.token}&oauth_token_secret=${preAuthToken.secret}"
