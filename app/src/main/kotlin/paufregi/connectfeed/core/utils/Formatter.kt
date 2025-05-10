@@ -13,7 +13,7 @@ object Formatter {
             .withZone(zoneId)
     }
 
-    val dateTimeForImport = { locale: Locale -> SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale) }
+    val dateTimeForImport = { locale: Locale -> SimpleDateFormat("yyyy.MM.dd HH:mm:ss", locale) }
 
     @SuppressLint("DefaultLocale")
     val distance = { distance: Double -> String.format("%.2f", distance / 1000) }
