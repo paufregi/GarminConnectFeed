@@ -17,9 +17,9 @@ fun createAuthToken(issuedAt: Instant) = AuthToken(
 )
 
 fun createStravaToken(expiresAt: Instant) = StravaAuthToken(
-    accessToken = "ACCCESS_TOKEN",
+    accessToken = "ACCESS_TOKEN",
     refreshToken = "REFRESH_TOKEN",
-    expiresAt = expiresAt.toEpochMilli()
+    expiresAt = expiresAt
 )
 
 val today: Instant = Instant.now()
