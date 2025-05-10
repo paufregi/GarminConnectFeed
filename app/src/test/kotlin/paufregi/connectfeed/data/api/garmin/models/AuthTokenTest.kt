@@ -2,40 +2,34 @@ package paufregi.connectfeed.data.api.garmin.models
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import java.util.Date
+import paufregi.connectfeed.createAuthToken
+import paufregi.connectfeed.today
 
 class AuthTokenTest {
 
+    private val token = createAuthToken(today)
+
     @Test
     fun `Valid access token`() {
-        val token = AuthToken(
-            accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NCIsIm5hbWUiOiJQYXVsIEVsbGlzIiwiZXhwIjoxNzA0MDI0MDAwLCJpYXQiOjE3MDQwMjQwMDB9.BAAoEhz3DEQfSe77n1BtDZEYX-e3_2_lfGIgx-QXEew", // ExpiresAt: 2024-01-01T00:00
-        )
-
-        val date = Date(1672488000) // 2023-01-01T00:00
-
-        assertThat(token.isExpired(date)).isFalse()
+        val now = today.minusSeconds(30)
+        assertThat(token.isExpired(now)).isFalse()
     }
 
     @Test
     fun `Expired access token`() {
-        val token = AuthToken(
-            accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NCIsIm5hbWUiOiJQYXVsIEVsbGlzIiwiZXhwIjoxNzA0MDI0MDAwLCJpYXQiOjE3MDQwMjQwMDB9.BAAoEhz3DEQfSe77n1BtDZEYX-e3_2_lfGIgx-QXEew", // ExpiresAt: 2024-01-01T00:00
-        )
-
-        val date = Date(1722430800000) // 2024-08-01T00:00
-
-        assertThat(token.isExpired(date)).isTrue()
+        val now = today.plusSeconds(30)
+        assertThat(token.isExpired(now)).isTrue()
     }
 
     @Test
-    fun `Empty access token OAuth2`() {
-        val token = AuthToken(
-            accessToken = "",
-        )
+    fun `Valid refresh token`() {
+        val now = today.minusSeconds(30)
+        assertThat(token.isRefreshExpired(now)).isFalse()
+    }
 
-        val date = Date(1722430800000) // 2024-08-01T00:00
-
-        assertThat(token.isExpired(date)).isTrue()
+    @Test
+    fun `Expired refresh token`() {
+        val now = today.plusSeconds(40)
+        assertThat(token.isExpired(now)).isTrue()
     }
 }

@@ -3,6 +3,7 @@ package paufregi.connectfeed.data.api.strava.models
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
+import paufregi.connectfeed.data.api.strava.converters.InstantSerializer
 import java.time.Instant
 
 @Serializable
@@ -13,7 +14,9 @@ data class AuthToken(
     @SerialName("refresh_token")
     val refreshToken: String,
     @SerialName("expires_at")
-    val expiresAt: Long,
+    @Serializable(with = InstantSerializer::class)
+    val expiresAt: Instant,
 ) {
-    fun isExpired(date: Long = Instant.now().epochSecond): Boolean = expiresAt < date
+    fun isExpired(now: Instant = Instant.now()): Boolean =
+        expiresAt.isBefore(now)
 }

@@ -39,9 +39,9 @@ import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.sslSocketFactory
+import paufregi.connectfeed.stravaAuthToken
 import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
-import paufregi.connectfeed.stravaToken
 import paufregi.connectfeed.user
 import javax.inject.Inject
 
@@ -151,7 +151,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
-        stravaStore.saveToken(stravaToken)
+        stravaStore.saveToken(stravaAuthToken)
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
@@ -277,7 +277,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
-        stravaStore.saveToken(stravaToken)
+        stravaStore.saveToken(stravaAuthToken)
         dao.saveProfile(ProfileEntity(name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
@@ -298,7 +298,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
-        stravaStore.saveToken(stravaToken)
+        stravaStore.saveToken(stravaAuthToken)
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }

@@ -15,6 +15,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.data.api.strava.models.AuthToken
+import paufregi.connectfeed.today
+import paufregi.connectfeed.tomorrow
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -42,8 +44,8 @@ class StravaStoreTest {
 
     @Test
     fun `Save retrieve and delete Token`() = runTest {
-        val authToken1 = AuthToken("ACCESS_TOKEN_1", "REFRESH_TOKEN_1", 3600)
-        val authToken2 = AuthToken("ACCESS_TOKEN_2", "REFRESH_TOKEN_2", 5600)
+        val authToken1 = AuthToken("ACCESS_TOKEN_1", "REFRESH_TOKEN_1", today)
+        val authToken2 = AuthToken("ACCESS_TOKEN_2", "REFRESH_TOKEN_2", tomorrow)
 
         dataStore.getToken().test {
             assertThat(awaitItem()).isNull()

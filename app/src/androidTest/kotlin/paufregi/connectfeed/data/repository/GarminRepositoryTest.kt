@@ -26,9 +26,9 @@ import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.sslSocketFactory
+import paufregi.connectfeed.stravaAuthToken
 import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
-import paufregi.connectfeed.stravaToken
 import java.io.File
 import java.time.Instant
 import javax.inject.Inject
@@ -153,7 +153,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get Strava activities`() = runTest {
-        stravaStore.saveToken(stravaToken)
+        stravaStore.saveToken(stravaAuthToken)
 
         val expected = listOf(
             CoreActivity(
@@ -222,7 +222,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Update strava activity`() = runTest {
-        stravaStore.saveToken(stravaToken)
+        stravaStore.saveToken(stravaAuthToken)
 
         val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, trainingEffect = "", type = CoreActivityType.Cycling)
         val name = "newName"
@@ -241,7 +241,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Update strava profile`() = runTest {
-        stravaStore.saveToken(stravaToken)
+        stravaStore.saveToken(stravaAuthToken)
 
         val res = repo.updateStravaProfile(75.6f)
 

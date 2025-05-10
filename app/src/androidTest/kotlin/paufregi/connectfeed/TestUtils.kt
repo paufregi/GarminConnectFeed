@@ -13,25 +13,32 @@ import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.test.R
 import java.net.URLDecoder
-import java.util.Date
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
-fun createAuthToken(expiresAt: Date) = AuthToken(
-    accessToken = JWT.create().withExpiresAt(expiresAt).sign(Algorithm.none()),
-)
-fun createStravaToken(expiresAt: Date) = StravaAuthToken(
-    accessToken = "ACCESS_TOKEN",
+fun createAuthToken(issuedAt: Instant) = AuthToken(
+    accessToken = JWT.create().withIssuedAt(issuedAt).sign(Algorithm.none()),
     refreshToken = "REFRESH_TOKEN",
-    expiresAt = expiresAt.time / 1000
+    expiresAt = issuedAt.plusSeconds(10),
+    refreshExpiresAt = issuedAt.plusSeconds(30)
 )
 
-//1 Day  : 1000 * 60 * 60 * 24 milliseconds
-val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
+fun createStravaToken(expiresAt: Instant) = StravaAuthToken(
+    accessToken = "ACCESS_TOKEN",
+    refreshToken = "REFRESH_TOKEN",
+    expiresAt = expiresAt
+)
+
+val today: Instant = Instant.now().truncatedTo(ChronoUnit.SECONDS)
+val tomorrow: Instant = today.plus(1, ChronoUnit.DAYS)
 
 val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
 val preAuthToken = PreAuthToken("TOKEN", "SECRET")
 val authToken = createAuthToken(tomorrow)
-val stravaToken = createStravaToken(tomorrow)
+
+val stravaAuthToken = createStravaToken(today)
+val stravaRefreshedAuthToken = StravaAuthToken(accessToken = "NEW_ACCESS_TOKEN", refreshToken = "NEW_REFRESH_TOKEN", expiresAt = tomorrow)
 
 val preAuthTokenBody = "oauth_token=${preAuthToken.token}&oauth_token_secret=${preAuthToken.secret}"
 
@@ -40,10 +47,10 @@ val authTokenJson = """
     "scope": "SCOPE",
     "jti": "JTI",
     "access_token": "${authToken.accessToken}",
-    "token_type": "TOKEN_TYPE",
-    "refresh_token": "REFRESH_TOKEN",
-    "expires_in": 0,
-    "refresh_token_expires_in": 0
+    "token_type": "Bearer",
+    "refresh_token": "${authToken.refreshToken}",
+    "expires_in": 10000,
+    "refresh_token_expires_in": 30000
     }
     """.trimIndent()
 
@@ -648,10 +655,10 @@ val coursesJson = """
 val stravaAuthTokenJson = """
     {
         "token_type": "Bearer",
-        "expires_at": 1704067200,
+        "expires_at": ${today.toEpochMilli()},
         "expires_in": 21600,
-        "refresh_token": "REFRESH_TOKEN",
-        "access_token": "ACCESS_TOKEN",
+        "refresh_token": "${stravaAuthToken.refreshToken}",
+        "access_token": "${stravaAuthToken.accessToken}",
         "athlete": {
             "id" : 1,
             "username" : "paufregi",
@@ -665,10 +672,10 @@ val stravaAuthTokenJson = """
 val stravaRefreshTokenJson = """
     {
         "token_type": "Bearer",
-        "expires_at": 1704067200,
+        "expires_at": ${stravaRefreshedAuthToken.expiresAt.toEpochMilli()},
         "expires_in": 21600,
-        "refresh_token": "NEW_REFRESH_TOKEN",
-        "access_token": "NEW_ACCESS_TOKEN"
+        "refresh_token": "${stravaRefreshedAuthToken.refreshToken}",
+        "access_token": "${stravaRefreshedAuthToken.accessToken}"
     }
     """.trimIndent()
 

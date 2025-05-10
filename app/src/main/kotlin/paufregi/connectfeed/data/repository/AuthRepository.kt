@@ -58,4 +58,12 @@ class AuthRepository @Inject constructor(
             .onSuccess { authStore.saveAuthToken(it) }
             .mapFailure { Exception("Couldn't get Auth token") }
     }
+
+    suspend fun refresh(preAuthToken: PreAuthToken, refreshToken: String): Result<AuthToken> {
+        val garminAuth = makeGarminAuth(preAuthToken)
+        return garminAuth.refresh(refreshToken)
+            .toResult()
+            .onSuccess { authStore.saveAuthToken(it) }
+            .mapFailure { Exception("Couldn't refresh Auth token") }
+    }
 }
