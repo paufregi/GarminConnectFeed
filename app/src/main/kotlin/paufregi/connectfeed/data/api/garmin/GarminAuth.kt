@@ -3,7 +3,6 @@ package paufregi.connectfeed.data.api.garmin
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import retrofit2.Response
@@ -42,10 +41,14 @@ interface GarminAuth {
             val client = OkHttpClient.Builder()
                 .addInterceptor(SigningInterceptor(consumer))
 
+            val json = Json {
+                explicitNulls = false
+                ignoreUnknownKeys = true
+            }
+
             return Retrofit.Builder()
                 .baseUrl(url)
-                .addConverterFactory(GarminConverterFactory())
-                .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+                .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
                 .client(client.build())
                 .build()
                 .create(GarminAuth::class.java)

@@ -42,10 +42,15 @@ interface StravaAuth {
     companion object {
         const val BASE_URL = "https://www.strava.com"
 
+        val json = Json {
+            ignoreUnknownKeys = true
+            explicitNulls = false
+        }
+
         fun client(url: String): StravaAuth {
             return Retrofit.Builder()
                 .baseUrl(url)
-                .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+                .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
                 .build()
                 .create(StravaAuth::class.java)
         }

@@ -1,13 +1,10 @@
 package paufregi.connectfeed.data.api.garmin
 
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
 import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
 import paufregi.connectfeed.data.api.garmin.models.CSRF
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -57,7 +54,6 @@ interface GarminSSO {
             return Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(GarminConverterFactory())
-                .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
                 .build()
                 .create(GarminSSO::class.java)
         }

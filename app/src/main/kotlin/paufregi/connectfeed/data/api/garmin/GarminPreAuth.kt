@@ -1,14 +1,11 @@
 package paufregi.connectfeed.data.api.garmin
 
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
@@ -38,7 +35,6 @@ interface GarminPreAuth {
             return Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(GarminConverterFactory())
-                .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
                 .client(client.build())
                 .build()
                 .create(GarminPreAuth::class.java)
