@@ -81,6 +81,7 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+android-room = { id = "androidx.room", version.ref = "roomVersion" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinPlugin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinPlugin" }
 kotlin-serializable = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPlugin" }

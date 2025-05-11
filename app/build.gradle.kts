@@ -3,6 +3,7 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.android.room)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serializable)
@@ -28,10 +29,6 @@ android {
             useSupportLibrary = true
         }
 
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
-        }
-
         val properties = Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
@@ -43,6 +40,10 @@ android {
             buildConfigField("String", "STRAVA_CLIENT_ID", "\"${properties.getProperty("strava.client_id", "")}\"")
             buildConfigField("String", "STRAVA_CLIENT_SECRET", "\"${properties.getProperty("strava.client_secret", "")}\"")
         }
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 
     buildFeatures {
@@ -73,7 +74,6 @@ android {
         }
     }
 
-
     composeOptions {
         kotlinCompilerExtensionVersion = "1.8.0"
     }
@@ -95,10 +95,6 @@ android {
         }
     }
 
-}
-
-composeCompiler {
-    reportsDestination = layout.buildDirectory.dir("compose_compiler")
 }
 
 dependencies {
