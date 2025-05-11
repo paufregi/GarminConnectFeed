@@ -2,14 +2,12 @@ package paufregi.connectfeed.data.api.garmin.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import paufregi.connectfeed.data.api.garmin.converters.TrainingEffectConverter
 import java.time.Instant
 import kotlin.math.round
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 
 @Serializable
-@JsonIgnoreUnknownKeys
 data class Activity(
     @SerialName("activityId")
     val id: Long,

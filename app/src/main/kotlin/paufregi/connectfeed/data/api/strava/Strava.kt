@@ -43,9 +43,14 @@ interface Strava {
         fun client(authInterceptor: StravaAuthInterceptor, url: String): Strava {
             val client = OkHttpClient.Builder().addInterceptor(authInterceptor)
 
+            val json = Json {
+                ignoreUnknownKeys = true
+                explicitNulls = false
+            }
+
             return Retrofit.Builder()
                 .baseUrl(url)
-                .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+                .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
                 .client(client.build())
                 .build()
                 .create(Strava::class.java)

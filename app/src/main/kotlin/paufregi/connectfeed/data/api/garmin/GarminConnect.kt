@@ -4,7 +4,6 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
-import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.Course
@@ -52,10 +51,14 @@ interface GarminConnect {
         fun client(authInterceptor: AuthInterceptor, url: String): GarminConnect {
             val client = OkHttpClient.Builder().addInterceptor(authInterceptor)
 
+            val json = Json {
+                explicitNulls = false
+                ignoreUnknownKeys = true
+            }
+
             return Retrofit.Builder()
                 .baseUrl(url)
-                .addConverterFactory(GarminConverterFactory())
-                .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+                .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
                 .client(client.build())
                 .build()
                 .create(GarminConnect::class.java)
