@@ -72,7 +72,7 @@ class SyncWeightViewModelTest {
             metabolicAge = 35,
         ))
 
-        every { RenphoReader.read(any()) } returns weights
+        every { RenphoReader.read(any()) } returns Result.success(weights)
         coEvery { syncWeight.invoke(any()) } returns Result.success(Unit)
         coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.success(Unit)
 
@@ -107,7 +107,7 @@ class SyncWeightViewModelTest {
     fun `Sync weight - failure - empty file`() = runTest {
         val inputStream = IOUtils.toInputStream("", "UTF-8")
 
-        every { RenphoReader.read(any()) } returns emptyList()
+        every { RenphoReader.read(any()) } returns Result.success(emptyList())
 
         viewModel.state.test {
             viewModel.updateWeight(inputStream)
@@ -140,7 +140,7 @@ class SyncWeightViewModelTest {
             metabolicAge = 35,
         ))
 
-        every { RenphoReader.read(any()) } returns weights
+        every { RenphoReader.read(any()) } returns Result.success(weights)
         coEvery { syncWeight.invoke(any()) } returns Result.failure("error")
         coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.success(Unit)
 
@@ -179,7 +179,7 @@ class SyncWeightViewModelTest {
             metabolicAge = 35,
         ))
 
-        every { RenphoReader.read(any()) } returns weights
+        every { RenphoReader.read(any()) } returns Result.success(weights)
         coEvery { syncWeight.invoke(any()) } returns Result.success(Unit)
         coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.failure("error")
 
@@ -218,7 +218,7 @@ class SyncWeightViewModelTest {
             metabolicAge = 35,
         ))
 
-        every { RenphoReader.read(any()) } returns weights
+        every { RenphoReader.read(any()) } returns Result.success(weights)
         coEvery { syncWeight.invoke(any()) } returns Result.failure("error")
         coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.failure("error")
 
