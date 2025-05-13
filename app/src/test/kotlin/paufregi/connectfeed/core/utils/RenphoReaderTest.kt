@@ -36,6 +36,7 @@ class RenphoReaderTest {
 
         val result = RenphoReader.read(stubInputStream)
 
-        assertThat(result).containsExactly(expected)
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).containsExactly(expected)
     }
 }
