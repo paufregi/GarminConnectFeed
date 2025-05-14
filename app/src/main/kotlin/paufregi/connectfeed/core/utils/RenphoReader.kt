@@ -6,13 +6,16 @@ import java.io.InputStream
 import java.util.Locale
 
 object RenphoReader {
-    fun read(inputStream: InputStream): List<Weight> {
-        return CSVFormat.Builder.create(CSVFormat.DEFAULT).apply {
-            setIgnoreSurroundingSpaces(true)
-        }.get().parse(inputStream.reader())
-            .drop(1)
+    fun read(inputStream: InputStream): Result<List<Weight>> = runCatching {
+        val formatter = Formatter.dateTimeForImport(Locale.getDefault())
+        CSVFormat.Builder.create()
+            .setHeader()
+            .setSkipHeaderRecord(true)
+            .setIgnoreSurroundingSpaces(true)
+            .get()
+            .parse(inputStream.reader())
             .mapNotNull { record ->
-                val timestamp = Formatter.dateTimeForImport(Locale.getDefault()).parse("${record[0]} ${record[1]}")
+                val timestamp = formatter.parse("${record[0]} ${record[1]}")
                 timestamp?.let {
                     Weight(
                         timestamp = it,

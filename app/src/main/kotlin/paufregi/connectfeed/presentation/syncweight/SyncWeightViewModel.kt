@@ -33,7 +33,13 @@ class SyncWeightViewModel @Inject constructor(
             return@launch
         }
 
-        val weights = RenphoReader.read(inputStream)
+        val weightsRes = RenphoReader.read(inputStream)
+        if (weightsRes.isFailure) {
+            _state.update { SyncWeightState(ProcessState.Failure("Failed to read file")) }
+            return@launch
+        }
+        val weights = weightsRes.getOrElse { emptyList() }
+
         if (weights.isEmpty()) {
             _state.update { SyncWeightState(ProcessState.Failure("Nothing to sync")) }
             return@launch
