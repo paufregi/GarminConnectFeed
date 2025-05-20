@@ -1,4 +1,4 @@
-name: Build & Test
+name: Build
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: 'Build & Test'
+    name: Tests
     runs-on: ubuntu-latest
     env:
       TZ: 'Pacific/Auckland'
@@ -56,7 +56,11 @@ jobs:
         id: summary
         if: always()
         run: |
+          BUILD=$(if [[ "${{ steps.build.outcome }}" == "success" ]]; then echo "✅"; else echo "❌"; fi)
+          TEST=$(if [[ "${{ steps.unit_tests.outcome }}" == "success" ]]; then echo "✅"; else echo "❌"; fi)
+          
           echo "## Build and Test Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build:** [ "${{ steps.unit_tests.outcome }}" = "success" ] && ✅ || ❌" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build:** $BUILD" >> $GITHUB_STEP_SUMMARY
+          echo "- **Unit tests:** TEST" >> $GITHUB_STEP_SUMMARY
 
 
