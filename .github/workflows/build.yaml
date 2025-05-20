@@ -50,13 +50,33 @@ jobs:
 
       - name: 'Generate Summary 📝'
         if: always()
-        run: |
+        runs: |
+          # Initialize variables with default values (in case steps fail)
+          UNIT_TESTS_STATUS="❌"
+          ANDROID_TESTS_STATUS="❌"
+          LINT_STATUS="❌"
+
+          # Check for the existence of the steps and their outcomes *after* the steps have run.
+          #  This is done using conditional logic within the 'run' step.
+          if [ "${{ job.status }}" = "success" ]; then
+            if [ "${{ steps.unit_tests.outcome }}" = "success" ]; then
+              UNIT_TESTS_STATUS="✅"
+            fi
+            if [ "${{ steps.android_tests.outcome }}" = "success" ]; then
+              ANDROID_TESTS_STATUS="✅"
+            fi
+            if [ "${{ steps.lint.outcome }}" = "success" ]; then
+              LINT_STATUS="✅"
+            fi
+          fi
+
           echo "## Build and Test Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build:** ✅" >> $GITHUB_STEP_SUMMARY # Assuming assemble always succeeds if other steps run
-          echo "- **Unit Tests:** ${{ job.status == 'success' && steps.unit_tests.outcome == 'success' ? '✅' : '❌' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Android Tests:** ${{ job.status == 'success' && steps.android_tests.outcome == 'success' ? '✅' : '❌' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Lint:** ${{ job.status == 'success' && steps.lint.outcome == 'success' ? '✅' : '❌' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build:** ✅" >> $GITHUB_STEP_SUMMARY # Assuming assemble always succeeds
+          echo "- **Unit Tests:** ${UNIT_TESTS_STATUS}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Android Tests:** ${ANDROID_TESTS_STATUS}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Lint:** ${LINT_STATUS}" >> $GITHUB_STEP_SUMMARY
+      
 
       - name: Upload Build Results Artifact
         uses: actions/upload-artifact@v4
