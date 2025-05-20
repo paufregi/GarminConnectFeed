@@ -57,21 +57,3 @@ jobs:
         with:
           result-path: "app/build/reports/lint-results-debug.xml"
           fail-on-warning: false
-
-  dependacy-graph:
-    name: Dependency graph
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Dependency graph
-        uses: gradle/actions/dependency-submission@v4
