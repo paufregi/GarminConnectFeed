@@ -50,7 +50,7 @@ jobs:
 
       - name: 'Generate Summary 📝'
         if: always()
-        runs: |
+        run: |
           # Initialize variables with default values (in case steps fail)
           UNIT_TESTS_STATUS="❌"
           ANDROID_TESTS_STATUS="❌"
@@ -76,7 +76,6 @@ jobs:
           echo "- **Unit Tests:** ${UNIT_TESTS_STATUS}" >> $GITHUB_STEP_SUMMARY
           echo "- **Android Tests:** ${ANDROID_TESTS_STATUS}" >> $GITHUB_STEP_SUMMARY
           echo "- **Lint:** ${LINT_STATUS}" >> $GITHUB_STEP_SUMMARY
-      
 
       - name: Upload Build Results Artifact
         uses: actions/upload-artifact@v4
