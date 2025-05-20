@@ -36,7 +36,7 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Gradle Cache
+      - name: 'Gradle Cache'
         uses: actions/cache@v4
         with:
           path: |
@@ -63,15 +63,19 @@ jobs:
         id: lint
         run: ./gradlew lint
 
-#      - name: 'Generate Summary'
-#        id: summary
-#        if: always()
-#        run: |
-#          BUILD=$(if [[ "${{ steps.build.outcome }}" == "success" ]]; then echo "✅"; else echo "❌"; fi)
-#          TEST=$(if [[ "${{ steps.unit_tests.outcome }}" == "success" ]]; then echo "✅"; else echo "❌"; fi)
-#
-#          echo "## Build and Test Summary" >> $GITHUB_STEP_SUMMARY
-#          echo "- **Build:** $BUILD" >> $GITHUB_STEP_SUMMARY
-#          echo "- **Unit tests:** $TEST" >> $GITHUB_STEP_SUMMARY
+      - name: 'Generate Summary'
+        id: summary
+        if: always()
+        run: |
+          BUILD=$(if [[ "${{ steps.build.outcome }}" == "success" ]]; then echo "✅"; else echo "❌"; fi)
+          TEST=$(if [[ "${{ steps.unit_tests.outcome }}" == "success" ]]; then echo "✅"; else echo "❌"; fi)
+          ANDROID_TEST=$(if [[ "${{ steps.android_tests.outcome }}" == "success" ]]; then echo "✅"; else echo "❌"; fi)
+          LINT=$(if [[ "${{ steps.lint.outcome }}" == "success" ]]; then echo "✅"; else echo "❌"; fi)
+
+          echo "## Build and Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build:** $BUILD" >> $GITHUB_STEP_SUMMARY
+          echo "- **Unit tests:** $TEST" >> $GITHUB_STEP_SUMMARY
+          echo "- **Android tests:** ANDROID_TEST" >> $GITHUB_STEP_SUMMARY
+          echo "- **Lint:** $LINT" >> $GITHUB_STEP_SUMMARY
 
 
