@@ -1,4 +1,4 @@
-name: Build & Test
+name: Build
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build & Test
+    name: Test
     runs-on: ubuntu-latest
     env:
       TZ: 'Pacific/Auckland'
@@ -32,24 +32,21 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Create local.properties
+      - name: Setup local.properties
         run: |
           echo "strava.client_id=${{ secrets.STRAVA_CLIENT_ID }}" >> local.properties
           echo "strava.client_secret=${{ secrets.STRAVA_CLIENT_SECRET }}" >> local.properties
 
-      - name: Setup virtual device
-        run: ./gradlew pixel9ProSetup
-
-      - name: Run build
+      - name: Build
         run: ./gradlew assemble
 
-      - name: Run test
+      - name: Test
         run: ./gradlew testReleaseUnitTest
 
-      - name: Run android tests
+      - name: Android tests
         run: ./gradlew pixel9ProCheck
 
-      - name: Run lint
+      - name: Lint
         run: ./gradlew lint
 
       - name: Report lint results
