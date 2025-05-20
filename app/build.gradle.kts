@@ -34,11 +34,11 @@ android {
         if (localPropertiesFile.exists()) {
             properties.load(localPropertiesFile.inputStream())
 
-            buildConfigField("String", "GARMIN_CONSUMER_KEY", "\"${properties.getProperty("garmin.consumer_key", "")}\"")
-            buildConfigField("String", "GARMIN_CONSUMER_SECRET", "\"${properties.getProperty("garmin.consumer_secret", "")}\"")
+            buildConfigField("String", "GARMIN_CONSUMER_KEY", "\"${properties.getProperty("garmin.consumer_key", "GARMIN_CONSUMER_KEY")}\"")
+            buildConfigField("String", "GARMIN_CONSUMER_SECRET", "\"${properties.getProperty("garmin.consumer_secret", "GARMIN_CONSUMER_SECRET")}\"")
 
-            buildConfigField("String", "STRAVA_CLIENT_ID", "\"${properties.getProperty("strava.client_id", "")}\"")
-            buildConfigField("String", "STRAVA_CLIENT_SECRET", "\"${properties.getProperty("strava.client_secret", "")}\"")
+            buildConfigField("String", "STRAVA_CLIENT_ID", "\"${properties.getProperty("strava.client_id", "STRAVA_CLIENT_ID")}\"")
+            buildConfigField("String", "STRAVA_CLIENT_SECRET", "\"${properties.getProperty("strava.client_secret", "STRAVA_CLIENT_SECRET")}\"")
         }
     }
 
