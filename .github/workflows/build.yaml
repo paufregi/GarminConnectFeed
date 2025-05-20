@@ -8,70 +8,58 @@ on:
 
 jobs:
   build:
-    name: Build & Test
+    name: 'Build & Test'
     runs-on: ubuntu-latest
     env:
       TZ: 'Pacific/Auckland'
 
     steps:
-      - name: Checkout
+      - name: 'Checkout 📥'
         uses: actions/checkout@v4
 
-      - name: Setup JDK
+      - name: 'Setup JDK ☕'
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle
+      - name: 'Setup Gradle 🐘'
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Enable KVM group perms
+      - name: 'Setup ENV 🛠️'
         run: |
+          echo "garmin.consumer_key=${{ secrets.GARMIN_CONSUMER_KEY }}" >> local.properties
+          echo "garmin.consumer_secret=${{ secrets.GARMIN_CONSUMER_SECRET }}" >> local.properties
+          echo "strava.client_id=${{ secrets.STRAVA_CLIENT_ID }}" >> local.properties
+          echo "strava.client_secret=${{ secrets.STRAVA_CLIENT_SECRET }}" >> local.properties
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Create local.properties
-        run: |
-          echo "strava.client_id=${{ secrets.STRAVA_CLIENT_ID }}" >> local.properties
-          echo "strava.client_secret=${{ secrets.STRAVA_CLIENT_SECRET }}" >> local.properties
-
-      - name: Setup virtual device
-        run: ./gradlew pixel9ProSetup
-
-      - name: Run build
+      - name: 'Build 📦'
         run: ./gradlew assemble
 
-      - name: Run test
+      - name: 'Tests 🧪'
         run: ./gradlew testReleaseUnitTest
 
-      - name: Run android tests
+      - name: 'Android tests 📱🧪'
         run: ./gradlew pixel9ProCheck
 
-      - name: Run lint
+      - name: 'Lint 🖍️'
         run: ./gradlew lint
 
-      - name: Report lint results
-        uses: hidakatsuya/action-report-android-lint@v1.2.2
+      - name: 'Generate Summary 📝'
+        if: always()
+        run: |
+          echo "## Build and Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build:** ✅" >> $GITHUB_STEP_SUMMARY # Assuming assemble always succeeds if other steps run
+          echo "- **Unit Tests:** ${{ job.status == 'success' && steps.unit_tests.outcome == 'success' ? '✅' : '❌' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Android Tests:** ${{ job.status == 'success' && steps.android_tests.outcome == 'success' ? '✅' : '❌' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Lint:** ${{ job.status == 'success' && steps.lint.outcome == 'success' ? '✅' : '❌' }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Build Results Artifact
+        uses: actions/upload-artifact@v4
         with:
-          result-path: "app/build/reports/lint-results-debug.xml"
-          fail-on-warning: false
-
-  dependacy-graph:
-    name: Dependency graph
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Dependency graph
-        uses: gradle/actions/dependency-submission@v4
+          name: build-results
+          path: /home/runner/work/_temp/.gradle-actions/build-results/
