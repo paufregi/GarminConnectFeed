@@ -1,7 +1,7 @@
 # Garmin Connect Feed
 
-[![Build Status](https://github.com/paufregi/GarminFeed/actions/workflows/build.yaml/badge.svg?branch=main)](https://github.com/paufregi/GarminFeed/actions/workflows/build.yaml)
-[![CodeQL](https://github.com/paufregi/GarminFeed/actions/workflows/codeql.yaml/badge.svg?branch=main)](https://github.com/paufregi/GarminFeed/actions/workflows/codeql.yaml)
+[![Build](https://github.com/paufregi/GarminConnectFeed/actions/workflows/build.yaml/badge.svg)](https://github.com/paufregi/GarminConnectFeed/actions/workflows/build.yaml)
+[![CodeQL](https://github.com/paufregi/GarminConnectFeed/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/paufregi/GarminConnectFeed/actions/workflows/github-code-scanning/codeql)
 
 <img align="right" width="150" height="150" src="assets/logo.png" alt="logo" >
 
