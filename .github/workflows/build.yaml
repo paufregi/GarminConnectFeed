@@ -36,6 +36,17 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Gradle Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            build
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: 'Build'
         id: build
         run: ./gradlew assemble
@@ -44,23 +55,23 @@ jobs:
         id: unit_tests
         run: ./gradlew testReleaseUnitTest
 
-#      - name: 'Android tests'
-#        id: android_tests
-#        run: ./gradlew pixel9ProCheck
+      - name: 'Android tests'
+        id: android_tests
+        run: ./gradlew pixel9ProCheck
 
       - name: 'Lint'
         id: lint
         run: ./gradlew lint
 
-      - name: 'Generate Summary'
-        id: summary
-        if: always()
-        run: |
-          BUILD=$(if [[ "${{ steps.build.outcome }}" == "success" ]]; then echo "✅"; else echo "❌"; fi)
-          TEST=$(if [[ "${{ steps.unit_tests.outcome }}" == "success" ]]; then echo "✅"; else echo "❌"; fi)
-          
-          echo "## Build and Test Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build:** $BUILD" >> $GITHUB_STEP_SUMMARY
-          echo "- **Unit tests:** TEST" >> $GITHUB_STEP_SUMMARY
+#      - name: 'Generate Summary'
+#        id: summary
+#        if: always()
+#        run: |
+#          BUILD=$(if [[ "${{ steps.build.outcome }}" == "success" ]]; then echo "✅"; else echo "❌"; fi)
+#          TEST=$(if [[ "${{ steps.unit_tests.outcome }}" == "success" ]]; then echo "✅"; else echo "❌"; fi)
+#
+#          echo "## Build and Test Summary" >> $GITHUB_STEP_SUMMARY
+#          echo "- **Build:** $BUILD" >> $GITHUB_STEP_SUMMARY
+#          echo "- **Unit tests:** $TEST" >> $GITHUB_STEP_SUMMARY
 
 
