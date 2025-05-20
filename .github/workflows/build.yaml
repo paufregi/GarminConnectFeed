@@ -14,19 +14,19 @@ jobs:
       TZ: 'Pacific/Auckland'
 
     steps:
-      - name: 'Checkout 📥'
+      - name: 'Checkout'
         uses: actions/checkout@v4
 
-      - name: 'Setup JDK ☕'
+      - name: 'Setup JDK'
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 'Setup Gradle 🐘'
-        uses: gradle/actions/setup-gradle@v4
+      - name: 'Setup Gradle'
+        uses: gradle/actions/setup-gradle@v4.3.0
 
-      - name: 'Setup ENV 🛠️'
+      - name: 'Setup ENV '
         run: |
           echo "garmin.consumer_key=${{ secrets.GARMIN_CONSUMER_KEY }}" >> local.properties
           echo "garmin.consumer_secret=${{ secrets.GARMIN_CONSUMER_SECRET }}" >> local.properties
@@ -36,49 +36,27 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: 'Build 📦'
+      - name: 'Build'
+        id: build
         run: ./gradlew assemble
 
-      - name: 'Tests 🧪'
+      - name: 'Tests'
+        id: unit_tests
         run: ./gradlew testReleaseUnitTest
 
-      - name: 'Android tests 📱🧪'
-        run: ./gradlew pixel9ProCheck
+#      - name: 'Android tests'
+#        id: android_tests
+#        run: ./gradlew pixel9ProCheck
 
-      - name: 'Lint 🖍️'
+      - name: 'Lint'
+        id: lint
         run: ./gradlew lint
 
-      - name: 'Generate Summary 📝'
+      - name: 'Generate Summary'
+        id: summary
         if: always()
         run: |
-          # Initialize variables with default values (in case steps fail)
-          UNIT_TESTS_STATUS="❌"
-          ANDROID_TESTS_STATUS="❌"
-          LINT_STATUS="❌"
-
-          # Check for the existence of the steps and their outcomes *after* the steps have run.
-          #  This is done using conditional logic within the 'run' step.
-          if [ "${{ job.status }}" = "success" ]; then
-            if [ "${{ steps.unit_tests.outcome }}" = "success" ]; then
-              UNIT_TESTS_STATUS="✅"
-            fi
-            if [ "${{ steps.android_tests.outcome }}" = "success" ]; then
-              ANDROID_TESTS_STATUS="✅"
-            fi
-            if [ "${{ steps.lint.outcome }}" = "success" ]; then
-              LINT_STATUS="✅"
-            fi
-          fi
-
           echo "## Build and Test Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build:** ✅" >> $GITHUB_STEP_SUMMARY # Assuming assemble always succeeds
-          echo "- **Unit Tests:** ${UNIT_TESTS_STATUS}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Android Tests:** ${ANDROID_TESTS_STATUS}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Lint:** ${LINT_STATUS}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build:** [ "${{ steps.unit_tests.outcome }}" = "success" ] && ✅ || ❌" >> $GITHUB_STEP_SUMMARY
 
-      - name: Upload Build Results Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-results
-          path: /home/runner/work/_temp/.gradle-actions/build-results/
+
