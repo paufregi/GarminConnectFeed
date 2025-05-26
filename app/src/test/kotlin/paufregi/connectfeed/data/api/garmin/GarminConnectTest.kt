@@ -67,7 +67,7 @@ class GarminConnectTest {
         val res = api.getUserProfile()
 
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(UserProfile("Paul", "https://profile.image.com/large.jpg"))
+        assertThat(res.body()).isEqualTo(UserProfile(1, "Paul", "https://profile.image.com/large.jpg"))
         verify { authInterceptor.intercept(any()) }
         confirmVerified(authInterceptor)
     }
