@@ -58,7 +58,7 @@ class GarminRepositoryTest {
     @Test
     fun `Fetch user`() = runTest {
         val userProfile = UserProfile(1, "user", "url")
-        val user = User("user", "url")
+        val user = User(1, "user", "url")
         coEvery { connect.getUserProfile() } returns Response.success(userProfile)
 
         val res = repo.fetchUser()

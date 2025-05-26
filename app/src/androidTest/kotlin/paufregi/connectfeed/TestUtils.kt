@@ -33,7 +33,7 @@ fun createStravaToken(expiresAt: Instant) = StravaAuthToken(
 val today: Instant = Instant.now().truncatedTo(ChronoUnit.SECONDS)
 val tomorrow: Instant = today.plus(1, ChronoUnit.DAYS)
 
-val user = User(name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
+val user = User(id= 1, name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
 val preAuthToken = PreAuthToken("TOKEN", "SECRET")
 val authToken = createAuthToken(tomorrow)
 

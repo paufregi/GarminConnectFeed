@@ -94,7 +94,7 @@ class GarminRepositoryTest {
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
-        val expected = User("Paul", "https://profile.image.com/large.jpg")
+        val expected = User(1, "Paul", "https://profile.image.com/large.jpg")
 
         val res = repo.fetchUser()
 

@@ -24,7 +24,7 @@ class AccountScreenTest {
     @Test
     fun `Default screen`() {
         composeTestRule.setContent {
-            AccountContent(state = AccountState(user = User("Paul", "url")))
+            AccountContent(state = AccountState(user = User(1, "Paul", "url")))
         }
         composeTestRule.onNodeWithTag("profileImage").isDisplayed()
         composeTestRule.onNodeWithText("Refresh user").isDisplayed()
@@ -35,7 +35,7 @@ class AccountScreenTest {
     @Test
     fun `Default screen - Strava connected`() {
         composeTestRule.setContent {
-            AccountContent(state = AccountState(user = User("Paul", "url"), hasStrava = true))
+            AccountContent(state = AccountState(user = User(1, "Paul", "url"), hasStrava = true))
         }
         composeTestRule.onNodeWithTag("profileImage").isDisplayed()
         composeTestRule.onNodeWithText("Refresh user").isDisplayed()

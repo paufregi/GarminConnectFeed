@@ -14,6 +14,7 @@ data class UserProfile(
     val avatarUrl: String,
 ) {
     fun toCore(): CoreUserProfile = CoreUserProfile(
+        id = id,
         name = name,
         profileImageUrl = avatarUrl
     )
