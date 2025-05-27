@@ -47,6 +47,7 @@ class GarminDaoTest {
     fun `Save delete and retrieve profiles`() = runTest {
         val profile = ProfileEntity(
             id = 1,
+            userId = 1,
             name = "profile1",
             eventType = EventType.Training,
             activityType = ActivityType.Running,

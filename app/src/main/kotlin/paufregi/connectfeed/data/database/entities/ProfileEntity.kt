@@ -12,6 +12,7 @@ data class ProfileEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
 
+    val userId: Long,
     val name: String,
     val activityType: ActivityType = ActivityType.Any,
     val eventType: EventType? = null,

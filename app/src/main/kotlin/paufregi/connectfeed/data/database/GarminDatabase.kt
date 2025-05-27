@@ -7,7 +7,7 @@ import paufregi.connectfeed.data.database.coverters.ActivityTypeConverter
 import paufregi.connectfeed.data.database.coverters.EventTypeConverter
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 
-@Database(entities = [ProfileEntity::class], version = 4)
+@Database(entities = [ProfileEntity::class], version = 5)
 @TypeConverters(ActivityTypeConverter::class, EventTypeConverter::class)
 abstract class GarminDatabase : RoomDatabase() {
     abstract fun garminDao(): GarminDao
