@@ -7,6 +7,7 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.data.database.entities.ProfileEntity
+import paufregi.connectfeed.user
 
 class ProfileConverterTest {
 
@@ -25,6 +26,7 @@ class ProfileConverterTest {
 
     val entityProfile = ProfileEntity(
         id = 1,
+        userId = user.id,
         name = "profile",
         activityType = ActivityType.Cycling,
         eventType = EventType.Training,
@@ -38,7 +40,7 @@ class ProfileConverterTest {
 
     @Test
     fun `Profile to entity`() {
-        val result = profile.toEntity()
+        val result = profile.toEntity(user.id)
 
         assertThat(result).isEqualTo(entityProfile)
     }

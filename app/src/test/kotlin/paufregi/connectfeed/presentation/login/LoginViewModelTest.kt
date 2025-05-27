@@ -135,7 +135,7 @@ class LoginViewModelTest {
 
     @Test
     fun `Sign in - success`() = runTest {
-        val user = User("user", "avatar")
+        val user = User(1, "user", "avatar")
         coEvery { signIn(any(), any()) } returns Result.success(user)
 
         viewModel = LoginViewModel(signIn)

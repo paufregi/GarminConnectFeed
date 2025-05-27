@@ -29,6 +29,7 @@ import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaAuthToken
 import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
+import paufregi.connectfeed.user
 import java.io.File
 import java.time.Instant
 import javax.inject.Inject
@@ -94,7 +95,7 @@ class GarminRepositoryTest {
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
-        val expected = User("Paul", "https://profile.image.com/large.jpg")
+        val expected = User(1, "Paul", "https://profile.image.com/large.jpg")
 
         val res = repo.fetchUser()
 
@@ -105,15 +106,15 @@ class GarminRepositoryTest {
     @Test
     fun `Store profiles`() = runTest {
         val profile = Profile(id = 1, name = "test")
-        repo.saveProfile(profile)
+        repo.saveProfile(user, profile)
         assertThat(repo.getProfile(profile.id)).isEqualTo(profile)
 
-        repo.deleteProfile(profile)
+        repo.deleteProfile(user, profile)
         assertThat(repo.getProfile(profile.id)).isNull()
 
         repo.getAllProfiles().test{
             assertThat(awaitItem()).isEmpty()
-            repo.saveProfile(profile)
+            repo.saveProfile(user, profile)
             assertThat(awaitItem()).containsExactly(profile)
             cancelAndIgnoreRemainingEvents()
         }

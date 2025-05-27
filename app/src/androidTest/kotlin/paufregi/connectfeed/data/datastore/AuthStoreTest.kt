@@ -80,8 +80,8 @@ class AuthStoreTest {
 
     @Test
     fun `Save retrieve and delete User`() = runTest {
-        val user1 = User("user_1", "avatar_1")
-        val user2 = User("user_2", "avatar_2")
+        val user1 = User(1, "user_1", "avatar_1")
+        val user2 = User(2, "user_2", "avatar_2")
         dataStore.getUser().test {
             assertThat(awaitItem()).isNull()
             dataStore.saveUser(user1)

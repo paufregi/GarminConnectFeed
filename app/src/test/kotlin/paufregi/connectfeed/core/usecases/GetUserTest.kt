@@ -31,7 +31,7 @@ class GetUserTest{
 
     @Test
     fun `Get user`() = runTest {
-        val user = User("user", "profileImage")
+        val user = User(1, "user", "profileImage")
 
         coEvery { repo.getUser() } returns flowOf(user)
 

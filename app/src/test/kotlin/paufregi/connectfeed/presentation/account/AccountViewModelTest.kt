@@ -39,7 +39,7 @@ class AccountViewModelTest {
 
     private lateinit var viewModel: AccountViewModel
 
-    private val user = User("user", "url")
+    private val user = User(1, "user", "url")
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
