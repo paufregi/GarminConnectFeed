@@ -28,6 +28,7 @@ import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.ProfileEntity
+import paufregi.connectfeed.user
 import retrofit2.Response
 import java.io.File
 import paufregi.connectfeed.core.models.Activity as CoreActivity
@@ -116,6 +117,7 @@ class GarminRepositoryTest {
         val profileEntities = listOf(
             ProfileEntity(
                 id = 1,
+                userId = user.id,
                 name = "profile 1",
                 eventType = CoreEventType.Training,
                 activityType = CoreActivityType.Cycling,
@@ -124,6 +126,7 @@ class GarminRepositoryTest {
             ),
             ProfileEntity(
                 id = 2,
+                userId = user.id,
                 name = "profile 2",
                 eventType = CoreEventType.Recreation,
                 activityType = CoreActivityType.Running,
@@ -169,8 +172,9 @@ class GarminRepositoryTest {
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
         )
-        val profileEntity  = ProfileEntity(
+        val profileEntity = ProfileEntity(
             id = 1,
+            userId = user.id,
             name = "profile",
             eventType = CoreEventType.Training,
             activityType = CoreActivityType.Cycling,
@@ -200,6 +204,7 @@ class GarminRepositoryTest {
 
         val profileEntity  = ProfileEntity(
             name = "profile",
+            userId = user.id,
             eventType = CoreEventType.Training,
             activityType = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
@@ -208,7 +213,7 @@ class GarminRepositoryTest {
 
         coEvery { dao.saveProfile(any()) } returns Unit
 
-        repo.saveProfile(profile)
+        repo.saveProfile(user, profile)
 
         coVerify { dao.saveProfile(profileEntity) }
         confirmVerified(dao, connect, strava)
@@ -226,6 +231,7 @@ class GarminRepositoryTest {
 
         val profileEntity  = ProfileEntity(
             id = 1,
+            userId = user.id,
             name = "profile",
             eventType = CoreEventType.Training,
             activityType = CoreActivityType.Cycling,
@@ -234,7 +240,7 @@ class GarminRepositoryTest {
 
         coEvery { dao.deleteProfile(any()) } returns Unit
 
-        repo.deleteProfile(profile)
+        repo.deleteProfile(user, profile)
 
         coVerify { dao.deleteProfile(profileEntity) }
         confirmVerified(dao, connect, strava)

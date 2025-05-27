@@ -46,11 +46,11 @@ class GarminRepository @Inject constructor(
     suspend fun getProfile(id: Long): Profile? =
         garminDao.getProfile(id)?.toCore()
 
-    suspend fun saveProfile(profile: Profile) =
-        garminDao.saveProfile(profile.toEntity())
+    suspend fun saveProfile(user: User, profile: Profile) =
+        garminDao.saveProfile(profile.toEntity(user.id))
 
-    suspend fun deleteProfile(profile: Profile) =
-        garminDao.deleteProfile(profile.toEntity())
+    suspend fun deleteProfile(user: User, profile: Profile) =
+        garminDao.deleteProfile(profile.toEntity(user.id))
 
     suspend fun getActivities(limit: Int, force: Boolean = false): Result<List<Activity>> =
         withCache(activitiesCache, force) {
