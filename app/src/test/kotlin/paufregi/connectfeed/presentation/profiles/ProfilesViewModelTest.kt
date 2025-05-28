@@ -61,13 +61,13 @@ class ProfilesViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify{ getProfiles() }
+        verify { getProfiles() }
         confirmVerified(getProfiles, deleteProfile)
     }
 
     @Test
     fun `Initial state - empty list`() = runTest {
-        every { getProfiles.invoke() } returns flowOf(emptyList())
+        every { getProfiles() } returns flowOf(emptyList())
 
         viewModel = ProfilesViewModel(getProfiles, deleteProfile)
 
@@ -77,21 +77,21 @@ class ProfilesViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify{ getProfiles() }
+        verify { getProfiles() }
         confirmVerified(getProfiles, deleteProfile)
     }
 
     @Test
     fun `Delete profile`() = runTest {
-        every { getProfiles.invoke() } returns flowOf(profiles)
-        coEvery { deleteProfile.invoke(any()) } returns Unit
+        every { getProfiles() } returns flowOf(profiles)
+        coEvery { deleteProfile(any()) } returns Unit
 
         viewModel = ProfilesViewModel(getProfiles, deleteProfile)
 
         viewModel.onAction(ProfileAction.Delete(profiles[0]))
 
-        verify{ getProfiles() }
-        coVerify { deleteProfile.invoke(profiles[0]) }
+        verify { getProfiles() }
+        coVerify { deleteProfile(profiles[0]) }
         confirmVerified(getProfiles, deleteProfile)
     }
 }

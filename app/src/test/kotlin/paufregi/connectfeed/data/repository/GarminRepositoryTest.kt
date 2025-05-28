@@ -134,31 +134,31 @@ class GarminRepositoryTest {
             )
         )
 
-        coEvery { dao.getAllProfiles() } returns flowOf(profileEntities)
+        coEvery { dao.getAllProfiles(any()) } returns flowOf(profileEntities)
 
-        val res = repo.getAllProfiles()
+        val res = repo.getAllProfiles(user)
 
         res.test {
             assertThat(awaitItem()).isEqualTo(profiles)
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { dao.getAllProfiles() }
+        coVerify { dao.getAllProfiles(user.id) }
         confirmVerified(dao, connect, strava)
     }
 
     @Test
     fun `Get all profiles - empty list`() = runTest {
-        coEvery { dao.getAllProfiles() } returns flowOf(emptyList<ProfileEntity>())
+        coEvery { dao.getAllProfiles(any()) } returns flowOf(emptyList<ProfileEntity>())
 
-        val res = repo.getAllProfiles()
+        val res = repo.getAllProfiles(user)
 
         res.test {
             assertThat(awaitItem()).isEqualTo(emptyList<Profile>())
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { dao.getAllProfiles() }
+        coVerify { dao.getAllProfiles(user.id) }
         confirmVerified(dao, connect, strava)
     }
 

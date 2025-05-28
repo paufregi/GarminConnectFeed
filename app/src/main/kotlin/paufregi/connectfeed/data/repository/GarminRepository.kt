@@ -40,8 +40,8 @@ class GarminRepository @Inject constructor(
             .toResult()
             .map { it.toCore() }
 
-    fun getAllProfiles(): Flow<List<Profile>> =
-        garminDao.getAllProfiles().map { it.map { it.toCore() } }
+    fun getAllProfiles(user: User): Flow<List<Profile>> =
+        garminDao.getAllProfiles(user.id).map { it.map { it.toCore() } }
 
     suspend fun getProfile(id: Long): Profile? =
         garminDao.getProfile(id)?.toCore()

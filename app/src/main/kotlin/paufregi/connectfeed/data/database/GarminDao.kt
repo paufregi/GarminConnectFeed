@@ -16,8 +16,8 @@ interface GarminDao {
     @Delete
     suspend fun deleteProfile(profile: ProfileEntity)
 
-    @Query("SELECT * FROM profiles ORDER BY activityType, name")
-    fun getAllProfiles(): Flow<List<ProfileEntity>>
+    @Query("SELECT * FROM profiles WHERE userId = :userId ORDER BY activityType, name")
+    fun getAllProfiles(userId: Long): Flow<List<ProfileEntity>>
 
     @Query("SELECT * FROM profiles WHERE ID = :id")
     suspend fun getProfile(id: Long): ProfileEntity?
