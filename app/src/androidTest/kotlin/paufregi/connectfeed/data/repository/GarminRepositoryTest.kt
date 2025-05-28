@@ -112,7 +112,7 @@ class GarminRepositoryTest {
         repo.deleteProfile(user, profile)
         assertThat(repo.getProfile(profile.id)).isNull()
 
-        repo.getAllProfiles().test{
+        repo.getAllProfiles(user).test{
             assertThat(awaitItem()).isEmpty()
             repo.saveProfile(user, profile)
             assertThat(awaitItem()).containsExactly(profile)

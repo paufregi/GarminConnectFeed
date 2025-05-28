@@ -58,14 +58,30 @@ class GarminDaoTest {
             feelAndEffort = true,
             trainingEffect = true
         )
+        val profile2 = ProfileEntity(
+            id = 2,
+            userId = 2,
+            name = "profile2",
+            eventType = EventType.Training,
+            activityType = ActivityType.Running,
+            course = Course(id = 1, name = "course2", distance = 2000.50, type = ActivityType.Running),
+            water = 200,
+            rename = true,
+            customWater = true,
+            feelAndEffort = true,
+            trainingEffect = true
+        )
 
         dao.saveProfile(profile)
         assertThat(dao.getProfile(profile.id)).isEqualTo(profile)
 
+        dao.saveProfile(profile2)
+        assertThat(dao.getProfile(profile2.id)).isEqualTo(profile2)
+
         dao.deleteProfile(profile)
         assertThat(dao.getProfile(profile.id)).isNull()
 
-        dao.getAllProfiles().test {
+        dao.getAllProfiles(1).test {
             assertThat(awaitItem()).isEmpty()
             dao.saveProfile(profile)
             assertThat(awaitItem()).containsExactly(profile)

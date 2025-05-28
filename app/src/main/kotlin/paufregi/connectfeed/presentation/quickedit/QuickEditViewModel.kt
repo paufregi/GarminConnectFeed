@@ -33,8 +33,7 @@ class QuickEditViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(QuickEditState())
 
-    val state =
-        combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles) }
+    val state = combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles) }
             .onStart { load() }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), QuickEditState())
 
