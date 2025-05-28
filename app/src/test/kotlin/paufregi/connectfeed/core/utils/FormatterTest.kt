@@ -12,16 +12,23 @@ class FormatterTest {
     val zoneId: ZoneId = ZoneId.of("Pacific/Auckland")
 
     @Test
-    fun `Formatter date time for filename`() {
+    fun `Formatter date time`() {
         val date = Instant.ofEpochMilli(1704057630000) // 2024-01-01 10:20:30
-        val result = Formatter.dateTimeForFilename(zoneId).format(date)
+        val result = Formatter.dateTime(zoneId).format(date)
         assertThat(result).isEqualTo("20240101_102030")
     }
 
     @Test
-    fun `Formatter date time for importer`() {
+    fun `Formatter date`() {
+        val date = Instant.ofEpochMilli(1704057630000) // 2024-01-01 10:20:30
+        val result = Formatter.date(zoneId).format(date)
+        assertThat(result).isEqualTo("2024-01-01")
+    }
+
+    @Test
+    fun `Simple formatter date time`() {
         val date = Date.from(Instant.ofEpochMilli(1704057630000))
-        val result = Formatter.dateTimeForImport(Locale.ENGLISH).parse("2024.01.01 10:20:30")
+        val result = Formatter.simpleDateTime(Locale.ENGLISH).parse("2024.01.01 10:20:30")
         assertThat(result).isEqualTo(date)
     }
 
