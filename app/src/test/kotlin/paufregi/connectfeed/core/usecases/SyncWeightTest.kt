@@ -63,7 +63,7 @@ class SyncWeightTest {
             metabolicAge = 35,
         ))
 
-        every { Formatter.dateTimeForFilename(any()).format(any()) } returns "20240101_000000"
+        every { Formatter.dateTime(any()).format(any()) } returns "20240101_000000"
         every { FitWriter.weights(any(), any()) } returns Unit
         coEvery { repo.uploadFile(any()) } returns Result.success(Unit)
 
@@ -71,7 +71,7 @@ class SyncWeightTest {
 
         assertThat(res.isSuccess).isTrue()
         verify {
-            Formatter.dateTimeForFilename(any()).format(any())
+            Formatter.dateTime(any()).format(any())
             FitWriter.weights(any(), weights)
         }
         coVerify { repo.uploadFile(any()) }
@@ -80,7 +80,7 @@ class SyncWeightTest {
 
     @Test
     fun `Upload empty list`() = runTest {
-        every { Formatter.dateTimeForFilename(any()).format(any()) } returns "20240101_000000"
+        every { Formatter.dateTime(any()).format(any()) } returns "20240101_000000"
         every { FitWriter.weights(any(), any()) } returns Unit
         coEvery { repo.uploadFile(any()) } returns Result.success(Unit)
 
@@ -88,7 +88,7 @@ class SyncWeightTest {
 
         assertThat(res.isSuccess).isTrue()
         verify {
-            Formatter.dateTimeForFilename(any()).format(any())
+            Formatter.dateTime(any()).format(any())
             FitWriter.weights(any(), emptyList())
         }
         coVerify { repo.uploadFile(any()) }
@@ -97,7 +97,7 @@ class SyncWeightTest {
 
     @Test
     fun `Failed upload`() = runTest {
-        every { Formatter.dateTimeForFilename(any()).format(any()) } returns "20240101_000000"
+        every { Formatter.dateTime(any()).format(any()) } returns "20240101_000000"
         every { FitWriter.weights(any(), any()) } returns Unit
         coEvery { repo.uploadFile(any()) } returns Result.failure("Failed to upload file")
 
@@ -119,7 +119,7 @@ class SyncWeightTest {
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Failed to upload file")
         verify {
-            Formatter.dateTimeForFilename(any()).format(any())
+            Formatter.dateTime(any()).format(any())
             FitWriter.weights(any(), weights)
         }
         coVerify { repo.uploadFile(any()) }

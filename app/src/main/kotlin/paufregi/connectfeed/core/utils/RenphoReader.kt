@@ -7,7 +7,7 @@ import java.util.Locale
 
 object RenphoReader {
     fun read(inputStream: InputStream): Result<List<Weight>> = runCatching {
-        val formatter = Formatter.dateTimeForImport(Locale.getDefault())
+        val formatter = Formatter.simpleDateTime(Locale.getDefault())
         CSVFormat.Builder.create()
             .setHeader()
             .setSkipHeaderRecord(true)

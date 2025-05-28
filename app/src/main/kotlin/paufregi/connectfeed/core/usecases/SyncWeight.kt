@@ -16,7 +16,7 @@ class SyncWeight @Inject constructor(
     @param:Named("tempFolder") val folder: File
 ) {
     suspend operator fun invoke(weights: List<Weight>): Result<Unit> {
-        val dateFormatter = Formatter.dateTimeForFilename(ZoneId.systemDefault())
+        val dateFormatter = Formatter.dateTime(ZoneId.systemDefault())
         val filename = "ws_${dateFormatter.format(Instant.now())}.fit"
         val file = File(folder, filename)
         FitWriter.weights(file, weights)
