@@ -61,6 +61,14 @@ fun <T> Result<T>.mapFailure(transform: (exception: Throwable) -> Throwable): Re
         else -> Result.failure<T>(transform(exception))
     }
 
+inline fun <T, R> T.runCatchingResult(block: T.() -> Result<R>): Result<R> {
+    val res = runCatching { block() }
+    return res.fold(
+        onSuccess = { return it },
+        onFailure = { return Result.failure(it) }
+    )
+}
+
 inline fun <T> Semaphore.withPermit(action: () -> T): T {
     acquire()
     return try {
