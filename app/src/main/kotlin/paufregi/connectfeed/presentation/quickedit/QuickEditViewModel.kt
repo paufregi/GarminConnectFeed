@@ -42,13 +42,14 @@ class QuickEditViewModel @Inject constructor(
         val errors = mutableListOf<String>()
 
         coroutineScope {
-            async { getActivities(force) }
-                .await()
+            val asyncGetActivities = async { getActivities(force) }
+            val asyncGetStravaActivities = async { getStravaActivities(force) }
+
+            asyncGetActivities.await()
                 .onSuccess { data -> _state.update { it.copy(activities = data) } }
                 .onFailure { errors.add("activities") }
 
-            async { getStravaActivities(force) }
-                .await()
+            asyncGetStravaActivities.await()
                 .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
                 .onFailure { errors.add("Strava activities") }
         }

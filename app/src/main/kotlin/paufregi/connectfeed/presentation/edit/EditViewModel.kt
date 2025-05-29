@@ -49,18 +49,19 @@ class EditViewModel @Inject constructor(
         val courseError = mutableListOf<String>()
 
         coroutineScope {
-            async { getActivities(force) }
-                .await()
+            val asyncGetActivities = async { getActivities(force) }
+            val asyncGetStravaActivities = async { getStravaActivities(force) }
+            val asyncGetCourses = async { getCourses(force) }
+
+            asyncGetActivities.await()
                 .onSuccess { data -> _state.update { it.copy(activities = data) } }
                 .onFailure { activitiesErrors.add("Garmin") }
 
-            async { getStravaActivities(force) }
-                .await()
+            asyncGetStravaActivities.await()
                 .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
                 .onFailure { activitiesErrors.add("Strava") }
 
-            async { getCourses(force) }
-                .await()
+            asyncGetCourses.await()
                 .onSuccess { data -> _state.update { it.copy(courses = data) } }
                 .onFailure { courseError.add("courses") }
         }
@@ -108,7 +109,7 @@ class EditViewModel @Inject constructor(
         val errors = mutableListOf<String>()
 
         coroutineScope {
-            async {
+            val asyncUpdateActivity = async {
                 updateActivity(
                     activity = state.value.activity,
                     name = state.value.name,
@@ -118,22 +119,31 @@ class EditViewModel @Inject constructor(
                     feel = state.value.feel,
                     effort = state.value.effort
                 )
-            }.await()
+            }
+
+
+                val asyncUpdateStravaActivity = async {
+                    if (state.value.hasStrava && state.value.stravaActivity != null) {
+                        updateStravaActivity(
+                            stravaActivity = state.value.stravaActivity,
+                            name = state.value.name,
+                            description = state.value.description,
+                            eventType = state.value.eventType,
+                            trainingEffect = state.value.activity?.trainingEffect,
+                            trainingEffectFlag = state.value.trainingEffect
+                        )
+                    } else {
+                        Result.success(Unit)
+                    }
+                }
+
+            asyncUpdateActivity.await()
                 .onFailure { errors.add("Garmin") }
 
-            if (state.value.hasStrava && state.value.stravaActivity != null) {
-                async {
-                    updateStravaActivity(
-                        stravaActivity = state.value.stravaActivity,
-                        name = state.value.name,
-                        description = state.value.description,
-                        eventType = state.value.eventType,
-                        trainingEffect = state.value.activity?.trainingEffect,
-                        trainingEffectFlag = state.value.trainingEffect
-                    )
-                }.await()
-                    .onFailure { errors.add("Strava") }
-            }
+            asyncUpdateStravaActivity.await()
+                .onFailure { errors.add("Strava") }
+
+
         }
 
         when (errors.isEmpty()) {

@@ -48,12 +48,14 @@ class SyncWeightViewModel @Inject constructor(
         val errors = mutableListOf<String>()
 
         coroutineScope {
-            async { syncWeight(weights) }
-                .await()
+            val asyncSyncWeight = async { syncWeight(weights) }
+
+            val asyncSyncStravaWeight = async { syncStravaWeight(weights) }
+
+            asyncSyncWeight.await()
                 .onFailure { errors.add("Garmin") }
 
-            async { syncStravaWeight(weights) }
-                .await()
+            asyncSyncStravaWeight.await()
                 .onFailure { errors.add("Strava") }
         }
 
