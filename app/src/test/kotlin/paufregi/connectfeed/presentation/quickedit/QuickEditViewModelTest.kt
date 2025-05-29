@@ -862,7 +862,7 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             viewModel.onAction(QuickEditAction.Restart)
-            skipItems(3)
+            skipItems(2)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)

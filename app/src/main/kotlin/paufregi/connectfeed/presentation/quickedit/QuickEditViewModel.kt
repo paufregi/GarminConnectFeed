@@ -19,6 +19,7 @@ import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
 import paufregi.connectfeed.core.utils.getOrNull
+import paufregi.connectfeed.core.utils.runCatchingResult
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
@@ -42,13 +43,14 @@ class QuickEditViewModel @Inject constructor(
         val errors = mutableListOf<String>()
 
         coroutineScope {
-            async { getActivities(force) }
-                .await()
+            val asyncGetActivities = async { getActivities(force) }
+            val asyncGetStravaActivities = async { getStravaActivities(force) }
+
+            runCatchingResult { asyncGetActivities.await() }
                 .onSuccess { data -> _state.update { it.copy(activities = data) } }
                 .onFailure { errors.add("activities") }
 
-            async { getStravaActivities(force) }
-                .await()
+            runCatchingResult { asyncGetStravaActivities.await() }
                 .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
                 .onFailure { errors.add("Strava activities") }
         }
@@ -95,7 +97,7 @@ class QuickEditViewModel @Inject constructor(
         val errors = mutableListOf<String>()
 
         coroutineScope {
-            async {
+            val asyncQuickUpdate = async {
                 quickUpdateActivity(
                     activity = state.value.activity,
                     profile = state.value.profile,
@@ -103,20 +105,26 @@ class QuickEditViewModel @Inject constructor(
                     feel = state.value.feel,
                     effort = state.value.effort
                 )
-            }.await()
-                .onFailure { errors.add("Garmin") }
+            }
 
-            if (state.value.hasStrava && state.value.stravaActivity != null) {
-                async {
+            val asyncQuickUpdateStrava  = async {
+                if (state.value.hasStrava && state.value.stravaActivity != null) {
                     quickUpdateStravaActivity(
                         activity = state.value.activity,
                         stravaActivity = state.value.stravaActivity,
                         profile = state.value.profile,
                         description = state.value.description,
                     )
-                }.await()
-                    .onFailure { errors.add("Strava") }
+                } else {
+                    Result.success(Unit)
+                }
             }
+
+            runCatchingResult { asyncQuickUpdate.await() }
+                .onFailure { errors.add("Garmin") }
+
+            runCatchingResult { asyncQuickUpdateStrava.await() }
+                .onFailure { errors.add("Strava") }
         }
 
         when (errors.isEmpty()) {

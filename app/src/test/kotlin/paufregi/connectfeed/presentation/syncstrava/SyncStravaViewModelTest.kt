@@ -187,7 +187,10 @@ class SyncStravaViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't load Garmin & Strava activities"))
+            assertThat(state.process).isInstanceOf(ProcessState.Failure::class.java)
+            state.process as ProcessState.Failure
+            assertThat(state.process.reason).contains("Garmin")
+            assertThat(state.process.reason).contains("Strava")
             assertThat(state.activities).isEmpty()
             assertThat(state.stravaActivities).isEmpty()
             assertThat(state.activity).isNull()
@@ -515,7 +518,7 @@ class SyncStravaViewModelTest {
 
         viewModel.state.test {
             viewModel.onAction(SyncStravaAction.Restart)
-            skipItems(3)
+            skipItems(2)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)

@@ -533,6 +533,36 @@ class ExtensionTest {
     }
 
     @Test
+    fun `runCatchingResult - success`() {
+        val block: () -> Result<String> = { Result.success("Success") }
+
+        val result = runCatchingResult { block() }
+
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result).isEqualTo(Result.success("Success"))
+    }
+
+    @Test
+    fun `runCatchingResult - failure`() {
+        val block: () -> Result<String> = { Result.failure<String>("Fail") }
+
+        val result = runCatchingResult { block() }
+
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("Fail")
+    }
+
+    @Test
+    fun `runCatchingResult - exception`() {
+        val block: () -> Result<String> = { throw Exception("Fail") }
+
+        val result = runCatchingResult { block() }
+
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("Fail")
+    }
+
+    @Test
     fun `Semaphore - withPermit - executes action within permit`() {
         val semaphore = Semaphore(1)
         var result = 0

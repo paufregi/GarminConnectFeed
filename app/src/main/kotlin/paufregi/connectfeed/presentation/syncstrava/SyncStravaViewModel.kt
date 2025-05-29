@@ -15,6 +15,7 @@ import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.SyncStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
+import paufregi.connectfeed.core.utils.runCatchingResult
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
@@ -36,15 +37,16 @@ class SyncStravaViewModel @Inject constructor(
         val errors = mutableListOf<String>()
 
         coroutineScope {
-            async { getActivities(force) }
-                .await()
-                .onSuccess { data -> _state.update { it.copy(activities = data) } }
-                .onFailure { errors.add("Garmin") }
+            val asyncGetActivities = async { getActivities(force) }
+            val asyncGetStravaActivities = async { getStravaActivities(force) }
 
-            async { getStravaActivities(force) }
-                .await()
+            runCatchingResult { asyncGetStravaActivities.await() }
                 .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
                 .onFailure { errors.add("Strava") }
+
+            runCatchingResult { asyncGetActivities.await() }
+                .onSuccess { data -> _state.update { it.copy(activities = data) } }
+                .onFailure { errors.add("Garmin") }
         }
 
         when (errors.isEmpty()) {
