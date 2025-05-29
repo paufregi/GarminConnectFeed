@@ -19,6 +19,7 @@ import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.core.utils.getOrMatch
 import paufregi.connectfeed.core.utils.getOrNull
+import paufregi.connectfeed.core.utils.runCatchingResult
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
@@ -53,15 +54,15 @@ class EditViewModel @Inject constructor(
             val asyncGetStravaActivities = async { getStravaActivities(force) }
             val asyncGetCourses = async { getCourses(force) }
 
-            asyncGetActivities.await()
+            runCatchingResult { asyncGetActivities.await() }
                 .onSuccess { data -> _state.update { it.copy(activities = data) } }
                 .onFailure { activitiesErrors.add("Garmin") }
 
-            asyncGetStravaActivities.await()
+            runCatchingResult { asyncGetStravaActivities.await() }
                 .onSuccess { data -> _state.update { it.copy(stravaActivities = data) } }
                 .onFailure { activitiesErrors.add("Strava") }
 
-            asyncGetCourses.await()
+            runCatchingResult { asyncGetCourses.await() }
                 .onSuccess { data -> _state.update { it.copy(courses = data) } }
                 .onFailure { courseError.add("courses") }
         }
@@ -121,29 +122,26 @@ class EditViewModel @Inject constructor(
                 )
             }
 
-
-                val asyncUpdateStravaActivity = async {
-                    if (state.value.hasStrava && state.value.stravaActivity != null) {
-                        updateStravaActivity(
-                            stravaActivity = state.value.stravaActivity,
-                            name = state.value.name,
-                            description = state.value.description,
-                            eventType = state.value.eventType,
-                            trainingEffect = state.value.activity?.trainingEffect,
-                            trainingEffectFlag = state.value.trainingEffect
-                        )
-                    } else {
-                        Result.success(Unit)
-                    }
+            val asyncUpdateStravaActivity = async {
+                if (state.value.hasStrava && state.value.stravaActivity != null) {
+                    updateStravaActivity(
+                        stravaActivity = state.value.stravaActivity,
+                        name = state.value.name,
+                        description = state.value.description,
+                        eventType = state.value.eventType,
+                        trainingEffect = state.value.activity?.trainingEffect,
+                        trainingEffectFlag = state.value.trainingEffect
+                    )
+                } else {
+                    Result.success(Unit)
                 }
+            }
 
-            asyncUpdateActivity.await()
+            runCatchingResult { asyncUpdateActivity.await() }
                 .onFailure { errors.add("Garmin") }
 
-            asyncUpdateStravaActivity.await()
+            runCatchingResult { asyncUpdateStravaActivity.await() }
                 .onFailure { errors.add("Strava") }
-
-
         }
 
         when (errors.isEmpty()) {

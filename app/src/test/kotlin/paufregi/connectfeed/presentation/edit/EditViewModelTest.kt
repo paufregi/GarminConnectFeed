@@ -1512,7 +1512,7 @@ class EditViewModelTest {
 
         viewModel.state.test {
             viewModel.onAction(EditAction.Restart)
-            skipItems(5)
+            skipItems(3)
             val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)

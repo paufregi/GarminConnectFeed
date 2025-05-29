@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.SyncStravaWeight
 import paufregi.connectfeed.core.usecases.SyncWeight
 import paufregi.connectfeed.core.utils.RenphoReader
+import paufregi.connectfeed.core.utils.runCatchingResult
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import java.io.InputStream
 import javax.inject.Inject
@@ -52,10 +53,10 @@ class SyncWeightViewModel @Inject constructor(
 
             val asyncSyncStravaWeight = async { syncStravaWeight(weights) }
 
-            asyncSyncWeight.await()
+            runCatchingResult { asyncSyncWeight.await() }
                 .onFailure { errors.add("Garmin") }
 
-            asyncSyncStravaWeight.await()
+            runCatchingResult { asyncSyncStravaWeight.await() }
                 .onFailure { errors.add("Strava") }
         }
 
