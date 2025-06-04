@@ -79,8 +79,7 @@ internal fun AccountContent(
 
     Screen(
         tagName = "account_form",
-        menuItems = Navigation.items,
-        menuSelectedIndex = Navigation.ACCOUNT,
+        navigationIndex = Navigation.ACCOUNT,
         nav = nav,
         state = state.process,
         success = successInfo { onAction(AccountAction.Reset) },

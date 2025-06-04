@@ -23,7 +23,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.presentation.HomeNavigation
-import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Dropdown
 import paufregi.connectfeed.presentation.ui.components.Screen
@@ -52,10 +51,8 @@ internal fun SyncStravaContent(
 
     Screen(
         tagName = "sync_strava_form",
-        menuItems = Navigation.items,
-        menuSelectedIndex = Navigation.HOME,
-        bottomItems = HomeNavigation.items(true),
-        bottomSelectedIndex = HomeNavigation.SYNC_STRAVA,
+        location = HomeNavigation.SYNC_STRAVA,
+        hasStrava = true,
         nav = nav,
         state = state.process,
         success = successInfo {

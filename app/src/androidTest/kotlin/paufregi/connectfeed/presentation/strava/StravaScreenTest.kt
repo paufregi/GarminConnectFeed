@@ -11,6 +11,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
@@ -23,7 +24,7 @@ class StravaScreenTest {
     @Test
     fun `Loading spinning`() {
         composeTestRule.setContent {
-            StravaScreen(state = StravaState.Processing)
+            StravaScreen(state = StravaState(ProcessState.Processing))
         }
         composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
     }
@@ -31,7 +32,7 @@ class StravaScreenTest {
     @Test
     fun `Strava linked`() {
         composeTestRule.setContent {
-            StravaScreen(state = StravaState.Success)
+            StravaScreen(state = StravaState(ProcessState.Success("Strava linked")))
         }
         composeTestRule.onNodeWithText("Strava linked").isDisplayed()
     }
@@ -39,7 +40,7 @@ class StravaScreenTest {
     @Test
     fun `Sign in - failure`() {
         composeTestRule.setContent {
-            StravaScreen(state = StravaState.Failure)
+            StravaScreen(state = StravaState(ProcessState.Failure("Linked failed")))
         }
         composeTestRule.onNodeWithText("Link failed").isDisplayed()
     }

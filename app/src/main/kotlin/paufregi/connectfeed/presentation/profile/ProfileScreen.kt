@@ -55,8 +55,7 @@ internal fun ProfileContent(
 ) {
     Screen(
         tagName = "profile_form",
-        menuItems = Navigation.items,
-        menuSelectedIndex = Navigation.PROFILES,
+        navigationIndex = Navigation.PROFILES,
         nav = nav,
         state = state.process,
         success = successInfo { nav.navigateUp() },

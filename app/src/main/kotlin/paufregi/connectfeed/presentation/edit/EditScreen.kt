@@ -70,8 +70,8 @@ internal fun EditContent(
 
     Screen(
         tagName = "edit_form",
-        menuItems = HomeNavigation.items(state.hasStrava),
-        menuSelectedIndex = HomeNavigation.EDIT,
+        location = HomeNavigation.EDIT,
+        hasStrava = state.hasStrava,
         nav = nav,
         state = state.process,
         success = successInfo {

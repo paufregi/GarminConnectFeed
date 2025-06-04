@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import paufregi.connectfeed.presentation.HomeNavigation
+import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
@@ -52,8 +54,7 @@ fun Screen(
 @ExperimentalMaterial3Api
 fun Screen(
     tagName: String = "screen",
-    menuItems: List<NavigationItem> = emptyList<NavigationItem>(),
-    menuSelectedIndex: Int = 0,
+    navigationIndex: Int = 0,
     nav: NavController = rememberNavController(),
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
@@ -68,8 +69,8 @@ fun Screen(
         is ProcessState.Success -> SimpleScaffold { success(state, it) }
         is ProcessState.Failure-> SimpleScaffold { failure(state, it) }
         is ProcessState.Idle -> NavigationScaffold(
-            items = menuItems,
-            selectedIndex = menuSelectedIndex,
+            items = Navigation.items,
+            selectedIndex = navigationIndex,
             nav = nav,
             floatingActionButton = floatingActionButton,
             floatingActionButtonPosition = floatingActionButtonPosition,
@@ -98,10 +99,8 @@ fun Screen(
 @ExperimentalMaterial3Api
 fun Screen(
     tagName: String = "screen",
-    menuItems: List<NavigationItem> = emptyList<NavigationItem>(),
-    menuSelectedIndex: Int = 0,
-    bottomItems: List<NavigationItem> = emptyList<NavigationItem>(),
-    bottomSelectedIndex: Int = 0,
+    hasStrava: Boolean,
+    location: HomeNavigation,
     nav: NavController = rememberNavController(),
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
@@ -116,13 +115,13 @@ fun Screen(
         is ProcessState.Success -> SimpleScaffold { success(state, it) }
         is ProcessState.Failure-> SimpleScaffold { failure(state, it) }
         is ProcessState.Idle -> NavigationScaffold(
-            items = menuItems,
-            selectedIndex = menuSelectedIndex,
+            items = Navigation.items,
+            selectedIndex = location.menuIndex,
             bottomBar = @Composable {
                 NavigationBar(
-                    items = bottomItems,
-                    selectedIndex = bottomSelectedIndex,
-                    nav = nav
+                    items = HomeNavigation.items(hasStrava),
+                    selectedIndex = location.barIndex,
+                    nav = nav,
                 )
             },
             nav = nav,

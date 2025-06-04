@@ -29,7 +29,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.presentation.HomeNavigation
-import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.CustomSlider
 import paufregi.connectfeed.presentation.ui.components.Dropdown
@@ -70,10 +69,8 @@ internal fun QuickEditContent(
 
     Screen(
         tagName = "quick_edit_form",
-        menuItems = Navigation.items,
-        menuSelectedIndex = Navigation.HOME,
-        bottomItems = HomeNavigation.items(state.hasStrava),
-        bottomSelectedIndex = HomeNavigation.QUICK_EDIT,
+        location = HomeNavigation.QUICK_EDIT,
+        hasStrava = state.hasStrava,
         nav = nav,
         state = state.process,
         success = successInfo {

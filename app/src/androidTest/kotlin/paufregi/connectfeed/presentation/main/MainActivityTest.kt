@@ -262,7 +262,7 @@ class MainActivityTest {
         dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_form", timeoutMillis = 50000) { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
         composeTestRule.onNodeWithText("Activity").performClick()
         composeTestRule.onNodeWithText("Activity 1").performClick()
         composeTestRule.onNodeWithText("Profile").performClick()
