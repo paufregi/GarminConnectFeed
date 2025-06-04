@@ -61,7 +61,7 @@ class SyncWeightViewModel @Inject constructor(
         }
 
         when (errors.isEmpty()) {
-            true -> _state.update { SyncWeightState(ProcessState.Success()) }
+            true -> _state.update { SyncWeightState(ProcessState.Success("Sync succeeded")) }
             false -> _state.update { SyncWeightState(ProcessState.Failure("${errors.joinToString(" & ")} sync failed")) }
         }
     }

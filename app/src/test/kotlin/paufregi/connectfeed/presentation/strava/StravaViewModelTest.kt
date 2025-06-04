@@ -15,6 +15,7 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.usecases.StravaCodeExchange
 import paufregi.connectfeed.core.utils.failure
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
@@ -41,7 +42,7 @@ class StravaViewModelTest {
     fun `Initial state`() = runTest {
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state).isEqualTo(StravaState.Processing)
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -56,7 +57,7 @@ class StravaViewModelTest {
             viewModel.exchangeToken("code")
             skipItems(1)
             val state = awaitItem()
-            assertThat(state).isEqualTo(StravaState.Success)
+            assertThat(state.process).isEqualTo(ProcessState.Success("Strava linked"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -72,7 +73,7 @@ class StravaViewModelTest {
             viewModel.exchangeToken("code")
             skipItems(1)
             val state = awaitItem()
-            assertThat(state).isEqualTo(StravaState.Failure)
+            assertThat(state.process).isEqualTo(ProcessState.Failure("Link failed"))
             cancelAndIgnoreRemainingEvents()
         }
 

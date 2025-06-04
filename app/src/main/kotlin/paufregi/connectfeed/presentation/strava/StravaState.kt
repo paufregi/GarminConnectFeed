@@ -1,7 +1,7 @@
 package paufregi.connectfeed.presentation.strava
 
-sealed interface StravaState {
-    data object Processing : StravaState
-    data object Success : StravaState
-    data object Failure : StravaState
-}
+import paufregi.connectfeed.presentation.ui.models.ProcessState
+
+data class StravaState(
+    val process: ProcessState = ProcessState.Idle
+)

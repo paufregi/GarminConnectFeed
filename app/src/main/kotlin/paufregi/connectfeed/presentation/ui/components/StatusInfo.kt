@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 sealed class StatusInfoType(
     val icon: ImageVector,
@@ -62,4 +63,41 @@ fun StatusInfo(
         Spacer(modifier = Modifier.height(50.dp))
         actionButton()
     }
+}
+
+@ExperimentalMaterial3Api
+fun successInfo(
+    action: () -> Unit,
+) = @Composable { state: ProcessState.Success, paddingValues: PaddingValues ->
+    StatusInfo(
+        type = StatusInfoType.Success,
+        text = state.message ?: "All done",
+        actionButton = { Button(text = "Ok", onClick = action) },
+        paddingValues = paddingValues
+    )
+}
+
+@ExperimentalMaterial3Api
+fun failureInfo(
+    action: () -> Unit,
+) = @Composable { state: ProcessState.Failure, paddingValues: PaddingValues ->
+    StatusInfo(
+        type = StatusInfoType.Failure,
+        text = state.reason,
+        actionButton = { Button(text = "Ok", onClick = action) },
+        paddingValues = paddingValues
+    )
+}
+
+
+@ExperimentalMaterial3Api
+fun unknownInfo(
+    action: () -> Unit,
+) = @Composable { paddingValues: PaddingValues ->
+    StatusInfo(
+        type = StatusInfoType.Unknown,
+        text = "Don't know what to do",
+        actionButton = { Button(text = "Ok", onClick = action) },
+        paddingValues = paddingValues
+    )
 }

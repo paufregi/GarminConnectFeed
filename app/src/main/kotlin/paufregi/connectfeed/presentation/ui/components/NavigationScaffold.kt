@@ -47,7 +47,6 @@ fun NavigationScaffold(
     bottomBar: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit = {}
 ) {
-
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -87,6 +86,7 @@ fun NavigationScaffold(
                     }
                 )
             },
-        ) { pv -> content(pv) }
+            content = content
+        )
     }
 }

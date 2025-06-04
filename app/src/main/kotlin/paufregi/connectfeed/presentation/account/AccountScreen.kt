@@ -2,16 +2,9 @@ package paufregi.connectfeed.presentation.account
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
@@ -29,7 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,12 +31,9 @@ import coil3.compose.AsyncImage
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
-import paufregi.connectfeed.presentation.ui.components.Loading
-import paufregi.connectfeed.presentation.ui.components.NavigationScaffold
-import paufregi.connectfeed.presentation.ui.components.SimpleScaffold
-import paufregi.connectfeed.presentation.ui.components.StatusInfo
-import paufregi.connectfeed.presentation.ui.components.StatusInfoType
-import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.components.Screen
+import paufregi.connectfeed.presentation.ui.components.failureInfo
+import paufregi.connectfeed.presentation.ui.components.successInfo
 
 @Composable
 @ExperimentalMaterial3Api
@@ -63,44 +51,7 @@ internal fun AccountContent(
     @PreviewParameter(AccountStatePreview::class) state: AccountState,
     onAction: (AccountAction) -> Unit = {},
     stravaAuthUri: Uri = Uri.EMPTY,
-    nav: NavController = rememberNavController()
-) {
-    when (state.process) {
-        is ProcessState.Processing -> SimpleScaffold { Loading(it) }
-        is ProcessState.Success -> SimpleScaffold {
-            StatusInfo(
-                type = StatusInfoType.Success,
-                text = state.process.message ?: "All done",
-                actionButton = { Button(text = "Ok", onClick = { onAction(AccountAction.Reset) }) },
-                paddingValues = it
-            )
-        }
-
-        is ProcessState.Failure -> SimpleScaffold {
-            StatusInfo(
-                type = StatusInfoType.Failure,
-                text = state.process.reason,
-                actionButton = { Button(text = "Ok", onClick = { onAction(AccountAction.Reset) }) },
-                paddingValues = it
-            )
-        }
-
-        is ProcessState.Idle -> NavigationScaffold(
-            items = Navigation.items,
-            selectedIndex = Navigation.ACCOUNT,
-            nav = nav
-        ) { AccountForm(state, onAction, stravaAuthUri, it) }
-    }
-}
-
-
-@Composable
-@ExperimentalMaterial3Api
-internal fun AccountForm(
-    state: AccountState,
-    onAction: (AccountAction) -> Unit = {},
-    stravaAuthUri: Uri = Uri.EMPTY,
-    paddingValues: PaddingValues = PaddingValues(),
+    nav: NavController = rememberNavController(),
 ) {
     val context = LocalContext.current
     var signOutDialog by remember { mutableStateOf(false) }
@@ -126,21 +77,15 @@ internal fun AccountForm(
         )
     }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(
-                top = paddingValues.calculateTopPadding(),
-                bottom = paddingValues.calculateBottomPadding(),
-                start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr) + 20.dp,
-                end = paddingValues.calculateRightPadding(LayoutDirection.Ltr) + 20.dp,
-            )
-            .testTag("account_form")
+    Screen(
+        tagName = "account_form",
+        menuItems = Navigation.items,
+        menuSelectedIndex = Navigation.ACCOUNT,
+        nav = nav,
+        state = state.process,
+        success = successInfo { onAction(AccountAction.Reset) },
+        failure = failureInfo { onAction(AccountAction.Reset) },
     ) {
-
         AsyncImage(
             model = state.user?.profileImageUrl,
             contentDescription = null,

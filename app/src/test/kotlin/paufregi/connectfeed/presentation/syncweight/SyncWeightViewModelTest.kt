@@ -80,7 +80,7 @@ class SyncWeightViewModelTest {
             viewModel.updateWeight(inputStream)
             skipItems(2)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Success())
+            assertThat(state.process).isEqualTo(ProcessState.Success("Sync succeeded"))
             cancelAndIgnoreRemainingEvents()
         }
         coVerify {
