@@ -90,11 +90,7 @@ internal fun EditContent(
             modifier = Modifier.fillMaxWidth(),
             items = state.activities
                 .filter { state.stravaActivity?.type == null || it.type == state.stravaActivity.type }
-                .map {
-                    it.toDropdownItem {
-                        onAction(EditAction.SetActivity(it))
-                    }
-                }
+                .map { it.toDropdownItem { onAction(EditAction.SetActivity(it)) } }
         )
         if (state.hasStrava) {
             Dropdown(
@@ -103,11 +99,7 @@ internal fun EditContent(
                 modifier = Modifier.fillMaxWidth(),
                 items = state.stravaActivities
                     .filter { state.activity?.type == null || it.type == state.activity.type }
-                    .map {
-                        it.toDropdownItem {
-                            onAction(EditAction.SetStravaActivity(it))
-                        }
-                    }
+                    .map { it.toDropdownItem { onAction(EditAction.SetStravaActivity(it)) } }
             )
         }
         TextField(
@@ -120,11 +112,8 @@ internal fun EditContent(
             label = { Text("Event type") },
             selected = state.eventType?.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
-            items = state.eventTypes.map {
-                it.toDropdownItem {
-                    onAction(EditAction.SetEventType(it))
-                }
-            },
+            items = state.eventTypes
+                .map { it.toDropdownItem { onAction(EditAction.SetEventType(it)) } },
         )
         if (state.activity?.type?.allowCourseInProfile == true) {
             Dropdown(
@@ -133,9 +122,7 @@ internal fun EditContent(
                 modifier = Modifier.fillMaxWidth(),
                 items = state.courses
                     .filter { it.type == state.activity.type || state.activity.type == ActivityType.Any }
-                    .map {
-                        it.toDropdownItem { onAction(EditAction.SetCourse(it)) }
-                    }
+                    .map { it.toDropdownItem { onAction(EditAction.SetCourse(it)) } }
             )
         }
         if (state.stravaActivity != null) {
