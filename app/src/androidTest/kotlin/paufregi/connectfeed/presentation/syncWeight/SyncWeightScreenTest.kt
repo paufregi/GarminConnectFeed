@@ -41,7 +41,7 @@ class SyncWeightScreenTest {
     @Test
     fun `Status success`() {
         composeTestRule.setContent {
-            SyncWeightScreen(state = SyncWeightState(ProcessState.Success()))
+            SyncWeightScreen(state = SyncWeightState(ProcessState.Success("Sync succeeded")))
         }
         composeTestRule.onNodeWithText("Sync succeeded").assertIsDisplayed()
     }

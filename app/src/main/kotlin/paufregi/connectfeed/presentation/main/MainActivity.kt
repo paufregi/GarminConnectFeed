@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
             Theme {
                 NavHost(
                     navController = nav,
-                    startDestination = if (state.showLogin == true) Route.Auth else Route.App
+                    startDestination = if (state.showApp) Route.App else Route.Auth
                 ) {
                     navigation<Route.Auth>(startDestination = Route.Login) {
                         composable<Route.Login> { LoginScreen(viewModel::hideLogin) }

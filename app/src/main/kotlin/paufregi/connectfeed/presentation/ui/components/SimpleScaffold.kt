@@ -26,8 +26,7 @@ fun SimpleScaffold(
                     )
                 }
             )
-        }
-    ) {
-        content(it)
-    }
+        },
+        content = content
+    )
 }

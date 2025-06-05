@@ -4,14 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,30 +24,23 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.HomeNavigation
-import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.CustomSlider
 import paufregi.connectfeed.presentation.ui.components.Dropdown
 import paufregi.connectfeed.presentation.ui.components.IconRadioGroup
 import paufregi.connectfeed.presentation.ui.components.IconRadioItem
-import paufregi.connectfeed.presentation.ui.components.Loading
-import paufregi.connectfeed.presentation.ui.components.NavigationBar
-import paufregi.connectfeed.presentation.ui.components.NavigationScaffold
-import paufregi.connectfeed.presentation.ui.components.SimpleScaffold
-import paufregi.connectfeed.presentation.ui.components.StatusInfo
-import paufregi.connectfeed.presentation.ui.components.StatusInfoType
+import paufregi.connectfeed.presentation.ui.components.Screen
 import paufregi.connectfeed.presentation.ui.components.TextEffort
 import paufregi.connectfeed.presentation.ui.components.TextFeel
+import paufregi.connectfeed.presentation.ui.components.failureInfo
+import paufregi.connectfeed.presentation.ui.components.successInfo
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 import paufregi.connectfeed.presentation.ui.icons.Connect
 import paufregi.connectfeed.presentation.ui.icons.FaceHappy
@@ -59,99 +48,40 @@ import paufregi.connectfeed.presentation.ui.icons.FaceNormal
 import paufregi.connectfeed.presentation.ui.icons.FaceSad
 import paufregi.connectfeed.presentation.ui.icons.FaceVeryHappy
 import paufregi.connectfeed.presentation.ui.icons.FaceVerySad
-import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.ui.utils.launchStrava
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun EditScreen(nav: NavController = rememberNavController()) {
+internal fun EditScreen(nav: NavHostController = rememberNavController()) {
     val viewModel = hiltViewModel<EditViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     EditContent(state, viewModel::onAction, nav)
 }
 
-@Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun EditContent(
-    @PreviewParameter(EditStatePreview::class) state: EditState,
-    onAction: (EditAction) -> Unit = {},
-    nav: NavController = rememberNavController()
-) {
-    val context = LocalContext.current
-    when (state.process) {
-        is ProcessState.Processing -> SimpleScaffold { Loading(it) }
-        is ProcessState.Success -> SimpleScaffold {
-            StatusInfo(
-                type = StatusInfoType.Success,
-                text = state.process.message ?: "All done",
-                actionButton = {
-                    Button(
-                        text = "Ok",
-                        onClick = {
-                            onAction(EditAction.Restart)
-                            launchStrava(context, state.stravaActivity)
-                        }
-                    )
-                },
-                paddingValues = it
-            )
-        }
-
-        is ProcessState.Failure -> SimpleScaffold {
-            StatusInfo(
-                type = StatusInfoType.Failure,
-                text = state.process.reason,
-                actionButton = {
-                    Button(
-                        text = "Ok",
-                        onClick = { onAction(EditAction.Restart) })
-                },
-                paddingValues = it
-            )
-        }
-
-        is ProcessState.Idle -> NavigationScaffold(
-            items = Navigation.items,
-            selectedIndex = Navigation.HOME,
-            bottomBar = {
-                NavigationBar(
-                    items = HomeNavigation.items(state.hasStrava),
-                    selectedIndex = HomeNavigation.EDIT,
-                    nav = nav
-                )
-            },
-            nav = nav
-        ) { EditForm(state, onAction, it) }
-    }
-}
-
-
-@Composable
-@ExperimentalMaterial3Api
-internal fun EditForm(
     state: EditState,
     onAction: (EditAction) -> Unit = {},
-    paddingValues: PaddingValues = PaddingValues(),
+    nav: NavHostController = rememberNavController()
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(
-                top = paddingValues.calculateTopPadding(),
-                bottom = paddingValues.calculateBottomPadding(),
-                start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr) + 20.dp,
-                end = paddingValues.calculateRightPadding(LayoutDirection.Ltr) + 20.dp,
-            )
-            .testTag("edit_form")
+    Screen(
+        tagName = "edit_form",
+        location = HomeNavigation.EDIT,
+        hasStrava = state.hasStrava,
+        nav = nav,
+        state = state.process,
+        success = successInfo {
+            onAction(EditAction.Restart)
+            launchStrava(context, state.stravaActivity)
+        },
+        failure = failureInfo { onAction(EditAction.Restart) },
     ) {
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
         val interactionSource = remember { MutableInteractionSource() }
 
         Dropdown(
@@ -160,11 +90,7 @@ internal fun EditForm(
             modifier = Modifier.fillMaxWidth(),
             items = state.activities
                 .filter { state.stravaActivity?.type == null || it.type == state.stravaActivity.type }
-                .map {
-                    it.toDropdownItem {
-                        onAction(EditAction.SetActivity(it))
-                    }
-                }
+                .map { it.toDropdownItem { onAction(EditAction.SetActivity(it)) } }
         )
         if (state.hasStrava) {
             Dropdown(
@@ -173,11 +99,7 @@ internal fun EditForm(
                 modifier = Modifier.fillMaxWidth(),
                 items = state.stravaActivities
                     .filter { state.activity?.type == null || it.type == state.activity.type }
-                    .map {
-                        it.toDropdownItem {
-                            onAction(EditAction.SetStravaActivity(it))
-                        }
-                    }
+                    .map { it.toDropdownItem { onAction(EditAction.SetStravaActivity(it)) } }
             )
         }
         TextField(
@@ -190,11 +112,8 @@ internal fun EditForm(
             label = { Text("Event type") },
             selected = state.eventType?.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
-            items = state.eventTypes.map {
-                it.toDropdownItem {
-                    onAction(EditAction.SetEventType(it))
-                }
-            },
+            items = state.eventTypes
+                .map { it.toDropdownItem { onAction(EditAction.SetEventType(it)) } },
         )
         if (state.activity?.type?.allowCourseInProfile == true) {
             Dropdown(
@@ -203,9 +122,7 @@ internal fun EditForm(
                 modifier = Modifier.fillMaxWidth(),
                 items = state.courses
                     .filter { it.type == state.activity.type || state.activity.type == ActivityType.Any }
-                    .map {
-                        it.toDropdownItem { onAction(EditAction.SetCourse(it)) }
-                    }
+                    .map { it.toDropdownItem { onAction(EditAction.SetCourse(it)) } }
             )
         }
         if (state.stravaActivity != null) {

@@ -57,20 +57,22 @@ object Navigation {
     )
 }
 
-object HomeNavigation {
-    const val EDIT = 0
-    const val QUICK_EDIT = 1
-    const val SYNC_STRAVA = 2
+data class HomeNavigation(val barIndex: Int, val menuIndex: Int) {
+    companion object {
+        val EDIT = HomeNavigation(0, Navigation.HOME)
+        val QUICK_EDIT = HomeNavigation(1, Navigation.HOME)
+        val SYNC_STRAVA = HomeNavigation(2, Navigation.HOME)
 
-    fun items(hasStrava: Boolean): List<NavigationItem> {
-        val list = mutableListOf(
-            NavigationItem("Edit", Icons.Default.Edit, Route.Edit),
-            NavigationItem("Quick Edit", Icons.Default.EditNote, Route.QuickEdit),
-        )
-        if (hasStrava) {
-            list.add(NavigationItem("Sync Strava", Icons.Default.SyncAlt, Route.SyncStrava))
+        fun items(hasStrava: Boolean): List<NavigationItem> {
+            val list = mutableListOf(
+                NavigationItem("Edit", Icons.Default.Edit, Route.Edit),
+                NavigationItem("Quick Edit", Icons.Default.EditNote, Route.QuickEdit),
+            )
+            if (hasStrava) {
+                list.add(NavigationItem("Sync Strava", Icons.Default.SyncAlt, Route.SyncStrava))
+            }
+            return list
         }
-        return list
     }
-
 }
+

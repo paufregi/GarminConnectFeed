@@ -3,14 +3,10 @@ package paufregi.connectfeed.presentation.quickedit
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
@@ -24,31 +20,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.presentation.HomeNavigation
-import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.CustomSlider
 import paufregi.connectfeed.presentation.ui.components.Dropdown
 import paufregi.connectfeed.presentation.ui.components.IconRadioGroup
 import paufregi.connectfeed.presentation.ui.components.IconRadioItem
-import paufregi.connectfeed.presentation.ui.components.Loading
-import paufregi.connectfeed.presentation.ui.components.NavigationBar
-import paufregi.connectfeed.presentation.ui.components.NavigationScaffold
-import paufregi.connectfeed.presentation.ui.components.SimpleScaffold
-import paufregi.connectfeed.presentation.ui.components.StatusInfo
-import paufregi.connectfeed.presentation.ui.components.StatusInfoType
+import paufregi.connectfeed.presentation.ui.components.Screen
 import paufregi.connectfeed.presentation.ui.components.TextEffort
 import paufregi.connectfeed.presentation.ui.components.TextFeel
+import paufregi.connectfeed.presentation.ui.components.failureInfo
+import paufregi.connectfeed.presentation.ui.components.successInfo
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 import paufregi.connectfeed.presentation.ui.icons.Connect
 import paufregi.connectfeed.presentation.ui.icons.FaceHappy
@@ -56,12 +46,11 @@ import paufregi.connectfeed.presentation.ui.icons.FaceNormal
 import paufregi.connectfeed.presentation.ui.icons.FaceSad
 import paufregi.connectfeed.presentation.ui.icons.FaceVeryHappy
 import paufregi.connectfeed.presentation.ui.icons.FaceVerySad
-import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.ui.utils.launchStrava
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun QuickEditScreen(nav: NavController = rememberNavController()) {
+internal fun QuickEditScreen(nav: NavHostController = rememberNavController()) {
     val viewModel = hiltViewModel<QuickEditViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -74,80 +63,24 @@ internal fun QuickEditScreen(nav: NavController = rememberNavController()) {
 internal fun QuickEditContent(
     @PreviewParameter(QuickEditStatePreview::class) state: QuickEditState,
     onAction: (QuickEditAction) -> Unit = {},
-    nav: NavController = rememberNavController()
+    nav: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
-    when (state.process) {
-        is ProcessState.Processing -> SimpleScaffold { Loading(it) }
-        is ProcessState.Success -> SimpleScaffold {
-            StatusInfo(
-                type = StatusInfoType.Success,
-                text = state.process.message ?: "All done",
-                actionButton = {
-                    Button(
-                        text = "Ok",
-                        onClick = {
-                            onAction(QuickEditAction.Restart)
-                            launchStrava(context, state.stravaActivity)
-                        }
-                    )
-                },
-                paddingValues = it
-            )
-        }
 
-        is ProcessState.Failure -> SimpleScaffold {
-            StatusInfo(
-                type = StatusInfoType.Failure,
-                text = state.process.reason,
-                actionButton = {
-                    Button(
-                        text = "Ok",
-                        onClick = { onAction(QuickEditAction.Restart) })
-                },
-                paddingValues = it
-            )
-        }
-
-        is ProcessState.Idle -> NavigationScaffold(
-            items = Navigation.items,
-            selectedIndex = Navigation.HOME,
-            bottomBar = {
-                NavigationBar(
-                    items = HomeNavigation.items(state.hasStrava),
-                    selectedIndex = HomeNavigation.QUICK_EDIT,
-                    nav = nav
-                )
-            },
-            nav = nav
-        ) { QuickEditForm(state, onAction, it) }
-    }
-}
-
-@Composable
-@ExperimentalMaterial3Api
-internal fun QuickEditForm(
-    state: QuickEditState,
-    onAction: (QuickEditAction) -> Unit = {},
-    paddingValues: PaddingValues = PaddingValues(),
-) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(
-                top = paddingValues.calculateTopPadding(),
-                bottom = paddingValues.calculateBottomPadding(),
-                start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr) + 20.dp,
-                end = paddingValues.calculateRightPadding(LayoutDirection.Ltr) + 20.dp,
-            )
-            .testTag("quick_edit_form")
+    Screen(
+        tagName = "quick_edit_form",
+        location = HomeNavigation.QUICK_EDIT,
+        hasStrava = state.hasStrava,
+        nav = nav,
+        state = state.process,
+        success = successInfo {
+            onAction(QuickEditAction.Restart)
+            launchStrava(context, state.stravaActivity)
+        },
+        failure = failureInfo { onAction(QuickEditAction.Restart) }
     ) {
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
         val interactionSource = remember { MutableInteractionSource() }
 
         Dropdown(
