@@ -27,7 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.HomeNavigation
@@ -52,7 +52,7 @@ import paufregi.connectfeed.presentation.ui.utils.launchStrava
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun EditScreen(nav: NavController = rememberNavController()) {
+internal fun EditScreen(nav: NavHostController = rememberNavController()) {
     val viewModel = hiltViewModel<EditViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -64,7 +64,7 @@ internal fun EditScreen(nav: NavController = rememberNavController()) {
 internal fun EditContent(
     state: EditState,
     onAction: (EditAction) -> Unit = {},
-    nav: NavController = rememberNavController()
+    nav: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
 

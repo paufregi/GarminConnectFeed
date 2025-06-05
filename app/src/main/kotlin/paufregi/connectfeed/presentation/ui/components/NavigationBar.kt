@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.util.fastForEachIndexed
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.material3.NavigationBar as MaterialNavigationBar
 import androidx.compose.material3.NavigationBarItem as MaterialNavigationBarItem
@@ -15,7 +15,7 @@ import androidx.compose.material3.NavigationBarItem as MaterialNavigationBarItem
 fun NavigationBar(
     items: List<NavigationItem>,
     selectedIndex: Int = 0,
-    nav: NavController = rememberNavController()
+    nav: NavHostController = rememberNavController()
 ) {
     MaterialNavigationBar(
         modifier = Modifier.testTag("navigation_bar")

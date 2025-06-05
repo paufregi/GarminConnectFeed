@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.presentation.Route
@@ -41,7 +41,7 @@ data class NavigationItem(
 fun NavigationScaffold(
     items: List<NavigationItem> = emptyList<NavigationItem>(),
     selectedIndex: Int = 0,
-    nav: NavController = rememberNavController(),
+    nav: NavHostController = rememberNavController(),
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     bottomBar: @Composable () -> Unit = {},

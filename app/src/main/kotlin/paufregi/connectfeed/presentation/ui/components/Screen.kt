@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.presentation.HomeNavigation
 import paufregi.connectfeed.presentation.Navigation
@@ -55,7 +55,7 @@ fun Screen(
 fun Screen(
     tagName: String = "screen",
     navigationIndex: Int = 0,
-    nav: NavController = rememberNavController(),
+    nav: NavHostController = rememberNavController(),
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     state: ProcessState,
@@ -101,7 +101,7 @@ fun Screen(
     tagName: String = "screen",
     hasStrava: Boolean,
     location: HomeNavigation,
-    nav: NavController = rememberNavController(),
+    nav: NavHostController = rememberNavController(),
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     state: ProcessState,

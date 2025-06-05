@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.presentation.HomeNavigation
 import paufregi.connectfeed.presentation.ui.components.Button
@@ -33,7 +33,7 @@ import paufregi.connectfeed.presentation.ui.utils.launchStrava
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun SyncStravaScreen(nav: NavController = rememberNavController()) {
+internal fun SyncStravaScreen(nav: NavHostController = rememberNavController()) {
     val viewModel = hiltViewModel<SyncStravaViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -45,7 +45,7 @@ internal fun SyncStravaScreen(nav: NavController = rememberNavController()) {
 internal fun SyncStravaContent(
     state: SyncStravaState,
     onAction: (SyncStravaAction) -> Unit = {},
-    nav: NavController = rememberNavController()
+    nav: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
 
