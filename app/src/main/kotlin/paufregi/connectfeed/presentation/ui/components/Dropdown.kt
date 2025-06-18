@@ -15,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
@@ -32,7 +31,7 @@ data class DropdownItem(
 
 @SuppressLint("DefaultLocale")
 @ExperimentalMaterial3Api
-fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+fun Activity.toDropdownItem(onClick: () -> Unit = {}) = DropdownItem(
     text = name,
     distance = distance?.takeIf { it > 0 }?.let { Formatter.distance(it) },
     activityType = type,
@@ -40,21 +39,21 @@ fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 )
 
 @ExperimentalMaterial3Api
-fun ActivityType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+fun ActivityType.toDropdownItem(onClick: () -> Unit = {}) = DropdownItem(
     text = name,
     activityType = this,
     onClick = onClick
 )
 
 @ExperimentalMaterial3Api
-fun EventType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+fun EventType.toDropdownItem(onClick: () -> Unit = {}) = DropdownItem(
     text = name,
     onClick = onClick
 )
 
 @SuppressLint("DefaultLocale")
 @ExperimentalMaterial3Api
-fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+fun Course.toDropdownItem(onClick: () -> Unit = {}) = DropdownItem(
     text = name,
     distance = Formatter.distance(distance),
     activityType = type,
@@ -63,7 +62,7 @@ fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 
 @SuppressLint("DefaultLocale")
 @ExperimentalMaterial3Api
-fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+fun Profile.toDropdownItem(onClick: () -> Unit = {}) = DropdownItem(
     text = this.name,
     distance = course?.let { Formatter.distance(it.distance) },
     activityType = activityType,
@@ -73,7 +72,6 @@ fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 @Composable
 @ExperimentalMaterial3Api
 fun Dropdown(
-    modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
     selected: DropdownItem? = null,
     items: List<DropdownItem> = emptyList(),
@@ -84,7 +82,7 @@ fun Dropdown(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        modifier = modifier
+        modifier = Modifier.fillMaxWidth()
     ) {
         TextField(
             modifier = Modifier
@@ -118,14 +116,5 @@ fun Dropdown(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun DistanceText(
-    distance: String?
-) {
-    if (distance != null) {
-        Text(text = "$distance km", fontSize = 11.sp)
     }
 }
