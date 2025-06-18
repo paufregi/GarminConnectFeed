@@ -1,22 +1,18 @@
 package paufregi.connectfeed.presentation.profile
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -29,6 +25,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Dropdown
+import paufregi.connectfeed.presentation.ui.components.RowCheckBox
 import paufregi.connectfeed.presentation.ui.components.Screen
 import paufregi.connectfeed.presentation.ui.components.failureInfo
 import paufregi.connectfeed.presentation.ui.components.successInfo
@@ -73,29 +70,25 @@ internal fun ProfileContent(
         )
         Dropdown(
             label = { Text("Activity type") },
-            selected = state.profile.activityType.toDropdownItem { },
-            modifier = Modifier.fillMaxWidth(),
+            selected = state.profile.activityType.toDropdownItem(),
             items = state.activityTypes.map {
                 it.toDropdownItem { onAction(ProfileAction.SetActivityType(it)) }
             }
         )
         Dropdown(
             label = { Text("Event type") },
-            selected = state.profile.eventType?.toDropdownItem { },
-            modifier = Modifier.fillMaxWidth(),
+            selected = state.profile.eventType?.toDropdownItem(),
             items = state.eventTypes.map {
                 it.toDropdownItem {
                     onAction(ProfileAction.SetEventType(it))
                 }
             },
             isError = state.profile.activityType != ActivityType.Any && state.profile.eventType == null
-
         )
         if (state.profile.activityType.allowCourseInProfile == true) {
             Dropdown(
                 label = { Text("Course") },
-                selected = state.profile.course?.toDropdownItem { },
-                modifier = Modifier.fillMaxWidth(),
+                selected = state.profile.course?.toDropdownItem(),
                 items = state.courses
                     .filter { it.type == state.profile.activityType || state.profile.activityType == ActivityType.Any }
                     .map {
@@ -110,70 +103,30 @@ internal fun ProfileContent(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
         )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = {
-                    onAction(ProfileAction.SetRename(!state.profile.rename))
-                })
-        ) {
-            Checkbox(
-                modifier = Modifier.testTag("rename_checkbox"),
-                checked = state.profile.rename,
-                onCheckedChange = { onAction(ProfileAction.SetRename(it)) },
-            )
-            Text("Rename activity")
-        }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    onClick = { onAction(ProfileAction.SetCustomWater(!state.profile.customWater)) }
-                )
-        ) {
-            Checkbox(
-                modifier = Modifier.testTag("custom_water_checkbox"),
-                checked = state.profile.customWater,
-                onCheckedChange = { onAction(ProfileAction.SetCustomWater(it)) },
-            )
-            Text("Customizable water")
-        }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    onClick = { onAction(ProfileAction.SetFeelAndEffort(!state.profile.feelAndEffort)) }
-                )
-        ) {
-            Checkbox(
-                modifier = Modifier.testTag("feel_and_effort_checkbox"),
-                checked = state.profile.feelAndEffort,
-                onCheckedChange = { onAction(ProfileAction.SetFeelAndEffort(it)) },
-            )
-            Text(text = "Feel & Effort")
-        }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    onClick = { onAction(ProfileAction.SetTrainingEffect(!state.profile.trainingEffect)) }
-                )
-        ) {
-            Checkbox(
-                modifier = Modifier.testTag("training_effect_checkbox"),
-                checked = state.profile.trainingEffect,
-                onCheckedChange = { onAction(ProfileAction.SetTrainingEffect(it)) },
-            )
-            Text(text = "Training effect")
-        }
+        RowCheckBox(
+            checked = state.profile.rename,
+            onCheckedChange = { onAction(ProfileAction.SetRename(it)) },
+            label = "Rename activity",
+            tagName = "rename_checkbox"
+        )
+        RowCheckBox(
+            checked = state.profile.customWater,
+            onCheckedChange = { onAction(ProfileAction.SetCustomWater(it)) },
+            label = "Customizable water",
+            tagName = "custom_water_checkbox"
+        )
+        RowCheckBox(
+            checked = state.profile.feelAndEffort,
+            onCheckedChange = { onAction(ProfileAction.SetFeelAndEffort(it)) },
+            label = "Feel & Effort",
+            tagName = "feel_and_effort_checkbox"
+        )
+        RowCheckBox(
+            checked = state.profile.trainingEffect,
+            onCheckedChange = { onAction(ProfileAction.SetTrainingEffect(it)) },
+            label = "Training effect",
+            tagName = "training_effect_checkbox"
+        )
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth().padding(20.dp)
