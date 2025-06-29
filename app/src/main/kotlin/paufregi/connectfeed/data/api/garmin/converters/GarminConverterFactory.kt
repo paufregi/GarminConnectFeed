@@ -7,6 +7,7 @@ import paufregi.connectfeed.data.api.garmin.models.Ticket
 import retrofit2.Converter
 import retrofit2.Retrofit
 import java.lang.reflect.Type
+import java.time.Instant
 
 class GarminConverterFactory : Converter.Factory() {
 
@@ -18,6 +19,7 @@ class GarminConverterFactory : Converter.Factory() {
         return when (type) {
             CSRF::class.java -> CSRFStringConverter()
             Ticket::class.java -> TicketStringConverter()
+            Instant::class.java -> InstantStringConverter()
             else -> null
         }
     }
