@@ -4,9 +4,11 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.Course
+import paufregi.connectfeed.data.api.garmin.models.Gear
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import retrofit2.Response
@@ -20,6 +22,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.time.Instant
 
 interface GarminConnect {
 
@@ -38,6 +41,12 @@ interface GarminConnect {
 
     @GET("/userprofile-service/socialProfile")
     suspend fun getUserProfile(): Response<UserProfile>
+
+    @GET("/gear-service/gear/filterGear")
+    suspend fun getGear(
+        @Query("userProfilePk") userId: Long,
+        @Query("availableGearDate") at: Instant = Instant.now(),
+    ): Response<List<Gear>>
 
     @PUT("/activity-service/activity/{id}")
     suspend fun updateActivity(
@@ -59,6 +68,7 @@ interface GarminConnect {
             return Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+                .addConverterFactory(GarminConverterFactory())
                 .client(client.build())
                 .build()
                 .create(GarminConnect::class.java)
