@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Test
+    name: Build & Test
     runs-on: ubuntu-latest
     env:
       TZ: 'Pacific/Auckland'
