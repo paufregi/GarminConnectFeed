@@ -8,6 +8,8 @@ import paufregi.connectfeed.data.api.garmin.models.CSRF
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import retrofit2.Retrofit
+import java.time.Instant
+import kotlin.jvm.java
 
 class GarminConverterFactoryTest {
 
@@ -25,6 +27,14 @@ class GarminConverterFactoryTest {
             .stringConverter(Ticket::class.java, arrayOf(), mockk<Retrofit>() )
 
         assertThat(result).isInstanceOf(TicketStringConverter::class.java)
+    }
+
+    @Test
+    fun `Instant string converter`() {
+        val result = GarminConverterFactory()
+            .stringConverter(Instant::class.java, arrayOf(), mockk<Retrofit>() )
+
+        assertThat(result).isInstanceOf(InstantStringConverter::class.java)
     }
 
     @Test
