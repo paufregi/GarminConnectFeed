@@ -2,11 +2,11 @@ package paufregi.connectfeed.data.api.strava
 
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.stravaAuthToken
 import paufregi.connectfeed.stravaAuthTokenJson
 import paufregi.connectfeed.stravaDeauthorizationJson
@@ -15,42 +15,35 @@ import paufregi.connectfeed.stravaRefreshedAuthToken
 
 class StravaAuthTest {
 
-    private var server: MockWebServer = MockWebServer()
+    @JvmField @Rule val server = MockWebServerRule()
     private lateinit var api: StravaAuth
 
     @Before
     fun setup() {
-        server.start()
         api = StravaAuth.client(server.url("/").toString())
     }
 
     @After
     fun tearDown() {
-        server.shutdown()
     }
 
     @Test
     fun `Exchange token`() = runTest {
-        val response = MockResponse()
-            .setResponseCode(200)
-            .setBody(stravaAuthTokenJson)
-        server.enqueue(response)
+        server.enqueue(code = 200, body = stravaAuthTokenJson)
 
         val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
         val request = server.takeRequest()
 
         assertThat(request.method).isEqualTo("POST")
-        assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/api/v3/oauth/token")
+        assertThat(request.url.encodedPath).isEqualTo("/api/v3/oauth/token")
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(stravaAuthToken)
     }
 
     @Test
     fun `Exchange token - failure`() = runTest {
-        val response = MockResponse()
-            .setResponseCode(400)
-        server.enqueue(response)
+        server.enqueue(400)
 
         val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
@@ -60,26 +53,21 @@ class StravaAuthTest {
 
     @Test
     fun `Refresh token`() = runTest {
-        val response = MockResponse()
-            .setResponseCode(200)
-            .setBody(stravaRefreshTokenJson)
-        server.enqueue(response)
+        server.enqueue(code = 200, body = stravaRefreshTokenJson)
 
         val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "TOKEN")
 
         val request = server.takeRequest()
 
         assertThat(request.method).isEqualTo("POST")
-        assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/api/v3/oauth/token")
+        assertThat(request.url.encodedPath).isEqualTo("/api/v3/oauth/token")
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(stravaRefreshedAuthToken)
     }
 
     @Test
     fun `Refresh - failure`() = runTest {
-        val response = MockResponse()
-            .setResponseCode(400)
-        server.enqueue(response)
+        server.enqueue(400)
 
         val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "TOKEN")
 
@@ -89,25 +77,20 @@ class StravaAuthTest {
 
     @Test
     fun `Remove authorization`() = runTest {
-        val response = MockResponse()
-            .setResponseCode(200)
-            .setBody(stravaDeauthorizationJson)
-        server.enqueue(response)
+        server.enqueue(code = 200, body = stravaDeauthorizationJson)
 
         val res = api.deauthorization("TOKEN")
 
         val request = server.takeRequest()
 
         assertThat(request.method).isEqualTo("POST")
-        assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/oauth/deauthorize")
+        assertThat(request.url.encodedPath).isEqualTo("/oauth/deauthorize")
         assertThat(res.isSuccessful).isTrue()
     }
 
     @Test
     fun `Remove authorization - failure`() = runTest {
-        val response = MockResponse()
-            .setResponseCode(400)
-        server.enqueue(response)
+        server.enqueue(400)
 
         val res = api.deauthorization("TOKEN")
 

@@ -26,7 +26,7 @@ class AccountViewModel @Inject constructor(
     val refreshUser: RefreshUser,
     val signOut: SignOut,
     val disconnectStrava: DisconnectStrava,
-    @Named("StravaAuthUri") val stravaAuthUri: Uri
+    @param:Named("StravaAuthUri") val stravaAuthUri: Uri
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AccountState())

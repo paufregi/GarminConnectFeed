@@ -9,11 +9,11 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
@@ -59,30 +59,17 @@ class GarminRepositoryTest {
     @Inject
     lateinit var database: GarminDatabase
 
-    private val connectServer = MockWebServer()
-    private val garminSSOServer = MockWebServer()
-    private val stravaServer = MockWebServer()
+    @JvmField @Rule val connectServer = MockWebServerRule(connectPort, sslSocketFactory, connectDispatcher)
+    @JvmField @Rule val garminSSOServer = MockWebServerRule(garminSSOPort, sslSocketFactory, garminSSODispatcher)
+    @JvmField @Rule val stravaServer = MockWebServerRule(stravaPort, sslSocketFactory, stravaDispatcher)
 
     @Before
     fun setup() {
         hiltRule.inject()
-        connectServer.useHttps(sslSocketFactory, false)
-        connectServer.start(connectPort)
-        garminSSOServer.useHttps(sslSocketFactory, false)
-        garminSSOServer.start(garminSSOPort)
-        stravaServer.useHttps(sslSocketFactory, false)
-        stravaServer.start(stravaPort)
-
-        connectServer.dispatcher = connectDispatcher
-        garminSSOServer.dispatcher = garminSSODispatcher
-        stravaServer.dispatcher = stravaDispatcher
     }
 
     @After
     fun tearDown() {
-        connectServer.shutdown()
-        garminSSOServer.shutdown()
-        stravaServer.shutdown()
         database.close()
         runBlocking(Dispatchers.IO){
             authStore.dataStore.edit { it.clear() }

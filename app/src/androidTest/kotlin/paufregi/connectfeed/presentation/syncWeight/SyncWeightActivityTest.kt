@@ -15,7 +15,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import jakarta.inject.Inject
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockWebServer
+import mockwebserver3.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -55,24 +55,18 @@ class SyncWeightActivityTest {
     @Inject
     lateinit var instrumentationContext: Context
 
-    private val connectServer = MockWebServer()
-    private val strava = MockWebServer()
+    @JvmField @Rule val connectServer = MockWebServerRule(connectPort, sslSocketFactory, connectDispatcher)
+    @JvmField @Rule val strava = MockWebServerRule(stravaPort, sslSocketFactory, stravaDispatcher)
 
     @Before
     fun setup() {
         hiltRule.inject()
 
         instrumentationContext = InstrumentationRegistry.getInstrumentation().targetContext
-        connectServer.useHttps(sslSocketFactory, false)
-        connectServer.start(connectPort)
-        strava.useHttps(sslSocketFactory, false)
-        strava.start(stravaPort)
     }
 
     @After
     fun tearDown() {
-        connectServer.shutdown()
-        strava.shutdown()
     }
 
     // FIXME: android.os.FileUriExposedException: file:///data/user/0/paufregi.connectfeed/files/test.csv exposed beyond app through Intent.getData()

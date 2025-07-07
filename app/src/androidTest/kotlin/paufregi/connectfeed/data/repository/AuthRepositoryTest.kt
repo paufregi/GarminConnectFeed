@@ -9,11 +9,11 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
@@ -46,25 +46,17 @@ class AuthRepositoryTest {
     @Inject
     lateinit var database: GarminDatabase
 
-    private val garminSSOServer = MockWebServer()
-    private val connectServer = MockWebServer()
+
+    @JvmField @Rule val garminSSOServer = MockWebServerRule(garminSSOPort, sslSocketFactory, garminSSODispatcher)
+    @JvmField @Rule val connectServer = MockWebServerRule(connectPort, sslSocketFactory, connectDispatcher)
 
     @Before
     fun setup() {
         hiltRule.inject()
-        garminSSOServer.useHttps(sslSocketFactory, false)
-        garminSSOServer.start(garminSSOPort)
-        connectServer.useHttps(sslSocketFactory, false)
-        connectServer.start(connectPort)
-
-        garminSSOServer.dispatcher = garminSSODispatcher
-        connectServer.dispatcher = connectDispatcher
     }
 
     @After
     fun tearDown() {
-        garminSSOServer.shutdown()
-        connectServer.shutdown()
         database.close()
         runBlocking(Dispatchers.IO){
             authStore.dataStore.edit { it.clear() }

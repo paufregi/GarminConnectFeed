@@ -13,11 +13,11 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.createStravaToken
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
@@ -36,7 +36,7 @@ class StravaAuthInterceptorTest {
 
     private val authRepo = mockk<StravaAuthRepository>()
 
-    private val server = MockWebServer()
+    @JvmField @Rule val server = MockWebServerRule()
 
     interface TestApi {
         @GET("/test")
@@ -45,10 +45,9 @@ class StravaAuthInterceptorTest {
 
     @Before
     fun setup() {
-        server.start()
 
         auth = StravaAuthInterceptor(authRepo, "CLIENT_ID", "CLIENT_SECRET")
-        server.enqueue(MockResponse().setResponseCode(200))
+        server.enqueue(200)
         api = Retrofit.Builder()
             .baseUrl(server.url("/"))
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
@@ -60,7 +59,6 @@ class StravaAuthInterceptorTest {
     @After
     fun tearDown() {
         clearAllMocks()
-        server.shutdown()
     }
 
     @Test

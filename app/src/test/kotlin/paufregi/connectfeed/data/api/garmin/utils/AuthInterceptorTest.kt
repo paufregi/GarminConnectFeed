@@ -15,11 +15,11 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.createAuthToken
@@ -43,7 +43,7 @@ class AuthInterceptorTest {
 
     private val authRepo = mockk<AuthRepository>()
 
-    private val server = MockWebServer()
+    @JvmField @Rule val server = MockWebServerRule()
 
     interface TestApi {
         @GET("/test")
@@ -52,10 +52,8 @@ class AuthInterceptorTest {
 
     @Before
     fun setup() {
-        server.start()
-
         auth = AuthInterceptor(authRepo)
-        server.enqueue(MockResponse().setResponseCode(200))
+        server.enqueue(200)
         api = Retrofit.Builder()
             .baseUrl(server.url("/"))
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
@@ -67,7 +65,6 @@ class AuthInterceptorTest {
     @After
     fun tearDown() {
         clearAllMocks()
-        server.shutdown()
     }
 
     @Test
@@ -89,7 +86,7 @@ class AuthInterceptorTest {
     fun `Success - exchange - expired AuthToken`() = runTest {
         val expiredToken = createAuthToken(yesterday)
         val validToken = createAuthToken(tomorrow)
-        
+
         every { authRepo.getAuthToken() } returns flowOf(expiredToken)
         every { authRepo.getPreAuth() } returns flowOf(preAuthToken)
         coEvery { authRepo.exchange(any()) } returns Result.success(validToken)
