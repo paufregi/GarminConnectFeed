@@ -69,8 +69,8 @@ class MainActivityTest {
     lateinit var dao: GarminDao
 
     @JvmField @Rule val connectServer = MockWebServerRule(connectPort, sslSocketFactory, connectDispatcher)
-    @JvmField @Rule val garminSSOServer = MockWebServerRule(garminSSOPort, sslSocketFactory, stravaDispatcher)
-    @JvmField @Rule val strava = MockWebServerRule(stravaPort, sslSocketFactory, garminSSODispatcher)
+    @JvmField @Rule val garminSSOServer = MockWebServerRule(garminSSOPort, sslSocketFactory, garminSSODispatcher)
+    @JvmField @Rule val strava = MockWebServerRule(stravaPort, sslSocketFactory, stravaDispatcher)
 
     @Before
     fun setup() {

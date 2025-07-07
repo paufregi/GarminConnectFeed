@@ -6,8 +6,8 @@ import javax.inject.Named
 
 class StravaCodeExchange @Inject constructor(
     private val stravaAuthRepository: StravaAuthRepository,
-    @Named("StravaClientId") val clientId: String,
-    @Named("StravaClientSecret") val clientSecret: String,
+    @param:Named("StravaClientId") val clientId: String,
+    @param:Named("StravaClientSecret") val clientSecret: String,
 ) {
     suspend operator fun invoke(code: String): Result<Unit> =
         stravaAuthRepository.exchange(clientId, clientSecret, code)

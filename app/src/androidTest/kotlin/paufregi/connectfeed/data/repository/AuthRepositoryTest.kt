@@ -16,6 +16,7 @@ import org.junit.Test
 import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
+import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.database.GarminDatabase
@@ -47,7 +48,7 @@ class AuthRepositoryTest {
 
 
     @JvmField @Rule val garminSSOServer = MockWebServerRule(garminSSOPort, sslSocketFactory, garminSSODispatcher)
-    @JvmField @Rule val connectServer = MockWebServerRule(garminSSOPort, sslSocketFactory, connectDispatcher)
+    @JvmField @Rule val connectServer = MockWebServerRule(connectPort, sslSocketFactory, connectDispatcher)
 
     @Before
     fun setup() {

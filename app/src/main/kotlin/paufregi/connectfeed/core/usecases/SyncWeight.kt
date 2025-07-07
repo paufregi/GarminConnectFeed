@@ -13,7 +13,7 @@ import javax.inject.Named
 
 class SyncWeight @Inject constructor(
     private val garminRepository: GarminRepository,
-    @Named("tempFolder") val folder: File
+    @param:Named("tempFolder") val folder: File
 ) {
     suspend operator fun invoke(weights: List<Weight>): Result<Unit> {
         val dateFormatter = Formatter.dateTimeForFilename(ZoneId.systemDefault())
