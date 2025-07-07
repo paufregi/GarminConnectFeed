@@ -15,6 +15,7 @@ plugins {
 
 android {
     namespace = "paufregi.connectfeed"
+    //noinspection GradleDependency
     compileSdk = 35
 
     defaultConfig {
@@ -131,7 +132,6 @@ dependencies {
     debugRuntimeOnly(libs.androidx.ui.test.manifest)
 
     testRuntimeOnly(libs.androidx.test.core)
-    testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)
     testImplementation(libs.truth)
