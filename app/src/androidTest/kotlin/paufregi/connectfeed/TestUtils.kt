@@ -3,9 +3,10 @@ package paufregi.connectfeed
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.RecordedRequest
+import mockwebserver3.Dispatcher
+import mockwebserver3.MockResponse
+import mockwebserver3.RecordedRequest
+import okhttp3.Headers
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
 import paufregi.connectfeed.core.models.User
@@ -820,7 +821,7 @@ const val garminSSOPort = 8082
 const val stravaPort = 8083
 
 fun RecordedRequest.getFields(): Map<String, String> {
-    val body = body.readUtf8()
+    val body = body?.utf8() ?: ""
     val contentType = headers["Content-Type"] ?: ""
     if (body.isEmpty() || contentType != "application/x-www-form-urlencoded") return emptyMap()
     val items = body.split("&")
@@ -840,77 +841,76 @@ var sslSocketFactory = HandshakeCertificates.Builder()
 
 val connectDispatcher: Dispatcher = object : Dispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
-        val path = request.path ?: ""
+        val path = request.url.encodedPath
         return when {
             path.startsWith("/oauth-service/oauth/preauthorized") && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(preAuthTokenBody)
+                MockResponse(code = 200, body = preAuthTokenBody)
 
             path == "/oauth-service/oauth/exchange/user/2.0" && request.method == "POST" ->
-                MockResponse().setResponseCode(200).setBody(authTokenJson)
+                MockResponse(code = 200, body = authTokenJson)
 
             path == "/upload-service/upload" && request.method == "POST" ->
-                MockResponse().setResponseCode(200)
+                MockResponse(200)
 
             path == "/userprofile-service/socialProfile" && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(userProfileJson)
+                MockResponse(code = 200, body = userProfileJson)
 
             path == "/course-service/course" && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(coursesJson)
+                MockResponse(code = 200, body = coursesJson)
 
             (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
-                MockResponse().setResponseCode(200).setBody(activitiesJson)
+                MockResponse(code = 200, body = activitiesJson)
 
             (path.startsWith("/activity-service/activity") && request.method == "PUT") ->
-                MockResponse().setResponseCode(200)
+                MockResponse(200)
 
-            else -> MockResponse().setResponseCode(404)
+            else -> MockResponse(404)
         }
     }
 }
 
 val garminSSODispatcher: Dispatcher = object : Dispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
-        val path = request.path ?: ""
+        val path = request.url.encodedPath
         return when {
             path.startsWith("/sso/signin") && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(htmlCSRF)
+                MockResponse(code = 200, body = htmlCSRF)
 
             path.startsWith("/sso/signin") && request.method == "POST" ->
-                MockResponse().setResponseCode(200).setBody(htmlTicket)
+                MockResponse(code = 200, body = htmlTicket)
 
-            else -> MockResponse().setResponseCode(404)
+            else -> MockResponse(404)
         }
     }
 }
 
 val stravaDispatcher: Dispatcher = object : Dispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
-        val path = request.path ?: ""
+        val path = request.url.encodedPath
         val fields = request.getFields()
         return when {
             path.startsWith("/oauth/mobile/authorize") ->
-                MockResponse().setResponseCode(302)
-                    .setHeader("Location", "paufregi.connectfeed://strava/auth?code=123456")
+                MockResponse(302, Headers.headersOf("Location", "paufregi.connectfeed://strava/auth?code=123456"))
 
             path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "authorization_code" ->
-                MockResponse().setResponseCode(200).setBody(stravaAuthTokenJson)
+                MockResponse(code = 200, body = stravaAuthTokenJson)
 
             path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "refresh_token" ->
-                MockResponse().setResponseCode(200).setBody(stravaRefreshTokenJson)
+                MockResponse(code = 200, body = stravaRefreshTokenJson)
 
             path == "/oauth/deauthorize" && request.method == "POST" ->
-                MockResponse().setResponseCode(200).setBody(stravaDeauthorizationJson)
+                MockResponse(code = 200, body = stravaDeauthorizationJson)
 
             path.startsWith("/athlete/activities") && request.method == "GET" ->
-                MockResponse().setResponseCode(200).setBody(stravaActivitiesJson)
+                MockResponse(code = 200, body = stravaActivitiesJson)
 
             path.startsWith("/activities/") && request.method == "PUT" ->
-                MockResponse().setResponseCode(200)
+                MockResponse(200)
 
             path == "/athlete" && request.method == "PUT" ->
-                MockResponse().setResponseCode(200).setBody(stravaDetailedAthlete)
+                MockResponse(code = 200, body = stravaDetailedAthlete)
 
-            else -> MockResponse().setResponseCode(404)
+            else -> MockResponse(404)
         }
     }
 }

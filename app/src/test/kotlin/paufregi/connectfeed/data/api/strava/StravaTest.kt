@@ -9,11 +9,11 @@ import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import okhttp3.Interceptor
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.Activity
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity
@@ -23,7 +23,7 @@ import paufregi.connectfeed.stravaDetailedAthlete
 
 class StravaTest {
 
-    private var server: MockWebServer = MockWebServer()
+    @JvmField @Rule val server = MockWebServerRule()
     private lateinit var api: Strava
     private val authInterceptor = mockk<StravaAuthInterceptor>()
 
@@ -31,7 +31,6 @@ class StravaTest {
 
     @Before
     fun setup() {
-        server.start()
         api = Strava.client(authInterceptor, server.url("/").toString())
         every {
             authInterceptor.intercept(capture(chain))
@@ -43,13 +42,11 @@ class StravaTest {
     @After
     fun tearDown() {
         clearAllMocks()
-        server.shutdown()
     }
 
     @Test
     fun `Get activities`() = runTest {
-        val response = MockResponse().setResponseCode(200).setBody(stravaActivitiesJson)
-        server.enqueue(response)
+        server.enqueue(code = 200, body = stravaActivitiesJson)
 
         val res = api.getActivities(perPage = 3)
 
@@ -78,8 +75,7 @@ class StravaTest {
 
     @Test
     fun `Get activities - empty`() = runTest {
-        val response = MockResponse().setResponseCode(200).setBody("[]")
-        server.enqueue(response)
+        server.enqueue(code = 200, body = "[]")
 
         val res = api.getActivities(perPage = 3)
 
@@ -91,8 +87,7 @@ class StravaTest {
 
     @Test
     fun `Get activities - failure`() = runTest {
-        val response = MockResponse().setResponseCode(400)
-        server.enqueue(response)
+        server.enqueue(400)
 
         val res = api.getActivities(perPage = 3)
 
@@ -103,8 +98,7 @@ class StravaTest {
 
     @Test
     fun `Update activity`() = runTest {
-        val response = MockResponse().setResponseCode(200)
-        server.enqueue(response)
+        server.enqueue(200)
         val updateActivity = UpdateActivity(
             name = "newName",
             description = "newDescription",
@@ -119,8 +113,7 @@ class StravaTest {
 
     @Test
     fun `Update activity - failure`() = runTest {
-        val response = MockResponse().setResponseCode(400)
-        server.enqueue(response)
+        server.enqueue(400)
         val updateActivity = UpdateActivity(
             name = "newName",
             description = "newDescription",
@@ -135,8 +128,7 @@ class StravaTest {
 
     @Test
     fun `Update profile`() = runTest {
-        val response = MockResponse().setResponseCode(200).setBody(stravaDetailedAthlete)
-        server.enqueue(response)
+        server.enqueue(code = 200, body = stravaDetailedAthlete)
         val updateProfile = UpdateProfile(weight = 75.5f)
         val res = api.updateProfile(updateProfile = updateProfile)
 
@@ -147,8 +139,7 @@ class StravaTest {
 
     @Test
     fun `Update profile - failure`() = runTest {
-        val response = MockResponse().setResponseCode(400)
-        server.enqueue(response)
+        server.enqueue(400)
         val updateProfile = UpdateProfile(weight = 75.5f)
         val res = api.updateProfile(updateProfile = updateProfile)
 

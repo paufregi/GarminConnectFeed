@@ -9,11 +9,11 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.data.api.strava.models.AuthToken
 import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.sslSocketFactory
@@ -40,15 +40,11 @@ class StravaAuthRepositoryTest {
     @Inject
     lateinit var store: StravaStore
 
-    private val stravaServer = MockWebServer()
+    @JvmField @Rule val stravaServer = MockWebServerRule(stravaPort, sslSocketFactory, stravaDispatcher)
 
     @Before
     fun setup() {
         hiltRule.inject()
-        stravaServer.useHttps(sslSocketFactory, false)
-        stravaServer.start(stravaPort)
-
-        stravaServer.dispatcher = stravaDispatcher
         runBlocking(Dispatchers.IO){
             store.dataStore.edit { it.clear() }
         }
@@ -56,7 +52,6 @@ class StravaAuthRepositoryTest {
 
     @After
     fun tearDown() {
-        stravaServer.shutdown()
         runBlocking(Dispatchers.IO){
             store.dataStore.edit { it.clear() }
         }

@@ -11,11 +11,11 @@ import kotlinx.coroutines.test.runTest
 import okhttp3.Interceptor
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.activitiesJson
 import paufregi.connectfeed.coursesJson
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
@@ -32,7 +32,8 @@ import java.io.File
 
 class GarminConnectTest {
 
-    private var server: MockWebServer = MockWebServer()
+    @JvmField @Rule val server = MockWebServerRule()
+
     private lateinit var api: GarminConnect
     private val authInterceptor = mockk<AuthInterceptor>()
 
@@ -44,7 +45,6 @@ class GarminConnectTest {
 
     @Before
     fun setup() {
-        server.start()
         api = GarminConnect.client(authInterceptor, server.url("/").toString())
         every {
             authInterceptor.intercept(capture(chain))
@@ -56,13 +56,11 @@ class GarminConnectTest {
     @After
     fun tearDown() {
         clearAllMocks()
-        server.shutdown()
     }
 
     @Test
     fun `Get user profile`() = runTest {
-        val response = MockResponse().setResponseCode(200).setBody(userProfileJson)
-        server.enqueue(response)
+        server.enqueue(code = 200, body = userProfileJson)
 
         val res = api.getUserProfile()
 
@@ -74,8 +72,7 @@ class GarminConnectTest {
 
     @Test
     fun `Get user profile - failure`() = runTest {
-        val response = MockResponse().setResponseCode(400)
-        server.enqueue(response)
+        server.enqueue(400)
 
         val res = api.getUserProfile()
 
@@ -86,14 +83,13 @@ class GarminConnectTest {
 
     @Test
     fun `Upload file`() = runTest {
-        val response = MockResponse().setResponseCode(200)
-        server.enqueue(response)
+        server.enqueue(200)
 
         val res = api.uploadFile(fitFile)
 
         val request = server.takeRequest()
         assertThat(request.method).isEqualTo("POST")
-        assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/upload-service/upload")
+        assertThat(request.url.encodedPath).isEqualTo("/upload-service/upload")
         assertThat(res.isSuccessful).isTrue()
         verify { authInterceptor.intercept(any()) }
         confirmVerified(authInterceptor)
@@ -101,8 +97,7 @@ class GarminConnectTest {
 
     @Test
     fun `Upload file - failure`() = runTest {
-        val response = MockResponse().setResponseCode(400)
-        server.enqueue(response)
+        server.enqueue(400)
 
         val res = api.uploadFile(fitFile)
 
@@ -113,8 +108,7 @@ class GarminConnectTest {
 
     @Test
     fun `Get activities`() = runTest {
-        val response = MockResponse().setResponseCode(200).setBody(activitiesJson)
-        server.enqueue(response)
+        server.enqueue(code = 200, body = activitiesJson)
 
         val res = api.getActivities(limit = 3)
 
@@ -147,8 +141,7 @@ class GarminConnectTest {
 
     @Test
     fun `Get activities - empty`() = runTest {
-        val response = MockResponse().setResponseCode(200).setBody("[]")
-        server.enqueue(response)
+        server.enqueue(code = 200, body = "[]")
 
         val res = api.getActivities(limit = 3)
 
@@ -160,8 +153,7 @@ class GarminConnectTest {
 
     @Test
     fun `Get activities - failure`() = runTest {
-        val response = MockResponse().setResponseCode(400)
-        server.enqueue(response)
+        server.enqueue(400)
 
         val res = api.getActivities(limit = 3)
 
@@ -172,8 +164,7 @@ class GarminConnectTest {
 
     @Test
     fun `Update activity`() = runTest {
-        val response = MockResponse().setResponseCode(200)
-        server.enqueue(response)
+        server.enqueue(200)
         val updateActivity = UpdateActivity(
             id = 1,
             name = "newName",
@@ -190,8 +181,7 @@ class GarminConnectTest {
 
     @Test
     fun `Update activity - failure`() = runTest {
-        val response = MockResponse().setResponseCode(400)
-        server.enqueue(response)
+        server.enqueue(400)
         val updateActivity = UpdateActivity(
             id = 1,
             name = "newName",
@@ -208,8 +198,7 @@ class GarminConnectTest {
 
     @Test
     fun `Get course`() = runTest {
-        val response = MockResponse().setResponseCode(200).setBody(coursesJson)
-        server.enqueue(response)
+        server.enqueue(code = 200, body = coursesJson)
 
         val res = api.getCourses()
 
@@ -226,8 +215,7 @@ class GarminConnectTest {
 
     @Test
     fun `Get course - empty`() = runTest {
-        val response = MockResponse().setResponseCode(200).setBody("[]")
-        server.enqueue(response)
+        server.enqueue(code = 200, body = "[]")
 
         val res = api.getCourses()
 
@@ -239,8 +227,7 @@ class GarminConnectTest {
 
     @Test
     fun `Get course - failure`() = runTest {
-        val response = MockResponse().setResponseCode(400)
-        server.enqueue(response)
+        server.enqueue(400)
 
         val res = api.getCourses()
 
