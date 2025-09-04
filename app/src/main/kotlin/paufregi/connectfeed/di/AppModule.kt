@@ -15,6 +15,7 @@ import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.github.Github
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
@@ -23,6 +24,7 @@ import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.GithubRepository
 import paufregi.connectfeed.data.repository.StravaAuthRepository
 import java.io.File
 import javax.inject.Named
@@ -87,6 +89,13 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideGithubRepository(
+        github: Github,
+    ): GithubRepository = GithubRepository(github)
+
+
+    @Provides
+    @Singleton
     fun provideAuthInterceptor(
         authRepository: AuthRepository
     ): AuthInterceptor = AuthInterceptor(authRepository)
@@ -124,6 +133,12 @@ object AppModule {
         authInterceptor: StravaAuthInterceptor,
         @Named("StravaUrl") url: String,
     ): Strava = Strava.client(authInterceptor, url)
+
+    @Provides
+    @Singleton
+    fun provideGithub(
+        @Named("GithubUrl") url: String,
+    ): Github = Github.client(url)
 
     @Provides
     @Singleton
