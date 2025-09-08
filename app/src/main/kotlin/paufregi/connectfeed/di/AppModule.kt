@@ -9,6 +9,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import paufregi.connectfeed.BuildConfig
 import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.GarminPreAuth
@@ -145,4 +146,10 @@ object AppModule {
     @Named("tempFolder")
     fun provideTempFolder(@ApplicationContext context: Context): File =
         context.cacheDir
+
+    @Provides
+    @Singleton
+    @Named("currentVersion")
+    fun provideCurrentVersion(): String =
+        BuildConfig.VERSION_NAME
 }
