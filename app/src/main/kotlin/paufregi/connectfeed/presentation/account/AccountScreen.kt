@@ -57,7 +57,7 @@ internal fun AccountContent(
     var signOutDialog by remember { mutableStateOf(false) }
     var stravaDialog by remember { mutableStateOf(false) }
 
-    if (signOutDialog == true) {
+    if (signOutDialog) {
         ConfirmationDialog(
             title = "Sign out",
             message = "Are you sure you want to sign out?",
@@ -67,7 +67,7 @@ internal fun AccountContent(
         )
     }
 
-    if (stravaDialog == true) {
+    if (stravaDialog) {
         ConfirmationDialog(
             title = "Disconnect Strava",
             message = "Are you sure you want to disconnect Strava?",
