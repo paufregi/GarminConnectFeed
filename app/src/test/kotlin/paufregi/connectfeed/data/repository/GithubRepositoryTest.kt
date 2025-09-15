@@ -10,8 +10,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.core.models.Release
-import paufregi.connectfeed.core.models.Version
 import paufregi.connectfeed.data.api.github.Github
 import paufregi.connectfeed.data.api.github.models.Asset
 import paufregi.connectfeed.githubRelease
