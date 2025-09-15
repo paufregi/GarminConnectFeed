@@ -11,11 +11,10 @@ data class Version(
             val regex = Regex("^v?(\\d+)\\.(\\d+)\\.(\\d+)$")
             val match = regex.matchEntire(input.trim()) ?: return null
             val (major, minor, patch) = match.destructured
-            return try {
+            return runCatching {
                 Version(major.toInt(), minor.toInt(), patch.toInt())
-            } catch (e: NumberFormatException) {
-                null
-            }
+            }.getOrNull()
+
         }
     }
 }
