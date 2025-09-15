@@ -14,7 +14,7 @@ data class Release(
 ) {
     fun toCore(): CoreRelease? {
         val version = Version.parse(this.tagName)
-        val downloadUrl = this.assets.find { it.downloadUrl.endsWith(".apk") }?.downloadUrl
+        val downloadUrl = this.assets.find { it.contentType == "application/vnd.android.package-archive" && it.downloadUrl.endsWith(".apk") }?.downloadUrl
 
         return version?.let { v -> downloadUrl?.let { url ->  CoreRelease(v, url) } }
 
