@@ -6,5 +6,7 @@ import paufregi.connectfeed.data.api.github.Github
 class GithubRepository(
     private val github: Github
 ) {
-    suspend fun getLatestRelease() = github.getLatestRelease().toResult()
+    suspend fun getLatestRelease() = github.getLatestRelease()
+        .toResult()
+        .map { it.toCore() }
 }
