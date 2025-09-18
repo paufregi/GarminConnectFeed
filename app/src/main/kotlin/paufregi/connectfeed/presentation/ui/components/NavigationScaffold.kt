@@ -39,7 +39,7 @@ data class NavigationItem(
 @Composable
 @ExperimentalMaterial3Api
 fun NavigationScaffold(
-    items: List<NavigationItem> = emptyList<NavigationItem>(),
+    items: List<NavigationItem> = emptyList(),
     selectedIndex: Int = 0,
     nav: NavHostController = rememberNavController(),
     floatingActionButton: @Composable () -> Unit = {},
