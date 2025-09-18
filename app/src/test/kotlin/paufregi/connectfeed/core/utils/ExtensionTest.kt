@@ -533,6 +533,27 @@ class ExtensionTest {
     }
 
     @Test
+    fun `Result - mapOrFailure - success`() {
+        val result = Result.success("input").mapOrFailure { it.uppercase() }
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo("INPUT")
+    }
+
+    @Test
+    fun `Result - mapOrFailure - success with null transform`() {
+        val result = Result.success("input").mapOrFailure { null }
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("Transformation returned null")
+    }
+
+    @Test
+    fun `Result - mapOrFailure - failure`() {
+        val result = Result.failure<String>(Exception("fail")).mapOrFailure { it.uppercase() }
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("fail")
+    }
+
+    @Test
     fun `runCatchingResult - success`() {
         val block: () -> Result<String> = { Result.success("Success") }
 
