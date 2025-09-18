@@ -7,8 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -60,16 +61,27 @@ internal fun InfoContent(
             .testTag("info_screen")
     ) {
         Text(text = "Version: ${state.currentVersion?: "Unknown"}")
-        Spacer(modifier = Modifier.size(24.dp))
-        if (state.process == ProcessState.Processing) {
-            CircularProgressIndicator(Modifier.size(16.dp).testTag("loading"))
+        if(state.hasUpdate) {
+            Text(text = "Update available: ${state.latestRelease?.version}")
         }
-        if (state.currentVersion != null && state.latestRelease != null) {
-            if (state.currentVersion.lessThan(state.latestRelease.version)) {
-                Text(text = "Update available: ${state.latestRelease.version}")
-                Spacer(modifier = Modifier.size(8.dp))
-                Button(text = "Update", onClick = { onAction(InfoAction.Update) })
-            }
+        Spacer(modifier = Modifier.size(8.dp))
+
+        Button(
+            text = "Check for updates",
+            onClick = { onAction(InfoAction.CheckUpdate) },
+            enabled = state.process != ProcessState.Processing
+        )
+        if(state.hasUpdate) {
+            Button(
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                text = "Update",
+                onClick = { onAction(InfoAction.Update) },
+                enabled = state.process != ProcessState.Processing
+            )
+        }
+        if(state.process is ProcessState.Failure) {
+            Spacer(modifier = Modifier.size(8.dp))
+            Text(text = state.process.reason)
         }
     }
 }
