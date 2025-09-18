@@ -64,8 +64,10 @@ internal fun InfoContent(
         if(state.hasUpdate) {
             Text(text = "Update available: ${state.latestRelease?.version}")
         }
+        if(state.process is ProcessState.Failure) {
+            Text(text = state.process.reason, color = MaterialTheme.colorScheme.error)
+        }
         Spacer(modifier = Modifier.size(8.dp))
-
         Button(
             text = "Check for updates",
             onClick = { onAction(InfoAction.CheckUpdate) },
@@ -78,10 +80,6 @@ internal fun InfoContent(
                 onClick = { onAction(InfoAction.Update) },
                 enabled = state.process != ProcessState.Processing
             )
-        }
-        if(state.process is ProcessState.Failure) {
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(text = state.process.reason)
         }
     }
 }
