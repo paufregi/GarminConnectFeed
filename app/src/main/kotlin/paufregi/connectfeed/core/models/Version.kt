@@ -6,6 +6,22 @@ data class Version(
     val patch: Int,
 ) {
     override fun toString(): String = "v$major.$minor.$patch"
+
+    fun same(other: Version): Boolean {
+        return this.major == other.major &&
+            this.minor == other.minor &&
+            this.patch == other.patch
+    }
+
+    fun lessThan(other: Version): Boolean {
+        if (this.major < other.major) return true
+        if (this.major > other.major) return false
+        if (this.minor < other.minor) return true
+        if (this.minor > other.minor) return false
+        if (this.patch < other.patch) return true
+        return false
+    }
+
     companion object {
         fun parse(input: String): Version? {
             val regex = Regex("^v?(\\d+)\\.(\\d+)\\.(\\d+)$")
