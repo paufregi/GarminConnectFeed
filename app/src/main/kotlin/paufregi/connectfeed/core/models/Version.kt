@@ -13,7 +13,7 @@ data class Version(
             this.patch == other.patch
     }
 
-    fun lessThan(other: Version): Boolean {
+    fun isLowerThan(other: Version): Boolean {
         if (this.major < other.major) return true
         if (this.major > other.major) return false
         if (this.minor < other.minor) return true
