@@ -34,8 +34,8 @@ class InfoViewModel @Inject constructor(
         _state.update { it.copy(process = ProcessState.Processing)}
 
         getLatestRelease()
-            .onSuccess { data -> _state.update { it.copy(latestRelease = data, process = ProcessState.Success("Ok")) } }
-            .onFailure { _state.update { it.copy(process = ProcessState.Failure("Couldn't load latest release")) } }
+            .onSuccess { data -> _state.update { it.copy(latestRelease = data, process = ProcessState.Idle) } }
+            .onFailure { _state.update { it.copy(latestRelease = null, process = ProcessState.Failure("Couldn't load latest release")) } }
     }
 
 }
