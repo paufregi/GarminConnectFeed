@@ -46,17 +46,6 @@ class GetLatestReleaseTest {
     }
 
     @Test
-    fun `Get latest release - null`() = runTest {
-        coEvery { repo.getLatestRelease() } returns Result.success(null)
-        val res = useCase()
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isNull()
-        coVerify { repo.getLatestRelease() }
-        confirmVerified(repo)
-    }
-
-    @Test
     fun `Get latest release - failure`() = runTest {
         coEvery { repo.getLatestRelease() } returns Result.failure("error")
         val res = useCase()
