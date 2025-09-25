@@ -27,6 +27,7 @@ import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.GithubRepository
 import paufregi.connectfeed.data.repository.StravaAuthRepository
+import paufregi.connectfeed.data.utils.Updater
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
@@ -152,4 +153,10 @@ object AppModule {
     @Named("currentVersion")
     fun provideCurrentVersion(): String =
         BuildConfig.VERSION_NAME
+
+    @Provides
+    @Singleton
+    @Named("updater")
+    fun provideDownloader(@ApplicationContext context: Context): Updater =
+        Updater(context)
 }
