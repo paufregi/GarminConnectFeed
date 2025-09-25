@@ -95,5 +95,8 @@ internal fun InfoContent(
                 enabled = state.process != ProcessState.Processing
             )
         }
+        if(state.downloadProgress != null) {
+            Text(text = "Download progress: ${state.downloadProgress}%")
+        }
     }
 }
