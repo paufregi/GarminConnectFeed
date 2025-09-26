@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -95,8 +96,9 @@ internal fun InfoContent(
                 enabled = state.process != ProcessState.Processing
             )
         }
-        if(state.downloadProgress != null) {
-            Text(text = "Download progress: ${state.downloadProgress}%")
+        Spacer(modifier = Modifier.size(8.dp))
+        if(state.process is ProcessState.Processing) {
+            LinearProgressIndicator()
         }
     }
 }
