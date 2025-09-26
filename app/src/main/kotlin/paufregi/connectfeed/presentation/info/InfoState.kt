@@ -8,7 +8,6 @@ data class InfoState(
     val process: ProcessState = ProcessState.Idle,
     val currentVersion: Version? = null,
     val latestRelease: Release? = null,
-    val downloadProgress: Long? = null,
 ) {
     val hasUpdate: Boolean
         get() = latestRelease?.version?.let { currentVersion?.isLowerThan(it) } ?: false
