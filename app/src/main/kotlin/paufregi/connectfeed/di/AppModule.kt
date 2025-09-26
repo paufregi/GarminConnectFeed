@@ -27,7 +27,7 @@ import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.GithubRepository
 import paufregi.connectfeed.data.repository.StravaAuthRepository
-import paufregi.connectfeed.data.utils.Updater
+import paufregi.connectfeed.system.Downloader
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
@@ -156,7 +156,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    @Named("updater")
-    fun provideDownloader(@ApplicationContext context: Context): Updater =
-        Updater(context)
+    @Named("downloader")
+    fun provideDownloader(@ApplicationContext context: Context): Downloader =
+        Downloader(context)
 }
