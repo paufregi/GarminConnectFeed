@@ -49,8 +49,7 @@ class GithubRepositoryTest {
 
         val res =  repo.getLatestRelease()
 
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isNull()
+        assertThat(res.isSuccess).isFalse()
 
         coVerify { github.getLatestRelease() }
         confirmVerified(github)
@@ -63,8 +62,7 @@ class GithubRepositoryTest {
 
         val res =  repo.getLatestRelease()
 
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isNull()
+        assertThat(res.isSuccess).isFalse()
 
         coVerify { github.getLatestRelease() }
         confirmVerified(github)
@@ -78,8 +76,7 @@ class GithubRepositoryTest {
 
         val res =  repo.getLatestRelease()
 
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isNull()
+        assertThat(res.isSuccess).isFalse()
 
         coVerify { github.getLatestRelease() }
         confirmVerified(github)
@@ -93,8 +90,7 @@ class GithubRepositoryTest {
 
         val res =  repo.getLatestRelease()
 
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isNull()
+        assertThat(res.isSuccess).isFalse()
 
         coVerify { github.getLatestRelease() }
         confirmVerified(github)

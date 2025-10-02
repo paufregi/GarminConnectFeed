@@ -45,6 +45,6 @@ class GithubRepositoryTest {
         val res = repo.getLatestRelease()
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(githubRelease)
+        assertThat(res.getOrNull()).isEqualTo(githubRelease.toCore())
     }
 }
