@@ -1,5 +1,6 @@
 package paufregi.connectfeed.di
 
+import android.app.DownloadManager
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -158,5 +159,7 @@ object AppModule {
     @Singleton
     @Named("downloader")
     fun provideDownloader(@ApplicationContext context: Context): Downloader =
-        Downloader(context)
+        context.getSystemService(DownloadManager::class.java).let { Downloader(context, it) }
+
+
 }
