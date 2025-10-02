@@ -5,8 +5,7 @@ import android.content.Context
 import androidx.core.net.toUri
 import paufregi.connectfeed.core.models.Release
 
-class Downloader(private val context: Context) {
-    private val downloadManager = context.getSystemService(DownloadManager::class.java)
+class Downloader(val context: Context, val downloadManager: DownloadManager) {
 
     fun downloadApk(release: Release): Result<Unit> {
         if (!release.downloadUrl.endsWith(".apk")) {
