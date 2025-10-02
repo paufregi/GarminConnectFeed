@@ -98,7 +98,7 @@ internal fun InfoContent(
         }
         Spacer(modifier = Modifier.size(8.dp))
         if(state.process is ProcessState.Processing) {
-            LinearProgressIndicator()
+            LinearProgressIndicator(modifier = Modifier.testTag("loading"))
         }
     }
 }
