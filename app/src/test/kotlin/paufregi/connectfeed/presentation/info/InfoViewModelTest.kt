@@ -112,9 +112,6 @@ class InfoViewModelTest {
         coEvery { downloader.downloadApk(any()) } returns Result.success(Unit)
 
         viewModel.onAction(InfoAction.CheckUpdate)
-
-        viewModel.state.value.copy(latestRelease = release)
-
         viewModel.onAction(InfoAction.Update)
 
         coVerify {
