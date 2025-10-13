@@ -23,7 +23,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -75,7 +75,7 @@ internal fun InfoContent(
                 .testTag("app_icon")
         )
         Spacer(modifier = Modifier.size(42.dp))
-        Text(text = "Version: ${state.currentVersion?: "Unknown"}")
+        Text(text = "Version: ${state.currentVersion ?: "Unknown"}")
         if(state.hasUpdate) {
             Text(text = "Update available: ${state.latestRelease?.version}")
         }

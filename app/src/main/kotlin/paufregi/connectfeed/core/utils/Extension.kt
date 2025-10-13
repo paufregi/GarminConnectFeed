@@ -70,11 +70,12 @@ fun <R, T> Result<T>.mapOrFailure(transform: (value: T) -> R?): Result<R> {
     }
 }
 
-inline fun <T, R> T.runCatchingResult(block: T.() -> Result<R>): Result<R> =
-    runCatching { block() }.fold(
-        onSuccess = { return it },
-        onFailure = { return Result.failure(it) }
+inline fun <T, R> T.runCatchingResult(block: T.() -> Result<R>): Result<R> {
+    return runCatching { block() }.fold(
+        onSuccess = { it },
+        onFailure = { Result.failure(it) }
     )
+}
 
 inline fun <T> Semaphore.withPermit(action: () -> T): T {
     acquire()
