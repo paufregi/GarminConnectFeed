@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -57,7 +57,7 @@ internal fun AccountContent(
     var signOutDialog by remember { mutableStateOf(false) }
     var stravaDialog by remember { mutableStateOf(false) }
 
-    if (signOutDialog == true) {
+    if (signOutDialog) {
         ConfirmationDialog(
             title = "Sign out",
             message = "Are you sure you want to sign out?",
@@ -67,7 +67,7 @@ internal fun AccountContent(
         )
     }
 
-    if (stravaDialog == true) {
+    if (stravaDialog) {
         ConfirmationDialog(
             title = "Disconnect Strava",
             message = "Are you sure you want to disconnect Strava?",

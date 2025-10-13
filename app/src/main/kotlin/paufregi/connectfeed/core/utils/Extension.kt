@@ -61,11 +61,19 @@ fun <T> Result<T>.mapFailure(transform: (exception: Throwable) -> Throwable): Re
         else -> Result.failure<T>(transform(exception))
     }
 
+fun <R, T> Result<T>.mapOrFailure(transform: (value: T) -> R?): Result<R> {
+    val res = this.map(transform).getOrNull()
+    return when {
+        res != null -> Result.success(res)
+        this.isSuccess -> Result.failure(Exception("Transformation returned null"))
+        else -> Result.failure(this.exceptionOrNull() ?: Exception("Unknown error"))
+    }
+}
+
 inline fun <T, R> T.runCatchingResult(block: T.() -> Result<R>): Result<R> {
-    val res = runCatching { block() }
-    return res.fold(
-        onSuccess = { return it },
-        onFailure = { return Result.failure(it) }
+    return runCatching { block() }.fold(
+        onSuccess = { it },
+        onFailure = { Result.failure(it) }
     )
 }
 
@@ -77,5 +85,3 @@ inline fun <T> Semaphore.withPermit(action: () -> T): T {
         release()
     }
 }
-
-

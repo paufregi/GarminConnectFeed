@@ -96,7 +96,6 @@ android {
             }
         }
     }
-
 }
 
 dependencies {

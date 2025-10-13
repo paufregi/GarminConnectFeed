@@ -813,7 +813,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Update strava profile - failure`() = runTest {
-        coEvery { strava.updateProfile(any(), ) } returns Response.error<Unit>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { strava.updateProfile(any(), ) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val expectedRequest = StravaUpdateProfile(weight = 75.9f)
 
@@ -841,7 +841,7 @@ class GarminRepositoryTest {
     fun `Upload file - failure`() = runTest {
         val testFile = File.createTempFile("test", "test")
 
-        coEvery { connect.uploadFile(any()) } returns Response.error<Unit?>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.uploadFile(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.uploadFile(testFile)
 

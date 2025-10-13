@@ -30,7 +30,7 @@ class StravaCodeExchangeTest{
     }
 
     @Test
-    fun `Exchange code`() = runTest{
+    fun `Exchange code`() = runTest {
         val token = createStravaToken(tomorrow)
 
         coEvery { repo.exchange(any(), any(), any()) } returns Result.success(token)
@@ -48,7 +48,7 @@ class StravaCodeExchangeTest{
     }
 
     @Test
-    fun `Exchange code - failure`() = runTest{
+    fun `Exchange code - failure`() = runTest {
         coEvery { repo.exchange(any(), any(), any()) } returns Result.failure("error")
 
         val result = useCase("code")

@@ -1,5 +1,6 @@
 package paufregi.connectfeed.di
 
+import android.app.DownloadManager
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -9,12 +10,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import paufregi.connectfeed.BuildConfig
 import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.github.Github
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
@@ -23,7 +26,9 @@ import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.GithubRepository
 import paufregi.connectfeed.data.repository.StravaAuthRepository
+import paufregi.connectfeed.system.Downloader
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
@@ -87,6 +92,13 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideGithubRepository(
+        github: Github,
+    ): GithubRepository = GithubRepository(github)
+
+
+    @Provides
+    @Singleton
     fun provideAuthInterceptor(
         authRepository: AuthRepository
     ): AuthInterceptor = AuthInterceptor(authRepository)
@@ -127,7 +139,27 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideGithub(
+        @Named("GithubUrl") url: String,
+    ): Github = Github.client(url)
+
+    @Provides
+    @Singleton
     @Named("tempFolder")
     fun provideTempFolder(@ApplicationContext context: Context): File =
         context.cacheDir
+
+    @Provides
+    @Singleton
+    @Named("currentVersion")
+    fun provideCurrentVersion(): String =
+        BuildConfig.VERSION_NAME
+
+    @Provides
+    @Singleton
+    @Named("downloader")
+    fun provideDownloader(@ApplicationContext context: Context): Downloader =
+        context.getSystemService(DownloadManager::class.java).let { Downloader(context, it) }
+
+
 }

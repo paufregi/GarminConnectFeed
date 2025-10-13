@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.SyncAlt
 import androidx.compose.material.icons.filled.Tune
 import kotlinx.serialization.Serializable
@@ -42,6 +43,9 @@ sealed interface Route {
     data object Account : Route
 
     @Serializable
+    data object Info : Route
+
+    @Serializable
     data class Profile(val id: Long = 0L) : Route
 }
 
@@ -50,10 +54,13 @@ object Navigation {
     const val PROFILES = 1
     const val ACCOUNT = 2
 
+    const val INFO = 3
+
     val items = listOf(
         NavigationItem("Home", Icons.Filled.Home, Route.Home),
         NavigationItem("Profiles", Icons.Filled.Tune, Route.Profiles),
         NavigationItem("Account", Icons.Filled.AccountCircle, Route.Account),
+        NavigationItem("Info", Icons.Filled.Info, Route.Info),
     )
 }
 
