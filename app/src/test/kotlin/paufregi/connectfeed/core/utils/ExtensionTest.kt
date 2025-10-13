@@ -594,7 +594,7 @@ class ExtensionTest {
     }
 
     @Test
-    fun `Semaphore - withPermit - blocks when no permits are available`() = runTest{
+    fun `Semaphore - withPermit - blocks when no permits are available`() = runTest {
         val semaphore = Semaphore(1)
         var actionExecuted = false
 

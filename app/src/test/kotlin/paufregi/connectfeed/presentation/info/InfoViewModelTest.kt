@@ -102,7 +102,7 @@ class InfoViewModelTest {
     }
 
     @Test
-    fun `Update action`() = runTest{
+    fun `Update action`() = runTest {
         viewModel = InfoViewModel(
             version = currentVersion,
             downloader = downloader,
