@@ -15,8 +15,7 @@ plugins {
 
 android {
     namespace = "paufregi.connectfeed"
-    //noinspection GradleDependency
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "paufregi.connectfeed"
