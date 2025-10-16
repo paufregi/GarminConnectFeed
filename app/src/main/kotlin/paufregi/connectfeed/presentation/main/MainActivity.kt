@@ -22,6 +22,7 @@ import paufregi.connectfeed.presentation.login.LoginScreen
 import paufregi.connectfeed.presentation.profile.ProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
+import paufregi.connectfeed.presentation.settings.SettingsScreen
 import paufregi.connectfeed.presentation.syncstrava.SyncStravaScreen
 import paufregi.connectfeed.presentation.ui.theme.Theme
 
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
                             composable<Route.SyncStrava> { SyncStravaScreen(nav = nav) }
                         }
                         composable<Route.Account> { AccountScreen(nav = nav) }
+                        composable<Route.Settings> { SettingsScreen(nav = nav) }
                         navigation<Route.Profiles>(startDestination = Route.ProfileList) {
                             composable<Route.ProfileList> { ProfilesScreen(nav = nav) }
                             composable<Route.Profile> { ProfileScreen(nav = nav) }

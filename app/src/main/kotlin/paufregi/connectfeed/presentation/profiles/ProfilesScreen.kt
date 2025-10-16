@@ -46,7 +46,8 @@ internal fun ProfilesScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     NavigationScaffold(
-        items = Navigation.items,
+        topItems = Navigation.topItems,
+        bottomItems = Navigation.bottomItems,
         selectedIndex = Navigation.PROFILES,
         nav = nav,
         floatingActionButton = {

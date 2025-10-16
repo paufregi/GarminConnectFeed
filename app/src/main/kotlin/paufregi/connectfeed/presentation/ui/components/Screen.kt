@@ -69,7 +69,8 @@ fun Screen(
         is ProcessState.Success -> SimpleScaffold { success(state, it) }
         is ProcessState.Failure-> SimpleScaffold { failure(state, it) }
         is ProcessState.Idle -> NavigationScaffold(
-            items = Navigation.items,
+            topItems = Navigation.topItems,
+            bottomItems = Navigation.bottomItems,
             selectedIndex = navigationIndex,
             nav = nav,
             floatingActionButton = floatingActionButton,
@@ -115,7 +116,8 @@ fun Screen(
         is ProcessState.Success -> SimpleScaffold { success(state, it) }
         is ProcessState.Failure-> SimpleScaffold { failure(state, it) }
         is ProcessState.Idle -> NavigationScaffold(
-            items = Navigation.items,
+            topItems = Navigation.topItems,
+            bottomItems = Navigation.bottomItems,
             selectedIndex = location.menuIndex,
             bottomBar = @Composable {
                 NavigationBar(

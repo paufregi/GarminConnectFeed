@@ -41,7 +41,8 @@ internal fun InfoScreen(nav: NavHostController = rememberNavController()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     NavigationScaffold(
-        items = Navigation.items,
+        topItems = Navigation.topItems,
+        bottomItems = Navigation.bottomItems,
         selectedIndex = Navigation.INFO,
         nav = nav,
     ) {
