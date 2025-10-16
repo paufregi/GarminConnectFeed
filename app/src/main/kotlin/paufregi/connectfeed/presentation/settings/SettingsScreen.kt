@@ -45,6 +45,7 @@ import paufregi.connectfeed.presentation.ui.components.successInfo
 import paufregi.connectfeed.presentation.ui.icons.Connect
 import paufregi.connectfeed.presentation.ui.icons.Logo
 import paufregi.connectfeed.presentation.ui.icons.Strava
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
 @ExperimentalMaterial3Api
@@ -122,7 +123,7 @@ internal fun SettingsContent(
                 Text("Strava linked")
                 Spacer(modifier = Modifier.weight(1f))
                 Button(
-                    text = "Disconnect",
+                    text = "Remove",
                     onClick = { stravaDialog = true }
                 )
             }
@@ -147,11 +148,11 @@ internal fun SettingsContent(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Version: ${state.currentVersion ?: "Unknown"}")
             Spacer(modifier = Modifier.weight(1f))
-
-        }
-        Text(text = "Version: ${state.currentVersion ?: "Unknown"}")
-        if(state.hasUpdate) {
-            Text(text = "Update available: ${state.latestRelease?.version}")
+            Button(
+                text = "Check",
+                onClick = { onAction(SettingsAction.CheckUpdate) },
+                enabled = state.process != ProcessState.Processing
+            )
         }
     }
 }
