@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,12 +42,12 @@ import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
 import paufregi.connectfeed.presentation.ui.components.Screen
+import paufregi.connectfeed.presentation.ui.components.TextIcon
 import paufregi.connectfeed.presentation.ui.components.failureInfo
 import paufregi.connectfeed.presentation.ui.components.successInfo
 import paufregi.connectfeed.presentation.ui.icons.Connect
 import paufregi.connectfeed.presentation.ui.icons.Logo
 import paufregi.connectfeed.presentation.ui.icons.Strava
-import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
 @ExperimentalMaterial3Api
@@ -90,8 +92,8 @@ internal fun SettingsContent(
     }
 
     Screen(
-        tagName = "account_form",
-        navigationIndex = Navigation.ACCOUNT,
+        tagName = "settings_screen",
+        navigationIndex = Navigation.SETTINGS,
         nav = nav,
         state = state.process,
         success = successInfo { onAction(SettingsAction.Reset) },
@@ -101,7 +103,7 @@ internal fun SettingsContent(
             model = state.user?.profileImageUrl,
             contentDescription = null,
             modifier = Modifier
-                .scale(2f)
+                .scale(1.75f)
                 .clip(CircleShape)
                 .testTag("profileImage")
         )
@@ -109,29 +111,22 @@ internal fun SettingsContent(
         Text(text = state.user?.name ?: "", fontSize = 24.sp)
         HorizontalDivider()
         Row(verticalAlignment = Alignment.CenterVertically){
-            Icon(Icons.Connect.Logo, "connect", Modifier.size(24.dp).padding(end = 5.dp), Color.Unspecified)
-            Text("Garmin linked")
+            TextIcon(Icons.Connect.Logo, "Garmin", true)
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 text = "Refresh",
                 onClick = { onAction(SettingsAction.RefreshUser) }
             )
         }
-        if (state.hasStrava == true) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Strava.Logo, "strava", Modifier.size(24.dp).padding(end = 5.dp), Color.Unspecified)
-                Text("Strava linked")
-                Spacer(modifier = Modifier.weight(1f))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextIcon(Icons.Strava.Logo, "Strava", state.hasStrava)
+            Spacer(modifier = Modifier.weight(1f))
+            if (state.hasStrava == true) {
                 Button(
                     text = "Remove",
                     onClick = { stravaDialog = true }
                 )
-            }
-        } else {
-            Row {
-                Icon(Icons.Strava.Logo, "strava", Modifier.size(24.dp), tint = Color.LightGray)
-                Text("Strava not linked")
-                Spacer(modifier = Modifier.weight(1f))
+            } else {
                 Button(
                     text = "Connect",
                     onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, stravaAuthUri)) }
@@ -145,14 +140,24 @@ internal fun SettingsContent(
             onClick = { signOutDialog = true }
         )
         HorizontalDivider()
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 10.dp)) {
+
             Text(text = "Version: ${state.currentVersion ?: "Unknown"}")
+            if (!state.hasUpdate) {
+                Icon(Icons.Default.CheckCircle, "latest version", Modifier.size(32.dp).padding(start = 5.dp), Color.Green)
+            }
             Spacer(modifier = Modifier.weight(1f))
-            Button(
-                text = "Check",
-                onClick = { onAction(SettingsAction.CheckUpdate) },
-                enabled = state.process != ProcessState.Processing
-            )
+            if (state.hasUpdate) {
+                Button(
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    text = "Update",
+                    onClick = { onAction(SettingsAction.Update) },
+                    enabled = !state.updating
+                )
+            }
+        }
+        if(state.updating) {
+            LinearProgressIndicator(modifier = Modifier.padding(top = 10.dp).testTag("updating_bar"))
         }
     }
 }
