@@ -72,7 +72,7 @@ internal fun EditContent(
     val context = LocalContext.current
 
     Screen(
-        tagName = "edit_form",
+        tagName = "edit_screen",
         location = HomeNavigation.EDIT,
         hasStrava = state.hasStrava,
         nav = nav,

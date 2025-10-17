@@ -53,7 +53,7 @@ internal fun SyncStravaContent(
     val context = LocalContext.current
 
     Screen(
-        tagName = "sync_strava_form",
+        tagName = "sync_strava_screen",
         location = HomeNavigation.SYNC_STRAVA,
         hasStrava = true,
         nav = nav,

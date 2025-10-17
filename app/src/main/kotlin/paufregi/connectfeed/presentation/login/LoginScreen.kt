@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -53,6 +52,7 @@ internal fun LoginContent(
     onLogin: () -> Unit = {},
 ) {
     Screen(
+        tagName = "login_screen",
         state = state.process,
         success = {_, pv -> WelcomeInfo(state.user, onLogin, pv) },
         failure = failureInfo { onAction(LoginAction.Reset) }
@@ -67,7 +67,6 @@ internal fun LoginContent(
                 .fillMaxSize()
                 .padding(it)
                 .padding(horizontal = 20.dp)
-                .testTag("login_form")
         ) {
             TextField(
                 label = { Text("Username") },

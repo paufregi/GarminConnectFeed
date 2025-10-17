@@ -68,7 +68,7 @@ internal fun QuickEditContent(
     val context = LocalContext.current
 
     Screen(
-        tagName = "quick_edit_form",
+        tagName = "quick_edit_screen",
         location = HomeNavigation.QUICK_EDIT,
         hasStrava = state.hasStrava,
         nav = nav,

@@ -37,6 +37,8 @@ import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
+import paufregi.connectfeed.githubDispatcher
+import paufregi.connectfeed.githubPort
 import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaAuthToken
@@ -71,6 +73,7 @@ class MainActivityTest {
     @JvmField @Rule val connectServer = MockWebServerRule(connectPort, sslSocketFactory, connectDispatcher)
     @JvmField @Rule val garminSSOServer = MockWebServerRule(garminSSOPort, sslSocketFactory, garminSSODispatcher)
     @JvmField @Rule val strava = MockWebServerRule(stravaPort, sslSocketFactory, stravaDispatcher)
+    @JvmField @Rule val github = MockWebServerRule(githubPort, sslSocketFactory, githubDispatcher)
 
     @Before
     fun setup() {
@@ -90,14 +93,14 @@ class MainActivityTest {
     @Test
     fun `Sign in`() = runTest {
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.onNodeWithTag("login_form").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("login_screen").assertIsDisplayed()
 
         composeTestRule.onNodeWithText("Username").performTextInput("user")
         composeTestRule.onNodeWithText("Password").performTextInput("pass")
         composeTestRule.onNodeWithText("Sign in").performClick()
         composeTestRule.waitUntil(conditionDescription = "welcome") { composeTestRule.onNodeWithTag("welcome").isDisplayed() }
         composeTestRule.onNodeWithText("Ok").performClick()
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
     }
 
     @Test
@@ -107,14 +110,14 @@ class MainActivityTest {
         authStore.saveAuthToken(authToken)
 
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
         composeTestRule.onNodeWithTag("menu").performClick()
-        composeTestRule.onNodeWithText("Account").performClick()
-        composeTestRule.waitUntil(conditionDescription = "account_form") { composeTestRule.onNodeWithTag("account_form").isDisplayed() }
+        composeTestRule.onNodeWithText("Settings").performClick()
+        composeTestRule.waitUntil(conditionDescription = "settings_screen") { composeTestRule.onNodeWithTag("settings_screen").isDisplayed() }
         composeTestRule.onNodeWithText("Sign out").performClick()
         composeTestRule.waitUntil(conditionDescription = "sign_out_dialog") { composeTestRule.onNodeWithTag("sign_out_dialog").isDisplayed() }
         composeTestRule.onNodeWithText("Confirm").performClick()
-        composeTestRule.waitUntil(conditionDescription = "login_form") { composeTestRule.onNodeWithTag("login_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "login_screen") { composeTestRule.onNodeWithTag("login_screen").isDisplayed() }
     }
 
     @Test
@@ -124,11 +127,11 @@ class MainActivityTest {
         authStore.saveAuthToken(authToken)
 
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
         composeTestRule.onNodeWithTag("menu").performClick()
-        composeTestRule.onNodeWithText("Account").performClick()
-        composeTestRule.waitUntil(conditionDescription = "account_form") { composeTestRule.onNodeWithTag("account_form").isDisplayed() }
-        composeTestRule.onNodeWithText("Connect Strava").performClick()
+        composeTestRule.onNodeWithText("Settings").performClick()
+        composeTestRule.waitUntil(conditionDescription = "settings_screen") { composeTestRule.onNodeWithTag("settings_screen").isDisplayed() }
+        composeTestRule.onNodeWithText("Connect").performClick()
         composeTestRule.waitUntil(conditionDescription = "strava linked") { composeTestRule.onNodeWithText("Strava linked").isDisplayed() }
     }
 
@@ -140,15 +143,15 @@ class MainActivityTest {
         stravaStore.saveToken(stravaAuthToken)
 
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
         composeTestRule.onNodeWithTag("menu").performClick()
-        composeTestRule.onNodeWithText("Account").performClick()
-        composeTestRule.waitUntil(conditionDescription = "account_form") { composeTestRule.onNodeWithTag("account_form").isDisplayed() }
-        composeTestRule.onNodeWithText("Disconnect Strava").performClick()
+        composeTestRule.onNodeWithText("Settings").performClick()
+        composeTestRule.waitUntil(conditionDescription = "settings_screen") { composeTestRule.onNodeWithTag("settings_screen").isDisplayed() }
+        composeTestRule.onNodeWithText("Remove").performClick()
         composeTestRule.waitUntil(conditionDescription = "strava_dialog") { composeTestRule.onNodeWithTag("strava_dialog").isDisplayed() }
         composeTestRule.onNodeWithText("Confirm").performClick()
-        composeTestRule.waitUntil(conditionDescription = "account_form") { composeTestRule.onNodeWithTag("account_form").isDisplayed() }
-        composeTestRule.onNodeWithText("Connect Strava").isDisplayed()
+        composeTestRule.waitUntil(conditionDescription = "settings_screen") { composeTestRule.onNodeWithTag("settings_screen").isDisplayed() }
+        composeTestRule.onNodeWithText("Connect").isDisplayed()
     }
 
     @Test
@@ -158,11 +161,11 @@ class MainActivityTest {
         authStore.saveAuthToken(authToken)
 
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
         composeTestRule.onNodeWithTag("menu").performClick()
-        composeTestRule.onNodeWithText("Account").performClick()
-        composeTestRule.waitUntil(conditionDescription = "account_form") { composeTestRule.onNodeWithTag("account_form").isDisplayed() }
-        composeTestRule.onNodeWithText("Refresh user").performClick()
+        composeTestRule.onNodeWithText("Settings").performClick()
+        composeTestRule.waitUntil(conditionDescription = "settings_screen") { composeTestRule.onNodeWithTag("settings_screen").isDisplayed() }
+        composeTestRule.onNodeWithText("Refresh").performClick()
         composeTestRule.waitUntil(conditionDescription = "User data refreshed") { composeTestRule.onNodeWithText("User data refreshed").isDisplayed() }
     }
 
@@ -173,12 +176,12 @@ class MainActivityTest {
         authStore.saveAuthToken(authToken)
 
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
         composeTestRule.onNodeWithTag("menu").performClick()
         composeTestRule.onNodeWithText("Profiles").performClick()
         composeTestRule.waitUntil(conditionDescription = "profiles_content") { composeTestRule.onNodeWithTag("profiles_content").isDisplayed() }
         composeTestRule.onNodeWithTag("create_profile").performClick()
-        composeTestRule.waitUntil(conditionDescription = "profile_form") { composeTestRule.onNodeWithTag("profile_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "profile_screen") { composeTestRule.onNodeWithTag("profile_screen").isDisplayed() }
 
         composeTestRule.onNodeWithText("Name").performTextInput("Profile 1")
         composeTestRule.onNodeWithText("Activity type").performClick()
@@ -201,12 +204,12 @@ class MainActivityTest {
         dao.saveProfile(ProfileEntity(id = 5, userId = user.id, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
         composeTestRule.onNodeWithTag("menu").performClick()
         composeTestRule.onNodeWithText("Profiles").performClick()
         composeTestRule.waitUntil(conditionDescription = "profiles_content") { composeTestRule.onNodeWithTag("profiles_content").isDisplayed() }
         composeTestRule.onNodeWithText("Profile 1").performClick()
-        composeTestRule.waitUntil(conditionDescription = "profile_form") { composeTestRule.onNodeWithTag("profile_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "profile_screen") { composeTestRule.onNodeWithTag("profile_screen").isDisplayed() }
 
         composeTestRule.onNodeWithText("Name").performTextClearance()
         composeTestRule.onNodeWithText("Name").performTextInput("Profile 2")
@@ -231,7 +234,7 @@ class MainActivityTest {
         dao.saveProfile(ProfileEntity(id = 10, userId = user.id, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
         composeTestRule.onNodeWithTag("menu").performClick()
         composeTestRule.onNodeWithText("Profiles").performClick()
         composeTestRule.waitUntil(conditionDescription = "profiles_content") { composeTestRule.onNodeWithTag("profiles_content").isDisplayed() }
@@ -241,14 +244,14 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Update activity`() = runTest {
+    fun `Quick edit activity`() = runTest {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
         composeTestRule.onNodeWithText("Activity").performClick()
         composeTestRule.onNodeWithText("Activity 1").performClick()
         composeTestRule.onNodeWithText("Profile").performClick()
@@ -259,7 +262,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Update activity - with Strava`() = runTest {
+    fun `Quick edit - with Strava`() = runTest {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
@@ -267,7 +270,7 @@ class MainActivityTest {
         dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
         composeTestRule.onNodeWithText("Activity").performClick()
         composeTestRule.onNodeWithText("Activity 1").performClick()
         composeTestRule.onNodeWithText("Strava activity").performClick()
@@ -280,6 +283,27 @@ class MainActivityTest {
     }
 
     @Test
+    fun `Edit activity`() = runTest {
+        authStore.saveUser(user)
+        authStore.savePreAuthToken(preAuthToken)
+        authStore.saveAuthToken(authToken)
+
+        ActivityScenario.launch(MainActivity::class.java)
+
+    }
+
+    @Test
+    fun `Edit - with Strava`() = runTest {
+        authStore.saveUser(user)
+        authStore.savePreAuthToken(preAuthToken)
+        authStore.saveAuthToken(authToken)
+        stravaStore.saveToken(stravaAuthToken)
+
+        ActivityScenario.launch(MainActivity::class.java)
+
+    }
+
+    @Test
     fun `Sync Strava activity`() = runTest {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
@@ -287,9 +311,9 @@ class MainActivityTest {
         stravaStore.saveToken(stravaAuthToken)
 
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.waitUntil(conditionDescription = "quick_edit_form") { composeTestRule.onNodeWithTag("quick_edit_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
         composeTestRule.onNodeWithText("Sync Strava").performClick()
-        composeTestRule.waitUntil(conditionDescription = "sync_strava_form") { composeTestRule.onNodeWithTag("sync_strava_form").isDisplayed() }
+        composeTestRule.waitUntil(conditionDescription = "sync_strava_screen") { composeTestRule.onNodeWithTag("sync_strava_screen").isDisplayed() }
         composeTestRule.onNodeWithText("Activity").performClick()
         composeTestRule.onNodeWithText("Activity 1").performClick()
         composeTestRule.onNodeWithText("Strava activity").performClick()
