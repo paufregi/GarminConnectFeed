@@ -284,6 +284,7 @@ class MainActivityTest {
 
     @Test
     fun `Edit activity`() = runTest {
+        //TODO: finish test
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
@@ -294,6 +295,7 @@ class MainActivityTest {
 
     @Test
     fun `Edit - with Strava`() = runTest {
+        //TODO: finish test
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
