@@ -7,6 +7,7 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 data class SettingsState(
     val process: ProcessState = ProcessState.Idle,
+    val updating: Boolean = false,
     val user: User? = null,
     val hasStrava: Boolean? = null,
     val currentVersion: Version? = null,
