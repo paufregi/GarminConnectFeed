@@ -8,10 +8,8 @@ import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
+
     override val values = sequenceOf(
-        ProfileState(process = ProcessState.Processing),
-        ProfileState(process = ProcessState.Success("Profile saved")),
-        ProfileState(process = ProcessState.Failure("Error saving profile")),
         ProfileState(
             process = ProcessState.Idle,
             profile = Profile(

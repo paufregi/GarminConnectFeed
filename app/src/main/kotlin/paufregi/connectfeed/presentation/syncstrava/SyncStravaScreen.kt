@@ -17,6 +17,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,10 +42,11 @@ internal fun SyncStravaScreen(nav: NavHostController = rememberNavController()) 
     SyncStravaContent(state, viewModel::onAction, nav)
 }
 
+@Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun SyncStravaContent(
-    state: SyncStravaState,
+    @PreviewParameter(SyncStravaStatePreview::class) state: SyncStravaState,
     onAction: (SyncStravaAction) -> Unit = {},
     nav: NavHostController = rememberNavController()
 ) {

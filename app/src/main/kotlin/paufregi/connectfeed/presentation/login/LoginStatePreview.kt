@@ -6,11 +6,9 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 class LoginStatePreview : PreviewParameterProvider<LoginState> {
     override val values = sequenceOf(
-        LoginState(process = ProcessState.Processing),
-        LoginState(process = ProcessState.Success("Paul"), user = User(1, "Paul", "")),
-        LoginState(process = ProcessState.Failure("Error")),
-        LoginState(process = ProcessState.Idle, username = "user", password = "pass"),
-        LoginState(process = ProcessState.Idle,username = "user", password = "pass", showPassword = true),
-        LoginState(process = ProcessState.Idle,username = "", password = ""),
+        LoginState(username = "user", password = "pass"),
+        LoginState(username = "user", password = "pass", showPassword = true),
+        LoginState(username = "", password = ""),
+        LoginState(user = User(1, "Paul", "https://profile.image.com/large.jpg"), process = ProcessState.Success() ),
     )
 }

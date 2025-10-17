@@ -23,6 +23,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,10 +44,11 @@ internal fun LoginScreen(
     LoginContent(state, viewModel::onAction, onLogin)
 }
 
+@Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun LoginContent(
-    state: LoginState,
+    @PreviewParameter(LoginStatePreview::class) state: LoginState,
     onAction: (LoginAction) -> Unit = {},
     onLogin: () -> Unit = {},
 ) {
