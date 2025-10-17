@@ -1,11 +1,9 @@
 package paufregi.connectfeed.presentation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SyncAlt
 import androidx.compose.material.icons.filled.Tune
@@ -42,12 +40,6 @@ sealed interface Route {
     data object ProfileList : Route
 
     @Serializable
-    data object Account : Route
-
-    @Serializable
-    data object Info : Route
-
-    @Serializable
     data object Settings : Route
 
     @Serializable
@@ -57,15 +49,11 @@ sealed interface Route {
 object Navigation {
     const val HOME = 0
     const val PROFILES = 1
-    const val ACCOUNT = 2
-    const val INFO = 3
-    const val SETTINGS = 4
+    const val SETTINGS = 3
 
     val topItems = listOf(
         NavigationItem(HOME,"Home", Icons.Filled.Home, Route.Home),
         NavigationItem(PROFILES,"Profiles", Icons.Filled.Tune, Route.Profiles),
-        NavigationItem(ACCOUNT, "Account", Icons.Filled.AccountCircle, Route.Account),
-        NavigationItem(INFO, "Info", Icons.Filled.Info, Route.Info),
     )
 
     val bottomItems = listOf(
