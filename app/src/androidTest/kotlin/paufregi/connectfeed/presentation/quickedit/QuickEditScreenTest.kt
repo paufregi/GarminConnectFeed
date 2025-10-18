@@ -6,7 +6,6 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -75,8 +74,8 @@ class QuickEditScreenTest {
                 profiles = profiles,
             ))
         }
-        composeTestRule.onNodeWithText("Activity").isDisplayed()
-        composeTestRule.onNodeWithText("Profile").isDisplayed()
+        composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Profile").assertIsDisplayed()
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
         composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
@@ -95,9 +94,9 @@ class QuickEditScreenTest {
                 profiles = profiles,
             ))
         }
-        composeTestRule.onNodeWithText("Activity").isDisplayed()
-        composeTestRule.onNodeWithText("Strava").isDisplayed()
-        composeTestRule.onNodeWithText("Profile").isDisplayed()
+        composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Strava activity").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Profile").assertIsDisplayed()
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
         composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
@@ -152,7 +151,7 @@ class QuickEditScreenTest {
                 process = ProcessState.Processing,
             ))
         }
-        composeTestRule.onNodeWithTag("loading").isDisplayed()
+        composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
@@ -162,8 +161,8 @@ class QuickEditScreenTest {
                 process = ProcessState.Success("Activity updated"),
             ))
         }
-        composeTestRule.onNodeWithTag("status_info_text").isDisplayed()
-        composeTestRule.onNodeWithText("Activity updated").isDisplayed()
+        composeTestRule.onNodeWithTag("status_info_text").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Activity updated").assertIsDisplayed()
     }
 
     @Test
@@ -173,7 +172,7 @@ class QuickEditScreenTest {
                 process = ProcessState.Failure("Couldn't update activity"),
             ))
         }
-        composeTestRule.onNodeWithTag("status_info_text").isDisplayed()
-        composeTestRule.onNodeWithText("Couldn't update activity").isDisplayed()
+        composeTestRule.onNodeWithTag("status_info_text").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Couldn't update activity").assertIsDisplayed()
     }
 }

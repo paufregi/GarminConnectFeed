@@ -24,6 +24,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -59,17 +61,18 @@ internal fun EditScreen(nav: NavHostController = rememberNavController()) {
     EditContent(state, viewModel::onAction, nav)
 }
 
+@Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun EditContent(
-    state: EditState,
+    @PreviewParameter(EditStatePreview::class) state: EditState,
     onAction: (EditAction) -> Unit = {},
     nav: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
 
     Screen(
-        tagName = "edit_form",
+        tagName = "edit_screen",
         location = HomeNavigation.EDIT,
         hasStrava = state.hasStrava,
         nav = nav,

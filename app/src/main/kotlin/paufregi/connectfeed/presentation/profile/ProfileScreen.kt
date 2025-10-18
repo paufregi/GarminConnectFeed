@@ -54,7 +54,7 @@ internal fun ProfileContent(
     nav: NavHostController = rememberNavController(),
 ) {
     Screen(
-        tagName = "profile_form",
+        tagName = "profile_screen",
         navigationIndex = Navigation.PROFILES,
         nav = nav,
         state = state.process,

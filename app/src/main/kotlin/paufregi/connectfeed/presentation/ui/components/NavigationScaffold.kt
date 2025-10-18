@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -31,6 +32,7 @@ import kotlinx.coroutines.launch
 import paufregi.connectfeed.presentation.Route
 
 data class NavigationItem(
+    val index: Int,
     val label: String,
     val icon: ImageVector,
     val route: Route,
@@ -39,7 +41,8 @@ data class NavigationItem(
 @Composable
 @ExperimentalMaterial3Api
 fun NavigationScaffold(
-    items: List<NavigationItem> = emptyList(),
+    topItems: List<NavigationItem> = emptyList(),
+    bottomItems: List<NavigationItem> = emptyList(),
     selectedIndex: Int = 0,
     nav: NavHostController = rememberNavController(),
     floatingActionButton: @Composable () -> Unit = {},
@@ -55,11 +58,25 @@ fun NavigationScaffold(
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(modifier = Modifier.height(16.dp))
-                items.fastForEachIndexed { index, item ->
+                topItems.fastForEachIndexed { index, item ->
                     NavigationDrawerItem(
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                         label = { Text(item.label) },
-                        selected = index == selectedIndex,
+                        selected = item.index == selectedIndex,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            nav.navigate(item.route)
+                        },
+                        icon = { Icon(item.icon, item.label) },
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                HorizontalDivider()
+                bottomItems.fastForEachIndexed { index, item ->
+                    NavigationDrawerItem(
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        label = { Text(item.label) },
+                        selected = item.index == selectedIndex,
                         onClick = {
                             scope.launch { drawerState.close() }
                             nav.navigate(item.route)

@@ -7,8 +7,6 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.isDisplayed
-import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -83,13 +81,12 @@ class EditScreenTest {
                 courses = courses
             ))
         }
-        composeTestRule.onNodeWithText("Activity").isDisplayed()
-        composeTestRule.onNodeWithText("Profile").isDisplayed()
-        composeTestRule.onNodeWithText("Name").isDisplayed()
-        composeTestRule.onNodeWithText("Event type").isDisplayed()
-        composeTestRule.onNodeWithText("Course").isNotDisplayed()
-        composeTestRule.onNodeWithText("Description").isNotDisplayed()
-        composeTestRule.onNodeWithText("Water").isDisplayed()
+        composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Name").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Event type").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Course").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("Description").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("Water").assertIsDisplayed()
         composeTestRule.onNodeWithTag("feel_text").assertTextContains("None selected")
         composeTestRule.onNodeWithTag("effort_text").assertTextContains("0 - None selected")
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
@@ -111,13 +108,12 @@ class EditScreenTest {
                 courses = courses
             ))
         }
-        composeTestRule.onNodeWithText("Activity").isDisplayed()
-        composeTestRule.onNodeWithText("Profile").isDisplayed()
-        composeTestRule.onNodeWithText("Name").isDisplayed()
-        composeTestRule.onNodeWithText("Event type").isDisplayed()
-        composeTestRule.onNodeWithText("Course").isNotDisplayed()
-        composeTestRule.onNodeWithText("Description").isNotDisplayed()
-        composeTestRule.onNodeWithText("Water").isDisplayed()
+        composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Name").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Event type").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Course").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("Description").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("Water").assertIsDisplayed()
         composeTestRule.onNodeWithTag("feel_text").assertTextContains("None selected")
         composeTestRule.onNodeWithTag("effort_text").assertTextContains("0 - None selected")
         composeTestRule.onNodeWithTag("training_effect_checkbox").assertIsNotDisplayed()
@@ -150,7 +146,7 @@ class EditScreenTest {
         composeTestRule.onNodeWithText("Name").assertTextContains("New name")
         composeTestRule.onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
         composeTestRule.onNodeWithText("Course").assertTextContains(courses[0].name)
-        composeTestRule.onNodeWithText("Description").isNotDisplayed()
+        composeTestRule.onNodeWithText("Description").assertIsNotDisplayed()
         composeTestRule.onNodeWithText("Water").assertTextContains("10")
         composeTestRule.onNodeWithTag("feel_text").assertTextContains("Normal")
         composeTestRule.onNodeWithTag("effort_text").assertTextContains("8 - Very Hard")
@@ -208,7 +204,7 @@ class EditScreenTest {
                 process = ProcessState.Processing,
             ))
         }
-        composeTestRule.onNodeWithTag("loading").isDisplayed()
+        composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
@@ -218,8 +214,8 @@ class EditScreenTest {
                 process = ProcessState.Success("Activity updated"),
             ))
         }
-        composeTestRule.onNodeWithTag("status_info_text").isDisplayed()
-        composeTestRule.onNodeWithText("Activity updated").isDisplayed()
+        composeTestRule.onNodeWithTag("status_info_text").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Activity updated").assertIsDisplayed()
     }
 
     @Test
@@ -229,7 +225,7 @@ class EditScreenTest {
                 process = ProcessState.Failure("Couldn't update activity"),
             ))
         }
-        composeTestRule.onNodeWithTag("status_info_text").isDisplayed()
-        composeTestRule.onNodeWithText("Couldn't update activity").isDisplayed()
+        composeTestRule.onNodeWithTag("status_info_text").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Couldn't update activity").assertIsDisplayed()
     }
 }
