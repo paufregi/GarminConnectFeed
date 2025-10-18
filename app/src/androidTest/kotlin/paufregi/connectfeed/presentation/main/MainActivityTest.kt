@@ -3,14 +3,16 @@ package paufregi.connectfeed.presentation.main
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.isDisplayed
-import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
 import androidx.datastore.preferences.core.edit
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -151,7 +153,7 @@ class MainActivityTest {
         composeTestRule.waitUntil(conditionDescription = "strava_dialog") { composeTestRule.onNodeWithTag("strava_dialog").isDisplayed() }
         composeTestRule.onNodeWithText("Confirm").performClick()
         composeTestRule.waitUntil(conditionDescription = "settings_screen") { composeTestRule.onNodeWithTag("settings_screen").isDisplayed() }
-        composeTestRule.onNodeWithText("Connect").isDisplayed()
+        composeTestRule.onNodeWithText("Connect").assertIsDisplayed()
     }
 
     @Test
@@ -240,7 +242,7 @@ class MainActivityTest {
         composeTestRule.waitUntil(conditionDescription = "profiles_content") { composeTestRule.onNodeWithTag("profiles_content").isDisplayed() }
         composeTestRule.onNodeWithTag("delete_profile_10").performClick()
 
-        composeTestRule.onNodeWithText("Profile 1").isNotDisplayed()
+        composeTestRule.onNodeWithText("Profile 1").assertIsNotDisplayed()
     }
 
     @Test
@@ -284,25 +286,54 @@ class MainActivityTest {
 
     @Test
     fun `Edit activity`() = runTest {
-        //TODO: finish test
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
         ActivityScenario.launch(MainActivity::class.java)
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
+        composeTestRule.onNodeWithText("Edit").performClick()
+        composeTestRule.waitUntil(conditionDescription = "edit_screen") { composeTestRule.onNodeWithTag("edit_screen").isDisplayed() }
+        composeTestRule.onNodeWithText("Activity").performClick()
+        composeTestRule.onNodeWithText("Activity 1").performClick()
+        composeTestRule.onNodeWithText("Name").performTextInput("New Name")
+        composeTestRule.onNodeWithText("Event type").performClick()
+        composeTestRule.onNodeWithText("Race").performClick()
+        composeTestRule.onNodeWithText("Course").performClick()
+        composeTestRule.onNodeWithText("Course 2").performClick()
+        composeTestRule.onNodeWithText("Water").performTextInput("50")
+        composeTestRule.onNodeWithText("Save").performClick()
 
+        composeTestRule.waitUntil(conditionDescription = "Activity updated") { composeTestRule.onNodeWithText("Activity updated").isDisplayed() }
     }
 
     @Test
     fun `Edit - with Strava`() = runTest {
-        //TODO: finish test
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         stravaStore.saveToken(stravaAuthToken)
 
         ActivityScenario.launch(MainActivity::class.java)
+        composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
+        composeTestRule.onNodeWithText("Edit").performClick()
+        composeTestRule.waitUntil(conditionDescription = "edit_screen") { composeTestRule.onNodeWithTag("edit_screen").isDisplayed() }
+        composeTestRule.onNodeWithText("Activity").performClick()
+        composeTestRule.onNodeWithText("Activity 1").performClick()
+        composeTestRule.onNodeWithText("Strava activity").performClick()
+        composeTestRule.onNodeWithText("Bondcliff").performClick()
+        composeTestRule.onNodeWithText("Name").performTextInput("New Name")
+        composeTestRule.onNodeWithText("Event type").performClick()
+        composeTestRule.onNodeWithText("Race").performClick()
+        composeTestRule.onNodeWithText("Course").performClick()
+        composeTestRule.onNodeWithText("Course 2").performClick()
+        composeTestRule.onNodeWithText("Description").performTextInput("New Description")
+        composeTestRule.onNodeWithText("Water").performTextInput("50")
+        composeTestRule.onNodeWithTag("edit_screen").performTouchInput { swipeUp(centerY) }
+        composeTestRule.onNodeWithText("Training effect").performClick()
+        composeTestRule.onNodeWithText("Save").performClick()
 
+        composeTestRule.waitUntil(conditionDescription = "Activity updated") { composeTestRule.onNodeWithText("Activity updated").isDisplayed() }
     }
 
     @Test
