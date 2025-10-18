@@ -16,6 +16,6 @@ fun TextIcon(
     text: String,
     tint: Boolean? = null,
 ) {
-    Icon(icon, text.lowercase(), Modifier.size(24.dp).padding(end = 5.dp), if (tint == true) Color.Unspecified else Color.LightGray )
+    Icon(icon, text.lowercase(), Modifier.size(24.dp).padding(end = 5.dp), if (tint == true) Color.Unspecified else Color.LightGray)
     Text(text)
 }
