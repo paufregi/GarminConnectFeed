@@ -1,9 +1,9 @@
 package paufregi.connectfeed.presentation.settings
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.isDisplayed
-import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -33,12 +33,12 @@ class SettingsScreenTest {
         composeTestRule.setContent {
             SettingsContent(state = SettingsState(user = user, currentVersion = version, latestRelease = Release(version, "url")))
         }
-        composeTestRule.onNodeWithTag("profileImage").isDisplayed()
-        composeTestRule.onNodeWithText("Refresh").isDisplayed()
-        composeTestRule.onNodeWithText("Connect").isDisplayed()
-        composeTestRule.onNodeWithText("Sign out").isDisplayed()
-        composeTestRule.onNodeWithText("Version: v1.2.3").isDisplayed()
-        composeTestRule.onNodeWithText("Update").isNotDisplayed()
+        composeTestRule.onNodeWithTag("profileImage").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Refresh").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Connect").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sign out").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Version: v1.2.3").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Update").assertIsNotDisplayed()
     }
 
     @Test
@@ -46,12 +46,12 @@ class SettingsScreenTest {
         composeTestRule.setContent {
             SettingsContent(state = SettingsState(user = user, hasStrava = true, currentVersion = version, latestRelease = Release(version, "url")))
         }
-        composeTestRule.onNodeWithTag("profileImage").isDisplayed()
-        composeTestRule.onNodeWithText("Refresh").isDisplayed()
-        composeTestRule.onNodeWithText("Remove").isDisplayed()
-        composeTestRule.onNodeWithText("Sign out").isDisplayed()
-        composeTestRule.onNodeWithText("Version: v1.2.3").isDisplayed()
-        composeTestRule.onNodeWithText("Update").isNotDisplayed()
+        composeTestRule.onNodeWithTag("profileImage").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Refresh").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Remove").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sign out").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Version: v1.2.3").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Update").assertIsNotDisplayed()
     }
 
     @Test
@@ -59,12 +59,12 @@ class SettingsScreenTest {
         composeTestRule.setContent {
             SettingsContent(state = SettingsState(user = user, currentVersion = version, latestRelease = Release(Version(2,0,0), "url")))
         }
-        composeTestRule.onNodeWithTag("profileImage").isDisplayed()
-        composeTestRule.onNodeWithText("Refresh").isDisplayed()
-        composeTestRule.onNodeWithText("Remove").isDisplayed()
-        composeTestRule.onNodeWithText("Sign out").isDisplayed()
-        composeTestRule.onNodeWithText("Version: v1.2.3").isDisplayed()
-        composeTestRule.onNodeWithText("Update").isDisplayed()
+        composeTestRule.onNodeWithTag("profileImage").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Refresh").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Remove").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sign out").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Version: v1.2.3").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Update").assertIsDisplayed()
     }
 
     @Test
@@ -72,9 +72,9 @@ class SettingsScreenTest {
         composeTestRule.setContent {
             SettingsContent(state = SettingsState(updating = true, currentVersion = version, latestRelease = Release(Version(2,0,0), "url")))
         }
-        composeTestRule.onNodeWithText("Update").isDisplayed()
+        composeTestRule.onNodeWithText("Update").assertIsDisplayed()
         composeTestRule.onNodeWithText("Update").assertIsNotEnabled()
-        composeTestRule.onNodeWithTag("updating_bar").isDisplayed()
+        composeTestRule.onNodeWithTag("updating_bar").assertIsDisplayed()
     }
 
     @Test
@@ -82,7 +82,7 @@ class SettingsScreenTest {
         composeTestRule.setContent {
             SettingsContent(state = SettingsState(process = ProcessState.Processing))
         }
-        composeTestRule.onNodeWithTag("loading").isDisplayed()
+        composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
@@ -90,8 +90,8 @@ class SettingsScreenTest {
         composeTestRule.setContent {
             SettingsContent(state = SettingsState(process = ProcessState.Success("message")))
         }
-        composeTestRule.onNodeWithText("message").isDisplayed()
-        composeTestRule.onNodeWithText("Ok").isDisplayed()
+        composeTestRule.onNodeWithText("message").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Ok").assertIsDisplayed()
     }
 
     @Test
@@ -99,7 +99,7 @@ class SettingsScreenTest {
         composeTestRule.setContent {
             SettingsContent(state = SettingsState(process = ProcessState.Failure("error")))
         }
-        composeTestRule.onNodeWithText("error").isDisplayed()
-        composeTestRule.onNodeWithText("Ok").isDisplayed()
+        composeTestRule.onNodeWithText("error").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Ok").assertIsDisplayed()
     }
 }

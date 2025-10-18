@@ -1,12 +1,12 @@
 package paufregi.connectfeed.presentation.profile
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.isDisplayed
-import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -36,19 +36,19 @@ class ProfileScreenTest {
                 process = ProcessState.Idle,
             ))
         }
-        composeTestRule.onNodeWithText("Name").isDisplayed()
-        composeTestRule.onNodeWithText("Activity type").isDisplayed()
-        composeTestRule.onNodeWithText("Event type").isDisplayed()
-        composeTestRule.onNodeWithText("Water").isDisplayed()
-        composeTestRule.onNodeWithText("Rename activity").isDisplayed()
+        composeTestRule.onNodeWithText("Name").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Activity type").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Event type").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Water").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Rename activity").assertIsDisplayed()
         composeTestRule.onNodeWithTag("rename_checkbox").assertIsOn()
-        composeTestRule.onNodeWithText("Customizable water").isDisplayed()
+        composeTestRule.onNodeWithText("Customizable water").assertIsDisplayed()
         composeTestRule.onNodeWithTag("custom_water_checkbox").assertIsOff()
-        composeTestRule.onNodeWithText("Feel & Effort").isDisplayed()
+        composeTestRule.onNodeWithText("Feel & Effort").assertIsDisplayed()
         composeTestRule.onNodeWithTag("feel_and_effort_checkbox").assertIsOff()
-        composeTestRule.onNodeWithText("Training effect").isDisplayed()
+        composeTestRule.onNodeWithText("Training effect").assertIsDisplayed()
         composeTestRule.onNodeWithTag("training_effect_checkbox").assertIsOff()
-        composeTestRule.onNodeWithText("Cancel").isDisplayed()
+        composeTestRule.onNodeWithText("Cancel").assertIsDisplayed()
         composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
 
@@ -59,7 +59,7 @@ class ProfileScreenTest {
                 process = ProcessState.Processing
             ))
         }
-        composeTestRule.onNodeWithTag("loading").isDisplayed()
+        composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
@@ -89,8 +89,8 @@ class ProfileScreenTest {
         composeTestRule.onNodeWithTag("custom_water_checkbox").assertIsOn()
         composeTestRule.onNodeWithTag("feel_and_effort_checkbox").assertIsOn()
         composeTestRule.onNodeWithTag("training_effect_checkbox").assertIsOn()
-        composeTestRule.onNodeWithText("Cancel").isDisplayed()
-        composeTestRule.onNodeWithText("Save").isDisplayed()
+        composeTestRule.onNodeWithText("Cancel").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Save").assertIsDisplayed()
     }
 
     @Test
@@ -137,8 +137,8 @@ class ProfileScreenTest {
                 )
             ))
         }
-        composeTestRule.onNodeWithText("Course").isNotDisplayed()
-        composeTestRule.onNodeWithText("Save").isDisplayed()
+        composeTestRule.onNodeWithText("Course").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("Save").assertIsDisplayed()
     }
 
     @Test
@@ -153,7 +153,7 @@ class ProfileScreenTest {
                 )
             ))
         }
-        composeTestRule.onNodeWithText("Course").isNotDisplayed()
-        composeTestRule.onNodeWithText("Save").isDisplayed()
+        composeTestRule.onNodeWithText("Course").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("Save").assertIsDisplayed()
     }
 }

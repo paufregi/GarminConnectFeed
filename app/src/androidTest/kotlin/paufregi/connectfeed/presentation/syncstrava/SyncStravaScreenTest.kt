@@ -5,7 +5,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -67,8 +66,8 @@ class SyncStravaScreenTest {
                 stravaActivities = stravaActivities,
             ))
         }
-        composeTestRule.onNodeWithText("Activity").isDisplayed()
-        composeTestRule.onNodeWithText("Strava activity").isDisplayed()
+        composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Strava activity").assertIsDisplayed()
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
         composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
@@ -105,7 +104,7 @@ class SyncStravaScreenTest {
                 process = ProcessState.Processing,
             ))
         }
-        composeTestRule.onNodeWithTag("loading").isDisplayed()
+        composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
@@ -115,8 +114,8 @@ class SyncStravaScreenTest {
                 process = ProcessState.Success("Activity updated"),
             ))
         }
-        composeTestRule.onNodeWithTag("status_info_text").isDisplayed()
-        composeTestRule.onNodeWithText("Activity updated").isDisplayed()
+        composeTestRule.onNodeWithTag("status_info_text").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Activity updated").assertIsDisplayed()
     }
 
     @Test
@@ -126,7 +125,7 @@ class SyncStravaScreenTest {
                 process = ProcessState.Failure("Couldn't update activity"),
             ))
         }
-        composeTestRule.onNodeWithTag("status_info_text").isDisplayed()
-        composeTestRule.onNodeWithText("Couldn't update activity").isDisplayed()
+        composeTestRule.onNodeWithTag("status_info_text").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Couldn't update activity").assertIsDisplayed()
     }
 }

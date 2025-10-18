@@ -2,7 +2,6 @@ package paufregi.connectfeed.presentation.strava
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -34,7 +33,7 @@ class StravaScreenTest {
         composeTestRule.setContent {
             StravaScreen(state = StravaState(ProcessState.Success("Strava linked")))
         }
-        composeTestRule.onNodeWithText("Strava linked").isDisplayed()
+        composeTestRule.onNodeWithText("Strava linked").assertIsDisplayed()
     }
 
     @Test
@@ -42,6 +41,6 @@ class StravaScreenTest {
         composeTestRule.setContent {
             StravaScreen(state = StravaState(ProcessState.Failure("Linked failed")))
         }
-        composeTestRule.onNodeWithText("Link failed").isDisplayed()
+        composeTestRule.onNodeWithText("Link failed").assertIsDisplayed()
     }
 }
