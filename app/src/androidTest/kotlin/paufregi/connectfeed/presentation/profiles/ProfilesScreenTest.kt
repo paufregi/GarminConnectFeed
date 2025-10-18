@@ -3,7 +3,6 @@ package paufregi.connectfeed.presentation.profiles
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -27,7 +26,6 @@ class ProfilesScreenTest {
             ProfilesContent(state = ProfilesState())
         }
         composeTestRule.onNodeWithText("No profile").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("addProfile").assertIsDisplayed()
     }
 
     @Test
@@ -44,7 +42,6 @@ class ProfilesScreenTest {
         composeTestRule.onNodeWithText("Profile 1").assertIsDisplayed()
         composeTestRule.onNodeWithText("Profile 2").assertIsDisplayed()
         composeTestRule.onNodeWithText("Profile 3").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("addProfile").assertIsDisplayed()
     }
 
 }

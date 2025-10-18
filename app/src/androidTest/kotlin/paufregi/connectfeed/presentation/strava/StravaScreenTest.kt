@@ -39,7 +39,7 @@ class StravaScreenTest {
     @Test
     fun `Sign in - failure`() {
         composeTestRule.setContent {
-            StravaScreen(state = StravaState(ProcessState.Failure("Linked failed")))
+            StravaScreen(state = StravaState(ProcessState.Failure("Link failed")))
         }
         composeTestRule.onNodeWithText("Link failed").assertIsDisplayed()
     }

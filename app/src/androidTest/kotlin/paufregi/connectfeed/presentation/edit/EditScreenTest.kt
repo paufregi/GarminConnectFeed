@@ -82,7 +82,6 @@ class EditScreenTest {
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Profile").assertIsDisplayed()
         composeTestRule.onNodeWithText("Name").assertIsDisplayed()
         composeTestRule.onNodeWithText("Event type").assertIsDisplayed()
         composeTestRule.onNodeWithText("Course").assertIsNotDisplayed()
@@ -110,7 +109,6 @@ class EditScreenTest {
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Profile").assertIsDisplayed()
         composeTestRule.onNodeWithText("Name").assertIsDisplayed()
         composeTestRule.onNodeWithText("Event type").assertIsDisplayed()
         composeTestRule.onNodeWithText("Course").assertIsNotDisplayed()

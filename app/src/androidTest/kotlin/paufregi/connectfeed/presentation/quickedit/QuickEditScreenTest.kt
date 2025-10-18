@@ -95,7 +95,7 @@ class QuickEditScreenTest {
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Strava").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Strava activity").assertIsDisplayed()
         composeTestRule.onNodeWithText("Profile").assertIsDisplayed()
         composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
         composeTestRule.onNodeWithText("Edit").assertIsDisplayed()

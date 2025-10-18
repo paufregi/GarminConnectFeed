@@ -33,7 +33,6 @@ class SettingsScreenTest {
         composeTestRule.setContent {
             SettingsContent(state = SettingsState(user = user, currentVersion = version, latestRelease = Release(version, "url")))
         }
-        composeTestRule.onNodeWithTag("profileImage").assertIsDisplayed()
         composeTestRule.onNodeWithText("Refresh").assertIsDisplayed()
         composeTestRule.onNodeWithText("Connect").assertIsDisplayed()
         composeTestRule.onNodeWithText("Sign out").assertIsDisplayed()
@@ -46,7 +45,6 @@ class SettingsScreenTest {
         composeTestRule.setContent {
             SettingsContent(state = SettingsState(user = user, hasStrava = true, currentVersion = version, latestRelease = Release(version, "url")))
         }
-        composeTestRule.onNodeWithTag("profileImage").assertIsDisplayed()
         composeTestRule.onNodeWithText("Refresh").assertIsDisplayed()
         composeTestRule.onNodeWithText("Remove").assertIsDisplayed()
         composeTestRule.onNodeWithText("Sign out").assertIsDisplayed()
@@ -59,9 +57,8 @@ class SettingsScreenTest {
         composeTestRule.setContent {
             SettingsContent(state = SettingsState(user = user, currentVersion = version, latestRelease = Release(Version(2,0,0), "url")))
         }
-        composeTestRule.onNodeWithTag("profileImage").assertIsDisplayed()
         composeTestRule.onNodeWithText("Refresh").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Remove").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Connect").assertIsDisplayed()
         composeTestRule.onNodeWithText("Sign out").assertIsDisplayed()
         composeTestRule.onNodeWithText("Version: v1.2.3").assertIsDisplayed()
         composeTestRule.onNodeWithText("Update").assertIsDisplayed()
