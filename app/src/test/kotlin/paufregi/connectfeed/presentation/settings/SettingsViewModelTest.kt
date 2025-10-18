@@ -53,7 +53,7 @@ class SettingsViewModelTest {
     private lateinit var viewModel: SettingsViewModel
 
     fun createViewModel() =
-        SettingsViewModel(getUser, isStravaLoggedIn, getLatestRelease, refreshUser, signOut, disconnectStrava, currentVersion, downloader,stravaUri)
+        SettingsViewModel(getUser, isStravaLoggedIn, getLatestRelease, refreshUser, signOut, disconnectStrava, currentVersion, downloader, stravaUri)
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
