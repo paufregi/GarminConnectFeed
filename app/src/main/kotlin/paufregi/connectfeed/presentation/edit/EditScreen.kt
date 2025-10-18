@@ -65,7 +65,7 @@ internal fun EditScreen(nav: NavHostController = rememberNavController()) {
 @Composable
 @ExperimentalMaterial3Api
 internal fun EditContent(
-    @PreviewParameter(EditStatePreview ::class) state: EditState,
+    @PreviewParameter(EditStatePreview::class) state: EditState,
     onAction: (EditAction) -> Unit = {},
     nav: NavHostController = rememberNavController()
 ) {
