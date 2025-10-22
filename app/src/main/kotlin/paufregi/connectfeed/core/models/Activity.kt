@@ -7,6 +7,7 @@ data class Activity(
     val id: Long,
     val name: String,
     val type: ActivityType,
+    val category:
     val eventType: EventType? = null,
     val distance: Double? = null,
     val trainingEffect: String? = null,
