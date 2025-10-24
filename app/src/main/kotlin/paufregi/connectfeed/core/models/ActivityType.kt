@@ -11,14 +11,18 @@ sealed class ActivityType(val name: String, val order: Int, val allowCourseInPro
     data object Swimming : ActivityType("Swimming", 8, false)
     data object OpenWaterSwimming : ActivityType("Open Water Swimming", 9, false)
     data object Strength : ActivityType("Strength", 10, false)
-    data object Walking : ActivityType("Walking", 11, true)
-    data object Hiking : ActivityType("Hiking", 12, true)
-    data object Rugby : ActivityType("Rugby", 13, false)
-    data object Soccer : ActivityType("Soccer", 14, false)
-    data object JumpRope : ActivityType("Jump Rope", 15, false)
-    data object Breathwork : ActivityType("Breathwork", 16, false)
-    data object Meditation : ActivityType("Meditation", 17, false)
-    data object Yoga : ActivityType("Yoga", 18, false)
+    data object Fitness : ActivityType("Fitness", 11, false)
+    data object Walking : ActivityType("Walking", 12, true)
+    data object Hiking : ActivityType("Hiking", 13, true)
+    data object Rugby : ActivityType("Rugby", 14, false)
+    data object Soccer : ActivityType("Soccer", 15, false)
+    data object JumpRope : ActivityType("Jump Rope", 16, false)
+    data object Breathwork : ActivityType("Breathwork", 17, false)
+    data object Meditation : ActivityType("Meditation", 18, false)
+    data object Yoga : ActivityType("Yoga", 19, false)
     data object Other : ActivityType("Other", 99, false)
     data object Unknown : ActivityType("Unknown", 100, false)
+
+    fun match(activityType: ActivityType?): Boolean =
+        this == Any || activityType == null || this == activityType
 }
