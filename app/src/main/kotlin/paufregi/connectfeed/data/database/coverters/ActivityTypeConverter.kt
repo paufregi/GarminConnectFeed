@@ -16,6 +16,7 @@ class ActivityTypeConverter {
         ActivityType.Swimming.name -> ActivityType.Swimming
         ActivityType.OpenWaterSwimming.name -> ActivityType.OpenWaterSwimming
         ActivityType.Strength.name -> ActivityType.Strength
+        ActivityType.Fitness.name -> ActivityType.Fitness
         ActivityType.Walking.name -> ActivityType.Walking
         ActivityType.Hiking.name -> ActivityType.Hiking
         ActivityType.Rugby.name -> ActivityType.Rugby
