@@ -115,8 +115,8 @@ internal fun QuickEditContent(
             modifier = Modifier.fillMaxWidth(),
             items = state.profiles
                 .filter {
-                    (state.activity?.type == null || it.activityType == state.activity.type) &&
-                            (state.stravaActivity?.type == null || it.activityType == state.stravaActivity.type)
+                    (it.activityType.match(state.activity?.type) &&
+                        it.activityType.match(state.stravaActivity?.type))
                 }
                 .map {
                     it.toDropdownItem { onAction(QuickEditAction.SetProfile(it)) }
