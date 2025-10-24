@@ -33,7 +33,7 @@ class SportTypeConverterTest {
     @Test
     fun `To Core activity - crossfit`() {
         val activityType = SportTypeConverter.toActivityType("Crossfit")
-        assertThat(activityType).isEqualTo(ActivityType.Unknown)
+        assertThat(activityType).isEqualTo(ActivityType.Fitness)
     }
 
     @Test
@@ -75,7 +75,7 @@ class SportTypeConverterTest {
     @Test
     fun `To Core activity - high intensity interval training`() {
         val activityType = SportTypeConverter.toActivityType("HighIntensityIntervalTraining")
-        assertThat(activityType).isEqualTo(ActivityType.Unknown)
+        assertThat(activityType).isEqualTo(ActivityType.Fitness)
     }
 
     @Test
@@ -129,7 +129,7 @@ class SportTypeConverterTest {
     @Test
     fun `To Core activity - pilates`() {
         val activityType = SportTypeConverter.toActivityType("Pilates")
-        assertThat(activityType).isEqualTo(ActivityType.Unknown)
+        assertThat(activityType).isEqualTo(ActivityType.Other)
     }
 
     @Test
@@ -297,7 +297,7 @@ class SportTypeConverterTest {
     @Test
     fun `To Core activity - workout`() {
         val activityType = SportTypeConverter.toActivityType("Workout")
-        assertThat(activityType).isEqualTo(ActivityType.Unknown)
+        assertThat(activityType).isEqualTo(ActivityType.Fitness)
     }
 
     @Test
