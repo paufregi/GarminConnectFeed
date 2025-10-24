@@ -10,7 +10,8 @@ class GetActivityTypes @Inject constructor() {
             ActivityType.Running,
             ActivityType.Cycling,
             ActivityType.Swimming,
-            ActivityType.Strength
+            ActivityType.Strength,
+            ActivityType.Fitness,
         ).sortedBy { it.order }
     }
 }
