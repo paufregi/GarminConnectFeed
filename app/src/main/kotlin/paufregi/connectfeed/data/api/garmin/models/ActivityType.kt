@@ -18,6 +18,7 @@ data class ActivityType(
         4L -> CoreActivityType.Other
         6L -> CoreActivityType.TrailRunning
         9L -> CoreActivityType.Walking
+        11L, 180L -> CoreActivityType.Fitness // cardio, hiit
         13L -> CoreActivityType.Strength
         18L -> CoreActivityType.TreadmillRunning
         25L -> CoreActivityType.IndoorCycling

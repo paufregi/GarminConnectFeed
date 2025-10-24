@@ -31,7 +31,8 @@ class GetActivityTypesTest {
             ActivityType.Running,
             ActivityType.Cycling,
             ActivityType.Swimming,
-            ActivityType.Strength
+            ActivityType.Strength,
+            ActivityType.Fitness,
         )
     }
 }

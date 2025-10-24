@@ -8,14 +8,14 @@ object SportTypeConverter {
         "BackcountrySki" -> ActivityType.Unknown
         "Badminton" -> ActivityType.Unknown
         "Canoeing" -> ActivityType.Unknown
-        "Crossfit" -> ActivityType.Unknown
+        "Crossfit" -> ActivityType.Fitness
         "EBikeRide" -> ActivityType.EBiking
         "Elliptical" -> ActivityType.Unknown
         "EMountainBikeRide" -> ActivityType.EBiking
         "Golf" -> ActivityType.Unknown
         "GravelRide" -> ActivityType.Cycling
         "Handcycle" -> ActivityType.Cycling
-        "HighIntensityIntervalTraining" -> ActivityType.Unknown
+        "HighIntensityIntervalTraining" -> ActivityType.Fitness
         "Hike" -> ActivityType.Hiking
         "IceSkate" -> ActivityType.Unknown
         "InlineSkate" -> ActivityType.Unknown
@@ -24,7 +24,7 @@ object SportTypeConverter {
         "MountainBikeRide" -> ActivityType.Cycling
         "NordicSki" -> ActivityType.Unknown
         "Pickleball" -> ActivityType.Unknown
-        "Pilates" -> ActivityType.Unknown
+        "Pilates" -> ActivityType.Other
         "Racquetball" -> ActivityType.Unknown
         "Ride" -> ActivityType.Cycling
         "RockClimbing" -> ActivityType.Unknown
@@ -52,7 +52,7 @@ object SportTypeConverter {
         "WeightTraining" -> ActivityType.Strength
         "Wheelchair" -> ActivityType.Unknown
         "Windsurf" -> ActivityType.Unknown
-        "Workout" -> ActivityType.Unknown
+        "Workout" -> ActivityType.Fitness
         "Yoga" -> ActivityType.Yoga
         else -> ActivityType.Unknown
     }

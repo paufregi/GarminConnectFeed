@@ -155,6 +155,18 @@ class ExtensionTest {
     }
 
     @Test
+    fun `Activity - getOrNull - get any`() {
+        val activity1 = Activity(
+            id = 1,
+            name = "activity1",
+            type = ActivityType.Running,
+        )
+
+        val result = activity1.getOrNull(ActivityType.Any)
+        assertThat(result).isEqualTo(activity1)
+    }
+
+    @Test
     fun `Activity - getOrNull - no match`() {
         val activity1 = Activity(
             id = 1,
@@ -278,6 +290,23 @@ class ExtensionTest {
         val profile = Profile(
             name = "profile",
             activityType = ActivityType.Running,
+        )
+
+        val activity = Activity(
+            id = 1,
+            name = "activity",
+            type = ActivityType.Running,
+        )
+
+        val result = profile.getOrNull(activity)
+        assertThat(result).isEqualTo(profile)
+    }
+
+    @Test
+    fun `Profile - getOrNull - any`() {
+        val profile = Profile(
+            name = "profile",
+            activityType = ActivityType.Any,
         )
 
         val activity = Activity(

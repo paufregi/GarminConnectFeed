@@ -13,7 +13,7 @@ fun Activity?.getOrMatch(other: Activity, pool: List<Activity>): Activity? =
     if(this?.type != other.type) pool.find { it.match(other) } else this
 
 fun Activity?.getOrNull(type: ActivityType?): Activity? =
-    if(this?.type != type) null else this
+    if(this?.type != type && type != ActivityType.Any) null else this
 
 fun Activity?.getOrNull(profile: Profile?): Activity? =
     this.getOrNull(profile?.activityType)
@@ -22,7 +22,8 @@ fun Activity?.getOrNull(course: Course?): Activity? =
     this.getOrNull(course?.type)
 
 fun Profile?.getOrNull(activity: Activity): Profile? =
-    if(this?.activityType != activity.type) null else this
+    if (this?.activityType?.match(activity.type) == true) this else null
+
 
 fun Course?.getOrNull(type: ActivityType): Course? =
     if(!type.allowCourseInProfile || this?.type != type) null else this
