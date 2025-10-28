@@ -1,6 +1,7 @@
 package paufregi.connectfeed.presentation.profile
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import paufregi.connectfeed.core.models.ActivityCategory
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
@@ -14,7 +15,7 @@ class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
             process = ProcessState.Idle,
             profile = Profile(
                 name = "Profile running",
-                activityType = ActivityType.Running,
+                category = ActivityCategory.Running,
                 eventType = EventType.Training,
                 course = Course(1, "Course 1", 10.0, ActivityType.Running),
                 water = 200,
@@ -28,7 +29,7 @@ class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
             process = ProcessState.Idle,
             profile = Profile(
                 name = "Profile any",
-                activityType = ActivityType.Any,
+                category = ActivityCategory.Any,
                 eventType = null,
                 course = null,
                 water = 200,
@@ -39,13 +40,12 @@ class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
             process = ProcessState.Idle,
             profile = Profile(
                 name = "Profile strength",
-                activityType = ActivityType.Strength,
+                category = ActivityCategory.Strength,
                 eventType = null,
                 course = null,
                 water = 200,
                 rename = false,
             ),
-        ),
-
+        )
         )
 }

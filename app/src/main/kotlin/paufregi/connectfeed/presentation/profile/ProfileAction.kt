@@ -4,7 +4,6 @@ import paufregi.connectfeed.core.models.ActivityCategory
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 
-
 sealed interface ProfileAction {
     data class SetName(val name: String) : ProfileAction
     data class SetCategory(val category: ActivityCategory) : ProfileAction
