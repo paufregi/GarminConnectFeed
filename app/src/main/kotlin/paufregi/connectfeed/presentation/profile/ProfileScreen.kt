@@ -25,7 +25,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.ActivityCategory
+import paufregi.connectfeed.core.utils.compatible
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Dropdown
@@ -72,11 +73,11 @@ internal fun ProfileContent(
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
         Dropdown(
-            label = { Text("Activity type") },
-            selected = state.profile.activityType.toDropdownItem { },
+            label = { Text("Category") },
+            selected = state.profile.category.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
-            items = state.activityTypes.map {
-                it.toDropdownItem { onAction(ProfileAction.SetActivityType(it)) }
+            items = state.categories.map {
+                it.toDropdownItem { onAction(ProfileAction.SetCategory(it)) }
             }
         )
         Dropdown(
@@ -88,16 +89,16 @@ internal fun ProfileContent(
                     onAction(ProfileAction.SetEventType(it))
                 }
             },
-            isError = state.profile.activityType != ActivityType.Any && state.profile.eventType == null
+            isError = state.profile.category != ActivityCategory.Any && state.profile.eventType == null
 
         )
-        if (state.profile.activityType.allowCourseInProfile == true) {
+        if (state.profile.category.allowCourseInProfile) {
             Dropdown(
                 label = { Text("Course") },
                 selected = state.profile.course?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
                 items = state.courses
-                    .filter { it.type == state.profile.activityType || state.profile.activityType == ActivityType.Any }
+                    .filter { it.compatible(state.profile) }
                     .map {
                         it.toDropdownItem { onAction(ProfileAction.SetCourse(it)) }
                     }
@@ -186,7 +187,7 @@ internal fun ProfileContent(
             Button(
                 text = "Save",
                 enabled = state.profile.name.isNotBlank() &&
-                        (state.profile.activityType == ActivityType.Any || state.profile.eventType != null),
+                        (state.profile.category == ActivityCategory.Any || state.profile.eventType != null),
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()

@@ -17,7 +17,7 @@ import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
 import paufregi.connectfeed.core.usecases.SaveProfile
-import paufregi.connectfeed.core.utils.getOrNull
+import paufregi.connectfeed.core.utils.takeIfCompatible
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
@@ -45,7 +45,7 @@ class ProfileViewModel @Inject constructor(
             it.copy(
                 process = ProcessState.Processing,
                 profile = getProfile(profileId) ?: Profile(),
-                activityTypes = getActivityCategories(),
+                categories = getActivityCategories(),
                 eventTypes = getEventTypes()
             )
         }
@@ -57,16 +57,16 @@ class ProfileViewModel @Inject constructor(
 
     fun onAction(action: ProfileAction) = when (action) {
         is ProfileAction.SetName -> _state.update { it.copy(profile = it.profile.copy(name = action.name)) }
-        is ProfileAction.SetActivityType -> _state.update { it.copy(
+        is ProfileAction.SetCategory -> _state.update { it.copy(
             profile = it.profile.copy(
-                activityType = action.activityType,
-                course = it.profile.course.getOrNull(action.activityType)
+                category = action.category,
+                course = it.profile.course.takeIfCompatible(action.category)
             )
         ) }
         is ProfileAction.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = action.eventType)) }
         is ProfileAction.SetCourse -> _state.update { it.copy(
             profile = it.profile.copy(
-                course = action.course.getOrNull(it.profile.activityType),
+                course = action.course.takeIfCompatible(it.profile.category),
             )
         ) }
         is ProfileAction.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = action.water)) }

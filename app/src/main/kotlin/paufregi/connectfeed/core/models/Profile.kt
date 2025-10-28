@@ -14,4 +14,7 @@ data class Profile(
 ) {
     fun compatibleWith(activity: Activity): Boolean =
         this.category == ActivityCategory.Any || this.category.compatibleWith(activity)
+
+    fun compatibleWith(course: Course): Boolean =
+        this.category == ActivityCategory.Any || this.category.compatibleWith(course.type)
 }
