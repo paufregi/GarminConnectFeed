@@ -1,6 +1,7 @@
 package paufregi.connectfeed.core.utils
 
 import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.models.ActivityCategory
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.Profile
@@ -24,12 +25,8 @@ fun Activity?.getOrNull(course: Course?): Activity? =
 fun Profile?.getOrNull(activity: Activity): Profile? =
     if (this?.activityType?.match(activity.type) == true) this else null
 
-
-fun Course?.getOrNull(type: ActivityType): Course? =
-    if(!type.allowCourseInProfile || this?.type != type) null else this
-
-fun Course?.getOrNull(activity: Activity): Course? =
-    this.getOrNull(activity.type)
+fun Course?.takeIfCompatible(category: ActivityCategory): Course? =
+    this.takeIf { it != null && category.allowCourseInProfile && category.compatibleWith(it.type) }
 
 fun Float?.getOrNull(): Float? =
     if(this == 0f) null else this
