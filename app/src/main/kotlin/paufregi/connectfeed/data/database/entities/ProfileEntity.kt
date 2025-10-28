@@ -3,7 +3,7 @@ package paufregi.connectfeed.data.database.entities
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.ActivityCategory
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 
@@ -14,7 +14,7 @@ data class ProfileEntity(
 
     val userId: Long,
     val name: String,
-    val activityType: ActivityType = ActivityType.Any,
+    val category: ActivityCategory = ActivityCategory.Any,
     val eventType: EventType? = null,
     @Embedded(prefix = "course_")
     val course: Course? = null,

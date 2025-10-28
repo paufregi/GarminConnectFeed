@@ -2,6 +2,7 @@ package paufregi.connectfeed.data.database.coverters
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import paufregi.connectfeed.core.models.ActivityCategory
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
@@ -14,7 +15,7 @@ class ProfileConverterTest {
     val profile = Profile(
         id = 1,
         name = "profile",
-        activityType = ActivityType.Cycling,
+        category = ActivityCategory.Cycling,
         eventType = EventType.Training,
         course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
         water = 550,
@@ -28,7 +29,7 @@ class ProfileConverterTest {
         id = 1,
         userId = user.id,
         name = "profile",
-        activityType = ActivityType.Cycling,
+        category = ActivityCategory.Cycling,
         eventType = EventType.Training,
         course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
         water = 550,
