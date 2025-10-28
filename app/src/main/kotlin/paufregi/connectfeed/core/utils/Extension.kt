@@ -28,6 +28,9 @@ fun Profile?.getOrNull(activity: Activity): Profile? =
 fun Course?.takeIfCompatible(category: ActivityCategory): Course? =
     this.takeIf { it != null && category.allowCourseInProfile && category.compatibleWith(it.type) }
 
+fun Course.compatible(profile: Profile?): Boolean =
+    profile != null && profile.compatibleWith(this)
+
 fun Float?.getOrNull(): Float? =
     if(this == 0f) null else this
 
