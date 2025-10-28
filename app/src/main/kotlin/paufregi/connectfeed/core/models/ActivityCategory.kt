@@ -69,7 +69,10 @@ sealed class ActivityCategory(val name: String, val order: Int, val allowCourseI
     ))
 
     fun compatibleWith(activity: Activity): Boolean =
-        this == Any || this.types.contains(activity.type)
+        compatibleWith(activity.type)
+
+    fun compatibleWith(type: ActivityType): Boolean =
+        this == Any || this.types.contains(type)
 
     companion object {
         fun findCategory(activity: Activity): ActivityCategory =
