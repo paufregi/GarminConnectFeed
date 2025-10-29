@@ -13,23 +13,24 @@ import java.util.concurrent.Semaphore
 fun Activity?.getOrMatch(other: Activity, pool: List<Activity>): Activity? =
     if(this?.type != other.type) pool.find { it.match(other) } else this
 
-fun Activity?.getOrNull(type: ActivityType?): Activity? =
+fun Activity?.takeIfCompatible(type: ActivityCategory?): Activity? =
     if(this?.type != type && type != ActivityType.Any) null else this
 
-fun Activity?.getOrNull(profile: Profile?): Activity? =
+fun Activity?.takeIfCompatible(profile: Profile?): Activity? =
     this.getOrNull(profile?.activityType)
 
-fun Activity?.getOrNull(course: Course?): Activity? =
+fun Activity?.takeIfCompatible(course: Course?): Activity? =
     this.getOrNull(course?.type)
 
 fun Profile?.getOrNull(activity: Activity): Profile? =
     if (this?.activityType?.match(activity.type) == true) this else null
 
+fun Course?.takeIfCompatible(activity: Activity): Course? =
+    this.takeIf { it != null && ActivityCategory.findCategory(activity).compatibleWith(it.type) }
+
 fun Course?.takeIfCompatible(category: ActivityCategory): Course? =
     this.takeIf { it != null && category.allowCourseInProfile && category.compatibleWith(it.type) }
 
-fun Course.compatible(profile: Profile?): Boolean =
-    profile != null && profile.compatibleWith(this)
 
 fun Float?.getOrNull(): Float? =
     if(this == 0f) null else this

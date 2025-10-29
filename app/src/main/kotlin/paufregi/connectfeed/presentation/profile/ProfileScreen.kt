@@ -26,7 +26,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.core.models.ActivityCategory
-import paufregi.connectfeed.core.utils.compatible
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Dropdown
@@ -98,7 +97,7 @@ internal fun ProfileContent(
                 selected = state.profile.course?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
                 items = state.courses
-                    .filter { it.compatible(state.profile) }
+                    .filter { it.compatibleWith(state.profile) }
                     .map {
                         it.toDropdownItem { onAction(ProfileAction.SetCourse(it)) }
                     }

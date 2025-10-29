@@ -31,6 +31,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import paufregi.connectfeed.core.models.ActivityCategory
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.HomeNavigation
 import paufregi.connectfeed.presentation.ui.components.Button
@@ -118,13 +119,13 @@ internal fun EditContent(
             items = state.eventTypes
                 .map { it.toDropdownItem { onAction(EditAction.SetEventType(it)) } },
         )
-        if (state.activity?.type?.allowCourseInProfile == true) {
+        if (state.activity != null && ActivityCategory.findCategory(state.activity).allowCourseInProfile) {
             Dropdown(
                 label = { Text("Course") },
                 selected = state.course?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
                 items = state.courses
-                    .filter { it.type == state.activity.type || state.activity.type == ActivityType.Any }
+                    .filter { it.compatibleWith() == state.activity.type || state.activity.type == ActivityType.Any }
                     .map { it.toDropdownItem { onAction(EditAction.SetCourse(it)) } }
             )
         }

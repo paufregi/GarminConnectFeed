@@ -5,4 +5,10 @@ data class Course(
     val name: String,
     val distance: Double,
     val type: ActivityType
-)
+) {
+    fun compatibleWith(profile: Profile?): Boolean =
+        profile != null && profile.compatibleWith(this)
+
+    fun compatibleWith(activity: Activity?): Boolean =
+        activity != null && this.type == activity.type
+}
