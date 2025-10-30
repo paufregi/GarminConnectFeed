@@ -18,19 +18,17 @@ data class ActivityType(
         4L -> CoreActivityType.Other
         6L -> CoreActivityType.TrailRunning
         9L -> CoreActivityType.Walking
-        11L, 180L -> CoreActivityType.Fitness // cardio, hiit
-        13L -> CoreActivityType.Strength
+        11L -> CoreActivityType.Cardio
+        180L -> CoreActivityType.HIIT
+        13L -> CoreActivityType.StrengthTraining
         18L -> CoreActivityType.TreadmillRunning
-        25L -> CoreActivityType.IndoorCycling
-        26L, 27L -> CoreActivityType.Swimming
+        26L -> CoreActivityType.Swimming
+        27L -> CoreActivityType.PoolSwimming
         28L -> CoreActivityType.OpenWaterSwimming
         176L -> CoreActivityType.EBiking
         163L -> CoreActivityType.Yoga
         164L -> CoreActivityType.Breathwork
-        202L -> CoreActivityType.Meditation
-        208L -> CoreActivityType.Rugby
-        215L -> CoreActivityType.Soccer
         254L -> CoreActivityType.JumpRope
-        else -> CoreActivityType.Unknown
+        else -> CoreActivityType.Other
     }
 }

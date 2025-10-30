@@ -17,9 +17,9 @@ import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
-import paufregi.connectfeed.core.utils.getOrMatch
 import paufregi.connectfeed.core.utils.getOrNull
 import paufregi.connectfeed.core.utils.runCatchingResult
+import paufregi.connectfeed.core.utils.takeOrMatch
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
@@ -63,25 +63,27 @@ class QuickEditViewModel @Inject constructor(
 
     fun onAction(action: QuickEditAction) = when (action) {
         is QuickEditAction.SetActivity -> _state.update {
+            val profile = it.profile?.takeIf { p -> p.compatibleWith(action.activity) }
             it.copy(
                 activity = action.activity,
-                profile = it.profile.getOrNull(action.activity),
-                stravaActivity = it.stravaActivity.getOrMatch(action.activity, it.stravaActivities),
-                water = if (it.profile.getOrNull(action.activity) == null) null else it.water,
+                profile = profile,
+                stravaActivity = it.stravaActivity.takeOrMatch(action.activity, it.stravaActivities),
+                water = it.water.takeIf { profile != null },
             )
         }
         is QuickEditAction.SetStravaActivity -> _state.update {
+            val profile = it.profile?.takeIf { p -> p.compatibleWith(action.activity) }
             it.copy(
                 stravaActivity = action.activity,
-                profile = it.profile.getOrNull(action.activity),
-                activity = it.activity.getOrMatch(action.activity, it.activities),
-                water = if (it.profile.getOrNull(action.activity) == null) null else it.water,
+                profile = profile,
+                activity = it.activity.takeOrMatch(action.activity, it.activities),
+                water = it.water.takeIf { profile != null },
             )
         }
         is QuickEditAction.SetProfile -> _state.update { it.copy(
             profile = action.profile,
-            activity = it.activity.getOrNull(action.profile),
-            stravaActivity = it.stravaActivity.getOrNull(action.profile),
+            activity = it.activity.takeIf { a -> action.profile.compatibleWith(a) },
+            stravaActivity = it.stravaActivity.takeIf { a -> action.profile.compatibleWith(a) },
             water = action.profile.water,
         ) }
         is QuickEditAction.SetDescription -> _state.update { it.copy(description = action.description) }

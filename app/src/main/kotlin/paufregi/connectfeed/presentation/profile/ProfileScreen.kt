@@ -84,9 +84,7 @@ internal fun ProfileContent(
             selected = state.profile.eventType?.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
             items = state.eventTypes.map {
-                it.toDropdownItem {
-                    onAction(ProfileAction.SetEventType(it))
-                }
+                it.toDropdownItem { onAction(ProfileAction.SetEventType(it)) }
             },
             isError = state.profile.category != ActivityCategory.Any && state.profile.eventType == null
 
@@ -98,9 +96,7 @@ internal fun ProfileContent(
                 modifier = Modifier.fillMaxWidth(),
                 items = state.courses
                     .filter { it.compatibleWith(state.profile) }
-                    .map {
-                        it.toDropdownItem { onAction(ProfileAction.SetCourse(it)) }
-                    }
+                    .map { it.toDropdownItem { onAction(ProfileAction.SetCourse(it)) } }
             )
         }
         TextField(
@@ -115,9 +111,9 @@ internal fun ProfileContent(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = {
-                    onAction(ProfileAction.SetRename(!state.profile.rename))
-                })
+                .clickable(
+                    onClick = { onAction(ProfileAction.SetRename(!state.profile.rename)) }
+                )
         ) {
             Checkbox(
                 modifier = Modifier.testTag("rename_checkbox"),

@@ -12,8 +12,8 @@ data class Profile(
     val feelAndEffort: Boolean = false,
     val trainingEffect: Boolean = false,
 ) {
-    fun compatibleWith(activity: Activity): Boolean =
-        this.category == ActivityCategory.Any || this.category.compatibleWith(activity)
+    fun compatibleWith(activity: Activity?): Boolean =
+        this.category == ActivityCategory.Any || activity == null || this.category.compatibleWith(activity)
 
     fun compatibleWith(course: Course): Boolean =
         this.category == ActivityCategory.Any || this.category.compatibleWith(course.type)

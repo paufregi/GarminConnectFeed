@@ -15,8 +15,8 @@ class SaveProfile @Inject constructor(
         if (user == null) return Result.failure(Exception("User must be logged in"))
         if (profile.name.isBlank()) return Result.failure(Exception("Name cannot be empty"))
         if (profile.course != null) {
-            if (!profile.activityType.allowCourseInProfile) return Result.failure(Exception("Can't have course for ${profile.activityType.name} activity type"))
-            if (profile.course.type != profile.activityType) return Result.failure(Exception("Course must match activity type"))
+            if (!profile.category.allowCourseInProfile) return Result.failure(Exception("Can't have course for ${profile.category.name} activity type"))
+            if (!profile.course.compatibleWith(profile)) return Result.failure(Exception("Course must match activity type"))
         }
 
         garminRepository.saveProfile(user, profile)

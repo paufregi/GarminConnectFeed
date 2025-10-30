@@ -75,14 +75,14 @@ sealed class ActivityCategory(val name: String, val order: Int, val allowCourseI
         this == Any || this.types.contains(type)
 
     companion object {
-        fun findCategory(activity: Activity): ActivityCategory =
+        fun findCategory(type: ActivityType): ActivityCategory =
             when {
-                Running.compatibleWith(activity) -> Running
-                Cycling.compatibleWith(activity) -> Cycling
-                Swimming.compatibleWith(activity) -> Swimming
-                Strength.compatibleWith(activity) -> Strength
-                Fitness.compatibleWith(activity) -> Fitness
+                Running.compatibleWith(type) -> Running
+                Cycling.compatibleWith(type) -> Cycling
+                Swimming.compatibleWith(type) -> Swimming
+                Strength.compatibleWith(type) -> Strength
+                Fitness.compatibleWith(type) -> Fitness
                 else -> Other
             }
-        }
     }
+}
