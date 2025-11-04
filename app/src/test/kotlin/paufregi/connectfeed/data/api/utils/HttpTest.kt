@@ -22,7 +22,7 @@ class HttpTest {
 
         assertThat(result.code).isEqualTo(401)
         assertThat(result.message).isEqualTo("Auth failed")
-        assertThat(result.body?.string()).isEqualTo("reason")
+        assertThat(result.body.string()).isEqualTo("reason")
         assertThat(result.request).isEqualTo(request)
     }
 }
