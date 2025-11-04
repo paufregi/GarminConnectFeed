@@ -8,4 +8,7 @@ sealed class ProfileType(val order: Int, val allowCourse: Boolean) {
     data object Strength : ProfileType(5, false)
     data object Fitness : ProfileType(6, false)
     data object Other : ProfileType(7, false)
+
+    fun compatible(type: ActivityType): Boolean =
+        this == Any || this == type.profileType
 }
