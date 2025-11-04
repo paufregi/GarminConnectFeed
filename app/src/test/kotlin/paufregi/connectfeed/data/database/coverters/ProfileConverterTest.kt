@@ -6,6 +6,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.core.models.ProfileType
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.user
 
@@ -14,7 +15,7 @@ class ProfileConverterTest {
     val profile = Profile(
         id = 1,
         name = "profile",
-        activityType = ActivityType.Cycling,
+        type = ProfileType.Cycling,
         eventType = EventType.Training,
         course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
         water = 550,
@@ -28,7 +29,7 @@ class ProfileConverterTest {
         id = 1,
         userId = user.id,
         name = "profile",
-        activityType = ActivityType.Cycling,
+        type = ProfileType.Cycling,
         eventType = EventType.Training,
         course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
         water = 550,
