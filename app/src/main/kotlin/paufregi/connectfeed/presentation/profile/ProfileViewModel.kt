@@ -12,12 +12,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.usecases.GetActivityTypes
 import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
+import paufregi.connectfeed.core.usecases.GetProfileTypes
 import paufregi.connectfeed.core.usecases.SaveProfile
-import paufregi.connectfeed.core.utils.getOrNull
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
@@ -26,7 +25,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val getProfile: GetProfile,
-    val getActivityTypes: GetActivityTypes,
+    val getProfileTypes: GetProfileTypes,
     val getEventTypes: GetEventTypes,
     val getCourses: GetCourses,
     val saveProfile: SaveProfile,
@@ -45,7 +44,7 @@ class ProfileViewModel @Inject constructor(
             it.copy(
                 process = ProcessState.Processing,
                 profile = getProfile(profileId) ?: Profile(),
-                activityTypes = getActivityTypes(),
+                types = getProfileTypes(),
                 eventTypes = getEventTypes()
             )
         }
@@ -57,16 +56,16 @@ class ProfileViewModel @Inject constructor(
 
     fun onAction(action: ProfileAction) = when (action) {
         is ProfileAction.SetName -> _state.update { it.copy(profile = it.profile.copy(name = action.name)) }
-        is ProfileAction.SetActivityType -> _state.update { it.copy(
+        is ProfileAction.SetType -> _state.update { it.copy(
             profile = it.profile.copy(
-                activityType = action.activityType,
-                course = it.profile.course.getOrNull(action.activityType)
+                type = action.type,
+                course = it.profile.course?.takeIf { c -> action.type.compatible(c.type) }
             )
         ) }
         is ProfileAction.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = action.eventType)) }
         is ProfileAction.SetCourse -> _state.update { it.copy(
             profile = it.profile.copy(
-                course = action.course.getOrNull(it.profile.activityType),
+                course = action.course?.takeIf { c -> it.profile.type.compatible(c.type) },
             )
         ) }
         is ProfileAction.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = action.water)) }
