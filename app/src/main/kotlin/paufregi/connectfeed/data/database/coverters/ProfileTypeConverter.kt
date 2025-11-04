@@ -1,7 +1,6 @@
 package paufregi.connectfeed.data.database.coverters
 
 import androidx.room.TypeConverter
-import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.ProfileType
 
 class ProfileTypeConverter {
