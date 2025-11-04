@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.ProfileType
 
 @Entity(tableName = "profiles")
 data class ProfileEntity(
@@ -14,7 +15,7 @@ data class ProfileEntity(
 
     val userId: Long,
     val name: String,
-    val activityType: ActivityType = ActivityType.Any,
+    val type: ProfileType = ProfileType.Any,
     val eventType: EventType? = null,
     @Embedded(prefix = "course_")
     val course: Course? = null,
