@@ -31,7 +31,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.HomeNavigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.CustomSlider
@@ -92,7 +91,7 @@ internal fun EditContent(
             selected = state.activity?.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
             items = state.activities
-                .filter { state.stravaActivity?.type == null || it.type == state.stravaActivity.type }
+                .filter { state.stravaActivity == null || it.type.profileType.compatible(state.stravaActivity.type) }
                 .map { it.toDropdownItem { onAction(EditAction.SetActivity(it)) } }
         )
         if (state.hasStrava) {
@@ -101,7 +100,7 @@ internal fun EditContent(
                 selected = state.stravaActivity?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
                 items = state.stravaActivities
-                    .filter { state.activity?.type == null || it.type == state.activity.type }
+                    .filter { state.activity == null || it.type.profileType.compatible(state.activity.type) }
                     .map { it.toDropdownItem { onAction(EditAction.SetStravaActivity(it)) } }
             )
         }
@@ -118,13 +117,13 @@ internal fun EditContent(
             items = state.eventTypes
                 .map { it.toDropdownItem { onAction(EditAction.SetEventType(it)) } },
         )
-        if (state.activity?.type?.allowCourseInProfile == true) {
+        if (state.activity != null && state.activity.type.profileType.allowCourse) {
             Dropdown(
                 label = { Text("Course") },
                 selected = state.course?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
                 items = state.courses
-                    .filter { it.type == state.activity.type || state.activity.type == ActivityType.Any }
+                    .filter { it.type.profileType.compatible(state.activity.type) }
                     .map { it.toDropdownItem { onAction(EditAction.SetCourse(it)) } }
             )
         }

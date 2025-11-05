@@ -82,20 +82,20 @@ class EditViewModel @Inject constructor(
         is EditAction.SetActivity -> _state.update { it.copy(
             activity = action.activity,
             stravaActivity = it.stravaActivity.getOrMatch(action.activity, it.stravaActivities),
-            course = it.course.getOrNull(action.activity)
+            course = it.course?.takeIf { c -> c.type.profileType.compatible(action.activity.type) && action.activity.type.profileType.allowCourse }
         ) }
         is EditAction.SetStravaActivity -> _state.update { it.copy(
             stravaActivity = action.activity,
             activity = it.activity.getOrMatch(action.activity, it.activities),
-            course = it.course.getOrNull(action.activity)
+            course = it.course?.takeIf { c -> c.type.profileType.compatible(action.activity.type) && action.activity.type.profileType.allowCourse }
         ) }
         is EditAction.SetDescription -> _state.update { it.copy(description = action.description) }
         is EditAction.SetName -> _state.update { it.copy(name = action.name) }
         is EditAction.SetEventType -> _state.update { it.copy(eventType = action.eventType) }
         is EditAction.SetCourse -> _state.update { it.copy(
             course = action.course,
-            activity = it.activity.getOrNull(action.course),
-            stravaActivity = it.stravaActivity.getOrNull(action.course)
+            activity = it.activity?.takeIf { a -> action.course == null || action.course.type.profileType.compatible(a.type) },
+            stravaActivity = it.stravaActivity?.takeIf { a -> action.course == null || action.course.type.profileType.compatible(a.type) },
         ) }
         is EditAction.SetWater -> _state.update { it.copy(water = action.water) }
         is EditAction.SetEffort -> _state.update { it.copy(effort = action.effort.getOrNull()) }
