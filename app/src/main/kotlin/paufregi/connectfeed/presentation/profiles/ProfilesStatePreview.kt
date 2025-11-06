@@ -5,6 +5,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.core.models.ProfileType
 
 class ProfilesStatePreview : PreviewParameterProvider<ProfilesState> {
     override val values = sequenceOf(
@@ -15,7 +16,7 @@ class ProfilesStatePreview : PreviewParameterProvider<ProfilesState> {
                     name = "Commute to home",
                     rename = true,
                     eventType = EventType.Transportation,
-                    activityType = ActivityType.Cycling,
+                    type = ProfileType.Cycling,
                     course = Course(1, "Commute to home", 10.0, ActivityType.Cycling),
                     water = 550
                 ),
@@ -23,19 +24,19 @@ class ProfilesStatePreview : PreviewParameterProvider<ProfilesState> {
                     name = "Ponsonby/Westhaven",
                     rename = true,
                     eventType = EventType.Transportation,
-                    activityType = ActivityType.Running,
+                    type = ProfileType.Running,
                     course = Course(2, "Ponsonby/Westhaven", 10.0, ActivityType.Running)
                 ),
                 Profile(
                     name = "Gym",
                     rename = true,
-                    activityType = ActivityType.Strength,
+                    type = ProfileType.Strength,
                     water = 100
                 ),
                 Profile(
                     name = "Just water",
                     rename = true,
-                    activityType = ActivityType.Any,
+                    type = ProfileType.Any,
                     water = 100
                 )
             )

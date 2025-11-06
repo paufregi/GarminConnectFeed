@@ -17,6 +17,7 @@ import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.core.models.ProfileType
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
@@ -60,9 +61,9 @@ class QuickEditScreenTest {
     )
 
     val profiles = listOf(
-        Profile(name = "profile1", activityType = ActivityType.Running),
-        Profile(name = "profile2", activityType = ActivityType.Cycling),
-        Profile(name = "profile3", activityType = ActivityType.Running)
+        Profile(name = "profile1", type = ProfileType.Running),
+        Profile(name = "profile2", type = ProfileType.Cycling),
+        Profile(name = "profile3", type = ProfileType.Running)
     )
 
     @Test

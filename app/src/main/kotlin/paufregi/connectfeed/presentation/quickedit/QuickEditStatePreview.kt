@@ -5,6 +5,7 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.core.models.ProfileType
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
@@ -25,7 +26,7 @@ class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
     val profile = Profile(
         id = 1,
         name = "profile",
-        activityType = ActivityType.Running,
+        type = ProfileType.Running,
         course = Course(
             id = 1,
             name = "course",
@@ -37,7 +38,7 @@ class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
     val fullProfile = Profile(
         id = 1,
         name = "profile",
-        activityType = ActivityType.Running,
+        type = ProfileType.Running,
         water = 10,
         customWater = true,
         feelAndEffort = true,

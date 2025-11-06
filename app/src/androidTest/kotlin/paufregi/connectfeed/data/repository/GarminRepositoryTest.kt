@@ -118,7 +118,7 @@ class GarminRepositoryTest {
                 name = "Activity 1",
                 distance = 17804.00,
                 trainingEffect = "recovery",
-                type = CoreActivityType.Cycling,
+                type = CoreActivityType.RoadBiking,
                 eventType = CoreEventType.Transportation,
                 date = Instant.ofEpochMilli(1729754100000)
             ),
@@ -127,7 +127,7 @@ class GarminRepositoryTest {
                 name = "Activity 2",
                 distance = 17760.00,
                 trainingEffect = "recovery",
-                type = CoreActivityType.Cycling,
+                type = CoreActivityType.RoadBiking,
                 eventType = CoreEventType.Transportation,
                 date = Instant.ofEpochMilli(1729705968000)
             )
@@ -148,14 +148,14 @@ class GarminRepositoryTest {
                 id = 1,
                 name = "Happy Friday",
                 distance = 7804.0,
-                type = CoreActivityType.Running,
+                type = CoreActivityType.StravaRunning,
                 date = Instant.parse("2018-05-02T12:15:09Z")
             ),
             CoreActivity(
                 id = 2,
                 name = "Bondcliff",
                 distance = 23676.0,
-                type = CoreActivityType.Cycling,
+                type = CoreActivityType.StravaRide,
                 date = Instant.parse("2018-04-30T12:35:51Z")
                 )
         )
@@ -173,7 +173,7 @@ class GarminRepositoryTest {
 
         val expected = listOf(
             CoreCourse(id = 1, name = "Course 1", distance = 10235.00, type = CoreActivityType.Running),
-            CoreCourse(id = 2, name = "Course 2", distance = 15008.00, type = CoreActivityType.Cycling),
+            CoreCourse(id = 2, name = "Course 2", distance = 15008.00, type = CoreActivityType.RoadBiking),
         )
 
         val res = repo.getCourses()

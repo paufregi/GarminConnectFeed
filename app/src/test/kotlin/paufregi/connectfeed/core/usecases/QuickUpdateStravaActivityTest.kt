@@ -15,6 +15,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.core.models.ProfileType
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class QuickUpdateStravaActivityTest{
@@ -36,7 +37,7 @@ class QuickUpdateStravaActivityTest{
     )
     val profile = Profile(
         name = "newName",
-        activityType = ActivityType.Running,
+        type = ProfileType.Running,
         eventType = EventType.Transportation,
         course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
         rename = true,
@@ -72,7 +73,7 @@ class QuickUpdateStravaActivityTest{
 
         val profile = Profile(
             name = "newName",
-            activityType = ActivityType.Running,
+            type = ProfileType.Running,
             eventType = EventType.Transportation,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
             rename = false,
@@ -93,7 +94,7 @@ class QuickUpdateStravaActivityTest{
 
         val profile = Profile(
             name = "newName",
-            activityType = ActivityType.Running,
+            type = ProfileType.Running,
             eventType = EventType.Transportation,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
             rename = true,
@@ -113,7 +114,7 @@ class QuickUpdateStravaActivityTest{
 
         val profile = Profile(
             name = "newName",
-            activityType = ActivityType.Running,
+            type = ProfileType.Running,
             eventType = EventType.Training,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
             rename = true,

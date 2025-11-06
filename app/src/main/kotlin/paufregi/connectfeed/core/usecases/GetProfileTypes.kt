@@ -1,8 +1,9 @@
 package paufregi.connectfeed.core.usecases
 
 import paufregi.connectfeed.core.models.ProfileType
+import javax.inject.Inject
 
-class GetProfileTypes {
+class GetProfileTypes @Inject constructor() {
     operator fun invoke(): List<ProfileType> = listOf(
         ProfileType.Any,
         ProfileType.Running,

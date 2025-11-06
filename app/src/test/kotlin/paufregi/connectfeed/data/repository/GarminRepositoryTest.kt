@@ -15,6 +15,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.core.models.ProfileType
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.models.Activity
@@ -102,7 +103,7 @@ class GarminRepositoryTest {
                 id = 1,
                 name = "profile 1",
                 eventType = CoreEventType.Training,
-                activityType = CoreActivityType.Cycling,
+                type = ProfileType.Cycling,
                 course = CoreCourse(1, "course 1", 10234.00, CoreActivityType.Cycling),
                 water = 2
             ),
@@ -110,7 +111,7 @@ class GarminRepositoryTest {
                 id = 2,
                 name = "profile 2",
                 eventType = CoreEventType.Recreation,
-                activityType = CoreActivityType.Running,
+                type = ProfileType.Running,
                 course = CoreCourse(2, "course 2", 15007.00, CoreActivityType.Running),
             )
         )
@@ -120,7 +121,7 @@ class GarminRepositoryTest {
                 userId = user.id,
                 name = "profile 1",
                 eventType = CoreEventType.Training,
-                activityType = CoreActivityType.Cycling,
+                type = ProfileType.Cycling,
                 course = CoreCourse(1, "course 1", 10234.00, CoreActivityType.Cycling),
                 water = 2
             ),
@@ -129,7 +130,7 @@ class GarminRepositoryTest {
                 userId = user.id,
                 name = "profile 2",
                 eventType = CoreEventType.Recreation,
-                activityType = CoreActivityType.Running,
+                type = ProfileType.Running,
                 course = CoreCourse(2, "course 2", 15007.00, CoreActivityType.Running),
             )
         )
@@ -168,7 +169,7 @@ class GarminRepositoryTest {
             id = 1,
             name = "profile",
             eventType = CoreEventType.Training,
-            activityType = CoreActivityType.Cycling,
+            type = ProfileType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
         )
@@ -177,7 +178,7 @@ class GarminRepositoryTest {
             userId = user.id,
             name = "profile",
             eventType = CoreEventType.Training,
-            activityType = CoreActivityType.Cycling,
+            type = ProfileType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
         )
@@ -197,7 +198,7 @@ class GarminRepositoryTest {
         val profile = Profile(
             name = "profile",
             eventType = CoreEventType.Training,
-            activityType = CoreActivityType.Cycling,
+            type = ProfileType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
         )
@@ -206,7 +207,7 @@ class GarminRepositoryTest {
             name = "profile",
             userId = user.id,
             eventType = CoreEventType.Training,
-            activityType = CoreActivityType.Cycling,
+            type = ProfileType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
         )
@@ -225,7 +226,7 @@ class GarminRepositoryTest {
             id = 1,
             name = "profile",
             eventType = CoreEventType.Training,
-            activityType = CoreActivityType.Cycling,
+            type = ProfileType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
         )
 
@@ -234,7 +235,7 @@ class GarminRepositoryTest {
             userId = user.id,
             name = "profile",
             eventType = CoreEventType.Training,
-            activityType = CoreActivityType.Cycling,
+            type = ProfileType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
         )
 
@@ -556,7 +557,7 @@ class GarminRepositoryTest {
 
         val expected = listOf(
             CoreCourse(id = 1, name = "course 1", distance = 10234.00, type = CoreActivityType.Running),
-            CoreCourse(id = 2, name = "course 2", distance = 15007.00, type = CoreActivityType.Cycling),
+            CoreCourse(id = 2, name = "course 2", distance = 15007.00, type = CoreActivityType.RoadBiking),
         )
 
         val res = repo.getCourses()

@@ -17,6 +17,6 @@ class ProfileTypeTest {
 
     @Test
     fun `Compatible - false`() {
-        assertThat(ProfileType.Cycling.compatible(ActivityType.Running)).isTrue()
+        assertThat(ProfileType.Cycling.compatible(ActivityType.Running)).isFalse()
     }
 }
