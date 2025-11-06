@@ -2,15 +2,21 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c1c13ad70305dac337d06157dca32f44",
+    "identityHash": "4cc9afc0ca75f636dc15a5d9f71e82b4",
     "entities": [
       {
         "tableName": "profiles",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `activityType` TEXT NOT NULL, `water` INTEGER, `rename` INTEGER NOT NULL, `customWater` INTEGER NOT NULL, `feelAndEffort` INTEGER NOT NULL, `event_id` INTEGER, `event_name` TEXT, `course_id` INTEGER, `course_name` TEXT, `course_type` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` INTEGER NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL DEFAULT 'Any', `eventType` INTEGER, `water` INTEGER, `rename` INTEGER NOT NULL DEFAULT true, `customWater` INTEGER NOT NULL DEFAULT false, `feelAndEffort` INTEGER NOT NULL DEFAULT false, `trainingEffect` INTEGER NOT NULL DEFAULT false, `course_id` INTEGER, `course_name` TEXT, `course_distance` REAL, `course_type` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -21,64 +27,69 @@
             "notNull": true
           },
           {
-            "fieldPath": "activityType",
-            "columnName": "activityType",
+            "fieldPath": "type",
+            "columnName": "type",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "'Any'"
+          },
+          {
+            "fieldPath": "eventType",
+            "columnName": "eventType",
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "water",
             "columnName": "water",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "rename",
             "columnName": "rename",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "true"
           },
           {
             "fieldPath": "customWater",
             "columnName": "customWater",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "false"
           },
           {
             "fieldPath": "feelAndEffort",
             "columnName": "feelAndEffort",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "false"
           },
           {
-            "fieldPath": "eventType.id",
-            "columnName": "event_id",
+            "fieldPath": "trainingEffect",
+            "columnName": "trainingEffect",
             "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "eventType.name",
-            "columnName": "event_name",
-            "affinity": "TEXT",
-            "notNull": false
+            "notNull": true,
+            "defaultValue": "false"
           },
           {
             "fieldPath": "course.id",
             "columnName": "course_id",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "course.name",
             "columnName": "course_name",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "course.distance",
+            "columnName": "course_distance",
+            "affinity": "REAL"
           },
           {
             "fieldPath": "course.type",
             "columnName": "course_type",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -86,15 +97,12 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       }
     ],
-    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c1c13ad70305dac337d06157dca32f44')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4cc9afc0ca75f636dc15a5d9f71e82b4')"
     ]
   }
 }
