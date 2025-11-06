@@ -1,17 +1,9 @@
 package paufregi.connectfeed.core.utils
 
-import paufregi.connectfeed.core.models.Activity
-import paufregi.connectfeed.core.models.Profile
 import retrofit2.Response
 import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.Semaphore
-
-fun Activity?.getOrMatch(other: Activity, pool: List<Activity>): Activity? =
-    if(this?.type != other.type) pool.find { it.match(other) } else this
-
-fun Profile?.getOrNull(activity: Activity): Profile? =
-    if (this?.activityType?.match(activity.type) == true) this else null
 
 fun Date.sameDay(other: Date): Boolean {
     val calendar1 = Calendar.getInstance().apply { time = this@sameDay }
