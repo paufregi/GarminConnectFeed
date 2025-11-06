@@ -17,6 +17,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.core.models.ProfileType
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.user
@@ -43,7 +44,7 @@ class SaveProfileTest{
             name = "Commute to home",
             rename = true,
             eventType = EventType.Training,
-            activityType = ActivityType.Cycling,
+            type = ProfileType.Cycling,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -66,7 +67,7 @@ class SaveProfileTest{
             name = "",
             rename = true,
             eventType = EventType.Training,
-            activityType = ActivityType.Cycling,
+            type = ProfileType.Cycling,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -88,7 +89,7 @@ class SaveProfileTest{
             name = "",
             rename = true,
             eventType = EventType.Training,
-            activityType = ActivityType.Cycling,
+            type = ProfileType.Cycling,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -110,7 +111,7 @@ class SaveProfileTest{
             name = "Test",
             rename = true,
             eventType = EventType.Training,
-            activityType = ActivityType.Strength,
+            type = ProfileType.Strength,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -132,7 +133,7 @@ class SaveProfileTest{
             name = "Test",
             rename = true,
             eventType = EventType.Training,
-            activityType = ActivityType.Any,
+            type = ProfileType.Any,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -154,7 +155,7 @@ class SaveProfileTest{
             name = "Test",
             rename = true,
             eventType = EventType.Training,
-            activityType = ActivityType.Running,
+            type = ProfileType.Running,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -163,7 +164,7 @@ class SaveProfileTest{
         val res = useCase(profile)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Course must match activity type")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Course not compatible with profile")
 
         verify { auth.getUser() }
         confirmVerified(auth, repo)
