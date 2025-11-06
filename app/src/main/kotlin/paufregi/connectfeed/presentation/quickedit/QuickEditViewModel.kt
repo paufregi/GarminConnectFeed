@@ -17,8 +17,6 @@ import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
-import paufregi.connectfeed.core.utils.getOrMatch
-import paufregi.connectfeed.core.utils.getOrNull
 import paufregi.connectfeed.core.utils.runCatchingResult
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
@@ -63,30 +61,32 @@ class QuickEditViewModel @Inject constructor(
 
     fun onAction(action: QuickEditAction) = when (action) {
         is QuickEditAction.SetActivity -> _state.update {
+            val profile = it.profile?.takeIf { p -> p.type.compatible(action.activity.type) }
             it.copy(
                 activity = action.activity,
-                profile = it.profile.getOrNull(action.activity),
-                stravaActivity = it.stravaActivity.getOrMatch(action.activity, it.stravaActivities),
-                water = if (it.profile.getOrNull(action.activity) == null) null else it.water,
+                profile = profile,
+                stravaActivity = it.stravaActivity?.takeIf { a -> a.type.profileType.compatible(action.activity.type) } ?: it.stravaActivities.find { a -> a.match(action.activity) },
+                water = it.water?.takeUnless { profile == null }
             )
         }
         is QuickEditAction.SetStravaActivity -> _state.update {
+            val profile = it.profile?.takeIf { p -> p.type.compatible(action.activity.type) }
             it.copy(
                 stravaActivity = action.activity,
-                profile = it.profile.getOrNull(action.activity),
-                activity = it.activity.getOrMatch(action.activity, it.activities),
-                water = if (it.profile.getOrNull(action.activity) == null) null else it.water,
+                profile = profile,
+                activity = it.activity?.takeIf { a -> a.type.profileType.compatible(action.activity.type) } ?: it.activities.find { a -> a.match(action.activity) },
+                water = it.water?.takeUnless { profile == null }
             )
         }
         is QuickEditAction.SetProfile -> _state.update { it.copy(
             profile = action.profile,
-            activity = it.activity.getOrNull(action.profile),
-            stravaActivity = it.stravaActivity.getOrNull(action.profile),
+            activity = it.activity?.takeIf { a -> action.profile.type.compatible(a.type) },
+            stravaActivity = it.stravaActivity?.takeIf { a -> action.profile.type.compatible(a.type) },
             water = action.profile.water,
         ) }
         is QuickEditAction.SetDescription -> _state.update { it.copy(description = action.description) }
         is QuickEditAction.SetWater -> _state.update { it.copy(water = action.water) }
-        is QuickEditAction.SetEffort -> _state.update { it.copy(effort = action.effort.getOrNull()) }
+        is QuickEditAction.SetEffort -> _state.update { it.copy(effort = action.effort?.takeIf { e -> e > 0 }) }
         is QuickEditAction.SetFeel -> _state.update { it.copy(feel = action.feel) }
         is QuickEditAction.Save -> saveAction()
         is QuickEditAction.Restart -> restartAction()
