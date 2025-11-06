@@ -63,7 +63,7 @@ class ProfileViewModelTest {
 
     @After
     fun tearDown(){
-        confirmVerified(savedState, getProfile, confirmVerified(savedState, getProfile, getProfileTypes, getEventTypes, getCourses, saveProfile), getEventTypes, getCourses, saveProfile)
+        confirmVerified(savedState, getProfile, getProfileTypes, getEventTypes, getCourses, saveProfile)
         clearAllMocks()
         unmockkStatic("androidx.navigation.SavedStateHandleKt")
     }
