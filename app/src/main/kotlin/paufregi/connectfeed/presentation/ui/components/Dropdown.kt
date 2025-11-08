@@ -24,10 +24,8 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.ProfileType
 import paufregi.connectfeed.core.utils.Formatter
-import paufregi.connectfeed.presentation.ui.utils.iconForActivityType
-import paufregi.connectfeed.presentation.ui.utils.iconForProfileType
+import paufregi.connectfeed.presentation.ui.utils.iconFor
 
 data class DropdownItem(
     val text: String,
@@ -41,7 +39,7 @@ data class DropdownItem(
 fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
     distance = distance?.takeIf { it > 0 }?.let { Formatter.distance(it) },
-    icon = iconForActivityType(this.type),
+    icon = iconFor(this.type),
     onClick = onClick
 )
 
@@ -56,7 +54,7 @@ fun EventType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
     distance = Formatter.distance(distance),
-    icon = iconForActivityType(this.type),
+    icon = iconFor(this.type),
     onClick = onClick
 )
 
@@ -65,15 +63,7 @@ fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = this.name,
     distance = course?.let { Formatter.distance(it.distance) },
-    icon = iconForProfileType(this.type),
-    onClick = onClick
-)
-
-@SuppressLint("DefaultLocale")
-@ExperimentalMaterial3Api
-fun ProfileType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
-    text = this.name,
-    icon = iconForProfileType(this),
+    icon = iconFor(this.type),
     onClick = onClick
 )
 
