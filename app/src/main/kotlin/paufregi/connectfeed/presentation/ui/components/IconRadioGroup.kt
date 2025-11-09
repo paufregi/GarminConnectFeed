@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -50,7 +49,6 @@ fun <T> IconRadioGroup(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier
-                        .padding(top = if (isSelected) 7.dp else 6.dp)
                         .align(Alignment.Center)
                         .size(if (isSelected) 46.dp else 38.dp)
                         .alpha(if (isSelected) 1f else 0.5f)
