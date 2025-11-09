@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.dp
 val ConnectIcons.FaceVerySad: ImageVector
     get() = image ?: ImageVector.Builder(
         name = "Connect.FaceVerySad",
-        defaultWidth = 512.dp,
+        defaultWidth = 522.dp,
         defaultHeight = 512.dp,
-        viewportWidth = 512f,
+        viewportWidth = 522f,
         viewportHeight = 512f
     ).apply {
         path(fill = SolidColor(Color.Black)) {
