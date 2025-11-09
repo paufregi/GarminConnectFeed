@@ -36,7 +36,7 @@ import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.NavigationScaffold
-import paufregi.connectfeed.presentation.ui.utils.iconForProfileType
+import paufregi.connectfeed.presentation.ui.utils.iconFor
 
 @Composable
 @ExperimentalMaterial3Api
@@ -98,7 +98,7 @@ internal fun ProfilesContent(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.padding(10.dp),
                     ) {
-                        iconForProfileType(it.type)?.let { i -> Icon(i, i.name, Modifier.size(24.dp)) }
+                        iconFor(it.type)?.let { i -> Icon(i, i.name, Modifier.size(24.dp)) }
                         Text(it.name)
                         Spacer(modifier = Modifier.weight(1f))
                         Button(
