@@ -80,8 +80,8 @@ class QuickEditViewModel @Inject constructor(
         }
         is QuickEditAction.SetProfile -> _state.update { it.copy(
             profile = action.profile,
-            activity = it.activity?.takeIf { a -> action.profile.type.compatible(a.type) },
-            stravaActivity = it.stravaActivity?.takeIf { a -> action.profile.type.compatible(a.type) },
+            activity = it.activity?.takeIf { a -> a.type.compatible(action.profile.type) },
+            stravaActivity = it.stravaActivity?.takeIf { a -> a.type.compatible(action.profile.type) },
             water = action.profile.water,
         ) }
         is QuickEditAction.SetDescription -> _state.update { it.copy(description = action.description) }
