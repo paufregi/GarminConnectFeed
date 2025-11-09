@@ -17,7 +17,7 @@ import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Profile
- import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
