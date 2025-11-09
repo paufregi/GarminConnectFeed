@@ -8,11 +8,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 val StravaIcons.Logo: ImageVector
-    get() {
-        if (logo != null) {
-            return logo!!
-        }
-        logo = ImageVector.Builder(
+    get() = image ?: ImageVector.Builder(
             name = "Strava.Logo",
             defaultWidth = 412.dp,
             defaultHeight = 596.dp,
@@ -45,8 +41,6 @@ val StravaIcons.Logo: ImageVector
                 lineTo(287.486f, 595.883f)
                 close()
             }
-        }.build()
-        return logo!!
-    }
+        }.build().also { image = it }
 
-private var logo: ImageVector? = null
+private var image: ImageVector? = null

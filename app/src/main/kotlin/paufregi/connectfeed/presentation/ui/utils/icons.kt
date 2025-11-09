@@ -33,6 +33,27 @@ import paufregi.connectfeed.presentation.ui.icons.garmin.VirtualRide
 import paufregi.connectfeed.presentation.ui.icons.garmin.Walking
 import paufregi.connectfeed.presentation.ui.icons.garmin.Windsurf
 import paufregi.connectfeed.presentation.ui.icons.garmin.Yoga
+import paufregi.connectfeed.presentation.ui.icons.strava.EBikeRide
+import paufregi.connectfeed.presentation.ui.icons.strava.EMountainBikeRide
+import paufregi.connectfeed.presentation.ui.icons.strava.Football
+import paufregi.connectfeed.presentation.ui.icons.strava.GravelRide
+import paufregi.connectfeed.presentation.ui.icons.strava.HIIT
+import paufregi.connectfeed.presentation.ui.icons.strava.Hike
+import paufregi.connectfeed.presentation.ui.icons.strava.Kayaking
+import paufregi.connectfeed.presentation.ui.icons.strava.MountainBikeRide
+import paufregi.connectfeed.presentation.ui.icons.strava.Ride
+import paufregi.connectfeed.presentation.ui.icons.strava.Running
+import paufregi.connectfeed.presentation.ui.icons.strava.Snowboard
+import paufregi.connectfeed.presentation.ui.icons.strava.StandUpPaddling
+import paufregi.connectfeed.presentation.ui.icons.strava.Strava
+import paufregi.connectfeed.presentation.ui.icons.strava.Surfing
+import paufregi.connectfeed.presentation.ui.icons.strava.Swim
+import paufregi.connectfeed.presentation.ui.icons.strava.TrailRun
+import paufregi.connectfeed.presentation.ui.icons.strava.Walk
+import paufregi.connectfeed.presentation.ui.icons.strava.WeightTraining
+import paufregi.connectfeed.presentation.ui.icons.strava.Windsurf
+import paufregi.connectfeed.presentation.ui.icons.strava.Workout
+import paufregi.connectfeed.presentation.ui.icons.strava.Yoga
 
 fun iconFor(type: ActivityType): ImageVector? =
     when (type) {
@@ -75,5 +96,31 @@ fun iconFor(type: ActivityType): ImageVector? =
         is ActivityType.StandUpPaddling -> Icons.Connect.StandUpPaddling
         is ActivityType.Surfing -> Icons.Connect.Surfing
         is ActivityType.Windsurf -> Icons.Connect.Windsurf
-        else -> null
+        // STRAVA
+        // Running
+        is ActivityType.StravaRunning -> Icons.Strava.Running
+        is ActivityType.StravaTrailRun -> Icons.Strava.TrailRun
+        // Cycling
+        is ActivityType.StravaRide -> Icons.Strava.Ride
+        is ActivityType.StravaMountainBikeRide -> Icons.Strava.MountainBikeRide
+        is ActivityType.StravaGravelRide -> Icons.Strava.GravelRide
+        is ActivityType.StravaEBikeRide -> Icons.Strava.EBikeRide
+        is ActivityType.StravaEMountainBikeRide -> Icons.Strava.EMountainBikeRide
+        is ActivityType.StravaVirtualRide -> Icons.Strava.Ride
+        // Fitness
+        is ActivityType.StravaHIIT -> Icons.Strava.HIIT
+        is ActivityType.StravaWorkout -> Icons.Strava.Workout
+        is ActivityType.StravaWeightTraining -> Icons.Strava.WeightTraining
+        is ActivityType.StravaYoga -> Icons.Strava.Yoga
+        // Swimming
+        is ActivityType.StravaSwim -> Icons.Strava.Swim
+        // Other
+        is ActivityType.StravaWalk -> Icons.Strava.Walk
+        is ActivityType.StravaHike -> Icons.Strava.Hike
+        is ActivityType.StravaSnowboard -> Icons.Strava.Snowboard
+        is ActivityType.StravaKayaking -> Icons.Strava.Kayaking
+        is ActivityType.StravaStandUpPaddling -> Icons.Strava.StandUpPaddling
+        is ActivityType.StravaSurfing -> Icons.Strava.Surfing
+        is ActivityType.StravaWindsurf -> Icons.Strava.Windsurf
+        is ActivityType.StravaFootball -> Icons.Strava.Football
     }
