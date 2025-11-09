@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
@@ -44,6 +45,13 @@ fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 )
 
 @ExperimentalMaterial3Api
+fun ActivityType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+    text = name,
+    icon = iconFor(this),
+    onClick = onClick
+)
+
+@ExperimentalMaterial3Api
 fun EventType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
     onClick = onClick
@@ -54,16 +62,16 @@ fun EventType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
     distance = Formatter.distance(distance),
-    icon = iconFor(this.type),
+    icon = iconFor(type),
     onClick = onClick
 )
 
 @SuppressLint("DefaultLocale")
 @ExperimentalMaterial3Api
 fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
-    text = this.name,
+    text = name,
     distance = course?.let { Formatter.distance(it.distance) },
-    icon = iconFor(this.type),
+    icon = iconFor(type),
     onClick = onClick
 )
 
