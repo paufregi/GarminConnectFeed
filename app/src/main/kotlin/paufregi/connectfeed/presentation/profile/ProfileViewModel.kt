@@ -12,10 +12,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.core.usecases.GetActivityTypesForProfile
 import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
-import paufregi.connectfeed.core.usecases.GetProfileTypes
 import paufregi.connectfeed.core.usecases.SaveProfile
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.models.ProcessState
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val getProfile: GetProfile,
-    val getProfileTypes: GetProfileTypes,
+    val getActivityTypesForProfile: GetActivityTypesForProfile,
     val getEventTypes: GetEventTypes,
     val getCourses: GetCourses,
     val saveProfile: SaveProfile,
@@ -44,7 +44,7 @@ class ProfileViewModel @Inject constructor(
             it.copy(
                 process = ProcessState.Processing,
                 profile = getProfile(profileId) ?: Profile(),
-                types = getProfileTypes(),
+                types = getActivityTypesForProfile(),
                 eventTypes = getEventTypes()
             )
         }

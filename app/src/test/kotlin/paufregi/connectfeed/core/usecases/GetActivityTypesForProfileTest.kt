@@ -6,15 +6,15 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.core.models.ProfileType
+import paufregi.connectfeed.core.models.ActivityType
 
-class GetProfileTypesTest {
+class GetActivityTypesForProfileTest {
 
-    private lateinit var useCase: GetProfileTypes
+    private lateinit var useCase: GetActivityTypesForProfile
 
     @Before
     fun setup(){
-        useCase = GetProfileTypes()
+        useCase = GetActivityTypesForProfile()
     }
 
     @After
@@ -27,13 +27,13 @@ class GetProfileTypesTest {
         val res = useCase()
 
         assertThat(res).containsExactly(
-            ProfileType.Any,
-            ProfileType.Running,
-            ProfileType.Cycling,
-            ProfileType.Swimming,
-            ProfileType.Strength,
-            ProfileType.Fitness,
-            ProfileType.Other
+            ActivityType.Any,
+           ActivityType.Running,
+           ActivityType.Cycling,
+           ActivityType.Swimming,
+           ActivityType.StrengthTraining,
+           ActivityType.Fitness,
+           ActivityType.Other
         )
     }
 }

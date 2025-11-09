@@ -14,7 +14,6 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.core.models.ProfileType
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import javax.inject.Inject
 
@@ -51,7 +50,7 @@ class GarminDaoTest {
             userId = 1,
             name = "profile1",
             eventType = EventType.Training,
-            type = ProfileType.Running,
+            type = ActivityType.Running,
             course = Course(id = 1, name = "course1", distance = 1000.50, type = ActivityType.Running),
             water = 100,
             rename = true,
@@ -64,7 +63,7 @@ class GarminDaoTest {
             userId = 2,
             name = "profile2",
             eventType = EventType.Training,
-            type = ProfileType.Running,
+            type = ActivityType.Running,
             course = Course(id = 1, name = "course2", distance = 2000.50, type = ActivityType.Running),
             water = 200,
             rename = true,

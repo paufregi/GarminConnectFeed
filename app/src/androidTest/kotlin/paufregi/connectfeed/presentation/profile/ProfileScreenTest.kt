@@ -19,7 +19,6 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.ProfileType
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
@@ -70,7 +69,7 @@ class ProfileScreenTest {
                 process = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
-                    type = ProfileType.Running,
+                    type = ActivityType.Running,
                     eventType = EventType.Training,
                     course = Course(id = 1, name = "Course 1", distance = 10234.00, type = ActivityType.Running),
                     water = 10,
@@ -101,7 +100,7 @@ class ProfileScreenTest {
                 process = ProcessState.Idle,
                 profile = Profile(
                     name = "",
-                    type = ProfileType.Running,
+                    type = ActivityType.Running,
                     eventType = EventType.Training,
                     course = Course(id = 1, name = "Course 1", distance = 10234.00, type = ActivityType.Running),
                 )
@@ -118,7 +117,7 @@ class ProfileScreenTest {
                 process = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
-                    type = ProfileType.Running,
+                    type = ActivityType.Running,
                 )
             ))
         }
@@ -133,7 +132,7 @@ class ProfileScreenTest {
                 process = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
-                    type = ProfileType.Any,
+                    type = ActivityType.Any,
                     eventType = EventType.Training,
                 )
             ))
@@ -149,7 +148,7 @@ class ProfileScreenTest {
                 process = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
-                    type = ProfileType.Strength,
+                    type = ActivityType.StrengthTraining,
                     eventType = EventType.Training
                 )
             ))

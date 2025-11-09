@@ -30,8 +30,8 @@ import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
+import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.core.models.ProfileType
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.database.entities.ProfileEntity
@@ -203,7 +203,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
-        dao.saveProfile(ProfileEntity(id = 5, userId = user.id, name = "Profile 1", type = ProfileType.Running, eventType = EventType.Race))
+        dao.saveProfile(ProfileEntity(id = 5, userId = user.id, name = "Profile 1", type = ActivityType.Running, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
@@ -233,7 +233,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
-        dao.saveProfile(ProfileEntity(id = 10, userId = user.id, name = "Profile 1", type = ProfileType.Running, eventType = EventType.Race))
+        dao.saveProfile(ProfileEntity(id = 10, userId = user.id, name = "Profile 1", type = ActivityType.Running, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
@@ -250,7 +250,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
-        dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", type = ProfileType.Cycling, eventType = EventType.Race))
+        dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", type = ActivityType.Cycling, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
@@ -269,7 +269,7 @@ class MainActivityTest {
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         stravaStore.saveToken(stravaAuthToken)
-        dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", type = ProfileType.Cycling, eventType = EventType.Race))
+        dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", type = ActivityType.Cycling, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }

@@ -58,13 +58,13 @@ class SyncStravaViewModel @Inject constructor(
         is SyncStravaAction.SetActivity -> _state.update {
             it.copy(
                 activity = action.activity,
-                stravaActivity = it.stravaActivity?.takeIf { a -> a.type.profileType.compatible(action.activity.type) } ?: it.stravaActivities.find { a -> a.match(action.activity) },
+                stravaActivity = it.stravaActivity?.takeIf { a -> a.type.compatible(action.activity.type) } ?: it.stravaActivities.find { a -> a.match(action.activity) },
             )
         }
         is SyncStravaAction.SetStravaActivity -> _state.update {
             it.copy(
                 stravaActivity = action.activity,
-                activity = it.activity?.takeIf { a -> a.type.profileType.compatible(action.activity.type) } ?: it.activities.find { a -> a.match(action.activity) },
+                activity = it.activity?.takeIf { a -> a.type.compatible(action.activity.type) } ?: it.activities.find { a -> a.match(action.activity) },
             )
         }
         is SyncStravaAction.SetDescription -> _state.update { it.copy(description = action.description) }

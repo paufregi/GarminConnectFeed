@@ -25,7 +25,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import paufregi.connectfeed.core.models.ProfileType
+import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Dropdown
@@ -75,7 +75,7 @@ internal fun ProfileContent(
         )
         Dropdown(
             label = { Text("Type") },
-            selected = state.profile.type.toDropdownItem { },
+            selected = state.profile.type.toDropdownItem { state.profile.type },
             modifier = Modifier.fillMaxWidth(),
             items = state.types.map {
                 it.toDropdownItem { onAction(ProfileAction.SetType(it)) }
@@ -90,7 +90,7 @@ internal fun ProfileContent(
                     onAction(ProfileAction.SetEventType(it))
                 }
             },
-            isError = state.profile.type != ProfileType.Any && state.profile.eventType == null
+            isError = state.profile.type != ActivityType.Any && state.profile.eventType == null
 
         )
         if (state.profile.type.allowCourse) {
@@ -192,7 +192,7 @@ internal fun ProfileContent(
             Button(
                 text = "Save",
                 enabled = state.profile.name.isNotBlank() &&
-                        (state.profile.type == ProfileType.Any || state.profile.eventType != null),
+                        (state.profile.type == ActivityType.Any || state.profile.eventType != null),
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()

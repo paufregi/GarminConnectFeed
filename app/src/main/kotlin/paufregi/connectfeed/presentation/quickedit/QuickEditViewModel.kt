@@ -65,7 +65,7 @@ class QuickEditViewModel @Inject constructor(
             it.copy(
                 activity = action.activity,
                 profile = profile,
-                stravaActivity = it.stravaActivity?.takeIf { a -> a.type.profileType.compatible(action.activity.type) } ?: it.stravaActivities.find { a -> a.match(action.activity) },
+                stravaActivity = it.stravaActivity?.takeIf { a -> a.type.compatible(action.activity.type) } ?: it.stravaActivities.find { a -> a.match(action.activity) },
                 water = it.water?.takeUnless { profile == null }
             )
         }
@@ -74,7 +74,7 @@ class QuickEditViewModel @Inject constructor(
             it.copy(
                 stravaActivity = action.activity,
                 profile = profile,
-                activity = it.activity?.takeIf { a -> a.type.profileType.compatible(action.activity.type) } ?: it.activities.find { a -> a.match(action.activity) },
+                activity = it.activity?.takeIf { a -> a.type.compatible(action.activity.type) } ?: it.activities.find { a -> a.match(action.activity) },
                 water = it.water?.takeUnless { profile == null }
             )
         }

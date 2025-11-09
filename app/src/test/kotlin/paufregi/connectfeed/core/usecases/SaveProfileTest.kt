@@ -17,7 +17,6 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.ProfileType
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.user
@@ -44,7 +43,7 @@ class SaveProfileTest{
             name = "Commute to home",
             rename = true,
             eventType = EventType.Training,
-            type = ProfileType.Cycling,
+            type = ActivityType.Cycling,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -67,7 +66,7 @@ class SaveProfileTest{
             name = "",
             rename = true,
             eventType = EventType.Training,
-            type = ProfileType.Cycling,
+            type = ActivityType.Cycling,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -89,7 +88,7 @@ class SaveProfileTest{
             name = "",
             rename = true,
             eventType = EventType.Training,
-            type = ProfileType.Cycling,
+            type = ActivityType.Cycling,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -111,7 +110,7 @@ class SaveProfileTest{
             name = "Test",
             rename = true,
             eventType = EventType.Training,
-            type = ProfileType.Strength,
+            type = ActivityType.StrengthTraining,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -133,7 +132,7 @@ class SaveProfileTest{
             name = "Test",
             rename = true,
             eventType = EventType.Training,
-            type = ProfileType.Any,
+            type = ActivityType.Any,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -155,7 +154,7 @@ class SaveProfileTest{
             name = "Test",
             rename = true,
             eventType = EventType.Training,
-            type = ProfileType.Running,
+            type = ActivityType.Running,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )

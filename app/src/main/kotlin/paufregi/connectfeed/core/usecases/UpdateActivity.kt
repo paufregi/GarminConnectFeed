@@ -17,7 +17,7 @@ class UpdateActivity @Inject constructor(private val garminRepository: GarminRep
         feel: Float?,
         effort: Float?
     ): Result<Unit> {
-        if (activity == null || name == null || (course != null && !activity.type.profileType.allowCourse))
+        if (activity == null || name == null || (course != null && !activity.type.allowCourse))
             return Result.failure("Validation error")
 
         return garminRepository.updateActivity(

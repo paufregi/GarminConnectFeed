@@ -13,8 +13,6 @@ data class Activity(
     val date: Instant? = null
 ) {
     fun match(other: Activity): Boolean =
-        this.type.profileType.compatible(other.type) &&
+        this.type.compatible(other.type) &&
                 (this.date != null && other.date != null && Duration.between(this.date, other.date).abs() <= Duration.ofMinutes(1))
-
-    
 }

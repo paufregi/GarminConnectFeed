@@ -19,7 +19,6 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.ProfileType
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.GetStravaActivities
@@ -99,9 +98,9 @@ class QuickEditViewModelTest {
     )
 
     val profiles = listOf(
-        Profile(name = "profile1", type = ProfileType.Running),
-        Profile(name = "profile2" ,type = ProfileType.Cycling),
-        Profile(name = "profile3", type = ProfileType.Running)
+        Profile(name = "profile1", type = ActivityType.Running),
+        Profile(name = "profile2" ,type = ActivityType.Cycling),
+        Profile(name = "profile3", type = ActivityType.Running)
     )
 
     @Before

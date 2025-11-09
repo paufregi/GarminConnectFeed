@@ -9,8 +9,8 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.models.ProfileType
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
@@ -33,9 +33,9 @@ class ProfilesScreenTest {
         composeTestRule.setContent {
             ProfilesContent(state = ProfilesState(
                 profiles = listOf(
-                    Profile(name = "Profile 1", type = ProfileType.Running),
-                    Profile(name = "Profile 2", type = ProfileType.Cycling),
-                    Profile(name = "Profile 3", type = ProfileType.Running)
+                    Profile(name = "Profile 1", type = ActivityType.Running),
+                    Profile(name = "Profile 2", type = ActivityType.Cycling),
+                    Profile(name = "Profile 3", type = ActivityType.Running)
                 )
             ))
         }
