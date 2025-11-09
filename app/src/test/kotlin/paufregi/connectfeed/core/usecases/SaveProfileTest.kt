@@ -119,7 +119,7 @@ class SaveProfileTest{
         val res = useCase(profile)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Can't have course for Strength activity type")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Can't have course for Strength Training activity type")
 
         verify { auth.getUser() }
         confirmVerified(auth, repo)
