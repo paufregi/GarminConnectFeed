@@ -90,12 +90,12 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
 
     val order: Int
         get() = when (parent ?: this) {
-            Running -> 0
-            Cycling -> 1
-            Swimming -> 2
-            Fitness -> 3
-            Other -> 4
-            Any -> 5
+            Any -> 0
+            Running -> 1
+            Cycling -> 2
+            Swimming -> 3
+            Fitness -> 4
+            Other -> 5
             Unknown -> 6
             else -> 7
         }
