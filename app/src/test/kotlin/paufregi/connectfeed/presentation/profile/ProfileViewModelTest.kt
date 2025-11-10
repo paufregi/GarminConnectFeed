@@ -187,7 +187,6 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
@@ -221,7 +220,6 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
@@ -256,7 +254,6 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
@@ -291,7 +288,6 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
@@ -325,14 +321,12 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
             getProfile(0)
             getCourses()
         }
-        
     }
 
     @Test
@@ -361,14 +355,12 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
             getProfile(0)
             getCourses()
         }
-        
     }
 
     @Test
@@ -396,14 +388,12 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
             getProfile(0)
             getCourses()
         }
-        
     }
 
     @Test
@@ -431,14 +421,12 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
             getProfile(0)
             getCourses()
         }
-        
     }
 
     @Test
@@ -466,14 +454,12 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
             getProfile(0)
             getCourses()
         }
-        
     }
 
     @Test
@@ -501,14 +487,12 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
             getProfile(0)
             getCourses()
         }
-        
     }
 
     @Test
@@ -536,14 +520,12 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
             getProfile(0)
             getCourses()
         }
-        
     }
 
     @Test
@@ -572,7 +554,6 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
@@ -580,7 +561,6 @@ class ProfileViewModelTest {
             getCourses()
             saveProfile(Profile())
         }
-        
     }
 
     @Test
@@ -609,7 +589,6 @@ class ProfileViewModelTest {
         verify{
             savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
-
             getEventTypes()
         }
         coVerify {
@@ -617,6 +596,5 @@ class ProfileViewModelTest {
             getCourses()
             saveProfile(Profile())
         }
-        
     }
 }
