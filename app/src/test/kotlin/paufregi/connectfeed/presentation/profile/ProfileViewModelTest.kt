@@ -346,7 +346,7 @@ class ProfileViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            viewModel.onAction(ProfileAction.SetType(ActivityType .Running))
+            viewModel.onAction(ProfileAction.SetType(ActivityType.Running))
             viewModel.onAction(ProfileAction.SetCourse(courses[0]))
             skipItems(2)
             val state = awaitItem()
