@@ -33,6 +33,7 @@ class SaveProfileTest{
 
     @After
     fun tearDown(){
+        confirmVerified(auth, repo)
         clearAllMocks()
     }
 
@@ -56,7 +57,6 @@ class SaveProfileTest{
 
         verify { auth.getUser() }
         coVerify { repo.saveProfile(user, profile) }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -78,7 +78,6 @@ class SaveProfileTest{
         assertThat(res.exceptionOrNull()?.message).isEqualTo("User must be logged in")
 
         verify { auth.getUser() }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -100,7 +99,6 @@ class SaveProfileTest{
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Name cannot be empty")
 
         verify { auth.getUser() }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -122,7 +120,6 @@ class SaveProfileTest{
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Can't have course for Strength Training activity type")
 
         verify { auth.getUser() }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -144,7 +141,6 @@ class SaveProfileTest{
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Can't have course for Any activity type")
 
         verify { auth.getUser() }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -166,6 +162,5 @@ class SaveProfileTest{
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Course not compatible with profile")
 
         verify { auth.getUser() }
-        confirmVerified(auth, repo)
     }
 }

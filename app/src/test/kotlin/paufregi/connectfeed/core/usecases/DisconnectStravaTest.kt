@@ -23,6 +23,7 @@ class DisconnectStravaTest {
 
     @After
     fun tearDown(){
+        confirmVerified(repo)
         clearAllMocks()
     }
 
@@ -31,6 +32,5 @@ class DisconnectStravaTest {
         coEvery { repo.clear() } returns Unit
         useCase()
         coVerify { repo.clear() }
-        confirmVerified(repo)
     }
 }

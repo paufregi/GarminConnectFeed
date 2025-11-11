@@ -26,6 +26,7 @@ class GetUserTest{
 
     @After
     fun tearDown(){
+        confirmVerified(repo)
         clearAllMocks()
     }
 
@@ -43,7 +44,6 @@ class GetUserTest{
         }
 
         coVerify { repo.getUser() }
-        confirmVerified(repo)
     }
 
     @Test
@@ -57,6 +57,5 @@ class GetUserTest{
             cancelAndIgnoreRemainingEvents()
         }
         coVerify { repo.getUser() }
-        confirmVerified(repo)
     }
 }

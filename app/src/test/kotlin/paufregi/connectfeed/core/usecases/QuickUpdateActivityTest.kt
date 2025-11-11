@@ -47,6 +47,7 @@ class QuickUpdateActivityTest{
 
     @After
     fun tearDown(){
+        confirmVerified(repo)
         clearAllMocks()
     }
 
@@ -57,7 +58,6 @@ class QuickUpdateActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateActivity(activity, profile.name, profile.eventType, profile.course, 20, 50f, 90f) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -66,8 +66,6 @@ class QuickUpdateActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(repo)
     }
 
     @Test
@@ -76,8 +74,6 @@ class QuickUpdateActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(repo)
     }
 
     @Test
@@ -86,7 +82,5 @@ class QuickUpdateActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(repo)
     }
 }

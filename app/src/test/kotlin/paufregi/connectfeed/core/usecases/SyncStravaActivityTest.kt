@@ -42,6 +42,7 @@ class SyncStravaActivityTest{
 
     @After
     fun tearDown(){
+        confirmVerified(repo)
         clearAllMocks()
     }
 
@@ -54,7 +55,6 @@ class SyncStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, activity.name, expectedDescription, true) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -65,7 +65,6 @@ class SyncStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, activity.name, description, true) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -85,7 +84,6 @@ class SyncStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, activity.name, description, false) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -94,8 +92,6 @@ class SyncStravaActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(repo)
     }
 
     @Test
@@ -104,8 +100,6 @@ class SyncStravaActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(repo)
     }
 
     @Test
@@ -114,7 +108,5 @@ class SyncStravaActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(repo)
     }
 }

@@ -27,6 +27,7 @@ class GetLatestReleaseTest {
 
     @After
     fun tearDown(){
+        confirmVerified(repo)
         clearAllMocks()
     }
 
@@ -42,7 +43,6 @@ class GetLatestReleaseTest {
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(release)
         coVerify { repo.getLatestRelease() }
-        confirmVerified(repo)
     }
 
     @Test
@@ -52,6 +52,5 @@ class GetLatestReleaseTest {
 
         assertThat(res.isSuccess).isFalse()
         coVerify { repo.getLatestRelease() }
-        confirmVerified(repo)
     }
 }

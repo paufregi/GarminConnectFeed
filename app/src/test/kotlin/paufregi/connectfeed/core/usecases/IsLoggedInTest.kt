@@ -26,6 +26,7 @@ class IsLoggedInTest{
 
     @After
     fun tearDown(){
+        confirmVerified(authRepo)
         clearAllMocks()
     }
 
@@ -41,7 +42,6 @@ class IsLoggedInTest{
         coVerify {
             authRepo.getUser()
         }
-        confirmVerified(authRepo)
     }
 
     @Test
@@ -56,6 +56,5 @@ class IsLoggedInTest{
         coVerify {
             authRepo.getUser()
         }
-        confirmVerified(authRepo)
     }
 }

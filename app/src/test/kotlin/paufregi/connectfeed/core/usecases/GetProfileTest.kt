@@ -27,6 +27,7 @@ class GetProfileTest{
 
     @After
     fun tearDown(){
+        confirmVerified(repo)
         clearAllMocks()
     }
 
@@ -48,7 +49,6 @@ class GetProfileTest{
 
         assertThat(res).isEqualTo(profile)
         coVerify { repo.getProfile(1) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -59,6 +59,5 @@ class GetProfileTest{
 
         assertThat(res).isNull()
         coVerify { repo.getProfile(1) }
-        confirmVerified(repo)
     }
 }

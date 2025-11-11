@@ -43,6 +43,7 @@ class SyncWeightTest {
 
     @After
     fun tearDown(){
+        confirmVerified(repo, Formatter, FitWriter)
         clearAllMocks()
         unmockkObject(Formatter::class)
         unmockkObject(FitWriter::class)
@@ -75,7 +76,6 @@ class SyncWeightTest {
             FitWriter.weights(any(), weights)
         }
         coVerify { repo.uploadFile(any()) }
-        confirmVerified(repo, Formatter, FitWriter)
     }
 
     @Test
@@ -92,7 +92,6 @@ class SyncWeightTest {
             FitWriter.weights(any(), emptyList())
         }
         coVerify { repo.uploadFile(any()) }
-        confirmVerified(repo, Formatter, FitWriter)
     }
 
     @Test
@@ -123,6 +122,5 @@ class SyncWeightTest {
             FitWriter.weights(any(), weights)
         }
         coVerify { repo.uploadFile(any()) }
-        confirmVerified(repo, Formatter, FitWriter)
     }
 }

@@ -19,7 +19,6 @@ class GetActivityTypesForProfileTest {
 
     @After
     fun tearDown(){
-        clearAllMocks()
     }
 
     @Test

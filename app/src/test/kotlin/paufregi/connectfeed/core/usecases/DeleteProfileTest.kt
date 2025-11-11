@@ -30,6 +30,7 @@ class DeleteProfileTest {
 
     @After
     fun tearDown(){
+        confirmVerified(auth, repo)
         clearAllMocks()
     }
 
@@ -43,7 +44,6 @@ class DeleteProfileTest {
 
         verify { auth.getUser() }
         coVerify { repo.deleteProfile(user, profile) }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -54,6 +54,5 @@ class DeleteProfileTest {
         useCase(profile)
 
         verify { auth.getUser() }
-        confirmVerified(auth, repo)
     }
 }

@@ -37,6 +37,7 @@ class SyncStravaWeightTest {
 
     @After
     fun tearDown(){
+        confirmVerified(repo, isStravaLoggedIn)
         clearAllMocks()
     }
 
@@ -82,7 +83,6 @@ class SyncStravaWeightTest {
 
         verify { isStravaLoggedIn.invoke() }
         coVerify { repo.updateStravaProfile(any()) }
-        confirmVerified(repo, isStravaLoggedIn)
     }
 
     @Test
@@ -124,7 +124,6 @@ class SyncStravaWeightTest {
         assertThat(res.isSuccess).isTrue()
 
         verify { isStravaLoggedIn.invoke() }
-        confirmVerified(repo, isStravaLoggedIn)
     }
 
     @Test
@@ -153,7 +152,6 @@ class SyncStravaWeightTest {
         assertThat(res.isSuccess).isTrue()
 
         verify { isStravaLoggedIn.invoke() }
-        confirmVerified(repo, isStravaLoggedIn)
     }
 
     @Test
@@ -165,7 +163,6 @@ class SyncStravaWeightTest {
 
         assertThat(res.isSuccess).isTrue()
         verify { isStravaLoggedIn.invoke() }
-        confirmVerified(repo, isStravaLoggedIn)
     }
 
     @Test
@@ -196,6 +193,5 @@ class SyncStravaWeightTest {
 
         coVerify { repo.updateStravaProfile(any()) }
         verify { isStravaLoggedIn.invoke() }
-        confirmVerified(repo, isStravaLoggedIn)
     }
 }

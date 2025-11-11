@@ -26,6 +26,7 @@ class StravaCodeExchangeTest{
 
     @After
     fun tearDown(){
+        confirmVerified(repo)
         clearAllMocks()
     }
 
@@ -44,7 +45,6 @@ class StravaCodeExchangeTest{
             repo.exchange("CLIENT_ID", "CLIENT_SECRET", "code")
             repo.saveToken(token)
         }
-        confirmVerified(repo)
     }
 
     @Test
@@ -61,7 +61,6 @@ class StravaCodeExchangeTest{
             repo.exchange("CLIENT_ID", "CLIENT_SECRET", "code")
         }
         coVerify { repo.exchange("CLIENT_ID", "CLIENT_SECRET", "code") }
-        confirmVerified(repo)
 
     }
 

@@ -22,6 +22,7 @@ class SignOutTest{
 
     @After
     fun tearDown(){
+        confirmVerified(authRepo)
         clearAllMocks()
     }
 
@@ -31,6 +32,5 @@ class SignOutTest{
         useCase()
 
         coVerify { authRepo.clear() }
-        confirmVerified(authRepo)
     }
 }

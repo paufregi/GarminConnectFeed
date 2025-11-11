@@ -51,6 +51,7 @@ class QuickUpdateStravaActivityTest{
 
     @After
     fun tearDown(){
+        confirmVerified(repo)
         clearAllMocks()
     }
 
@@ -63,7 +64,6 @@ class QuickUpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -84,7 +84,6 @@ class QuickUpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, activity.name, expectedDescription, true) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -104,7 +103,6 @@ class QuickUpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, profile.name, description, true) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -124,7 +122,6 @@ class QuickUpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, profile.name, description, false) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -133,8 +130,6 @@ class QuickUpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(repo)
     }
 
     @Test
@@ -143,8 +138,6 @@ class QuickUpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(repo)
     }
 
     @Test
@@ -153,7 +146,5 @@ class QuickUpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(repo)
     }
 }

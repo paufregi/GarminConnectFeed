@@ -34,6 +34,7 @@ class GetProfilesTest{
 
     @After
     fun tearDown(){
+        confirmVerified(auth, repo)
         clearAllMocks()
     }
 
@@ -68,7 +69,6 @@ class GetProfilesTest{
 
         verify { auth.getUser() }
         coVerify { repo.getAllProfiles(user) }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -84,7 +84,6 @@ class GetProfilesTest{
 
         verify { auth.getUser() }
         coVerify { repo.getAllProfiles(user) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -98,6 +97,5 @@ class GetProfilesTest{
         }
 
         verify { auth.getUser() }
-        confirmVerified(repo)
     }
 }
