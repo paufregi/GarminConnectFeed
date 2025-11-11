@@ -58,6 +58,7 @@ class StravaAuthInterceptorTest {
 
     @After
     fun tearDown() {
+        confirmVerified(authRepo)
         clearAllMocks()
     }
 
@@ -73,7 +74,6 @@ class StravaAuthInterceptorTest {
         assertThat(req.headers["Authorization"]).isEqualTo("Bearer ${token.accessToken}")
 
         verify { authRepo.getToken() }
-        confirmVerified(authRepo)
     }
 
     @Test
@@ -95,7 +95,6 @@ class StravaAuthInterceptorTest {
             authRepo.refresh("CLIENT_ID", "CLIENT_SECRET", expiredToken.refreshToken)
             authRepo.saveToken(validToken)
         }
-        confirmVerified(authRepo)
     }
 
     @Test
@@ -107,7 +106,6 @@ class StravaAuthInterceptorTest {
         assertThat(res.isSuccessful).isFalse()
 
         verify { authRepo.getToken() }
-        confirmVerified(authRepo)
     }
 
     @Test
@@ -124,6 +122,5 @@ class StravaAuthInterceptorTest {
 
         verify { authRepo.getToken() }
         coVerify { authRepo.refresh("CLIENT_ID", "CLIENT_SECRET", expiredToken.refreshToken) }
-        confirmVerified(authRepo)
     }
 }

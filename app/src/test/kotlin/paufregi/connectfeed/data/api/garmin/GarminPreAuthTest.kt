@@ -46,7 +46,6 @@ class GarminPreAuthTest {
         assertThat(request.headers["authorization"]).contains("""oauth_version="1.0"""")
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(preAuthToken)
-
     }
 
     @Test
