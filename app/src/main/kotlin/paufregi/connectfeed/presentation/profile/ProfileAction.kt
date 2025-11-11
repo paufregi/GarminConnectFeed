@@ -7,7 +7,7 @@ import paufregi.connectfeed.core.models.EventType
 
 sealed interface ProfileAction {
     data class SetName(val name: String) : ProfileAction
-    data class SetActivityType(val activityType: ActivityType) : ProfileAction
+    data class SetType(val type: ActivityType) : ProfileAction
     data class SetEventType(val eventType: EventType?) : ProfileAction
     data class SetCourse(val course: Course?) : ProfileAction
     data class SetWater(val water: Int?) : ProfileAction

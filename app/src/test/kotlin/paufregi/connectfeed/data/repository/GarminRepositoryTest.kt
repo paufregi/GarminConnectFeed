@@ -53,6 +53,7 @@ class GarminRepositoryTest {
 
     @After
     fun tearDown(){
+        confirmVerified(dao, connect, strava)
         clearAllMocks()
     }
 
@@ -68,7 +69,6 @@ class GarminRepositoryTest {
         assertThat(res.getOrNull()).isEqualTo(user)
 
         coVerify { connect.getUserProfile() }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -80,7 +80,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isFalse()
 
         coVerify { connect.getUserProfile() }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -92,7 +91,6 @@ class GarminRepositoryTest {
         assertThat(res).isNull()
 
         coVerify { dao.getProfile(1) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -102,7 +100,7 @@ class GarminRepositoryTest {
                 id = 1,
                 name = "profile 1",
                 eventType = CoreEventType.Training,
-                activityType = CoreActivityType.Cycling,
+                type = CoreActivityType.Cycling,
                 course = CoreCourse(1, "course 1", 10234.00, CoreActivityType.Cycling),
                 water = 2
             ),
@@ -110,7 +108,7 @@ class GarminRepositoryTest {
                 id = 2,
                 name = "profile 2",
                 eventType = CoreEventType.Recreation,
-                activityType = CoreActivityType.Running,
+                type = CoreActivityType.Running,
                 course = CoreCourse(2, "course 2", 15007.00, CoreActivityType.Running),
             )
         )
@@ -120,7 +118,7 @@ class GarminRepositoryTest {
                 userId = user.id,
                 name = "profile 1",
                 eventType = CoreEventType.Training,
-                activityType = CoreActivityType.Cycling,
+                type = CoreActivityType.Cycling,
                 course = CoreCourse(1, "course 1", 10234.00, CoreActivityType.Cycling),
                 water = 2
             ),
@@ -129,7 +127,7 @@ class GarminRepositoryTest {
                 userId = user.id,
                 name = "profile 2",
                 eventType = CoreEventType.Recreation,
-                activityType = CoreActivityType.Running,
+                type = CoreActivityType.Running,
                 course = CoreCourse(2, "course 2", 15007.00, CoreActivityType.Running),
             )
         )
@@ -144,7 +142,6 @@ class GarminRepositoryTest {
         }
 
         coVerify { dao.getAllProfiles(user.id) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -159,7 +156,6 @@ class GarminRepositoryTest {
         }
 
         coVerify { dao.getAllProfiles(user.id) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -168,7 +164,7 @@ class GarminRepositoryTest {
             id = 1,
             name = "profile",
             eventType = CoreEventType.Training,
-            activityType = CoreActivityType.Cycling,
+            type = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
         )
@@ -177,7 +173,7 @@ class GarminRepositoryTest {
             userId = user.id,
             name = "profile",
             eventType = CoreEventType.Training,
-            activityType = CoreActivityType.Cycling,
+            type = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
         )
@@ -189,7 +185,6 @@ class GarminRepositoryTest {
         assertThat(res).isEqualTo(profile)
 
         coVerify { dao.getProfile(1) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -197,7 +192,7 @@ class GarminRepositoryTest {
         val profile = Profile(
             name = "profile",
             eventType = CoreEventType.Training,
-            activityType = CoreActivityType.Cycling,
+            type = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
         )
@@ -206,7 +201,7 @@ class GarminRepositoryTest {
             name = "profile",
             userId = user.id,
             eventType = CoreEventType.Training,
-            activityType = CoreActivityType.Cycling,
+            type = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
             water = 2
         )
@@ -216,7 +211,6 @@ class GarminRepositoryTest {
         repo.saveProfile(user, profile)
 
         coVerify { dao.saveProfile(profileEntity) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -225,7 +219,7 @@ class GarminRepositoryTest {
             id = 1,
             name = "profile",
             eventType = CoreEventType.Training,
-            activityType = CoreActivityType.Cycling,
+            type = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
         )
 
@@ -234,7 +228,7 @@ class GarminRepositoryTest {
             userId = user.id,
             name = "profile",
             eventType = CoreEventType.Training,
-            activityType = CoreActivityType.Cycling,
+            type = CoreActivityType.Cycling,
             course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
         )
 
@@ -243,7 +237,6 @@ class GarminRepositoryTest {
         repo.deleteProfile(user, profile)
 
         coVerify { dao.deleteProfile(profileEntity) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -277,7 +270,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(expected)
         coVerify { connect.getActivities(5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -314,7 +306,6 @@ class GarminRepositoryTest {
         assertThat(res2.isSuccess).isTrue()
         assertThat(res2.getOrNull()).isEqualTo(expected)
         coVerify(exactly = 1) { connect.getActivities(5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -351,7 +342,6 @@ class GarminRepositoryTest {
         assertThat(res2.isSuccess).isTrue()
         assertThat(res2.getOrNull()).isEqualTo(expected)
         coVerify(exactly = 2) { connect.getActivities(5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -363,7 +353,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
         coVerify { connect.getActivities(5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -375,7 +364,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
         coVerify { connect.getActivities(5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -386,7 +374,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isFalse()
         coVerify { connect.getActivities(5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -399,7 +386,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isFalse()
         assertThat(res2.isSuccess).isFalse()
         coVerify(exactly = 2) { connect.getActivities(5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -429,7 +415,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(expected)
         coVerify { strava.getActivities(perPage = 5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -462,7 +447,6 @@ class GarminRepositoryTest {
         assertThat(res2.isSuccess).isTrue()
         assertThat(res2.getOrNull()).isEqualTo(expected)
         coVerify(exactly = 1) { strava.getActivities(perPage = 5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -495,7 +479,6 @@ class GarminRepositoryTest {
         assertThat(res2.isSuccess).isTrue()
         assertThat(res2.getOrNull()).isEqualTo(expected)
         coVerify(exactly = 2) { strava.getActivities(perPage = 5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -507,7 +490,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
         coVerify { strava.getActivities(perPage = 5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -519,7 +501,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
         coVerify { strava.getActivities(perPage = 5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -530,7 +511,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isFalse()
         coVerify { strava.getActivities(perPage = 5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -543,7 +523,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isFalse()
         assertThat(res2.isSuccess).isFalse()
         coVerify(exactly = 2) { strava.getActivities(perPage = 5) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -556,7 +535,7 @@ class GarminRepositoryTest {
 
         val expected = listOf(
             CoreCourse(id = 1, name = "course 1", distance = 10234.00, type = CoreActivityType.Running),
-            CoreCourse(id = 2, name = "course 2", distance = 15007.00, type = CoreActivityType.Cycling),
+            CoreCourse(id = 2, name = "course 2", distance = 15007.00, type = CoreActivityType.RoadBiking),
         )
 
         val res = repo.getCourses()
@@ -564,7 +543,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(expected)
         coVerify { connect.getCourses() }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -585,7 +563,6 @@ class GarminRepositoryTest {
         assertThat(res2.isSuccess).isTrue()
         assertThat(res2.getOrNull()).isEqualTo(expected)
         coVerify(exactly = 1) { connect.getCourses() }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -606,7 +583,6 @@ class GarminRepositoryTest {
         assertThat(res2.isSuccess).isTrue()
         assertThat(res2.getOrNull()).isEqualTo(expected)
         coVerify(exactly = 2) { connect.getCourses() }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -618,7 +594,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(emptyList<CoreCourse>())
         coVerify { connect.getCourses() }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -630,7 +605,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(emptyList<CoreCourse>())
         coVerify { connect.getCourses() }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -641,7 +615,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isFalse()
         coVerify { connect.getCourses() }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -654,7 +627,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isFalse()
         assertThat(res2.isSuccess).isFalse()
         coVerify(exactly = 2) { connect.getCourses() }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -694,7 +666,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isTrue()
         coVerify { connect.updateActivity(activity.id, expectedRequest) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -731,7 +702,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isFalse()
         coVerify { connect.updateActivity(activity.id, expectedRequest) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -763,7 +733,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isTrue()
         coVerify { strava.updateActivity(activity.id, expectedRequest) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -795,7 +764,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isFalse()
         coVerify { strava.updateActivity(activity.id, expectedRequest) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -808,7 +776,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isTrue()
         coVerify { strava.updateProfile(expectedRequest) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -821,7 +788,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isFalse()
         coVerify { strava.updateProfile(expectedRequest) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -834,7 +800,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isTrue()
         coVerify { connect.uploadFile(any()) }
-        confirmVerified(dao, connect, strava)
     }
 
     @Test
@@ -847,6 +812,5 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isFalse()
         coVerify { connect.uploadFile(any()) }
-        confirmVerified(dao, connect, strava)
     }
 }

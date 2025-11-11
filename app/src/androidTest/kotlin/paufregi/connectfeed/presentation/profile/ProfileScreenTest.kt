@@ -37,7 +37,7 @@ class ProfileScreenTest {
             ))
         }
         composeTestRule.onNodeWithText("Name").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Activity type").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Type").assertIsDisplayed()
         composeTestRule.onNodeWithText("Event type").assertIsDisplayed()
         composeTestRule.onNodeWithText("Water").assertIsDisplayed()
         composeTestRule.onNodeWithText("Rename activity").assertIsDisplayed()
@@ -69,7 +69,7 @@ class ProfileScreenTest {
                 process = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
-                    activityType = ActivityType.Running,
+                    type = ActivityType.Running,
                     eventType = EventType.Training,
                     course = Course(id = 1, name = "Course 1", distance = 10234.00, type = ActivityType.Running),
                     water = 10,
@@ -81,7 +81,7 @@ class ProfileScreenTest {
             )
         }
         composeTestRule.onNodeWithText("Name").assertTextContains("Profile 1")
-        composeTestRule.onNodeWithText("Activity type").assertTextContains("Running")
+        composeTestRule.onNodeWithText("Type").assertTextContains("Running")
         composeTestRule.onNodeWithText("Event type").assertTextContains(EventType.Training.name)
         composeTestRule.onNodeWithText("Course").assertTextContains("Course 1")
         composeTestRule.onNodeWithText("Water").assertTextContains("10")
@@ -100,7 +100,7 @@ class ProfileScreenTest {
                 process = ProcessState.Idle,
                 profile = Profile(
                     name = "",
-                    activityType = ActivityType.Running,
+                    type = ActivityType.Running,
                     eventType = EventType.Training,
                     course = Course(id = 1, name = "Course 1", distance = 10234.00, type = ActivityType.Running),
                 )
@@ -117,7 +117,7 @@ class ProfileScreenTest {
                 process = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
-                    activityType = ActivityType.Running,
+                    type = ActivityType.Running,
                 )
             ))
         }
@@ -132,7 +132,7 @@ class ProfileScreenTest {
                 process = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
-                    activityType = ActivityType.Any,
+                    type = ActivityType.Any,
                     eventType = EventType.Training,
                 )
             ))
@@ -148,7 +148,7 @@ class ProfileScreenTest {
                 process = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
-                    activityType = ActivityType.Strength,
+                    type = ActivityType.StrengthTraining,
                     eventType = EventType.Training
                 )
             ))

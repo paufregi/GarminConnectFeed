@@ -45,9 +45,10 @@ import paufregi.connectfeed.presentation.ui.components.Screen
 import paufregi.connectfeed.presentation.ui.components.TextIcon
 import paufregi.connectfeed.presentation.ui.components.failureInfo
 import paufregi.connectfeed.presentation.ui.components.successInfo
-import paufregi.connectfeed.presentation.ui.icons.Connect
-import paufregi.connectfeed.presentation.ui.icons.Logo
-import paufregi.connectfeed.presentation.ui.icons.Strava
+import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
+import paufregi.connectfeed.presentation.ui.icons.garmin.Logo
+import paufregi.connectfeed.presentation.ui.icons.strava.Logo
+import paufregi.connectfeed.presentation.ui.icons.strava.Strava
 
 @Composable
 @ExperimentalMaterial3Api

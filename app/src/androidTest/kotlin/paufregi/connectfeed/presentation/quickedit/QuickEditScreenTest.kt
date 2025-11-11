@@ -60,9 +60,9 @@ class QuickEditScreenTest {
     )
 
     val profiles = listOf(
-        Profile(name = "profile1", activityType = ActivityType.Running),
-        Profile(name = "profile2", activityType = ActivityType.Cycling),
-        Profile(name = "profile3", activityType = ActivityType.Running)
+        Profile(name = "profile1", type = ActivityType.Running),
+        Profile(name = "profile2", type = ActivityType.Cycling),
+        Profile(name = "profile3", type = ActivityType.Running)
     )
 
     @Test

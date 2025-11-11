@@ -72,7 +72,7 @@ internal fun SyncStravaContent(
             selected = state.activity?.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
             items = state.activities
-                .filter { state.stravaActivity?.type == null || it.type == state.stravaActivity.type }
+                .filter { state.stravaActivity == null || it.type.compatible(state.stravaActivity.type) }
                 .map { it.toDropdownItem { onAction(SyncStravaAction.SetActivity(it)) } }
         )
         if (state.stravaActivities.isNotEmpty()) {
@@ -81,7 +81,7 @@ internal fun SyncStravaContent(
                 selected = state.stravaActivity?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
                 items = state.stravaActivities
-                    .filter { state.activity?.type == null || it.type == state.activity.type }
+                    .filter { state.activity == null || it.type.compatible(state.activity.type) }
                     .map { it.toDropdownItem { onAction(SyncStravaAction.SetStravaActivity(it)) } }
             )
         }

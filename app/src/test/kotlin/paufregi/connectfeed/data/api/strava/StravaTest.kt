@@ -41,6 +41,7 @@ class StravaTest {
 
     @After
     fun tearDown() {
+        confirmVerified(authInterceptor)
         clearAllMocks()
     }
 
@@ -70,7 +71,6 @@ class StravaTest {
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(expected)
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -82,7 +82,6 @@ class StravaTest {
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(emptyList<Activity>())
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -93,7 +92,6 @@ class StravaTest {
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -108,7 +106,6 @@ class StravaTest {
 
         assertThat(res.isSuccessful).isTrue()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -123,7 +120,6 @@ class StravaTest {
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -134,7 +130,6 @@ class StravaTest {
 
         assertThat(res.isSuccessful).isTrue()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -145,6 +140,5 @@ class StravaTest {
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 }

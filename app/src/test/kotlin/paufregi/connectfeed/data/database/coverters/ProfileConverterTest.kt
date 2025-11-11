@@ -14,7 +14,7 @@ class ProfileConverterTest {
     val profile = Profile(
         id = 1,
         name = "profile",
-        activityType = ActivityType.Cycling,
+        type = ActivityType.Cycling,
         eventType = EventType.Training,
         course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
         water = 550,
@@ -28,7 +28,7 @@ class ProfileConverterTest {
         id = 1,
         userId = user.id,
         name = "profile",
-        activityType = ActivityType.Cycling,
+        type = ActivityType.Cycling,
         eventType = EventType.Training,
         course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
         water = 550,

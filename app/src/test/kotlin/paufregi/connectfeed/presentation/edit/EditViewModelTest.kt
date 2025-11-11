@@ -116,6 +116,7 @@ class EditViewModelTest {
 
     @After
     fun tearDown() {
+        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
         clearAllMocks()
     }
 
@@ -162,14 +163,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity
-        )
     }
 
     @Test
@@ -215,14 +208,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -268,14 +253,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -321,14 +298,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -374,14 +343,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -427,14 +388,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity
-        )
     }
 
     @Test
@@ -482,14 +435,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -539,14 +484,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -596,14 +533,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -651,14 +580,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -708,14 +629,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -765,14 +678,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -820,14 +725,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -877,14 +774,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -934,14 +823,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -989,15 +870,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
-
     }
 
     @Test
@@ -1045,15 +917,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
-
     }
 
     @Test
@@ -1101,14 +964,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify { getEventTypes() }
-        confirmVerified(
-            getActivities,
-            getStravaActivities,
-            getEventTypes,
-            getCourses,
-            updateActivity,
-            updateStravaActivity,
-        )
     }
 
     @Test
@@ -1149,8 +1004,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
-
     }
 
     @Test
@@ -1191,8 +1044,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
-
     }
 
     @Test
@@ -1233,8 +1084,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
-
     }
 
     @Test
@@ -1275,8 +1124,6 @@ class EditViewModelTest {
             getCourses(false)
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
-
     }
 
     @Test
@@ -1331,8 +1178,6 @@ class EditViewModelTest {
             updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true)
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
-
     }
 
     @Test
@@ -1387,8 +1232,6 @@ class EditViewModelTest {
             updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true)
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
-
     }
 
     @Test
@@ -1397,10 +1240,36 @@ class EditViewModelTest {
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
         coEvery { getCourses(any()) } returns Result.success(courses)
         every { getEventTypes() } returns eventTypes
-        coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
-        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
+        coEvery {
+            updateActivity(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns Result.success(Unit)
+        coEvery {
+            updateStravaActivity(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns Result.failure("error")
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(
+            getActivities,
+            getStravaActivities,
+            getEventTypes,
+            getCourses,
+            updateActivity,
+            updateStravaActivity
+        )
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetActivity(activities[0]))
@@ -1435,15 +1304,21 @@ class EditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify{
+        coVerify {
             getActivities(false)
             getStravaActivities(false)
             getCourses(false)
             updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f)
-            updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true)
+            updateStravaActivity(
+                stravaActivities[0],
+                "name",
+                "description",
+                eventTypes[0],
+                "recovery",
+                true
+            )
         }
-        verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        verify { getEventTypes() }
     }
 
     @Test
@@ -1498,7 +1373,6 @@ class EditViewModelTest {
             updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true)
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
     }
 
     @Test
@@ -1542,6 +1416,5 @@ class EditViewModelTest {
             getCourses(true)
         }
         verify{ getEventTypes() }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
     }
 }

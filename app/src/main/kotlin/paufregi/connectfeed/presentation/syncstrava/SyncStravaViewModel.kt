@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.SyncStravaActivity
-import paufregi.connectfeed.core.utils.getOrMatch
 import paufregi.connectfeed.core.utils.runCatchingResult
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
@@ -59,13 +58,13 @@ class SyncStravaViewModel @Inject constructor(
         is SyncStravaAction.SetActivity -> _state.update {
             it.copy(
                 activity = action.activity,
-                stravaActivity = it.stravaActivity.getOrMatch(action.activity, it.stravaActivities),
+                stravaActivity = it.stravaActivity?.takeIf { a -> a.type.compatible(action.activity.type) } ?: it.stravaActivities.find { a -> a.match(action.activity) },
             )
         }
         is SyncStravaAction.SetStravaActivity -> _state.update {
             it.copy(
                 stravaActivity = action.activity,
-                activity = it.activity.getOrMatch(action.activity, it.activities),
+                activity = it.activity?.takeIf { a -> a.type.compatible(action.activity.type) } ?: it.activities.find { a -> a.match(action.activity) },
             )
         }
         is SyncStravaAction.SetDescription -> _state.update { it.copy(description = action.description) }

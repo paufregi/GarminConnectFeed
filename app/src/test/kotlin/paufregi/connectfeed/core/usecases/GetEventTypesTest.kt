@@ -19,7 +19,6 @@ class GetEventTypesTest {
 
     @After
     fun tearDown(){
-        clearAllMocks()
     }
 
     @Test

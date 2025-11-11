@@ -40,12 +40,12 @@ import paufregi.connectfeed.presentation.ui.components.TextFeel
 import paufregi.connectfeed.presentation.ui.components.failureInfo
 import paufregi.connectfeed.presentation.ui.components.successInfo
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
-import paufregi.connectfeed.presentation.ui.icons.Connect
-import paufregi.connectfeed.presentation.ui.icons.FaceHappy
-import paufregi.connectfeed.presentation.ui.icons.FaceNormal
-import paufregi.connectfeed.presentation.ui.icons.FaceSad
-import paufregi.connectfeed.presentation.ui.icons.FaceVeryHappy
-import paufregi.connectfeed.presentation.ui.icons.FaceVerySad
+import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
+import paufregi.connectfeed.presentation.ui.icons.garmin.FaceHappy
+import paufregi.connectfeed.presentation.ui.icons.garmin.FaceNormal
+import paufregi.connectfeed.presentation.ui.icons.garmin.FaceSad
+import paufregi.connectfeed.presentation.ui.icons.garmin.FaceVeryHappy
+import paufregi.connectfeed.presentation.ui.icons.garmin.FaceVerySad
 import paufregi.connectfeed.presentation.ui.utils.launchStrava
 
 @Composable
@@ -88,7 +88,7 @@ internal fun QuickEditContent(
             selected = state.activity?.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
             items = state.activities
-                .filter { state.stravaActivity?.type == null || it.type == state.stravaActivity.type }
+                .filter { state.stravaActivity == null || it.type.compatible(state.stravaActivity.type) }
                 .map {
                     it.toDropdownItem {
                         onAction(QuickEditAction.SetActivity(it))
@@ -101,7 +101,7 @@ internal fun QuickEditContent(
                 selected = state.stravaActivity?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
                 items = state.stravaActivities
-                    .filter { state.activity?.type == null || it.type == state.activity.type }
+                    .filter { state.activity == null || it.type.compatible(state.activity.type) }
                     .map {
                         it.toDropdownItem {
                             onAction(QuickEditAction.SetStravaActivity(it))
@@ -115,8 +115,8 @@ internal fun QuickEditContent(
             modifier = Modifier.fillMaxWidth(),
             items = state.profiles
                 .filter {
-                    (it.activityType.match(state.activity?.type) &&
-                        it.activityType.match(state.stravaActivity?.type))
+                    (state.activity == null || it.type.compatible(state.activity.type)) &&
+                        (state.stravaActivity == null || it.type.compatible(state.stravaActivity.type))
                 }
                 .map {
                     it.toDropdownItem { onAction(QuickEditAction.SetProfile(it)) }

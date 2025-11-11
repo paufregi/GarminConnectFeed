@@ -41,6 +41,7 @@ class UpdateActivityTest{
 
     @After
     fun tearDown(){
+        confirmVerified(repo)
         clearAllMocks()
     }
 
@@ -52,7 +53,6 @@ class UpdateActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateActivity(activity, name, eventType, course, water, feel, effort) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -61,8 +61,6 @@ class UpdateActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(repo)
     }
 
     @Test
@@ -80,7 +78,5 @@ class UpdateActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(repo)
     }
 }

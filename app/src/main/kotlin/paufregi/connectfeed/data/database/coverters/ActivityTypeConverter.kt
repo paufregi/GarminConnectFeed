@@ -6,29 +6,16 @@ import paufregi.connectfeed.core.models.ActivityType
 class ActivityTypeConverter {
     @TypeConverter
     fun fromName(type: String?): ActivityType = when (type) {
-        ActivityType.Any.name -> ActivityType.Any
-        ActivityType.Running.name -> ActivityType.Running
-        ActivityType.TrailRunning.name -> ActivityType.TrailRunning
-        ActivityType.TreadmillRunning.name -> ActivityType.TreadmillRunning
-        ActivityType.Cycling.name -> ActivityType.Cycling
-        ActivityType.IndoorCycling.name -> ActivityType.IndoorCycling
-        ActivityType.EBiking.name -> ActivityType.EBiking
-        ActivityType.Swimming.name -> ActivityType.Swimming
-        ActivityType.OpenWaterSwimming.name -> ActivityType.OpenWaterSwimming
-        ActivityType.Strength.name -> ActivityType.Strength
-        ActivityType.Fitness.name -> ActivityType.Fitness
-        ActivityType.Walking.name -> ActivityType.Walking
-        ActivityType.Hiking.name -> ActivityType.Hiking
-        ActivityType.Rugby.name -> ActivityType.Rugby
-        ActivityType.Soccer.name -> ActivityType.Soccer
-        ActivityType.JumpRope.name -> ActivityType.JumpRope
-        ActivityType.Breathwork.name -> ActivityType.Breathwork
-        ActivityType.Meditation.name -> ActivityType.Meditation
-        ActivityType.Yoga.name -> ActivityType.Yoga
-        ActivityType.Other.name -> ActivityType.Other
+        ActivityType.Any::class.simpleName -> ActivityType.Any
+        ActivityType.Running::class.simpleName -> ActivityType.Running
+        ActivityType.Cycling::class.simpleName -> ActivityType.Cycling
+        ActivityType.Swimming::class.simpleName -> ActivityType.Swimming
+        ActivityType.StrengthTraining::class.simpleName -> ActivityType.StrengthTraining
+        ActivityType.Fitness::class.simpleName -> ActivityType.Fitness
+        ActivityType.Other::class.simpleName -> ActivityType.Other
         else -> ActivityType.Unknown
     }
 
     @TypeConverter
-    fun toName(type: ActivityType?): String? = type?.name
+    fun toName(type: ActivityType?): String? = type?.javaClass?.simpleName
 }

@@ -69,14 +69,16 @@ internal fun ProfileContent(
             value = state.profile.name,
             onValueChange = { onAction(ProfileAction.SetName(it)) },
             isError = state.profile.name.isBlank(),
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
         )
         Dropdown(
-            label = { Text("Activity type") },
-            selected = state.profile.activityType.toDropdownItem { },
+            label = { Text("Type") },
+            selected = state.profile.type.toDropdownItem { state.profile.type },
             modifier = Modifier.fillMaxWidth(),
-            items = state.activityTypes.map {
-                it.toDropdownItem { onAction(ProfileAction.SetActivityType(it)) }
+            items = state.types.map {
+                it.toDropdownItem { onAction(ProfileAction.SetType(it)) }
             }
         )
         Dropdown(
@@ -88,16 +90,16 @@ internal fun ProfileContent(
                     onAction(ProfileAction.SetEventType(it))
                 }
             },
-            isError = state.profile.activityType != ActivityType.Any && state.profile.eventType == null
+            isError = state.profile.type != ActivityType.Any && state.profile.eventType == null
 
         )
-        if (state.profile.activityType.allowCourseInProfile == true) {
+        if (state.profile.type.allowCourse) {
             Dropdown(
                 label = { Text("Course") },
                 selected = state.profile.course?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
                 items = state.courses
-                    .filter { it.type == state.profile.activityType || state.profile.activityType == ActivityType.Any }
+                    .filter { state.profile.type.compatible(it.type) }
                     .map {
                         it.toDropdownItem { onAction(ProfileAction.SetCourse(it)) }
                     }
@@ -108,7 +110,9 @@ internal fun ProfileContent(
             value = state.profile.water?.toString() ?: "",
             onValueChange = { onAction(ProfileAction.SetWater(it.toIntOrNull())) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -176,7 +180,9 @@ internal fun ProfileContent(
         }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth().padding(20.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
         ) {
             Button(
                 text = "Cancel",
@@ -186,7 +192,7 @@ internal fun ProfileContent(
             Button(
                 text = "Save",
                 enabled = state.profile.name.isNotBlank() &&
-                        (state.profile.activityType == ActivityType.Any || state.profile.eventType != null),
+                        (state.profile.type == ActivityType.Any || state.profile.eventType != null),
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()

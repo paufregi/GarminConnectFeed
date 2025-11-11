@@ -30,6 +30,7 @@ class GetStravaActivitiesTest{
 
     @After
     fun tearDown(){
+        confirmVerified(repo, strava)
         clearAllMocks()
     }
 
@@ -47,7 +48,6 @@ class GetStravaActivitiesTest{
 
         verify { strava() }
         coVerify { repo.getStravaActivities(5, true) }
-        confirmVerified(repo, strava)
     }
 
     @Test
@@ -60,7 +60,6 @@ class GetStravaActivitiesTest{
 
         verify { strava() }
         coVerify { repo.getStravaActivities(5, false) }
-        confirmVerified(repo, strava)
     }
 
     @Test
@@ -73,6 +72,5 @@ class GetStravaActivitiesTest{
 
         verify { strava() }
         assertThat(res.isSuccess).isTrue()
-        confirmVerified(repo, strava)
     }
 }

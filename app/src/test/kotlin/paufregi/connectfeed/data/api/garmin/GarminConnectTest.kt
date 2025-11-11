@@ -55,6 +55,7 @@ class GarminConnectTest {
 
     @After
     fun tearDown() {
+        confirmVerified(authInterceptor)
         clearAllMocks()
     }
 
@@ -67,7 +68,6 @@ class GarminConnectTest {
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(UserProfile(1, "Paul", "https://profile.image.com/large.jpg"))
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -78,7 +78,6 @@ class GarminConnectTest {
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -92,7 +91,6 @@ class GarminConnectTest {
         assertThat(request.url.encodedPath).isEqualTo("/upload-service/upload")
         assertThat(res.isSuccessful).isTrue()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -103,7 +101,6 @@ class GarminConnectTest {
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -136,7 +133,6 @@ class GarminConnectTest {
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(expected)
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -148,7 +144,6 @@ class GarminConnectTest {
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(emptyList<Activity>())
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -159,7 +154,6 @@ class GarminConnectTest {
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -176,7 +170,6 @@ class GarminConnectTest {
 
         assertThat(res.isSuccessful).isTrue()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -193,7 +186,6 @@ class GarminConnectTest {
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -210,7 +202,6 @@ class GarminConnectTest {
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(expected)
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -222,7 +213,6 @@ class GarminConnectTest {
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEmpty()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -233,6 +223,5 @@ class GarminConnectTest {
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
-        confirmVerified(authInterceptor)
     }
 }

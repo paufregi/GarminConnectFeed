@@ -26,6 +26,7 @@ class IsStravaLoggedInTest{
 
     @After
     fun tearDown(){
+        confirmVerified(repo)
         clearAllMocks()
     }
 
@@ -39,7 +40,6 @@ class IsStravaLoggedInTest{
             cancelAndIgnoreRemainingEvents()
         }
         verify { repo.getToken() }
-        confirmVerified(repo)
     }
 
     @Test
@@ -52,6 +52,5 @@ class IsStravaLoggedInTest{
             cancelAndIgnoreRemainingEvents()
         }
         verify { repo.getToken() }
-        confirmVerified(repo)
     }
 }

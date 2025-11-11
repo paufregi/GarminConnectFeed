@@ -14,7 +14,7 @@ class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
             process = ProcessState.Idle,
             profile = Profile(
                 name = "Profile running",
-                activityType = ActivityType.Running,
+                type = ActivityType.Running,
                 eventType = EventType.Training,
                 course = Course(1, "Course 1", 10.0, ActivityType.Running),
                 water = 200,
@@ -28,7 +28,7 @@ class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
             process = ProcessState.Idle,
             profile = Profile(
                 name = "Profile any",
-                activityType = ActivityType.Any,
+                type = ActivityType.Any,
                 eventType = null,
                 course = null,
                 water = 200,
@@ -39,7 +39,7 @@ class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
             process = ProcessState.Idle,
             profile = Profile(
                 name = "Profile strength",
-                activityType = ActivityType.Strength,
+                type = ActivityType.StrengthTraining,
                 eventType = null,
                 course = null,
                 water = 200,

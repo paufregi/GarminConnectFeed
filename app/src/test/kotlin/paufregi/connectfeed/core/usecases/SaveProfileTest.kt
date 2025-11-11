@@ -33,6 +33,7 @@ class SaveProfileTest{
 
     @After
     fun tearDown(){
+        confirmVerified(auth, repo)
         clearAllMocks()
     }
 
@@ -43,7 +44,7 @@ class SaveProfileTest{
             name = "Commute to home",
             rename = true,
             eventType = EventType.Training,
-            activityType = ActivityType.Cycling,
+            type = ActivityType.Cycling,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -56,7 +57,6 @@ class SaveProfileTest{
 
         verify { auth.getUser() }
         coVerify { repo.saveProfile(user, profile) }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -66,7 +66,7 @@ class SaveProfileTest{
             name = "",
             rename = true,
             eventType = EventType.Training,
-            activityType = ActivityType.Cycling,
+            type = ActivityType.Cycling,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -78,7 +78,6 @@ class SaveProfileTest{
         assertThat(res.exceptionOrNull()?.message).isEqualTo("User must be logged in")
 
         verify { auth.getUser() }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -88,7 +87,7 @@ class SaveProfileTest{
             name = "",
             rename = true,
             eventType = EventType.Training,
-            activityType = ActivityType.Cycling,
+            type = ActivityType.Cycling,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -100,7 +99,6 @@ class SaveProfileTest{
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Name cannot be empty")
 
         verify { auth.getUser() }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -110,7 +108,7 @@ class SaveProfileTest{
             name = "Test",
             rename = true,
             eventType = EventType.Training,
-            activityType = ActivityType.Strength,
+            type = ActivityType.StrengthTraining,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -119,10 +117,9 @@ class SaveProfileTest{
         val res = useCase(profile)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Can't have course for Strength activity type")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Can't have course for Strength Training activity type")
 
         verify { auth.getUser() }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -132,7 +129,7 @@ class SaveProfileTest{
             name = "Test",
             rename = true,
             eventType = EventType.Training,
-            activityType = ActivityType.Any,
+            type = ActivityType.Any,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -144,7 +141,6 @@ class SaveProfileTest{
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Can't have course for Any activity type")
 
         verify { auth.getUser() }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -154,7 +150,7 @@ class SaveProfileTest{
             name = "Test",
             rename = true,
             eventType = EventType.Training,
-            activityType = ActivityType.Running,
+            type = ActivityType.Running,
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
             water = 550
         )
@@ -163,9 +159,8 @@ class SaveProfileTest{
         val res = useCase(profile)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Course must match activity type")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Course not compatible with profile")
 
         verify { auth.getUser() }
-        confirmVerified(auth, repo)
     }
 }

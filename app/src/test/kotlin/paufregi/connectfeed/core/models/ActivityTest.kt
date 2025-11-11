@@ -13,7 +13,7 @@ class ActivityTest {
             name = "Activity 1",
             distance = 17804.00,
             trainingEffect = "recovery",
-            type = ActivityType.Cycling,
+            type = ActivityType.RoadBiking,
             eventType = EventType.Transportation,
             date = Instant.parse("2025-01-01T01:01:00Z")
         )
@@ -23,7 +23,7 @@ class ActivityTest {
             name = "Activity 2",
             distance = 7804.00,
             trainingEffect = "recovery",
-            type = ActivityType.Cycling,
+            type = ActivityType.StravaRide,
             date = Instant.parse("2025-01-01T01:01:30Z")
         )
 
@@ -37,7 +37,7 @@ class ActivityTest {
             name = "Activity 1",
             distance = 17804.00,
             trainingEffect = "recovery",
-            type = ActivityType.Cycling,
+            type = ActivityType.RoadBiking,
             eventType = EventType.Transportation,
             date = null
         )
@@ -47,7 +47,7 @@ class ActivityTest {
             name = "Activity 2",
             distance = 7804.00,
             trainingEffect = "recovery",
-            type = ActivityType.Cycling,
+            type = ActivityType.StravaRide,
             date = Instant.parse("2025-01-01T01:02:00Z")
         )
 
@@ -61,7 +61,7 @@ class ActivityTest {
             name = "Activity 1",
             distance = 17804.00,
             trainingEffect = "recovery",
-            type = ActivityType.Cycling,
+            type = ActivityType.RoadBiking,
             eventType = EventType.Transportation,
             date = Instant.parse("2025-01-01T01:01:00Z")
         )
@@ -71,7 +71,7 @@ class ActivityTest {
             name = "Activity 2",
             distance = 7804.00,
             trainingEffect = "recovery",
-            type = ActivityType.Cycling,
+            type = ActivityType.StravaRide,
             date = null
         )
 
@@ -95,7 +95,7 @@ class ActivityTest {
             name = "Activity 2",
             distance = 17804.00,
             trainingEffect = "recovery",
-            type = ActivityType.Cycling,
+            type = ActivityType.StravaRide,
             date = Instant.parse("2025-01-01T01:01:00Z")
         )
 
@@ -109,7 +109,7 @@ class ActivityTest {
             name = "Activity 1",
             distance = 17804.00,
             trainingEffect = "recovery",
-            type = ActivityType.Cycling,
+            type = ActivityType.RoadBiking,
             eventType = EventType.Transportation,
             date = Instant.parse("2025-01-01T01:01:00Z")
         )
@@ -119,7 +119,7 @@ class ActivityTest {
             name = "Activity 2",
             distance = 7804.00,
             trainingEffect = "recovery",
-            type = ActivityType.Cycling,
+            type = ActivityType.StravaRide,
             date = Instant.parse("2025-01-01T01:02:30Z")
         )
 

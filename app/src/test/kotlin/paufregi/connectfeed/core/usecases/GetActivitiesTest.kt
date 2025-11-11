@@ -26,6 +26,7 @@ class GetActivitiesTest{
 
     @After
     fun tearDown(){
+        confirmVerified(repo)
         clearAllMocks()
     }
 
@@ -40,7 +41,6 @@ class GetActivitiesTest{
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(activities)
         coVerify { repo.getActivities(5, true) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -50,6 +50,5 @@ class GetActivitiesTest{
 
         assertThat(res.isSuccess).isFalse()
         coVerify { repo.getActivities(5, false) }
-        confirmVerified(repo)
     }
 }

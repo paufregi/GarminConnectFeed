@@ -11,12 +11,11 @@ class SaveProfile @Inject constructor(
     private val garminRepository: GarminRepository
 ) {
     suspend operator fun invoke(profile: Profile): Result<Unit> {
-        val user = authRepository.getUser().firstOrNull()
-        if (user == null) return Result.failure(Exception("User must be logged in"))
+        val user = authRepository.getUser().firstOrNull() ?: return Result.failure(Exception("User must be logged in"))
         if (profile.name.isBlank()) return Result.failure(Exception("Name cannot be empty"))
         if (profile.course != null) {
-            if (!profile.activityType.allowCourseInProfile) return Result.failure(Exception("Can't have course for ${profile.activityType.name} activity type"))
-            if (profile.course.type != profile.activityType) return Result.failure(Exception("Course must match activity type"))
+            if (!profile.type.allowCourse) return Result.failure(Exception("Can't have course for ${profile.type.name} activity type"))
+            if (!profile.type.compatible(profile.course.type)) return Result.failure(Exception("Course not compatible with profile"))
         }
 
         garminRepository.saveProfile(user, profile)

@@ -27,6 +27,7 @@ class RefreshUserTest{
 
     @After
     fun tearDown(){
+        confirmVerified(garminRepo, authRepo)
         clearAllMocks()
     }
 
@@ -43,7 +44,6 @@ class RefreshUserTest{
             garminRepo.fetchUser()
             authRepo.saveUser(user)
         }
-        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
@@ -55,6 +55,5 @@ class RefreshUserTest{
         assertThat(res.isSuccess).isFalse()
 
         coVerify { garminRepo.fetchUser() }
-        confirmVerified(garminRepo, authRepo)
     }
 }

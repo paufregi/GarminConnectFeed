@@ -28,6 +28,7 @@ class SignInTest{
 
     @After
     fun tearDown(){
+        confirmVerified(garminRepo, authRepo)
         clearAllMocks()
     }
 
@@ -48,7 +49,6 @@ class SignInTest{
             garminRepo.fetchUser()
             authRepo.saveUser(user)
         }
-        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
@@ -56,8 +56,6 @@ class SignInTest{
         val res = useCase("", "pass")
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
@@ -65,8 +63,6 @@ class SignInTest{
         val res = useCase("user", "")
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
@@ -74,8 +70,6 @@ class SignInTest{
         val res = useCase("", "")
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
-
-        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
@@ -91,7 +85,6 @@ class SignInTest{
             authRepo.authorize("user", "pass")
             authRepo.clear()
         }
-        confirmVerified(garminRepo, authRepo)
     }
 
     @Test
@@ -111,7 +104,6 @@ class SignInTest{
             garminRepo.fetchUser()
             authRepo.clear()
         }
-        confirmVerified(garminRepo, authRepo)
     }
 
 

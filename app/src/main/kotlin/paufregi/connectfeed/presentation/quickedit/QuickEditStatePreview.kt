@@ -25,7 +25,7 @@ class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
     val profile = Profile(
         id = 1,
         name = "profile",
-        activityType = ActivityType.Running,
+        type = ActivityType.Running,
         course = Course(
             id = 1,
             name = "course",
@@ -37,7 +37,7 @@ class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
     val fullProfile = Profile(
         id = 1,
         name = "profile",
-        activityType = ActivityType.Running,
+        type = ActivityType.Running,
         water = 10,
         customWater = true,
         feelAndEffort = true,

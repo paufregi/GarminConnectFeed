@@ -34,6 +34,7 @@ class GetProfilesTest{
 
     @After
     fun tearDown(){
+        confirmVerified(auth, repo)
         clearAllMocks()
     }
 
@@ -45,7 +46,7 @@ class GetProfilesTest{
                 name = "profile 1",
                 rename = true,
                 eventType = EventType.Training,
-                activityType = ActivityType.Cycling,
+                type = ActivityType.Cycling,
                 course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Cycling),
                 water = 550),
             Profile(
@@ -53,7 +54,7 @@ class GetProfilesTest{
                 name = "profile 2",
                 rename = true,
                 eventType = EventType.Training,
-                activityType = ActivityType.Running,
+                type = ActivityType.Running,
                 course = Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType.Running)),
         )
 
@@ -68,7 +69,6 @@ class GetProfilesTest{
 
         verify { auth.getUser() }
         coVerify { repo.getAllProfiles(user) }
-        confirmVerified(auth, repo)
     }
 
     @Test
@@ -84,7 +84,6 @@ class GetProfilesTest{
 
         verify { auth.getUser() }
         coVerify { repo.getAllProfiles(user) }
-        confirmVerified(repo)
     }
 
     @Test
@@ -98,6 +97,5 @@ class GetProfilesTest{
         }
 
         verify { auth.getUser() }
-        confirmVerified(repo)
     }
 }

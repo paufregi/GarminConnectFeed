@@ -46,6 +46,7 @@ class ProfilesViewModelTest {
 
     @After
     fun tearDown(){
+        confirmVerified(getProfiles, deleteProfile)
         clearAllMocks()
     }
 
@@ -62,7 +63,6 @@ class ProfilesViewModelTest {
         }
 
         verify { getProfiles() }
-        confirmVerified(getProfiles, deleteProfile)
     }
 
     @Test
@@ -78,7 +78,6 @@ class ProfilesViewModelTest {
         }
 
         verify { getProfiles() }
-        confirmVerified(getProfiles, deleteProfile)
     }
 
     @Test
@@ -92,6 +91,5 @@ class ProfilesViewModelTest {
 
         verify { getProfiles() }
         coVerify { deleteProfile(profiles[0]) }
-        confirmVerified(getProfiles, deleteProfile)
     }
 }

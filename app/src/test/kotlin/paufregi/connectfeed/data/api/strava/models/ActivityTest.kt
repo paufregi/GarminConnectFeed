@@ -22,7 +22,7 @@ class ActivityTest {
             id = 1,
             name = "name",
             distance = 15008.00,
-            type = CoreActivityType.Running,
+            type = CoreActivityType.StravaRunning,
             date = Instant.parse("2024-01-01T01:00:00Z")
         )
 

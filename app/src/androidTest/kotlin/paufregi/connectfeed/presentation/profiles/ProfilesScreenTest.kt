@@ -33,9 +33,9 @@ class ProfilesScreenTest {
         composeTestRule.setContent {
             ProfilesContent(state = ProfilesState(
                 profiles = listOf(
-                    Profile(name = "Profile 1", activityType = ActivityType.Running),
-                    Profile(name = "Profile 2", activityType = ActivityType.Cycling),
-                    Profile(name = "Profile 3", activityType = ActivityType.Running)
+                    Profile(name = "Profile 1", type = ActivityType.Running),
+                    Profile(name = "Profile 2", type = ActivityType.Cycling),
+                    Profile(name = "Profile 3", type = ActivityType.Running)
                 )
             ))
         }

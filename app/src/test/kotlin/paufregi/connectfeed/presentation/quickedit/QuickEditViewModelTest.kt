@@ -98,9 +98,9 @@ class QuickEditViewModelTest {
     )
 
     val profiles = listOf(
-        Profile(name = "profile1", activityType = ActivityType.Running),
-        Profile(name = "profile2" ,activityType = ActivityType.Cycling),
-        Profile(name = "profile3", activityType = ActivityType.Running)
+        Profile(name = "profile1", type = ActivityType.Running),
+        Profile(name = "profile2" ,type = ActivityType.Cycling),
+        Profile(name = "profile3", type = ActivityType.Running)
     )
 
     @Before
@@ -110,6 +110,7 @@ class QuickEditViewModelTest {
 
     @After
     fun tearDown(){
+        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
         clearAllMocks()
     }
 
@@ -143,7 +144,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -176,7 +176,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -209,7 +208,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -242,7 +240,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -275,7 +272,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -310,7 +306,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -345,7 +340,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -380,7 +374,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -417,7 +410,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -454,7 +446,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -491,7 +482,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -528,7 +518,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -563,7 +552,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -599,7 +587,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -634,7 +621,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -669,7 +655,6 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -714,7 +699,6 @@ class QuickEditViewModelTest {
             quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -759,7 +743,6 @@ class QuickEditViewModelTest {
             quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -804,7 +787,6 @@ class QuickEditViewModelTest {
             quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -849,7 +831,6 @@ class QuickEditViewModelTest {
             quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description")
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 
     @Test
@@ -886,6 +867,5 @@ class QuickEditViewModelTest {
             getStravaActivities(true)
         }
         coVerify{ getProfiles() }
-        confirmVerified(getActivities, getStravaActivities, getProfiles, quickUpdateActivity, quickUpdateStravaActivity)
     }
 }

@@ -1,5 +1,6 @@
 package paufregi.connectfeed.data.database.entities
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,13 +15,18 @@ data class ProfileEntity(
 
     val userId: Long,
     val name: String,
-    val activityType: ActivityType = ActivityType.Any,
+    @ColumnInfo(defaultValue = "Any")
+    val type: ActivityType = ActivityType.Any,
     val eventType: EventType? = null,
     @Embedded(prefix = "course_")
     val course: Course? = null,
     val water: Int? = null,
+    @ColumnInfo(defaultValue = "true")
     val rename: Boolean = true,
+    @ColumnInfo(defaultValue = "false")
     val customWater: Boolean = false,
+    @ColumnInfo(defaultValue = "false")
     val feelAndEffort: Boolean = false,
+    @ColumnInfo(defaultValue = "false")
     val trainingEffect: Boolean = false,
 )

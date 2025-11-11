@@ -25,6 +25,6 @@ class TicketExtractorTest {
     fun `No Ticket`() {
         val responseBody = "".toResponseBody(mediaType.toMediaType())
 
-                assertThat(converter.convert(responseBody)).isEqualTo(Ticket(""))
+        assertThat(converter.convert(responseBody)).isEqualTo(Ticket(""))
     }
 }

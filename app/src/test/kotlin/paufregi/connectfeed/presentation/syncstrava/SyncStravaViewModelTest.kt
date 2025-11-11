@@ -97,6 +97,7 @@ class SyncStravaViewModelTest {
 
     @After
     fun tearDown(){
+        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
         clearAllMocks()
     }
 
@@ -123,7 +124,6 @@ class SyncStravaViewModelTest {
             getActivities(false)
             getStravaActivities(false)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 
     @Test
@@ -149,7 +149,6 @@ class SyncStravaViewModelTest {
             getActivities(false)
             getStravaActivities(false)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 
     @Test
@@ -175,7 +174,6 @@ class SyncStravaViewModelTest {
             getActivities(false)
             getStravaActivities(false)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 
     @Test
@@ -204,7 +202,6 @@ class SyncStravaViewModelTest {
             getActivities(false)
             getStravaActivities(false)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 
     @Test
@@ -232,7 +229,6 @@ class SyncStravaViewModelTest {
             getActivities(false)
             getStravaActivities(false)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 
     @Test
@@ -260,7 +256,6 @@ class SyncStravaViewModelTest {
             getActivities(false)
             getStravaActivities(false)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 
     @Test
@@ -289,7 +284,6 @@ class SyncStravaViewModelTest {
             getActivities(false)
             getStravaActivities(false)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 
     @Test
@@ -318,7 +312,6 @@ class SyncStravaViewModelTest {
             getActivities(false)
             getStravaActivities(false)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 
     @Test
@@ -347,7 +340,6 @@ class SyncStravaViewModelTest {
             getActivities(false)
             getStravaActivities(false)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 
     @Test
@@ -376,7 +368,6 @@ class SyncStravaViewModelTest {
             getActivities(false)
             getStravaActivities(false)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 
     @Test
@@ -404,7 +395,6 @@ class SyncStravaViewModelTest {
             getActivities(false)
             getStravaActivities(false)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 
     @Test
@@ -432,7 +422,6 @@ class SyncStravaViewModelTest {
             getActivities(false)
             getStravaActivities(false)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 
     @Test
@@ -536,6 +525,5 @@ class SyncStravaViewModelTest {
             getStravaActivities(false)
             getStravaActivities(true)
         }
-        confirmVerified(getActivities, getStravaActivities, syncStravaActivity)
     }
 }

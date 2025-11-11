@@ -17,8 +17,6 @@ import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.usecases.UpdateStravaActivity
-import paufregi.connectfeed.core.utils.getOrMatch
-import paufregi.connectfeed.core.utils.getOrNull
 import paufregi.connectfeed.core.utils.runCatchingResult
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
@@ -81,24 +79,24 @@ class EditViewModel @Inject constructor(
     fun onAction(action: EditAction) = when (action) {
         is EditAction.SetActivity -> _state.update { it.copy(
             activity = action.activity,
-            stravaActivity = it.stravaActivity.getOrMatch(action.activity, it.stravaActivities),
-            course = it.course.getOrNull(action.activity)
+            stravaActivity = it.stravaActivity?.takeIf { a -> a.type.compatible(action.activity.type) } ?: it.stravaActivities.find { a -> a.match(action.activity) },
+            course = it.course?.takeIf { c -> c.type.compatible(action.activity.type) && action.activity.type.allowCourse }
         ) }
         is EditAction.SetStravaActivity -> _state.update { it.copy(
             stravaActivity = action.activity,
-            activity = it.activity.getOrMatch(action.activity, it.activities),
-            course = it.course.getOrNull(action.activity)
+            activity = it.activity?.takeIf { a -> a.type.compatible(action.activity.type) } ?: it.activities.find { a -> a.match(action.activity) },
+            course = it.course?.takeIf { c -> c.type.compatible(action.activity.type) && action.activity.type.allowCourse }
         ) }
         is EditAction.SetDescription -> _state.update { it.copy(description = action.description) }
         is EditAction.SetName -> _state.update { it.copy(name = action.name) }
         is EditAction.SetEventType -> _state.update { it.copy(eventType = action.eventType) }
         is EditAction.SetCourse -> _state.update { it.copy(
             course = action.course,
-            activity = it.activity.getOrNull(action.course),
-            stravaActivity = it.stravaActivity.getOrNull(action.course)
+            activity = it.activity?.takeIf { a -> action.course == null || action.course.type.compatible(a.type) },
+            stravaActivity = it.stravaActivity?.takeIf { a -> action.course == null || action.course.type.compatible(a.type) },
         ) }
         is EditAction.SetWater -> _state.update { it.copy(water = action.water) }
-        is EditAction.SetEffort -> _state.update { it.copy(effort = action.effort.getOrNull()) }
+        is EditAction.SetEffort -> _state.update { it.copy(effort = action.effort?.takeIf { e -> e > 0 }) }
         is EditAction.SetFeel -> _state.update { it.copy(feel = action.feel) }
         is EditAction.SetTrainingEffect -> _state.update { it.copy(trainingEffect = action.trainingEffect) }
         is EditAction.Save -> saveAction()

@@ -1,38 +1,9 @@
 package paufregi.connectfeed.core.utils
 
-import paufregi.connectfeed.core.models.Activity
-import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.core.models.Course
-import paufregi.connectfeed.core.models.Profile
 import retrofit2.Response
 import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.Semaphore
-
-fun Activity?.getOrMatch(other: Activity, pool: List<Activity>): Activity? =
-    if(this?.type != other.type) pool.find { it.match(other) } else this
-
-fun Activity?.getOrNull(type: ActivityType?): Activity? =
-    if(this?.type != type && type != ActivityType.Any) null else this
-
-fun Activity?.getOrNull(profile: Profile?): Activity? =
-    this.getOrNull(profile?.activityType)
-
-fun Activity?.getOrNull(course: Course?): Activity? =
-    this.getOrNull(course?.type)
-
-fun Profile?.getOrNull(activity: Activity): Profile? =
-    if (this?.activityType?.match(activity.type) == true) this else null
-
-
-fun Course?.getOrNull(type: ActivityType): Course? =
-    if(!type.allowCourseInProfile || this?.type != type) null else this
-
-fun Course?.getOrNull(activity: Activity): Course? =
-    this.getOrNull(activity.type)
-
-fun Float?.getOrNull(): Float? =
-    if(this == 0f) null else this
 
 fun Date.sameDay(other: Date): Boolean {
     val calendar1 = Calendar.getInstance().apply { time = this@sameDay }

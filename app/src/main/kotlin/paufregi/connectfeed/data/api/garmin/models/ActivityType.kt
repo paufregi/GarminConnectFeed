@@ -12,25 +12,45 @@ data class ActivityType(
     val key: String
 ) {
     fun toCore(): CoreActivityType = when (this.id) {
+        // Running
         1L -> CoreActivityType.Running
-        2L, 10L -> CoreActivityType.Cycling
-        3L -> CoreActivityType.Hiking
-        4L -> CoreActivityType.Other
+        8L -> CoreActivityType.TrackRunning
         6L -> CoreActivityType.TrailRunning
-        9L -> CoreActivityType.Walking
-        11L, 180L -> CoreActivityType.Fitness // cardio, hiit
-        13L -> CoreActivityType.Strength
         18L -> CoreActivityType.TreadmillRunning
-        25L -> CoreActivityType.IndoorCycling
-        26L, 27L -> CoreActivityType.Swimming
-        28L -> CoreActivityType.OpenWaterSwimming
+        181L -> CoreActivityType.UltraRun
+
+        // Cycling
+        2L -> CoreActivityType.Cycling
+        20L -> CoreActivityType.DownhillBiking
         176L -> CoreActivityType.EBiking
-        163L -> CoreActivityType.Yoga
+        175L -> CoreActivityType.EBikingMountain
+        143L -> CoreActivityType.GravelCycling
+        5L -> CoreActivityType.MountainBiking
+        10L -> CoreActivityType.RoadBiking
+        153L -> CoreActivityType.VirtualRide
+
+        // Fitness
+        180L -> CoreActivityType.HIIT
         164L -> CoreActivityType.Breathwork
-        202L -> CoreActivityType.Meditation
-        208L -> CoreActivityType.Rugby
-        215L -> CoreActivityType.Soccer
+        11L -> CoreActivityType.Cardio
         254L -> CoreActivityType.JumpRope
+        13L -> CoreActivityType.StrengthTraining
+        163L -> CoreActivityType.Yoga
+
+        // Swimming
+        27L -> CoreActivityType.PoolSwimming
+        28L -> CoreActivityType.OpenWaterSwimming
+        26L -> CoreActivityType.Swimming
+
+        // Other
+        9L -> CoreActivityType.Walking
+        3L -> CoreActivityType.Hiking
+        252L -> CoreActivityType.Snowboarding
+        231L -> CoreActivityType.Kayaking
+        239L -> CoreActivityType.StandUpPaddling
+        240L -> CoreActivityType.Surfing
+        242L -> CoreActivityType.Windsurf
+
         else -> CoreActivityType.Unknown
     }
 }

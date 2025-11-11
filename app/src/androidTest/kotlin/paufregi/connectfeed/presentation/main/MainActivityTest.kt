@@ -186,7 +186,7 @@ class MainActivityTest {
         composeTestRule.waitUntil(conditionDescription = "profile_screen") { composeTestRule.onNodeWithTag("profile_screen").isDisplayed() }
 
         composeTestRule.onNodeWithText("Name").performTextInput("Profile 1")
-        composeTestRule.onNodeWithText("Activity type").performClick()
+        composeTestRule.onNodeWithText("Type").performClick()
         composeTestRule.onNodeWithText("Running").performClick()
         composeTestRule.onNodeWithText("Event type").performClick()
         composeTestRule.onNodeWithText("Race").performClick()
@@ -203,7 +203,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
-        dao.saveProfile(ProfileEntity(id = 5, userId = user.id, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType.Race))
+        dao.saveProfile(ProfileEntity(id = 5, userId = user.id, name = "Profile 1", type = ActivityType.Running, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
@@ -215,7 +215,7 @@ class MainActivityTest {
 
         composeTestRule.onNodeWithText("Name").performTextClearance()
         composeTestRule.onNodeWithText("Name").performTextInput("Profile 2")
-        composeTestRule.onNodeWithText("Activity type").performClick()
+        composeTestRule.onNodeWithText("Type").performClick()
         composeTestRule.onNodeWithText("Cycling").performClick()
         composeTestRule.onNodeWithText("Event type").performClick()
         composeTestRule.onNodeWithText("Training").performClick()
@@ -233,7 +233,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
-        dao.saveProfile(ProfileEntity(id = 10, userId = user.id, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType.Race))
+        dao.saveProfile(ProfileEntity(id = 10, userId = user.id, name = "Profile 1", type = ActivityType.Running, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
@@ -250,7 +250,7 @@ class MainActivityTest {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
-        dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType.Race))
+        dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", type = ActivityType.Cycling, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
@@ -269,7 +269,7 @@ class MainActivityTest {
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         stravaStore.saveToken(stravaAuthToken)
-        dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType.Race))
+        dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", type = ActivityType.Cycling, eventType = EventType.Race))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }

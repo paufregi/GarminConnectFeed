@@ -64,6 +64,7 @@ class AuthInterceptorTest {
 
     @After
     fun tearDown() {
+        confirmVerified(authRepo)
         clearAllMocks()
     }
 
@@ -79,7 +80,6 @@ class AuthInterceptorTest {
         assertThat(req.headers["Authorization"]).isEqualTo("Bearer ${token.accessToken}")
 
         verify { authRepo.getAuthToken() }
-        confirmVerified(authRepo)
     }
 
     @Test
@@ -105,7 +105,6 @@ class AuthInterceptorTest {
             authRepo.exchange(preAuthToken)
             authRepo.saveAuthToken(validToken)
         }
-        confirmVerified(authRepo)
     }
 
     @Test
@@ -130,7 +129,6 @@ class AuthInterceptorTest {
             authRepo.exchange(preAuthToken)
             authRepo.saveAuthToken(validToken)
         }
-        confirmVerified(authRepo)
     }
 
     @Test
@@ -161,7 +159,6 @@ class AuthInterceptorTest {
             authRepo.refresh(preAuthToken, authToken.refreshToken)
             authRepo.saveAuthToken(validToken)
         }
-        confirmVerified(authRepo)
     }
 
     @Test
@@ -194,7 +191,6 @@ class AuthInterceptorTest {
             authRepo.exchange(preAuthToken)
             authRepo.saveAuthToken(validToken)
         }
-        confirmVerified(authRepo)
     }
 
     @Test
@@ -210,7 +206,6 @@ class AuthInterceptorTest {
             authRepo.getPreAuth()
             authRepo.getAuthToken()
         }
-        confirmVerified(authRepo)
     }
 
     @Test
@@ -230,7 +225,6 @@ class AuthInterceptorTest {
         coVerify {
             authRepo.exchange(preAuthToken)
         }
-        confirmVerified(authRepo)
     }
 
     @Test
@@ -258,6 +252,5 @@ class AuthInterceptorTest {
             authRepo.refresh(preAuthToken, expiredToken.refreshToken)
             authRepo.exchange(preAuthToken)
         }
-        confirmVerified(authRepo)
     }
 }
