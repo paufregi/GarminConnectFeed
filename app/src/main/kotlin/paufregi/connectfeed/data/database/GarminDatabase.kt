@@ -12,7 +12,7 @@ import paufregi.connectfeed.data.database.entities.ProfileEntity
     version = 1,
     autoMigrations = []
 )
-@TypeConverters(ActivityTypeConverter::class,ActivityTypeConverter::class, EventTypeConverter::class)
+@TypeConverters(ActivityTypeConverter::class, EventTypeConverter::class)
 abstract class GarminDatabase : RoomDatabase() {
     abstract fun garminDao(): GarminDao
 }
