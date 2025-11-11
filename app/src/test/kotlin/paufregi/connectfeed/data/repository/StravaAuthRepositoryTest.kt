@@ -35,6 +35,7 @@ class StravaAuthRepositoryTest {
 
     @After
     fun tearDown(){
+        confirmVerified(store, auth)
         clearAllMocks()
     }
 
@@ -49,7 +50,6 @@ class StravaAuthRepositoryTest {
         }
 
         verify { store.getToken() }
-        confirmVerified(store, auth)
     }
 
     @Test
@@ -60,7 +60,6 @@ class StravaAuthRepositoryTest {
         repo.saveToken(token)
 
         coVerify { store.saveToken(token) }
-        confirmVerified(store, auth)
     }
 
     @Test
@@ -70,7 +69,6 @@ class StravaAuthRepositoryTest {
         repo.clear()
 
         coVerify { store.clear() }
-        confirmVerified(store, auth)
     }
 
     @Test
@@ -84,7 +82,6 @@ class StravaAuthRepositoryTest {
         assertThat(res.getOrNull()).isEqualTo(token)
 
         coVerify { auth.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE") }
-        confirmVerified(store, auth)
     }
 
     @Test
@@ -96,7 +93,6 @@ class StravaAuthRepositoryTest {
         assertThat(res.isSuccess).isFalse()
 
         coVerify { auth.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE") }
-        confirmVerified(store, auth)
     }
 
     @Test
@@ -110,7 +106,6 @@ class StravaAuthRepositoryTest {
         assertThat(res.getOrNull()).isEqualTo(token)
 
         coVerify { auth.refreshAccessToken("CLIENT_ID", "CLIENT_SECRET", "CODE") }
-        confirmVerified(store, auth)
     }
 
     @Test
@@ -122,6 +117,5 @@ class StravaAuthRepositoryTest {
         assertThat(res.isSuccess).isFalse()
 
         coVerify { auth.refreshAccessToken("CLIENT_ID", "CLIENT_SECRET", "CODE") }
-        confirmVerified(store, auth)
     }
 }

@@ -47,6 +47,7 @@ class AuthRepositoryTest {
 
     @After
     fun tearDown(){
+        confirmVerified(garminSSO, authDatastore)
         clearAllMocks()
     }
 
@@ -60,7 +61,6 @@ class AuthRepositoryTest {
         }
 
         verify { authDatastore.getPreAuthToken() }
-        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -70,7 +70,6 @@ class AuthRepositoryTest {
         repo.savePreAuth(preAuthToken)
 
         coVerify { authDatastore.savePreAuthToken(preAuthToken) }
-        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -83,7 +82,6 @@ class AuthRepositoryTest {
         }
 
         verify { authDatastore.getAuthToken() }
-        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -93,7 +91,6 @@ class AuthRepositoryTest {
         repo.saveAuthToken(authToken)
 
         coVerify { authDatastore.saveAuthToken(authToken) }
-        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -106,7 +103,6 @@ class AuthRepositoryTest {
         }
 
         verify { authDatastore.getUser() }
-        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -116,7 +112,6 @@ class AuthRepositoryTest {
         repo.saveUser(user)
 
         coVerify { authDatastore.saveUser(user) }
-        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -126,7 +121,6 @@ class AuthRepositoryTest {
         repo.clear()
 
         coVerify { authDatastore.clear() }
-        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -149,7 +143,6 @@ class AuthRepositoryTest {
             garminSSO.login("user", "pass", csrf)
             garminPreAuth.preauthorize(ticket)
         }
-        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -170,7 +163,6 @@ class AuthRepositoryTest {
             garminSSO.login("user", "pass", csrf)
             garminPreAuth.preauthorize(ticket)
         }
-        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -184,7 +176,6 @@ class AuthRepositoryTest {
         coVerify{
             garminSSO.getCSRF()
         }
-        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -202,7 +193,6 @@ class AuthRepositoryTest {
             garminSSO.getCSRF()
             garminSSO.login("user", "pass", csrf)
         }
-        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -233,7 +223,6 @@ class AuthRepositoryTest {
         coVerify {
             garminAuth.exchange()
         }
-        confirmVerified(garminSSO, authDatastore)
     }
 
     @Test
@@ -264,6 +253,5 @@ class AuthRepositoryTest {
         coVerify {
             garminAuth.refresh(authToken.refreshToken)
         }
-        confirmVerified(garminSSO, authDatastore)
     }
 }

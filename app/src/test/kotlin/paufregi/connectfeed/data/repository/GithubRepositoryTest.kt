@@ -27,6 +27,7 @@ class GithubRepositoryTest {
 
     @After
     fun tearDown(){
+        confirmVerified(github)
         clearAllMocks()
     }
 
@@ -40,7 +41,6 @@ class GithubRepositoryTest {
         assertThat(res.getOrNull()).isEqualTo(githubRelease.toCore())
 
         coVerify { github.getLatestRelease() }
-        confirmVerified(github)
     }
 
     @Test
@@ -52,7 +52,6 @@ class GithubRepositoryTest {
         assertThat(res.isSuccess).isFalse()
 
         coVerify { github.getLatestRelease() }
-        confirmVerified(github)
     }
 
     @Test
@@ -65,7 +64,6 @@ class GithubRepositoryTest {
         assertThat(res.isSuccess).isFalse()
 
         coVerify { github.getLatestRelease() }
-        confirmVerified(github)
     }
 
     @Test
@@ -79,7 +77,6 @@ class GithubRepositoryTest {
         assertThat(res.isSuccess).isFalse()
 
         coVerify { github.getLatestRelease() }
-        confirmVerified(github)
     }
 
     @Test
@@ -93,6 +90,5 @@ class GithubRepositoryTest {
         assertThat(res.isSuccess).isFalse()
 
         coVerify { github.getLatestRelease() }
-        confirmVerified(github)
     }
 }
