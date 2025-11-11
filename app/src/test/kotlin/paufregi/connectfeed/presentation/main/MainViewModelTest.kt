@@ -34,6 +34,7 @@ class MainViewModelTest {
 
     @After
     fun tearDown(){
+        confirmVerified(isLoggedIn)
         clearAllMocks()
     }
 
@@ -51,7 +52,6 @@ class MainViewModelTest {
         }
 
         verify { isLoggedIn() }
-        confirmVerified(isLoggedIn)
     }
 
     @Test
@@ -70,7 +70,6 @@ class MainViewModelTest {
         }
 
         verify { isLoggedIn() }
-        confirmVerified(isLoggedIn)
     }
 
     @Test
@@ -89,6 +88,5 @@ class MainViewModelTest {
         }
 
         verify { isLoggedIn() }
-        confirmVerified(isLoggedIn)
     }
 }

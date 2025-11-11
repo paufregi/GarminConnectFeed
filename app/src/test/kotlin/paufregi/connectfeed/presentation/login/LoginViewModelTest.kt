@@ -30,10 +30,12 @@ class LoginViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Before
-    fun setup(){}
+    fun setup() {
+    }
 
     @After
-    fun tearDown(){
+    fun tearDown() {
+        confirmVerified(signIn)
         clearAllMocks()
     }
 
@@ -42,7 +44,7 @@ class LoginViewModelTest {
         viewModel = LoginViewModel(signIn)
 
         viewModel.state.test {
-            var state = awaitItem()
+            val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.username).isEmpty()
             assertThat(state.password).isEmpty()
@@ -50,8 +52,6 @@ class LoginViewModelTest {
             assertThat(state.showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
-
-        confirmVerified(signIn)
     }
 
     @Test
@@ -61,7 +61,7 @@ class LoginViewModelTest {
         viewModel.state.test {
             viewModel.onAction(LoginAction.SetUsername("user"))
             skipItems(1)
-            var state = awaitItem()
+            val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.username).isEqualTo("user")
             assertThat(state.password).isEmpty()
@@ -69,8 +69,6 @@ class LoginViewModelTest {
             assertThat(state.showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
-
-        confirmVerified(signIn)
     }
 
     @Test
@@ -80,7 +78,7 @@ class LoginViewModelTest {
         viewModel.state.test {
             viewModel.onAction(LoginAction.SetPassword("pass"))
             skipItems(1)
-            var state = awaitItem()
+            val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.username).isEmpty()
             assertThat(state.password).isEqualTo("pass")
@@ -88,8 +86,6 @@ class LoginViewModelTest {
             assertThat(state.showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
-
-        confirmVerified(signIn)
     }
 
     @Test
@@ -99,7 +95,7 @@ class LoginViewModelTest {
         viewModel.state.test {
             viewModel.onAction(LoginAction.ShowPassword(true))
             skipItems(1)
-            var state = awaitItem()
+            val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.username).isEmpty()
             assertThat(state.password).isEmpty()
@@ -107,8 +103,6 @@ class LoginViewModelTest {
             assertThat(state.showPassword).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
-
-        confirmVerified(signIn)
     }
 
     @Test
@@ -121,7 +115,7 @@ class LoginViewModelTest {
             viewModel.onAction(LoginAction.ShowPassword(true))
             viewModel.onAction(LoginAction.Reset)
             skipItems(4)
-            var state = awaitItem()
+            val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.username).isEmpty()
             assertThat(state.password).isEmpty()
@@ -129,8 +123,6 @@ class LoginViewModelTest {
             assertThat(state.showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
-
-        confirmVerified(signIn)
     }
 
     @Test
@@ -145,7 +137,7 @@ class LoginViewModelTest {
             viewModel.onAction(LoginAction.SetPassword("pass"))
             viewModel.onAction(LoginAction.SignIn)
             skipItems(3)
-            var state = awaitItem()
+            val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Success())
             assertThat(state.username).isEqualTo("user")
             assertThat(state.password).isEqualTo("pass")
@@ -155,7 +147,6 @@ class LoginViewModelTest {
         }
 
         coVerify { signIn("user", "pass") }
-        confirmVerified(signIn)
     }
 
     @Test
@@ -169,7 +160,7 @@ class LoginViewModelTest {
             viewModel.onAction(LoginAction.SetPassword("pass"))
             viewModel.onAction(LoginAction.SignIn)
             skipItems(3)
-            var state = awaitItem()
+            val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Failure("error"))
             assertThat(state.username).isEqualTo("user")
             assertThat(state.password).isEqualTo("pass")
@@ -179,6 +170,5 @@ class LoginViewModelTest {
         }
 
         coVerify { signIn("user", "pass") }
-        confirmVerified(signIn)
     }
 }

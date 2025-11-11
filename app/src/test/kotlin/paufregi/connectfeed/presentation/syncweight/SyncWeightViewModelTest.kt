@@ -48,6 +48,7 @@ class SyncWeightViewModelTest {
 
     @After
     fun tearDown(){
+        confirmVerified(syncWeight, RenphoReader)
         clearAllMocks()
         unmockkObject(RenphoReader)
     }
@@ -88,7 +89,6 @@ class SyncWeightViewModelTest {
             syncStravaWeight.invoke(weights, any())
         }
         verify { RenphoReader.read(inputStream) }
-        confirmVerified(syncWeight, RenphoReader)
     }
 
     @Test
@@ -100,7 +100,6 @@ class SyncWeightViewModelTest {
             assertThat(state.process).isEqualTo(ProcessState.Failure("Nothing to sync"))
             cancelAndIgnoreRemainingEvents()
         }
-        confirmVerified(syncWeight, RenphoReader)
     }
 
     @Test
@@ -117,7 +116,6 @@ class SyncWeightViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
         verify { RenphoReader.read(inputStream) }
-        confirmVerified(syncWeight, RenphoReader)
     }
 
     @Test
@@ -156,7 +154,6 @@ class SyncWeightViewModelTest {
             syncStravaWeight.invoke(weights, any())
         }
         verify { RenphoReader.read(inputStream) }
-        confirmVerified(syncWeight, RenphoReader)
     }
 
     @Test
@@ -195,7 +192,6 @@ class SyncWeightViewModelTest {
             syncStravaWeight.invoke(weights, any())
         }
         verify { RenphoReader.read(inputStream) }
-        confirmVerified(syncWeight, RenphoReader)
     }
 
     @Test
@@ -234,6 +230,5 @@ class SyncWeightViewModelTest {
             syncStravaWeight.invoke(weights, any())
         }
         verify { RenphoReader.read(inputStream) }
-        confirmVerified(syncWeight, RenphoReader)
     }
 }

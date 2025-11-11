@@ -35,6 +35,7 @@ class StravaViewModelTest {
 
     @After
     fun tearDown(){
+        confirmVerified(stravaCodeExchange)
         clearAllMocks()
     }
 
@@ -45,8 +46,6 @@ class StravaViewModelTest {
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             cancelAndIgnoreRemainingEvents()
         }
-
-        confirmVerified(stravaCodeExchange)
     }
 
     @Test
@@ -62,7 +61,6 @@ class StravaViewModelTest {
         }
 
         coVerify { stravaCodeExchange("code") }
-        confirmVerified(stravaCodeExchange)
     }
 
     @Test
@@ -78,6 +76,5 @@ class StravaViewModelTest {
         }
 
         coVerify { stravaCodeExchange("code") }
-        confirmVerified(stravaCodeExchange)
     }
 }
