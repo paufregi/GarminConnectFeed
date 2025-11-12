@@ -7,7 +7,7 @@ import paufregi.connectfeed.core.models.Activity
 
 fun launchStrava(context: Context, activity: Activity?) {
     activity?.let {
-        val stravaIntent = Intent(Intent.ACTION_VIEW, "https://www.strava.com/activities/${it.id}".toUri())
+        val stravaIntent = Intent(Intent.ACTION_VIEW, "https://www.strava.com/activities/${it.id}/edit".toUri())
         context.startActivity(stravaIntent)
     }
 }
