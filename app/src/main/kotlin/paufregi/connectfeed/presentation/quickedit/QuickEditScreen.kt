@@ -38,7 +38,7 @@ import paufregi.connectfeed.presentation.ui.components.Screen
 import paufregi.connectfeed.presentation.ui.components.TextEffort
 import paufregi.connectfeed.presentation.ui.components.TextFeel
 import paufregi.connectfeed.presentation.ui.components.failureInfo
-import paufregi.connectfeed.presentation.ui.components.successInfo
+import paufregi.connectfeed.presentation.ui.components.successActivityUpdate
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
 import paufregi.connectfeed.presentation.ui.icons.garmin.FaceHappy
@@ -46,6 +46,7 @@ import paufregi.connectfeed.presentation.ui.icons.garmin.FaceNormal
 import paufregi.connectfeed.presentation.ui.icons.garmin.FaceSad
 import paufregi.connectfeed.presentation.ui.icons.garmin.FaceVeryHappy
 import paufregi.connectfeed.presentation.ui.icons.garmin.FaceVerySad
+import paufregi.connectfeed.presentation.ui.utils.launchGarmin
 import paufregi.connectfeed.presentation.ui.utils.launchStrava
 
 @Composable
@@ -73,11 +74,14 @@ internal fun QuickEditContent(
         hasStrava = state.hasStrava,
         nav = nav,
         state = state.process,
-        success = successInfo {
+        success = successActivityUpdate(
+            action = { onAction(QuickEditAction.Restart) },
+            garmin = { launchGarmin(context, state.activity) },
+            strava = { launchStrava(context, state.stravaActivity) }
+        ),
+        failure = failureInfo {
             onAction(QuickEditAction.Restart)
-            launchStrava(context, state.stravaActivity)
         },
-        failure = failureInfo { onAction(QuickEditAction.Restart) }
     ) {
         val keyboardController = LocalSoftwareKeyboardController.current
         val focusManager = LocalFocusManager.current

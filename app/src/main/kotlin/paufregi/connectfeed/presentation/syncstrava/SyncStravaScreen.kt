@@ -29,8 +29,9 @@ import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Dropdown
 import paufregi.connectfeed.presentation.ui.components.Screen
 import paufregi.connectfeed.presentation.ui.components.failureInfo
-import paufregi.connectfeed.presentation.ui.components.successInfo
+import paufregi.connectfeed.presentation.ui.components.successActivityUpdate
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
+import paufregi.connectfeed.presentation.ui.utils.launchGarmin
 import paufregi.connectfeed.presentation.ui.utils.launchStrava
 
 @Composable
@@ -58,10 +59,11 @@ internal fun SyncStravaContent(
         hasStrava = true,
         nav = nav,
         state = state.process,
-        success = successInfo {
-            onAction(SyncStravaAction.Restart)
-            launchStrava(context, state.stravaActivity)
-        },
+        success = successActivityUpdate(
+            action = { onAction(SyncStravaAction.Restart) },
+            garmin = { launchGarmin(context, state.activity) },
+            strava = { launchStrava(context, state.stravaActivity) }
+        ),
         failure = failureInfo { onAction(SyncStravaAction.Restart) }
     ) {
         val keyboardController = LocalSoftwareKeyboardController.current

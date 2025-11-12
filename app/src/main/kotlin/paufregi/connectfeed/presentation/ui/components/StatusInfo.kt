@@ -3,8 +3,10 @@ package paufregi.connectfeed.presentation.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -39,6 +41,8 @@ fun StatusInfo(
     type: StatusInfoType,
     text: String = "",
     actionButton: @Composable () -> Unit = { },
+    garminButton: @Composable (() -> Unit)? = null,
+    stravaButton: @Composable (() -> Unit)? = null,
     paddingValues: PaddingValues = PaddingValues()
 ) {
     Column(
@@ -61,6 +65,16 @@ fun StatusInfo(
             modifier = Modifier.testTag("status_info_text")
         )
         Spacer(modifier = Modifier.height(50.dp))
+        if (garminButton != null || stravaButton != null) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+                modifier = Modifier.fillMaxWidth().padding(20.dp)
+            ) {
+                garminButton?.let { it() }
+                stravaButton?.let { it() }
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+        }
         actionButton()
     }
 }
@@ -78,6 +92,22 @@ fun successInfo(
 }
 
 @ExperimentalMaterial3Api
+fun successActivityUpdate(
+    action: () -> Unit,
+    garmin: () -> Unit,
+    strava: (() -> Unit)? = null,
+) = @Composable { state: ProcessState.Success, paddingValues: PaddingValues ->
+    StatusInfo(
+        type = StatusInfoType.Success,
+        text = state.message ?: "All done",
+        actionButton = { Button(text = "Ok", onClick = action) },
+        garminButton = { Button(text = "Garmin", onClick = garmin) },
+        stravaButton = strava?.let { { Button(text = "Strava", onClick = it) } },
+        paddingValues = paddingValues
+    )
+}
+
+@ExperimentalMaterial3Api
 fun failureInfo(
     action: () -> Unit,
 ) = @Composable { state: ProcessState.Failure, paddingValues: PaddingValues ->
@@ -88,7 +118,6 @@ fun failureInfo(
         paddingValues = paddingValues
     )
 }
-
 
 @ExperimentalMaterial3Api
 fun unknownInfo(
