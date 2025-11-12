@@ -16,6 +16,6 @@ fun launchGarmin(context: Context, activity: Activity?) {
     activity?.let {
         val appIntent = Intent(Intent.ACTION_VIEW, "garminconnect://activity/${it.id}".toUri())
         val webIntent = Intent(Intent.ACTION_VIEW, "https://connect.garmin.com/modern/activity/${it.id}".toUri())
-        runCatching { context.startActivity(appIntent) }.recover { context.startActivity(webIntent) }
+        runCatching { context.startActivity(appIntent) }.recoverCatching { context.startActivity(webIntent) }
     }
 }
