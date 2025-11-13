@@ -67,7 +67,7 @@ class LoginScreenTest {
         composeTestRule.setContent {
             LoginContent(state = LoginState(process = ProcessState.Success(), user = user))
         }
-        composeTestRule.onNodeWithText("Welcome Paul").assertIsDisplayed()
+        composeTestRule.onNodeWithText("All done").assertIsDisplayed()
     }
 
     @Test

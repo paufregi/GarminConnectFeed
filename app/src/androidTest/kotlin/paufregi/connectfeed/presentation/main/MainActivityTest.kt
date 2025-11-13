@@ -100,8 +100,6 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Username").performTextInput("user")
         composeTestRule.onNodeWithText("Password").performTextInput("pass")
         composeTestRule.onNodeWithText("Sign in").performClick()
-        composeTestRule.waitUntil(conditionDescription = "welcome") { composeTestRule.onNodeWithTag("welcome").isDisplayed() }
-        composeTestRule.onNodeWithText("Ok").performClick()
         composeTestRule.waitUntil(conditionDescription = "quick_edit_screen") { composeTestRule.onNodeWithTag("quick_edit_screen").isDisplayed() }
     }
 
