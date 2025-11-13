@@ -39,7 +39,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Initial state`() = runTest {
+    fun `Initial state - Logged in`() = runTest {
         every { isLoggedIn() } returns flowOf(true)
 
         viewModel = MainViewModel(isLoggedIn)
@@ -47,7 +47,6 @@ class MainViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.loggedIn).isTrue()
-            assertThat(state.showLogin).isNull()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -55,35 +54,14 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `Show login`() = runTest {
-        every { isLoggedIn() } returns flowOf(true)
+    fun `Initial state - Logged out`() = runTest {
+        every { isLoggedIn() } returns flowOf(false)
 
         viewModel = MainViewModel(isLoggedIn)
 
         viewModel.state.test {
-            viewModel.showLogin()
-            skipItems(1)
             val state = awaitItem()
-            assertThat(state.loggedIn).isTrue()
-            assertThat(state.showLogin).isTrue()
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        verify { isLoggedIn() }
-    }
-
-    @Test
-    fun `Hide login`() = runTest {
-        every { isLoggedIn() } returns flowOf(true)
-
-        viewModel = MainViewModel(isLoggedIn)
-
-        viewModel.state.test {
-            viewModel.hideLogin()
-            skipItems(1)
-            val state = awaitItem()
-            assertThat(state.loggedIn).isTrue()
-            assertThat(state.showLogin).isFalse()
+            assertThat(state.loggedIn).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 

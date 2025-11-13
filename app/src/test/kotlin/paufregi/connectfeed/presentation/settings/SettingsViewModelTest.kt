@@ -183,7 +183,7 @@ class SettingsViewModelTest {
         viewModel.state.test {
             skipItems(1)
             viewModel.onAction(SettingsAction.RefreshUser)
-            var state = awaitItem()
+            val state = awaitItem()
             assertThat(state.process).isEqualTo(ProcessState.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
@@ -201,6 +201,7 @@ class SettingsViewModelTest {
     @Test
     fun `Sign out`() = runTest {
         coEvery { signOut() } returns Unit
+        coEvery { disconnectStrava() } returns Unit
         every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
@@ -221,6 +222,7 @@ class SettingsViewModelTest {
         }
         coVerify {
             signOut()
+            disconnectStrava()
             getLatestRelease()
         }
     }

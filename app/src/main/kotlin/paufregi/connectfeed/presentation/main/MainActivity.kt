@@ -38,28 +38,27 @@ class MainActivity : ComponentActivity() {
             val state by viewModel.state.collectAsStateWithLifecycle()
             installSplashScreen().setKeepOnScreenCondition { state.loggedIn == null }
 
-            if (state.loggedIn == false && state.showLogin != true) {
-                viewModel.showLogin()
-            }
-            Theme {
-                NavHost(
-                    navController = nav,
-                    startDestination = if (state.showApp) Route.App else Route.Auth
-                ) {
-                    navigation<Route.Auth>(startDestination = Route.Login) {
-                        composable<Route.Login> { LoginScreen(viewModel::hideLogin) }
-                    }
-                    navigation<Route.App>(startDestination = Route.Home) {
-                        navigation<Route.Home>(startDestination = Route.QuickEdit) {
-                            composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }
-                            composable<Route.Edit> { EditScreen(nav = nav) }
-                            composable<Route.SyncStrava> { SyncStravaScreen(nav = nav) }
+            state.loggedIn?.let {
+                Theme {
+                    NavHost(
+                        navController = nav,
+                        startDestination = if (it) Route.App else Route.Auth
+                    ) {
+                        navigation<Route.Auth>(startDestination = Route.Login) {
+                            composable<Route.Login> { LoginScreen() }
                         }
-                        navigation<Route.Profiles>(startDestination = Route.ProfileList) {
-                            composable<Route.ProfileList> { ProfilesScreen(nav = nav) }
-                            composable<Route.Profile> { ProfileScreen(nav = nav) }
+                        navigation<Route.App>(startDestination = Route.Home) {
+                            navigation<Route.Home>(startDestination = Route.QuickEdit) {
+                                composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }
+                                composable<Route.Edit> { EditScreen(nav = nav) }
+                                composable<Route.SyncStrava> { SyncStravaScreen(nav = nav) }
+                            }
+                            navigation<Route.Profiles>(startDestination = Route.ProfileList) {
+                                composable<Route.ProfileList> { ProfilesScreen(nav = nav) }
+                                composable<Route.Profile> { ProfileScreen(nav = nav) }
+                            }
+                            composable<Route.Settings> { SettingsScreen(nav = nav) }
                         }
-                        composable<Route.Settings> { SettingsScreen(nav = nav) }
                     }
                 }
             }

@@ -1,7 +1,6 @@
 package paufregi.connectfeed.core.usecases
 
 import com.google.common.truth.Truth.assertThat
-import io.mockk.clearAllMocks
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before

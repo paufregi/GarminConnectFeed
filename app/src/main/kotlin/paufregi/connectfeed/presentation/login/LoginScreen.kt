@@ -2,6 +2,7 @@ package paufregi.connectfeed.presentation.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,18 +30,16 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Screen
-import paufregi.connectfeed.presentation.ui.components.WelcomeInfo
 import paufregi.connectfeed.presentation.ui.components.failureInfo
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun LoginScreen(
-    onLogin: () -> Unit = {}
-) {
+internal fun LoginScreen() {
     val viewModel = hiltViewModel<LoginViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LoginContent(state, viewModel::onAction, onLogin)
+    LoginContent(state, viewModel::onAction)
 }
 
 @Preview
@@ -49,12 +48,11 @@ internal fun LoginScreen(
 internal fun LoginContent(
     @PreviewParameter(LoginStatePreview::class) state: LoginState,
     onAction: (LoginAction) -> Unit = {},
-    onLogin: () -> Unit = {},
 ) {
     Screen(
         tagName = "login_screen",
         state = state.process,
-        success = {_, pv -> WelcomeInfo(state.user, onLogin, pv) },
+        success = { _: ProcessState.Success, _: PaddingValues -> run {} },
         failure = failureInfo { onAction(LoginAction.Reset) }
     ) {
         val keyboardController = LocalSoftwareKeyboardController.current

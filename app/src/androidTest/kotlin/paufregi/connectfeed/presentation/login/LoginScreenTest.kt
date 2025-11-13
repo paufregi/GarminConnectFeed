@@ -14,7 +14,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.presentation.ui.models.ProcessState
-import paufregi.connectfeed.user
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
@@ -60,14 +59,6 @@ class LoginScreenTest {
             LoginContent(state = LoginState(process = ProcessState.Processing))
         }
         composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
-    }
-
-    @Test
-    fun `Sign in - success`() {
-        composeTestRule.setContent {
-            LoginContent(state = LoginState(process = ProcessState.Success(), user = user))
-        }
-        composeTestRule.onNodeWithText("Welcome Paul").assertIsDisplayed()
     }
 
     @Test
