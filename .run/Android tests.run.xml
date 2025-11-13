@@ -9,14 +9,11 @@
     <option name="TEST_NAME_REGEX" value="" />
     <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
     <option name="EXTRA_OPTIONS" value="" />
-    <option name="RETENTION_ENABLED" value="No" />
-    <option name="RETENTION_MAX_SNAPSHOTS" value="2" />
-    <option name="RETENTION_COMPRESS_SNAPSHOTS" value="false" />
     <option name="CLEAR_LOGCAT" value="true" />
     <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
     <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
-    <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
-    <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+    <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="2147483645" />
+    <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="ace-computer-193605" />
     <option name="DEBUGGER_TYPE" value="Auto" />
     <Auto>
       <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
