@@ -71,6 +71,7 @@ class SettingsViewModel @Inject constructor(
 
     private fun signOutAction() = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
+        disconnectStrava()
         signOut()
         _state.update { it.copy(process = ProcessState.Idle) }
     }
