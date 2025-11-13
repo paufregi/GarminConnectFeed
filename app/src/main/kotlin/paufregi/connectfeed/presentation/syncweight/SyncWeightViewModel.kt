@@ -23,7 +23,7 @@ class SyncWeightViewModel @Inject constructor(
     val syncStravaWeight: SyncStravaWeight
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<SyncWeightState>(SyncWeightState())
+    private val _state = MutableStateFlow(SyncWeightState())
 
     val state = _state.asStateFlow()
 
