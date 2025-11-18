@@ -68,11 +68,11 @@ fun StatusInfo(
             color = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier.testTag("status_info_text")
         )
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         if (garminButton != null || stravaButton != null) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
-                modifier = Modifier.fillMaxWidth().padding(20.dp)
+                horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp)
             ) {
                 garminButton?.let { it() }
                 stravaButton?.let { it() }
