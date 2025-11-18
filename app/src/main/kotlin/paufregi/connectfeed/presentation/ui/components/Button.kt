@@ -32,7 +32,7 @@ fun Button(
             Icon(
                 imageVector = icon,
                 contentDescription = text,
-                modifier = Modifier.size(20.dp).padding(end = 6.dp)
+                modifier = Modifier.padding(end = 6.dp).size(20.dp)
             )
         }
         Text(text)
