@@ -24,6 +24,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
+import paufregi.connectfeed.presentation.ui.icons.garmin.Logo
+import paufregi.connectfeed.presentation.ui.icons.strava.Logo
+import paufregi.connectfeed.presentation.ui.icons.strava.Strava
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 sealed class StatusInfoType(
@@ -101,8 +105,8 @@ fun successActivityUpdate(
         type = StatusInfoType.Success,
         text = state.message ?: "All done",
         actionButton = { Button(text = "Ok", onClick = action) },
-        garminButton = { Button(text = "Garmin", onClick = garmin) },
-        stravaButton = strava?.let { { Button(text = "Strava", onClick = it) } },
+        garminButton = { Button(text = "Garmin", icon = Icons.Connect.Logo, onClick = garmin) },
+        stravaButton = strava?.let { { Button(text = "Strava", icon = Icons.Strava.Logo, onClick = it) } },
         paddingValues = paddingValues
     )
 }
