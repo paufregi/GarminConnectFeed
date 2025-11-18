@@ -24,6 +24,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
+import paufregi.connectfeed.presentation.ui.icons.garmin.Logo
+import paufregi.connectfeed.presentation.ui.icons.strava.Logo
+import paufregi.connectfeed.presentation.ui.icons.strava.Strava
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 sealed class StatusInfoType(
@@ -64,11 +68,11 @@ fun StatusInfo(
             color = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier.testTag("status_info_text")
         )
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         if (garminButton != null || stravaButton != null) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
-                modifier = Modifier.fillMaxWidth().padding(20.dp)
+                horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp)
             ) {
                 garminButton?.let { it() }
                 stravaButton?.let { it() }
@@ -101,8 +105,8 @@ fun successActivityUpdate(
         type = StatusInfoType.Success,
         text = state.message ?: "All done",
         actionButton = { Button(text = "Ok", onClick = action) },
-        garminButton = { Button(text = "Garmin", onClick = garmin) },
-        stravaButton = strava?.let { { Button(text = "Strava", onClick = it) } },
+        garminButton = { Button(text = "Garmin", icon = Icons.Connect.Logo, onClick = garmin) },
+        stravaButton = strava?.let { { Button(text = "Strava", icon = Icons.Strava.Logo, onClick = it) } },
         paddingValues = paddingValues
     )
 }
