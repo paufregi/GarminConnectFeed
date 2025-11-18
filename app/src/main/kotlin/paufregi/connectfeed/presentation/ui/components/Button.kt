@@ -1,5 +1,7 @@
 package paufregi.connectfeed.presentation.ui.components
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -7,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Button as MaterialButton
 import androidx.compose.material3.IconButton as MaterialIconButton
 
@@ -42,5 +45,25 @@ fun Button(
         enabled = enabled
     ) {
         Icon(icon, description)
+    }
+}
+
+@Composable
+fun Button(
+    text: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    onClick: () -> Unit = {},
+    enabled: Boolean = true
+) {
+    MaterialButton(
+        modifier = modifier,
+        colors = colors,
+        onClick = onClick,
+        enabled = enabled
+    ) {
+        Icon(imageVector = icon, contentDescription = text, modifier = Modifier.size(20.dp).padding(end = 6.dp))
+        Text(text)
     }
 }
