@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButton as MaterialIconButton
 fun Button(
     text: String,
     modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
     onClick: () -> Unit = {},
     enabled: Boolean = true
@@ -27,6 +28,13 @@ fun Button(
         onClick = onClick,
         enabled = enabled
     ) {
+        icon?.let {
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+                modifier = Modifier.size(20.dp).padding(end = 6.dp)
+            )
+        }
         Text(text)
     }
 }
@@ -45,25 +53,5 @@ fun Button(
         enabled = enabled
     ) {
         Icon(icon, description)
-    }
-}
-
-@Composable
-fun Button(
-    text: String,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    colors: ButtonColors = ButtonDefaults.buttonColors(),
-    onClick: () -> Unit = {},
-    enabled: Boolean = true
-) {
-    MaterialButton(
-        modifier = modifier,
-        colors = colors,
-        onClick = onClick,
-        enabled = enabled
-    ) {
-        Icon(imageVector = icon, contentDescription = text, modifier = Modifier.size(20.dp).padding(end = 6.dp))
-        Text(text)
     }
 }
