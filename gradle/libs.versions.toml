@@ -31,7 +31,7 @@ hilt = "2.57.2"
 runner = "1.7.0"
 turbine = "1.2.1"
 testLogger = "4.0.0"
-dependencyAnalysis = "3.4.1"
+dependencyAnalysis = "3.5.0"
 dependencyVersions = "0.53.0"
 
 [libraries]
