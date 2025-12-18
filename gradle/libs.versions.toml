@@ -1,5 +1,5 @@
 [versions]
-activity = "1.12.1"
+activity = "1.12.2"
 androidGradlePlugin = "8.13.2"
 coil = "3.3.0"
 commonsCsv = "1.14.1"
