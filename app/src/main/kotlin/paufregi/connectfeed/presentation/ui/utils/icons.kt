@@ -14,6 +14,7 @@ import paufregi.connectfeed.presentation.ui.icons.garmin.EBikingMountain
 import paufregi.connectfeed.presentation.ui.icons.garmin.GravelCycling
 import paufregi.connectfeed.presentation.ui.icons.garmin.HIIT
 import paufregi.connectfeed.presentation.ui.icons.garmin.Hiking
+import paufregi.connectfeed.presentation.ui.icons.garmin.IndoorRide
 import paufregi.connectfeed.presentation.ui.icons.garmin.JumpRope
 import paufregi.connectfeed.presentation.ui.icons.garmin.Kayaking
 import paufregi.connectfeed.presentation.ui.icons.garmin.MountainBiking
@@ -76,6 +77,7 @@ fun iconFor(type: ActivityType): ImageVector? =
         is ActivityType.GravelCycling -> Icons.Connect.GravelCycling
         is ActivityType.MountainBiking -> Icons.Connect.MountainBiking
         is ActivityType.RoadBiking -> Icons.Connect.RoadBiking
+        is ActivityType.IndoorRide -> Icons.Connect.IndoorRide
         is ActivityType.VirtualRide -> Icons.Connect.VirtualRide
         // Fitness
         is ActivityType.HIIT -> Icons.Connect.HIIT

@@ -19,6 +19,20 @@ class ActivityTypeTest {
     }
 
     @Test
+    fun `compatible - Unknown`() {
+        // This
+        assertThat(ActivityType.Unknown.compatible(ActivityType.Running)).isTrue()
+        assertThat(ActivityType.Unknown.compatible(ActivityType.Cycling)).isTrue()
+
+        // Other
+        assertThat(ActivityType.Running.compatible(ActivityType.Unknown)).isTrue()
+        assertThat(ActivityType.Cycling.compatible(ActivityType.Unknown)).isTrue()
+
+        // Both
+        assertThat(ActivityType.Unknown.compatible(ActivityType.Unknown)).isTrue()
+    }
+
+    @Test
     fun `compatible - same type`() {
         assertThat(ActivityType.Running.compatible(ActivityType.Running)).isTrue()
         assertThat(ActivityType.Cycling.compatible(ActivityType.Cycling)).isTrue()
