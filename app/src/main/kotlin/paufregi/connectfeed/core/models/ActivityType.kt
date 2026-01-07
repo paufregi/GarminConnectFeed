@@ -23,7 +23,8 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
     data object GravelCycling: ActivityType("Gravel Cycling", Cycling) // 143
     data object MountainBiking: ActivityType("Mountain Biking", Cycling) // 5
     data object RoadBiking: ActivityType("Road Biking", Cycling) // 10
-    data object VirtualRide: ActivityType("Virtual Ride", Cycling) // 153
+    data object IndoorRide: ActivityType("Indoor Cycling", Cycling) // 25
+    data object VirtualRide: ActivityType("Virtual Ride", Cycling) // 152
 
     // Fitness
     data object HIIT: ActivityType("HIIT", Fitness) // 180
@@ -100,7 +101,9 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
             else -> 7
         }
 
+    private fun isWildcard(type: ActivityType) = type == Any || type == Unknown
+
     fun compatible(other: ActivityType): Boolean =
-        this == Any || other == Any || (parent ?: this) == (other.parent ?: other)
+        isWildcard(this) || isWildcard(other) || (parent ?: this) == (other.parent ?: other)
 
 }
