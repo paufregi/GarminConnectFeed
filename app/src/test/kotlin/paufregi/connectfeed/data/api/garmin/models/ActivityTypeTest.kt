@@ -91,8 +91,15 @@ class ActivityTypeTest {
     }
 
     @Test
+    fun `To Core activity type - indoor ride`() {
+        val activityType = ActivityType(id = 25, key = "indoor_cycling")
+
+        assertThat(activityType.toCore()).isEqualTo(CoreActivityType.IndoorRide)
+    }
+
+    @Test
     fun `To Core activity type - virtual ride`() {
-        val activityType = ActivityType(id = 153, key = "virtual_ride")
+        val activityType = ActivityType(id = 152, key = "virtual_ride")
 
         assertThat(activityType.toCore()).isEqualTo(CoreActivityType.VirtualRide)
     }

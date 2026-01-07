@@ -27,7 +27,8 @@ data class ActivityType(
         143L -> CoreActivityType.GravelCycling
         5L -> CoreActivityType.MountainBiking
         10L -> CoreActivityType.RoadBiking
-        153L -> CoreActivityType.VirtualRide
+        25L -> CoreActivityType.IndoorRide
+        152L -> CoreActivityType.VirtualRide
 
         // Fitness
         180L -> CoreActivityType.HIIT
