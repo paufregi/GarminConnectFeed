@@ -111,7 +111,7 @@ class EditViewModel @Inject constructor(
             val asyncUpdateActivity = async {
                 updateActivity(
                     activity = state.value.activity,
-                    name = state.value.name,
+                    name = state.value.name ?: state.value.activity?.name,
                     eventType = state.value.eventType,
                     course = state.value.course,
                     water = state.value.water,
@@ -124,7 +124,7 @@ class EditViewModel @Inject constructor(
                 if (state.value.hasStrava && state.value.stravaActivity != null) {
                     updateStravaActivity(
                         stravaActivity = state.value.stravaActivity,
-                        name = state.value.name,
+                        name = state.value.name ?: state.value.activity?.name,
                         description = state.value.description,
                         eventType = state.value.eventType,
                         trainingEffect = state.value.activity?.trainingEffect,
