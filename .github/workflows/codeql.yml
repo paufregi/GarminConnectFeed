@@ -55,6 +55,8 @@ jobs:
         ./gradlew clean assemble \
           --no-daemon \
           -Dkotlin.compiler.execution.strategy="in-process"
+          -Dksp.incremental=false \
+          -Dksp.daemon.enabled=false
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
