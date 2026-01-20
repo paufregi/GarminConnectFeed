@@ -20,15 +20,12 @@ subprojects {
     }
     configurations.all {
         resolutionStrategy.dependencySubstitution {
+            listOf("4.1.93.Final", "4.1.110.Final").forEach { version ->
+                substitute(module("io.netty:netty-codec-http2:$version"))
+                    .using(module("io.netty:netty-codec-http2:4.1.130.Final"))
+            }
             substitute(module("com.google.protobuf:protobuf-kotlin:3.24.4"))
                 .using(module("com.google.protobuf:protobuf-kotlin:3.25.5"))
-                .because("CVE-2024-7254 - Dependabot issue #24")
-            substitute(module("io.netty:netty-codec-http2:4.1.110.Final"))
-                .using(module("io.netty:netty-codec-http2:4.1.124.Final"))
-                .because("CVE-2023-44487 - Dependabot issue #25")
-            substitute(module("io.netty:netty-codec-http2:4.1.93.Final"))
-                .using(module("io.netty:netty-codec-http2:4.1.124.Final"))
-                .because("CVE-2023-44487 - Dependabot issue #25")
         }
     }
 }
