@@ -36,6 +36,16 @@ subprojects {
     }
 }
 
+buildscript {
+    configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            substitute(module("org.jdom:jdom2:2.0.6"))
+                .using(module("org.jdom:jdom2:2.0.6.1"))
+                .because("Dependabot issue #28")
+        }
+    }
+}
+
 repositories {
     google()
 }
