@@ -18,7 +18,15 @@ subprojects {
         google()
         mavenCentral()
     }
+    configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            substitute(module("com.google.protobuf:protobuf-kotlin:3.24.4"))
+                .using(module("com.google.protobuf:protobuf-kotlin:3.25.5"))
+                .because("CVE-2024-7254 - Dependabot issue #24")
+        }
+    }
 }
+
 repositories {
     google()
 }
