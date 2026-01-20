@@ -26,6 +26,10 @@ subprojects {
             }
             substitute(module("com.google.protobuf:protobuf-kotlin:3.24.4"))
                 .using(module("com.google.protobuf:protobuf-kotlin:3.25.5"))
+            substitute(module("org.apache.httpcomponents:httpclient:4.5.6"))
+                .using(module("org.apache.httpcomponents:httpclient:4.5.13"))
+            substitute(module("org.apache.commons:commons-lang3:3.16.0"))
+                .using(module("org.apache.commons:commons-lang3:3.18.0"))
         }
     }
 }
@@ -35,10 +39,12 @@ buildscript {
         resolutionStrategy.dependencySubstitution {
             substitute(module("org.jdom:jdom2:2.0.6"))
                 .using(module("org.jdom:jdom2:2.0.6.1"))
-                .because("Dependabot issue #28")
             substitute(module("org.bitbucket.b_c:jose4j:0.9.5"))
                 .using(module("org.bitbucket.b_c:jose4j:0.9.6"))
-                .because("Dependabot issue #30")
+            substitute(module("org.apache.httpcomponents:httpclient:4.5.6"))
+                .using(module("org.apache.httpcomponents:httpclient:4.5.13"))
+            substitute(module("org.apache.commons:commons-lang3:3.16.0"))
+                .using(module("org.apache.commons:commons-lang3:3.18.0"))
         }
     }
 }
