@@ -23,6 +23,9 @@ subprojects {
             substitute(module("com.google.protobuf:protobuf-kotlin:3.24.4"))
                 .using(module("com.google.protobuf:protobuf-kotlin:3.25.5"))
                 .because("CVE-2024-7254 - Dependabot issue #24")
+            substitute(module("org.jdom:jdom2:2.0.6"))
+                .using(module("org.jdom:jdom2:2.0.6.1"))
+                .because("Dependabot issue #28")
         }
     }
 }
