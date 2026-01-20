@@ -52,9 +52,7 @@ jobs:
     - name: Build with Gradle
       if: matrix.language == 'java-kotlin'
       run: |
-        ./gradlew clean assembleDebug \
-        --no-daemon \
-        -Dorg.gradle.vfs.watch=false
+        ./gradlew clean assembleDebug
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
