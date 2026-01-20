@@ -29,12 +29,6 @@ subprojects {
             substitute(module("io.netty:netty-codec-http2:4.1.93.Final"))
                 .using(module("io.netty:netty-codec-http2:4.1.124.Final"))
                 .because("CVE-2023-44487 - Dependabot issue #25")
-            substitute(module("org.jdom:jdom2:2.0.6"))
-                .using(module("org.jdom:jdom2:2.0.6.1"))
-                .because("Dependabot issue #28")
-            substitute(module("org.bitbucket.b_c:jose4j:0.9.5"))
-                .using(module("org.bitbucket.b_c:jose4j:0.9.6"))
-                .because("Dependabot issue #30")
         }
     }
 }
@@ -45,6 +39,9 @@ buildscript {
             substitute(module("org.jdom:jdom2:2.0.6"))
                 .using(module("org.jdom:jdom2:2.0.6.1"))
                 .because("Dependabot issue #28")
+            substitute(module("org.bitbucket.b_c:jose4j:0.9.5"))
+                .using(module("org.bitbucket.b_c:jose4j:0.9.6"))
+                .because("Dependabot issue #30")
         }
     }
 }
