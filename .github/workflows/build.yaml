@@ -38,7 +38,7 @@ jobs:
         run: ./gradlew assemble
 
       - name: Test
-        run: ./gradlew testReleaseUnitTest
+        run: ./gradlew test
 
       - name: Android tests
         run: ./gradlew pixel9ProCheck
