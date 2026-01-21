@@ -28,8 +28,8 @@ subprojects {
                 .using(module("com.google.protobuf:protobuf-kotlin:3.25.5"))
             substitute(module("org.apache.httpcomponents:httpclient:4.5.6"))
                 .using(module("org.apache.httpcomponents:httpclient:4.5.13"))
-            substitute(module("org.apache.commons:commons-lang3:3.16.0"))
-                .using(module("org.apache.commons:commons-lang3:3.18.0"))
+            substitute(module("org.apache.commons:commons-lang3:3.20.0"))
+                .using(module("org.apache.commons:commons-lang3:3.20.0"))
         }
     }
 }
@@ -43,8 +43,8 @@ buildscript {
                 .using(module("org.bitbucket.b_c:jose4j:0.9.6"))
             substitute(module("org.apache.httpcomponents:httpclient:4.5.6"))
                 .using(module("org.apache.httpcomponents:httpclient:4.5.13"))
-            substitute(module("org.apache.commons:commons-lang3:3.16.0"))
-                .using(module("org.apache.commons:commons-lang3:3.18.0"))
+            substitute(module("org.apache.commons:commons-lang3:3.20.0"))
+                .using(module("org.apache.commons:commons-lang3:3.20.0"))
         }
     }
 }
