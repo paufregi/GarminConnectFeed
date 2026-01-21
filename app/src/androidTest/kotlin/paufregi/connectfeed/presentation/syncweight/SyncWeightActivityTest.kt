@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.syncWeight
+package paufregi.connectfeed.presentation.syncweight
 
 /*
 import android.content.Context

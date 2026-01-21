@@ -4,7 +4,6 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.android.room)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serializable)
     alias(libs.plugins.ksp)
@@ -118,12 +117,10 @@ dependencies {
     implementation(libs.fit)
     implementation(libs.commons.csv)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.hilt.android)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
     ksp(libs.androidx.room.compiler)
-    ksp(libs.androidx.hilt.compiler)
     ksp(libs.hilt.compiler)
 
     debugImplementation(libs.androidx.ui.tooling)
@@ -143,10 +140,11 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.kotlinx.coroutines.test)
-    androidTestImplementation(libs.junit)
     androidTestImplementation(libs.truth)
     androidTestImplementation(libs.hilt.testing)
     androidTestImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(libs.okhttp.tls)
     androidTestImplementation(libs.turbine)
+    
+    kspAndroidTest(libs.hilt.compiler)
 }
