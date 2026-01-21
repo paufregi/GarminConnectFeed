@@ -88,7 +88,7 @@ class EditViewModel @Inject constructor(
             course = it.course?.takeIf { c -> c.type.compatible(action.activity.type) && action.activity.type.allowCourse }
         ) }
         is EditAction.SetDescription -> _state.update { it.copy(description = action.description) }
-        is EditAction.SetName -> _state.update { it.copy(name = action.name.takeIf { n -> n?.isNotEmpty() ?: false }) }
+        is EditAction.SetName -> _state.update { it.copy(name = action.name?.takeIf { n -> n.isNotEmpty() }) }
         is EditAction.SetEventType -> _state.update { it.copy(eventType = action.eventType) }
         is EditAction.SetCourse -> _state.update { it.copy(
             course = action.course,
