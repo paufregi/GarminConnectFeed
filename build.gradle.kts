@@ -24,8 +24,8 @@ subprojects {
                 substitute(module("io.netty:netty-codec-http2:$version"))
                     .using(module("io.netty:netty-codec-http2:4.1.130.Final"))
             }
-            substitute(module("com.google.protobuf:protobuf-kotlin:3.24.4"))
-                .using(module("com.google.protobuf:protobuf-kotlin:3.25.5"))
+            substitute(module("com.google.protobuf:protobuf-kotlin:4.33.4"))
+                .using(module("com.google.protobuf:protobuf-kotlin:4.33.4"))
             substitute(module("org.apache.httpcomponents:httpclient:4.5.6"))
                 .using(module("org.apache.httpcomponents:httpclient:4.5.13"))
             substitute(module("org.apache.commons:commons-lang3:3.16.0"))
