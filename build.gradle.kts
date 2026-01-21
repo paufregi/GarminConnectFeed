@@ -22,7 +22,7 @@ subprojects {
         resolutionStrategy.dependencySubstitution {
             listOf("4.1.93.Final", "4.1.110.Final").forEach { version ->
                 substitute(module("io.netty:netty-codec-http2:$version"))
-                    .using(module("io.netty:netty-codec-http2:4.1.130.Final"))
+                    .using(module("io.netty:netty-codec-http2:4.2.9.Final"))
             }
             substitute(module("com.google.protobuf:protobuf-kotlin:3.24.4"))
                 .using(module("com.google.protobuf:protobuf-kotlin:3.25.5"))
