@@ -873,6 +873,54 @@ class EditViewModelTest {
     }
 
     @Test
+    fun `Set name - blank`() = runTest {
+        coEvery { getActivities(any()) } returns Result.success(activities)
+        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getCourses(any()) } returns Result.success(courses)
+        every { getEventTypes() } returns eventTypes
+
+        viewModel = EditViewModel(
+            getActivities,
+            getStravaActivities,
+            getEventTypes,
+            getCourses,
+            updateActivity,
+            updateStravaActivity,
+        )
+
+        viewModel.state.test {
+            viewModel.onAction(EditAction.SetName("test"))
+            viewModel.onAction(EditAction.SetName(""))
+            skipItems(2)
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
+            assertThat(state.eventTypes).isEqualTo(eventTypes)
+            assertThat(state.courses).isEqualTo(courses)
+            assertThat(state.activity).isNull()
+            assertThat(state.stravaActivity).isNull()
+            assertThat(state.name).isNull()
+            assertThat(state.eventType).isNull()
+            assertThat(state.course).isNull()
+            assertThat(state.description).isNull()
+            assertThat(state.water).isNull()
+            assertThat(state.effort).isNull()
+            assertThat(state.feel).isNull()
+            assertThat(state.trainingEffect).isFalse()
+            assertThat(state.hasStrava).isTrue()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify {
+            getActivities(false)
+            getStravaActivities(false)
+            getCourses(false)
+        }
+        verify { getEventTypes() }
+    }
+
+    @Test
     fun `Set description`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
