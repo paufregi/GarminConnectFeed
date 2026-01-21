@@ -5,6 +5,13 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "io.netty:netty-codec-http2"
+      - dependency-name: "com.google.protobuf:protobuf-kotlin"
+      - dependency-name: "org.apache.httpcomponents:httpclient"
+      - dependency-name: "org.apache.commons:commons-lang3"
+      - dependency-name: "org.jdom:jdom2"
+      - dependency-name: "org.bitbucket.b_c:jose4j"
     groups:
       kotlinPlugin:
         patterns:
