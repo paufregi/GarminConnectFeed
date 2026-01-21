@@ -37,8 +37,8 @@ subprojects {
 buildscript {
     configurations.all {
         resolutionStrategy.dependencySubstitution {
-            substitute(module("org.jdom:jdom2:2.0.6"))
-                .using(module("org.jdom:jdom2:2.0.6.1"))
+            substitute(module("org.jdom:jdom2:2.0.6.1"))
+                .using(module("org.jdom:jdom2:2.0.6.1.1"))
             substitute(module("org.bitbucket.b_c:jose4j:0.9.5"))
                 .using(module("org.bitbucket.b_c:jose4j:0.9.6"))
             substitute(module("org.apache.httpcomponents:httpclient:4.5.6"))
