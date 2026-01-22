@@ -34,14 +34,5 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Build
-        run: ./gradlew assemble
-
-      - name: Test
-        run: ./gradlew test
-
-      - name: Android tests
-        run: ./gradlew pixel9ProCheck
-
-      - name: Lint
-        run: ./gradlew lint
+      - name: Build & tests
+        run: ./gradlew assemble test pixel9ProCheck lint
