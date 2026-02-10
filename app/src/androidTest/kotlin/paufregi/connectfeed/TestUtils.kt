@@ -17,13 +17,14 @@ import paufregi.connectfeed.test.R
 import java.net.URLDecoder
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import kotlin.time.toKotlinInstant
 import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
-fun createAuthToken(issuedAt: Instant) = AuthToken(
-    accessToken = jwt { issuedAt }.toString(),
+fun createAuthToken(issuedTime: Instant) = AuthToken(
+    accessToken = jwt { claims { issuedAt(issuedTime.toKotlinInstant()) } }.toString(),
     refreshToken = "REFRESH_TOKEN",
-    expiresAt = issuedAt.plusSeconds(10),
-    refreshExpiresAt = issuedAt.plusSeconds(30)
+    expiresAt = issuedTime.plusSeconds(10),
+    refreshExpiresAt = issuedTime.plusSeconds(30)
 )
 
 fun createStravaToken(expiresAt: Instant) = StravaAuthToken(

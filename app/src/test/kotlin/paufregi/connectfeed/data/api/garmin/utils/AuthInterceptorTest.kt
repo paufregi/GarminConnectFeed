@@ -21,6 +21,7 @@ import org.junit.Test
 import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.core.utils.failure
+import paufregi.connectfeed.core.utils.toKotlinInstant
 import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
@@ -133,7 +134,7 @@ class AuthInterceptorTest {
     @Test
     fun `Success - refresh`() = runTest {
         val expiredToken = AuthToken(
-            accessToken = jwt { today.minus(10, ChronoUnit.SECONDS) }.toString(),
+            accessToken = jwt { claims { issuedAt(today.minus(10, ChronoUnit.SECONDS).toKotlinInstant()) } }.toString(),
             refreshToken = "REFRESH_TOKEN",
             expiresAt = today.minus(10, ChronoUnit.SECONDS),
             refreshExpiresAt = today.plus(1, ChronoUnit.DAYS)
@@ -163,7 +164,7 @@ class AuthInterceptorTest {
     @Test
     fun `Success - refresh & exchange`() = runTest {
         val expiredToken = AuthToken(
-            accessToken = jwt { today.minus(10, ChronoUnit.SECONDS) }.toString(),
+            accessToken = jwt { claims { issuedAt(today.minus(10, ChronoUnit.SECONDS).toKotlinInstant()) } }.toString(),
             refreshToken = "REFRESH_TOKEN",
             expiresAt = today.minus(10, ChronoUnit.SECONDS),
             refreshExpiresAt = today.plus(1, ChronoUnit.DAYS)
@@ -229,7 +230,7 @@ class AuthInterceptorTest {
     @Test
     fun `Failure - refresh`() = runTest {
         val expiredToken = AuthToken(
-            accessToken = jwt { today.minus(10, ChronoUnit.SECONDS) }.toString(),
+            accessToken = jwt { claims { issuedAt(today.minus(10, ChronoUnit.SECONDS).toKotlinInstant()) } }.toString(),
             refreshToken = "REFRESH_TOKEN",
             expiresAt = today.minus(10, ChronoUnit.SECONDS),
             refreshExpiresAt = today.plus(1, ChronoUnit.DAYS)
