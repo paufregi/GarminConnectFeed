@@ -7,32 +7,25 @@ import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Test
 import retrofit2.Response
-import java.time.Instant
 import java.util.Date
 import java.util.concurrent.Semaphore
+import kotlin.time.Instant
+import java.time.Instant as JInstant
 
 class ExtensionTest {
 
     @Test
-    fun `JavaInstant - toKotlinInstant - correct conversion`() {
-        val javaInstant = Instant.parse("2025-01-01T10:20:30Z")
-        val kotlinInstant = javaInstant.toKotlinInstant()
-
-        assertThat(kotlinInstant.toEpochMilliseconds()).isEqualTo(javaInstant.toEpochMilli())
-    }
-
-    @Test
-    fun `JavaInstant - toKotlinInstant - epoch zero`() {
-        val javaInstant = Instant.EPOCH
-        val kotlinInstant = javaInstant.toKotlinInstant()
-
-        assertThat(kotlinInstant.toEpochMilliseconds()).isEqualTo(0L)
+    fun `Instant - truncatedToSecond`() {
+        val instant = Instant.parse("2025-01-01T10:20:30.456Z")
+        val expected = Instant.parse("2025-01-01T10:20:30Z")
+        val truncated = instant.truncatedToSecond()
+        assertThat(truncated).isEqualTo(expected)
     }
 
     @Test
     fun `Date - sameDay - same day`() {
-        val date = Date.from(Instant.parse("2025-01-01T10:20:30Z"))
-        val other = Date.from(Instant.parse("2025-01-01T10:22:33Z"))
+        val date = Date.from(JInstant.parse("2025-01-01T10:20:30Z"))
+        val other = Date.from(JInstant.parse("2025-01-01T10:22:33Z"))
 
         val result = date.sameDay(other)
         assertThat(result).isTrue()
@@ -40,8 +33,8 @@ class ExtensionTest {
 
     @Test
     fun `Date - sameDay - different day`() {
-        val date = Date.from(Instant.parse("2025-01-01T10:20:30Z"))
-        val other = Date.from(Instant.parse("2025-01-03T10:20:30Z"))
+        val date = Date.from(JInstant.parse("2025-01-01T10:20:30Z"))
+        val other = Date.from(JInstant.parse("2025-01-03T10:20:30Z"))
 
         val result = date.sameDay(other)
         assertThat(result).isFalse()
