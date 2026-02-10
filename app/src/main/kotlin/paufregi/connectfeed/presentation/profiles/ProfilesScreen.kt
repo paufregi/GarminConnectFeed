@@ -106,7 +106,7 @@ internal fun ProfilesContent(
         if (state.profiles.isEmpty()) {
             item { Text("No profile") }
         } else {
-            itemsIndexed(state.profiles) { index, it ->
+            itemsIndexed(state.profiles) { _, it ->
                 Card(
                     modifier = Modifier
                         .height(50.dp)
