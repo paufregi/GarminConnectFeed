@@ -1,6 +1,8 @@
 package paufregi.connectfeed.data.api.garmin.converters
 
-import com.auth0.jwt.JWT
+import com.appstractive.jwt.JWT
+import com.appstractive.jwt.from
+import com.appstractive.jwt.issuedAt
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -15,6 +17,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import java.time.Duration
+import kotlin.time.toJavaInstant
 
 object AuthTokenSerializer : KSerializer<AuthToken> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("AuthToken") {
@@ -39,7 +42,8 @@ object AuthTokenSerializer : KSerializer<AuthToken> {
         val refreshExpiresAtOffset = jsonObject["refresh_token_expires_in"]?.jsonPrimitive?.longOrNull
             ?: throw SerializationException("Missing refresh_token_expires_in")
 
-        val issuedAt = JWT.decode(accessToken).issuedAtAsInstant
+        val issuedAt = JWT.from(accessToken).issuedAt!!.toJavaInstant()
+
         return AuthToken(
             accessToken = accessToken,
             refreshToken = refreshToken,
@@ -49,7 +53,7 @@ object AuthTokenSerializer : KSerializer<AuthToken> {
     }
 
     override fun serialize(encoder: Encoder, value: AuthToken) {
-        val issuedAt = JWT.decode(value.accessToken).issuedAtAsInstant
+        val issuedAt = JWT.from(value.accessToken).issuedAt!!.toJavaInstant()
         encoder.encodeStructure(descriptor) {
             encodeStringElement(descriptor, 0, value.accessToken)
             encodeStringElement(descriptor, 1, value.refreshToken)
