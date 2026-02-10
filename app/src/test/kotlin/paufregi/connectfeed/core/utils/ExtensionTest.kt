@@ -14,6 +14,22 @@ import java.util.concurrent.Semaphore
 class ExtensionTest {
 
     @Test
+    fun `JavaInstant - toKotlinInstant - correct conversion`() {
+        val javaInstant = Instant.parse("2025-01-01T10:20:30Z")
+        val kotlinInstant = javaInstant.toKotlinInstant()
+
+        assertThat(kotlinInstant.toEpochMilliseconds()).isEqualTo(javaInstant.toEpochMilli())
+    }
+
+    @Test
+    fun `JavaInstant - toKotlinInstant - epoch zero`() {
+        val javaInstant = Instant.EPOCH
+        val kotlinInstant = javaInstant.toKotlinInstant()
+
+        assertThat(kotlinInstant.toEpochMilliseconds()).isEqualTo(0L)
+    }
+
+    @Test
     fun `Date - sameDay - same day`() {
         val date = Date.from(Instant.parse("2025-01-01T10:20:30Z"))
         val other = Date.from(Instant.parse("2025-01-01T10:22:33Z"))

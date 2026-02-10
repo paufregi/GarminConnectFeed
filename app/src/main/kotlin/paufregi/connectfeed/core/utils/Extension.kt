@@ -4,6 +4,12 @@ import retrofit2.Response
 import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.Semaphore
+import java.time.Instant as JavaInstant
+import kotlin.time.Instant as KotlinInstant
+
+fun JavaInstant.toKotlinInstant(): KotlinInstant =
+    KotlinInstant.fromEpochMilliseconds(this.toEpochMilli())
+
 
 fun Date.sameDay(other: Date): Boolean {
     val calendar1 = Calendar.getInstance().apply { time = this@sameDay }
