@@ -3,8 +3,8 @@ package paufregi.connectfeed.data.api.strava.models
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import paufregi.connectfeed.data.api.strava.converters.SportTypeConverter
-import java.time.Instant
 import kotlin.math.round
+import kotlin.time.Instant
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 
 @Serializable
@@ -25,6 +25,6 @@ data class Activity(
         name = name,
         distance = round(this.distance),
         type = SportTypeConverter.toActivityType(sportType),
-        date = Instant.parse(this.startDate)
+        date = this.startDate?.let { Instant.parse(it) }
     )
 }

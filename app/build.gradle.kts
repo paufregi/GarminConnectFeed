@@ -113,7 +113,7 @@ dependencies {
     implementation(libs.retrofit.converter)
     implementation(libs.okhttp)
     implementation(libs.okhttp.signpost)
-    implementation(libs.java.jwt)
+    implementation(libs.jwt.kt)
     implementation(libs.fit)
     implementation(libs.commons.csv)
     implementation(libs.kotlinx.serialization.json)

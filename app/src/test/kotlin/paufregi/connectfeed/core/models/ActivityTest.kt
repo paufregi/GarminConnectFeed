@@ -2,7 +2,7 @@ package paufregi.connectfeed.core.models
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import java.time.Instant
+import kotlin.time.Instant
 
 class ActivityTest {
 

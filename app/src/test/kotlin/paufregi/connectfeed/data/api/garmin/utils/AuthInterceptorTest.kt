@@ -1,7 +1,6 @@
 package paufregi.connectfeed.data.api.garmin.utils
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
+import com.appstractive.jwt.jwt
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
@@ -34,7 +33,8 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.GET
-import java.time.temporal.ChronoUnit
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 
 class AuthInterceptorTest {
 
@@ -134,10 +134,10 @@ class AuthInterceptorTest {
     @Test
     fun `Success - refresh`() = runTest {
         val expiredToken = AuthToken(
-            accessToken = JWT.create().withIssuedAt(today.minus(10, ChronoUnit.SECONDS)).sign(Algorithm.none()),
+            accessToken = jwt { claims { issuedAt(today - 10.seconds) } }.toString(),
             refreshToken = "REFRESH_TOKEN",
-            expiresAt = today.minus(10, ChronoUnit.SECONDS),
-            refreshExpiresAt = today.plus(1, ChronoUnit.DAYS)
+            expiresAt = today - 10.seconds,
+            refreshExpiresAt = today + 1.days
         )
         val validToken = createAuthToken(tomorrow)
 
@@ -164,10 +164,10 @@ class AuthInterceptorTest {
     @Test
     fun `Success - refresh & exchange`() = runTest {
         val expiredToken = AuthToken(
-            accessToken = JWT.create().withIssuedAt(today.minus(10, ChronoUnit.SECONDS)).sign(Algorithm.none()),
+            accessToken = jwt { claims { issuedAt(today - 10.seconds) } }.toString(),
             refreshToken = "REFRESH_TOKEN",
-            expiresAt = today.minus(10, ChronoUnit.SECONDS),
-            refreshExpiresAt = today.plus(1, ChronoUnit.DAYS)
+            expiresAt = today - 10.seconds,
+            refreshExpiresAt = today + 1.days
         )
         val validToken = createAuthToken(tomorrow)
 
@@ -230,10 +230,10 @@ class AuthInterceptorTest {
     @Test
     fun `Failure - refresh`() = runTest {
         val expiredToken = AuthToken(
-            accessToken = JWT.create().withIssuedAt(today.minus(10, ChronoUnit.SECONDS)).sign(Algorithm.none()),
+            accessToken = jwt { claims { issuedAt(today - 10.seconds) } }.toString(),
             refreshToken = "REFRESH_TOKEN",
-            expiresAt = today.minus(10, ChronoUnit.SECONDS),
-            refreshExpiresAt = today.plus(1, ChronoUnit.DAYS)
+            expiresAt = today - 10.seconds,
+            refreshExpiresAt = today + 1.days
         )
         every { authRepo.getAuthToken() } returns flowOf(expiredToken)
         every { authRepo.getPreAuth() } returns flowOf(preAuthToken)

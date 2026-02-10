@@ -31,8 +31,8 @@ import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
 import paufregi.connectfeed.user
 import java.io.File
-import java.time.Instant
 import javax.inject.Inject
+import kotlin.time.Instant
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
@@ -120,7 +120,7 @@ class GarminRepositoryTest {
                 trainingEffect = "recovery",
                 type = CoreActivityType.RoadBiking,
                 eventType = CoreEventType.Transportation,
-                date = Instant.ofEpochMilli(1729754100000)
+                date = Instant.fromEpochMilliseconds(1729754100000)
             ),
             CoreActivity(
                 id = 2,
@@ -129,7 +129,7 @@ class GarminRepositoryTest {
                 trainingEffect = "recovery",
                 type = CoreActivityType.RoadBiking,
                 eventType = CoreEventType.Transportation,
-                date = Instant.ofEpochMilli(1729705968000)
+                date = Instant.fromEpochMilliseconds(1729705968000)
             )
         )
 

@@ -3,8 +3,8 @@ package paufregi.connectfeed.data.api.garmin.models
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import paufregi.connectfeed.data.api.garmin.converters.TrainingEffectConverter
-import java.time.Instant
 import kotlin.math.round
+import kotlin.time.Instant
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 
 @Serializable
@@ -32,6 +32,6 @@ data class Activity(
             eventType = this.eventType?.toCore(),
             distance = round(this.distance),
             trainingEffect = TrainingEffectConverter.convert(this.trainingEffectLabel),
-            date = this.beginTimestamp?.let { Instant.ofEpochMilli(it) }
+            date = this.beginTimestamp?.let { Instant.fromEpochMilliseconds(it) }
         )
 }

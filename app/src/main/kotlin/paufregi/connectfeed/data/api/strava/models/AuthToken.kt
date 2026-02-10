@@ -3,7 +3,8 @@ package paufregi.connectfeed.data.api.strava.models
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import paufregi.connectfeed.data.api.strava.converters.InstantSerializer
-import java.time.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 @Serializable
 data class AuthToken(
@@ -15,6 +16,6 @@ data class AuthToken(
     @Serializable(with = InstantSerializer::class)
     val expiresAt: Instant,
 ) {
-    fun isExpired(now: Instant = Instant.now()): Boolean =
-        expiresAt.isBefore(now)
+    fun isExpired(now: Instant = Clock.System.now()): Boolean =
+        expiresAt < now
 }

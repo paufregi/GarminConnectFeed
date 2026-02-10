@@ -1,7 +1,7 @@
 package paufregi.connectfeed.core.models
 
-import java.time.Duration
-import java.time.Instant
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
 data class Activity(
     val id: Long,
@@ -14,5 +14,5 @@ data class Activity(
 ) {
     fun match(other: Activity): Boolean =
         this.type.compatible(other.type) &&
-                (this.date != null && other.date != null && Duration.between(this.date, other.date).abs() <= Duration.ofMinutes(1))
+                (this.date != null && other.date != null && (this.date - other.date).absoluteValue <= 1.minutes)
 }

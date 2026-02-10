@@ -2,7 +2,8 @@ package paufregi.connectfeed.data.api.garmin.models
 
 import kotlinx.serialization.Serializable
 import paufregi.connectfeed.data.api.garmin.converters.AuthTokenSerializer
-import java.time.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 @Serializable(with = AuthTokenSerializer::class)
 data class AuthToken(
@@ -11,9 +12,9 @@ data class AuthToken(
     val expiresAt: Instant,
     val refreshExpiresAt: Instant
 ) {
-    fun isExpired(now: Instant = Instant.now()): Boolean =
-        expiresAt.isBefore(now)
+    fun isExpired(now: Instant = Clock.System.now()): Boolean =
+        expiresAt < now
 
-    fun isRefreshExpired(now: Instant = Instant.now()): Boolean =
-        refreshExpiresAt.isBefore(now)
+    fun isRefreshExpired(now: Instant = Clock.System.now()): Boolean =
+        refreshExpiresAt < now
 }

@@ -22,7 +22,7 @@ import paufregi.connectfeed.core.usecases.SyncStravaActivity
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
-import java.time.Instant
+import kotlin.time.Instant
 
 @ExperimentalCoroutinesApi
 class SyncStravaViewModelTest {

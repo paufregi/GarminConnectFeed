@@ -27,7 +27,7 @@ import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
-import java.time.Instant
+import kotlin.time.Instant
 
 @ExperimentalCoroutinesApi
 class QuickEditViewModelTest {
@@ -51,7 +51,7 @@ class QuickEditViewModelTest {
             eventType = EventType.Training,
             distance = 10234.00,
             trainingEffect = "recovery",
-            date = Instant.ofEpochMilli(1735693200000)
+            date = Instant.fromEpochMilliseconds(1735693200000)
         ),
         Activity(
             id = 2L,
@@ -60,7 +60,7 @@ class QuickEditViewModelTest {
             eventType = EventType.Training,
             distance = 17803.00,
             trainingEffect = "base",
-            date = Instant.ofEpochMilli(1729705968000)
+            date = Instant.fromEpochMilliseconds(1729705968000)
         ),
         Activity(
             id = 3L,
@@ -69,7 +69,7 @@ class QuickEditViewModelTest {
             eventType = EventType.Training,
             distance = 5234.00,
             trainingEffect = "base",
-            date = Instant.ofEpochMilli(1729705968000)
+            date = Instant.fromEpochMilliseconds(1729705968000)
         ),
     )
 
@@ -79,21 +79,21 @@ class QuickEditViewModelTest {
             name = "StravaRunning",
             type = ActivityType.Running,
             distance = 10234.00,
-            date = Instant.ofEpochMilli(1735693200000)
+            date = Instant.fromEpochMilliseconds(1735693200000)
         ),
         Activity(
             id = 2L,
             name = "StravaCycling",
             type = ActivityType.Cycling,
             distance = 17803.00,
-            date = Instant.ofEpochMilli(1729705968000)
+            date = Instant.fromEpochMilliseconds(1729705968000)
         ),
         Activity(
             id = 3L,
             name = "StravaRunning2",
             type = ActivityType.Running,
             distance = 5234.00,
-            date = Instant.ofEpochMilli(1729705968000)
+            date = Instant.fromEpochMilliseconds(1729705968000)
         ),
     )
 
