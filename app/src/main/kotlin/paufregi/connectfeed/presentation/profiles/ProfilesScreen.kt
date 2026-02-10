@@ -1,5 +1,6 @@
 package paufregi.connectfeed.presentation.profiles
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -117,8 +118,13 @@ internal fun ProfilesContent(
                         modifier = Modifier.padding(10.dp),
                     ) {
                         iconFor(it.type)?.let { i -> Icon(i, i.name, Modifier.size(24.dp)) }
-                        Text(it.name)
-                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            text = it.name,
+                            modifier = Modifier
+                                .weight(1f)
+                                .basicMarquee(),
+                            maxLines = 1
+                        )
                         Button(
                             icon = Icons.Default.Delete,
                             onClick = { profileToDelete = it },
