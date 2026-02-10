@@ -239,6 +239,9 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Profiles").performClick()
         composeTestRule.waitUntil(conditionDescription = "profiles_content") { composeTestRule.onNodeWithTag("profiles_content").isDisplayed() }
         composeTestRule.onNodeWithTag("delete_profile_10").performClick()
+        composeTestRule.waitUntil(conditionDescription = "delete_dialog") { composeTestRule.onNodeWithTag("delete_dialog").isDisplayed() }
+        composeTestRule.onNodeWithText("Confirm").performClick()
+        composeTestRule.waitUntil(conditionDescription = "profiles_content") { composeTestRule.onNodeWithTag("profiles_content").isDisplayed() }
 
         composeTestRule.onNodeWithText("Profile 1").assertIsNotDisplayed()
     }

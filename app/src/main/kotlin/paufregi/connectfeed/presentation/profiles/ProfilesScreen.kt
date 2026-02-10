@@ -21,6 +21,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -32,9 +35,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.components.Button
+import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
 import paufregi.connectfeed.presentation.ui.components.NavigationScaffold
 import paufregi.connectfeed.presentation.ui.utils.iconFor
 
@@ -71,6 +76,19 @@ internal fun ProfilesContent(
     nav: NavHostController = rememberNavController(),
     paddingValues: PaddingValues = PaddingValues(),
 ) {
+    var profileToDelete by remember { mutableStateOf<Profile?>(null) }
+
+    profileToDelete?.let {
+        ConfirmationDialog(
+            title = "Delete profile",
+            message = "Are you sure you want to delete this ${profileToDelete!!.name} profile?",
+            onConfirm = { onAction(ProfileAction.Delete(profileToDelete!!)
+            ) },
+            onDismiss = { profileToDelete = null },
+            modifier = Modifier.testTag("delete_dialog")
+        )
+    }
+
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -103,7 +121,7 @@ internal fun ProfilesContent(
                         Spacer(modifier = Modifier.weight(1f))
                         Button(
                             icon = Icons.Default.Delete,
-                            onClick = { onAction(ProfileAction.Delete(it)) },
+                            onClick = { profileToDelete = it },
                             modifier = Modifier.testTag("delete_profile_${it.id}")
                         )
                     }
