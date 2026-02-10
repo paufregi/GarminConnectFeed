@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import paufregi.connectfeed.createStravaToken
 import paufregi.connectfeed.today
+import kotlin.time.Duration.Companion.seconds
 
 class AuthTokenTest {
 
@@ -11,13 +12,13 @@ class AuthTokenTest {
 
     @Test
     fun `Valid access token`() {
-        val now = today.minusSeconds(10)
+        val now = today - 10.seconds
         assertThat(token.isExpired(now)).isFalse()
     }
 
     @Test
     fun `Expired access token`() {
-        val now = today.plusSeconds(10)
+        val now = today + 10.seconds
         assertThat(token.isExpired(now)).isTrue()
     }
 }

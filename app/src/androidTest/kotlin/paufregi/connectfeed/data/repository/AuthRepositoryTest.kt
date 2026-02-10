@@ -25,8 +25,9 @@ import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.sslSocketFactory
-import java.time.Instant
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
 @HiltAndroidTest
 class AuthRepositoryTest {
@@ -83,7 +84,7 @@ class AuthRepositoryTest {
     fun `Store AuthToken`() = runTest {
         val date = Instant.parse("2025-01-01T01:00:00Z")
         val token1 = createAuthToken(date)
-        val token2 = createAuthToken(date.plusSeconds(60))
+        val token2 = createAuthToken(date + 1.minutes)
 
         repo.getAuthToken().test{
             assertThat(awaitItem()).isNull()

@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.today
+import kotlin.time.Duration.Companion.seconds
 
 class AuthTokenTest {
 
@@ -11,25 +12,25 @@ class AuthTokenTest {
 
     @Test
     fun `Valid access token`() {
-        val now = today.minusSeconds(30)
+        val now = today - 30.seconds
         assertThat(token.isExpired(now)).isFalse()
     }
 
     @Test
     fun `Expired access token`() {
-        val now = today.plusSeconds(30)
+        val now = today + 30.seconds
         assertThat(token.isExpired(now)).isTrue()
     }
 
     @Test
     fun `Valid refresh token`() {
-        val now = today.minusSeconds(30)
+        val now = today - 30.seconds
         assertThat(token.isRefreshExpired(now)).isFalse()
     }
 
     @Test
     fun `Expired refresh token`() {
-        val now = today.plusSeconds(40)
+        val now = today + 30.seconds
         assertThat(token.isExpired(now)).isTrue()
     }
 }

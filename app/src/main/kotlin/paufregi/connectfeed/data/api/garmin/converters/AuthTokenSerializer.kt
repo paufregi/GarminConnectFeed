@@ -16,8 +16,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
-import java.time.Duration
-import kotlin.time.toJavaInstant
+import kotlin.time.Duration.Companion.milliseconds
 
 object AuthTokenSerializer : KSerializer<AuthToken> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("AuthToken") {
@@ -42,23 +41,26 @@ object AuthTokenSerializer : KSerializer<AuthToken> {
         val refreshExpiresAtOffset = jsonObject["refresh_token_expires_in"]?.jsonPrimitive?.longOrNull
             ?: throw SerializationException("Missing refresh_token_expires_in")
 
-        val issuedAt = JWT.from(accessToken).issuedAt!!.toJavaInstant()
+        val issuedAt = JWT.from(accessToken).issuedAt
+            ?: throw SerializationException("Missing issuedAt")
 
         return AuthToken(
             accessToken = accessToken,
             refreshToken = refreshToken,
-            expiresAt = issuedAt.plusMillis(expiresAtOffset),
-            refreshExpiresAt = issuedAt.plusMillis(refreshExpiresAtOffset)
+            expiresAt = issuedAt + expiresAtOffset.milliseconds,
+            refreshExpiresAt = issuedAt + refreshExpiresAtOffset.milliseconds
         )
     }
 
     override fun serialize(encoder: Encoder, value: AuthToken) {
-        val issuedAt = JWT.from(value.accessToken).issuedAt!!.toJavaInstant()
+        val issuedAt = JWT.from(value.accessToken).issuedAt
+            ?: throw SerializationException("Missing issuedAt")
+
         encoder.encodeStructure(descriptor) {
             encodeStringElement(descriptor, 0, value.accessToken)
             encodeStringElement(descriptor, 1, value.refreshToken)
-            encodeLongElement(descriptor, 2, (Duration.between(issuedAt, value.expiresAt).toMillis()))
-            encodeLongElement(descriptor, 3, (Duration.between(issuedAt, value.refreshExpiresAt).toMillis()))
+            encodeLongElement(descriptor, 2, (value.expiresAt - issuedAt).inWholeMilliseconds)
+            encodeLongElement(descriptor, 3, (value.refreshExpiresAt - issuedAt).inWholeMilliseconds)
         }
     }
 }
