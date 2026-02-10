@@ -25,6 +25,6 @@ data class Activity(
         name = name,
         distance = round(this.distance),
         type = SportTypeConverter.toActivityType(sportType),
-        date = Instant.parse(this.startDate ?: "")
+        date = this.startDate?.let { Instant.parse(it) }
     )
 }

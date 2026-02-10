@@ -14,5 +14,5 @@ data class Activity(
 ) {
     fun match(other: Activity): Boolean =
         this.type.compatible(other.type) &&
-                (this.date != null && other.date != null && (this.date - other.date).absoluteValue < 1.minutes)
+                (this.date != null && other.date != null && (this.date - other.date).absoluteValue <= 1.minutes)
 }

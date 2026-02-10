@@ -30,7 +30,7 @@ class AuthTokenTest {
 
     @Test
     fun `Expired refresh token`() {
-        val now = today + 30.seconds
-        assertThat(token.isExpired(now)).isTrue()
+        val now = today + 40.seconds
+        assertThat(token.isRefreshExpired(now)).isTrue()
     }
 }
