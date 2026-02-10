@@ -82,9 +82,8 @@ internal fun ProfilesContent(
     profileToDelete?.let {
         ConfirmationDialog(
             title = "Delete profile",
-            message = "Are you sure you want to delete this ${profileToDelete!!.name} profile?",
-            onConfirm = { onAction(ProfileAction.Delete(profileToDelete!!)
-            ) },
+            message = "Are you sure you want to delete this ${it.name} profile?",
+            onConfirm = { onAction(ProfileAction.Delete(it)) },
             onDismiss = { profileToDelete = null },
             modifier = Modifier.testTag("delete_dialog")
         )
