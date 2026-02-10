@@ -19,7 +19,7 @@ android {
     defaultConfig {
         applicationId = "paufregi.connectfeed"
         minSdk = 33
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 32
         versionName = "2.4.5"
 
@@ -88,7 +88,7 @@ android {
             allDevices {
                 register("pixel9Pro", ManagedVirtualDevice::class) {
                     device = "Pixel 9 Pro"
-                    apiLevel = 35
+                    apiLevel = 36
                     systemImageSource = "aosp"
                 }
             }
