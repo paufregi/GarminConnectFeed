@@ -1,7 +1,7 @@
 package paufregi.connectfeed.data.api.garmin.converters
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
+
+import com.appstractive.jwt.jwt
 import com.google.common.truth.Truth.assertThat
 import kotlinx.serialization.json.Json
 import org.junit.Test
@@ -13,7 +13,7 @@ class AuthTokenSerializerTest {
     val json = Json { encodeDefaults = true }
 
     private val issuedAt = Instant.parse("2025-01-01T01:00:00Z")
-    private val accessToken = JWT.create().withIssuedAt(issuedAt).sign(Algorithm.none())
+    private val accessToken = jwt { issuedAt }.toString()
 
     private val jsonToken = """{"access_token":"$accessToken","refresh_token":"REFRESH_TOKEN","expires_in":10000,"refresh_token_expires_in":30000}""".trimIndent()
     private val authToken = AuthToken(

@@ -1,7 +1,6 @@
 package paufregi.connectfeed
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
+import com.appstractive.jwt.jwt
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
@@ -12,7 +11,7 @@ import java.time.temporal.ChronoUnit
 import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
 fun createAuthToken(issuedAt: Instant) = AuthToken(
-    accessToken = JWT.create().withIssuedAt(issuedAt).sign(Algorithm.none()),
+    accessToken = jwt { issuedAt }.toString(),
     refreshToken = "REFRESH_TOKEN",
     expiresAt = issuedAt.plusSeconds(10),
     refreshExpiresAt = issuedAt.plusSeconds(30)

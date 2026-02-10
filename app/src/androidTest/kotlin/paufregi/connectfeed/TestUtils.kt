@@ -1,8 +1,7 @@
 package paufregi.connectfeed
 
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
+import com.appstractive.jwt.jwt
 import mockwebserver3.Dispatcher
 import mockwebserver3.MockResponse
 import mockwebserver3.RecordedRequest
@@ -21,7 +20,7 @@ import java.time.temporal.ChronoUnit
 import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
 fun createAuthToken(issuedAt: Instant) = AuthToken(
-    accessToken = JWT.create().withIssuedAt(issuedAt).sign(Algorithm.none()),
+    accessToken = jwt { issuedAt }.toString(),
     refreshToken = "REFRESH_TOKEN",
     expiresAt = issuedAt.plusSeconds(10),
     refreshExpiresAt = issuedAt.plusSeconds(30)

@@ -1,7 +1,6 @@
 package paufregi.connectfeed.data.api.garmin.utils
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
+import com.appstractive.jwt.jwt
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
@@ -134,7 +133,7 @@ class AuthInterceptorTest {
     @Test
     fun `Success - refresh`() = runTest {
         val expiredToken = AuthToken(
-            accessToken = JWT.create().withIssuedAt(today.minus(10, ChronoUnit.SECONDS)).sign(Algorithm.none()),
+            accessToken = jwt { today.minus(10, ChronoUnit.SECONDS) }.toString(),
             refreshToken = "REFRESH_TOKEN",
             expiresAt = today.minus(10, ChronoUnit.SECONDS),
             refreshExpiresAt = today.plus(1, ChronoUnit.DAYS)
@@ -164,7 +163,7 @@ class AuthInterceptorTest {
     @Test
     fun `Success - refresh & exchange`() = runTest {
         val expiredToken = AuthToken(
-            accessToken = JWT.create().withIssuedAt(today.minus(10, ChronoUnit.SECONDS)).sign(Algorithm.none()),
+            accessToken = jwt { today.minus(10, ChronoUnit.SECONDS) }.toString(),
             refreshToken = "REFRESH_TOKEN",
             expiresAt = today.minus(10, ChronoUnit.SECONDS),
             refreshExpiresAt = today.plus(1, ChronoUnit.DAYS)
@@ -230,7 +229,7 @@ class AuthInterceptorTest {
     @Test
     fun `Failure - refresh`() = runTest {
         val expiredToken = AuthToken(
-            accessToken = JWT.create().withIssuedAt(today.minus(10, ChronoUnit.SECONDS)).sign(Algorithm.none()),
+            accessToken = jwt { today.minus(10, ChronoUnit.SECONDS) }.toString(),
             refreshToken = "REFRESH_TOKEN",
             expiresAt = today.minus(10, ChronoUnit.SECONDS),
             refreshExpiresAt = today.plus(1, ChronoUnit.DAYS)
