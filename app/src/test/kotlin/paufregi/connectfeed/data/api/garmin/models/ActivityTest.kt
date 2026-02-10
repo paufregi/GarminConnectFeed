@@ -2,7 +2,7 @@ package paufregi.connectfeed.data.api.garmin.models
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import java.time.Instant
+import kotlin.time.Instant
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.EventType as CoreEventType
@@ -28,7 +28,7 @@ class ActivityTest {
             eventType = CoreEventType.Training,
             distance = 15008.00,
             trainingEffect = "tempo",
-            date = Instant.ofEpochMilli(1735693200000)
+            date = Instant.fromEpochMilliseconds(1735693200000)
         )
 
         assertThat(activity.toCore()).isEqualTo(coreActivity)

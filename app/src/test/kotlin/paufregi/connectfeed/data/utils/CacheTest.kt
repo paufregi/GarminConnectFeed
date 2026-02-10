@@ -2,13 +2,14 @@ package paufregi.connectfeed.data.utils
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.time.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class CacheTest {
 
@@ -21,18 +22,18 @@ class CacheTest {
     @Before
     fun setUp() {
         cache = Cache<String>()
-        mockkStatic(Instant::class)
+        mockkObject(Clock.System)
     }
 
     @After
     fun tearDown() {
         cache.invalidate()
-        unmockkStatic(Instant::class)
+        unmockkObject(Clock.System)
     }
 
     @Test
     fun `Cache value`() = runTest {
-        every { Instant.now() } returns time1
+        every { Clock.System.now() } returns time1
         val result = cache.get { "fetched data" }
 
         assertThat(result).isEqualTo("fetched data")
@@ -40,7 +41,7 @@ class CacheTest {
 
     @Test
     fun `Retrieve cached data`() = runTest {
-        every { Instant.now() } returns time1 andThen time2
+        every { Clock.System.now() } returns time1 andThen time2
         val result1 = cache.get { "fetched data" }
         val result2 = cache.get { "new data" }
 
@@ -50,7 +51,7 @@ class CacheTest {
 
     @Test
     fun `Force refresh`() = runTest {
-        every { Instant.now() } returns time1 andThen time2
+        every { Clock.System.now() } returns time1 andThen time2
         val result1 = cache.get { "fetched data" }
         val result2 = cache.get(true) { "new data" }
 
@@ -60,7 +61,7 @@ class CacheTest {
 
     @Test
     fun `Expired cache`() = runTest {
-        every { Instant.now() } returns time1 andThen time3
+        every { Clock.System.now() } returns time1 andThen time3
         val result1 = cache.get { "fetched data" }
         val result2 = cache.get { "new data" }
 
@@ -70,7 +71,7 @@ class CacheTest {
 
     @Test
     fun `Invalidate cache`() = runTest {
-        every { Instant.now() } returns time1 andThen time2
+        every { Clock.System.now() } returns time1 andThen time2
         val result1 = cache.get { "fetched data" }
         cache.invalidate()
         val result2 = cache.get { "new data" }
@@ -81,7 +82,7 @@ class CacheTest {
 
     @Test
     fun `withCache utility`() = runTest {
-        every { Instant.now() } returns time1 andThen time2
+        every { Clock.System.now() } returns time1 andThen time2
         val result1 = withCache(cache) { "fetched data" }
         val result2 = withCache(cache) { "new data" }
 
@@ -91,7 +92,7 @@ class CacheTest {
 
     @Test
     fun `withCache utility - force refresh`() = runTest {
-        every { Instant.now() } returns time1 andThen time2
+        every { Clock.System.now() } returns time1 andThen time2
         val result1 = withCache(cache) { "fetched data" }
         val result2 = withCache(cache, true) { "new data" }
 

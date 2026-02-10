@@ -2,7 +2,7 @@ package paufregi.connectfeed.data.api.strava.models
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import java.time.Instant
+import kotlin.time.Instant
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 

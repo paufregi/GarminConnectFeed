@@ -1,12 +1,14 @@
 package paufregi.connectfeed.data.utils
 
 import paufregi.connectfeed.core.utils.withPermit
-import java.time.Duration
-import java.time.Instant
 import java.util.concurrent.Semaphore
+import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 
 class Cache<T>(
-    private val ttl: Duration = Duration.ofMinutes(5),
+    private val ttl: Duration = 5.minutes
 ) {
     private var data: T? = null
     private var timestamp: Instant? = null
@@ -14,8 +16,8 @@ class Cache<T>(
 
     suspend fun get(force: Boolean = false, fetch: suspend () -> T): T =
         semaphore.withPermit {
-            val now = Instant.now()
-            if (force || data == null || this.timestamp == null || Duration.between(this.timestamp, now) > ttl) {
+            val now = Clock.System.now()
+            if (force || data == null || this.timestamp == null || (now - this.timestamp!!) > ttl) {
                 data = fetch()
                 timestamp = now
             }
