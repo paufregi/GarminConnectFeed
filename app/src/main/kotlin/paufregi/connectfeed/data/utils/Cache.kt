@@ -15,7 +15,7 @@ class Cache<T>(
     suspend fun get(force: Boolean = false, fetch: suspend () -> T): T =
         semaphore.withPermit {
             val now = Instant.now()
-            if (force == true || data == null || this.timestamp == null || Duration.between(this.timestamp, now) > ttl) {
+            if (force || data == null || this.timestamp == null || Duration.between(this.timestamp, now) > ttl) {
                 data = fetch()
                 timestamp = now
             }
