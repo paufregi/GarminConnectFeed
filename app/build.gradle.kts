@@ -20,8 +20,8 @@ android {
         applicationId = "paufregi.connectfeed"
         minSdk = 33
         targetSdk = 36
-        versionCode = 34
-        versionName = "2.4.7"
+        versionCode = 35
+        versionName = "2.4.8"
 
         testInstrumentationRunner = "paufregi.connectfeed.TestRunner"
         vectorDrawables {
