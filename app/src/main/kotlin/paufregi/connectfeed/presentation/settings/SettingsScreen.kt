@@ -2,6 +2,7 @@ package paufregi.connectfeed.presentation.settings
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -142,19 +143,22 @@ internal fun SettingsContent(
         )
         HorizontalDivider()
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 10.dp)) {
-
-            Text(text = "Version: ${state.currentVersion ?: "Unknown"}")
-            if (!state.hasUpdate) {
-                Icon(Icons.Default.CheckCircle, "latest version", Modifier.size(32.dp).padding(start = 5.dp), Color.Green)
-            }
-            Spacer(modifier = Modifier.weight(1f))
             if (state.hasUpdate) {
+                Column {
+                    Text(text = "Version: ${state.currentVersion ?: "Unknown"}")
+                    Text(text = "Update available", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f))
+                }
+                Spacer(modifier = Modifier.weight(1f))
                 Button(
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                     text = "Update",
                     onClick = { onAction(SettingsAction.Update) },
                     enabled = !state.updating
                 )
+            } else {
+                Text(text = "Version: ${state.currentVersion ?: "Unknown"}")
+                Icon(Icons.Default.CheckCircle, "latest version", Modifier.size(32.dp).padding(start = 5.dp), Color.Green)
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
         if(state.updating) {
