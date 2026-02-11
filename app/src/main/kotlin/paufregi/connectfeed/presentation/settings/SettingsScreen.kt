@@ -143,11 +143,7 @@ internal fun SettingsContent(
         )
         HorizontalDivider()
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 10.dp)) {
-            if (!state.hasUpdate) {
-                Text(text = "Version: ${state.currentVersion ?: "Unknown"}")
-                Icon(Icons.Default.CheckCircle, "latest version", Modifier.size(32.dp).padding(start = 5.dp), Color.Green)
-                Spacer(modifier = Modifier.weight(1f))
-            } else {
+            if (state.hasUpdate) {
                 Column {
                     Text(text = "Version: ${state.currentVersion ?: "Unknown"}")
                     Text(text = "Update available", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f))
@@ -159,6 +155,10 @@ internal fun SettingsContent(
                     onClick = { onAction(SettingsAction.Update) },
                     enabled = !state.updating
                 )
+            } else {
+                Text(text = "Version: ${state.currentVersion ?: "Unknown"}")
+                Icon(Icons.Default.CheckCircle, "latest version", Modifier.size(32.dp).padding(start = 5.dp), Color.Green)
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
         if(state.updating) {
