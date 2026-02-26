@@ -1,8 +1,7 @@
 # Garmin Connect Feed
 
 [![Build](https://github.com/paufregi/GarminConnectFeed/actions/workflows/build.yaml/badge.svg)](https://github.com/paufregi/GarminConnectFeed/actions/workflows/build.yaml)
-[![CodeQL](https://github.com/paufregi/GarminConnectFeed/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/paufregi/GarminConnectFeed/actions/workflows/github-code-scanning/codeql)
-
+[![CodeQL](https://github.com/paufregi/GarminConnectFeed/actions/workflows/codeql.yml/badge.svg)](https://github.com/paufregi/GarminConnectFeed/actions/workflows/codeql.yml)
 <img align="right" width="150" height="150" src="assets/logo.png" alt="logo" >
 
 **ConnectFeed** is an Android application that bridges the gap between Renpho Health, Strava and Garmin Connect.
