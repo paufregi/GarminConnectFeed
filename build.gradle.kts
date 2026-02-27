@@ -1,5 +1,3 @@
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
@@ -8,8 +6,10 @@ plugins {
     alias(libs.plugins.android.room) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
-    alias(libs.plugins.dependency.analysis) apply false
-    alias(libs.plugins.dependency.versions)
+}
+
+repositories {
+    google()
 }
 
 subprojects {
@@ -45,22 +45,5 @@ buildscript {
             substitute(module("org.apache.commons:commons-lang3:3.16.0"))
                 .using(module("org.apache.commons:commons-lang3:3.18.0"))
         }
-    }
-}
-
-repositories {
-    google()
-}
-
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
-    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-    val isStable = stableKeyword || regex.matches(version)
-    return isStable.not()
-}
-
-tasks.withType<DependencyUpdatesTask> {
-    rejectVersionIf {
-        isNonStable(candidate.version)
     }
 }

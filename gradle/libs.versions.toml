@@ -31,8 +31,6 @@ hilt = "2.59.2"
 runner = "1.7.0"
 turbine = "1.2.1"
 testLogger = "4.0.0"
-dependencyAnalysis = "3.6.0"
-dependencyVersions = "0.53.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
@@ -84,6 +82,4 @@ kotlin-serializable = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 test-logger = { id = "com.adarshr.test-logger", version.ref = "testLogger"}
-dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
-dependency-versions = { id = "com.github.ben-manes.versions", version.ref = "dependencyVersions" }
 
