@@ -11,6 +11,20 @@ plugins {
     alias(libs.plugins.test.logger)
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+kotlin {
+    jvmToolchain(17)
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+    sourceSets.all {
+        languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
+    }
+}
+
 android {
     namespace = "paufregi.connectfeed"
     compileSdk = 37
@@ -40,10 +54,6 @@ android {
         buildConfigField("String", "STRAVA_CLIENT_SECRET", "\"${properties.getProperty("strava.client_secret", "STRAVA_CLIENT_SECRET")}\"")
     }
 
-    room {
-        schemaDirectory("$projectDir/schemas")
-    }
-
     buildFeatures {
         compose = true
         buildConfig = true
@@ -63,20 +73,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlin {
-        jvmToolchain(17)
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
-        }
-        sourceSets.all {
-            languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
-        }
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.8.0"
-    }
-
+    
     lint {
         disable += "OldTargetApi"
     }
