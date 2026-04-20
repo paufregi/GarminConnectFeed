@@ -13,6 +13,8 @@ updates:
       - dependency-name: "org.apache.commons:commons-lang3"
       - dependency-name: "org.jdom:jdom2"
       - dependency-name: "org.bitbucket.b_c:jose4j"
+      - dependency-name: "org.bouncycastle:bcpkix-jdk18on"
+      - dependency-name: "org.bouncycastle:bcprov-jdk18on"
     groups:
       kotlinPlugin:
         patterns:
