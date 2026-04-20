@@ -25,6 +25,12 @@ kotlin {
     }
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 android {
     namespace = "paufregi.connectfeed"
     compileSdk = 37
