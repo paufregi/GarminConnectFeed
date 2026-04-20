@@ -13,12 +13,12 @@ plugins {
 
 android {
     namespace = "paufregi.connectfeed"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "paufregi.connectfeed"
         minSdk = 33
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 37
         versionName = "2.4.10"
 
