@@ -33,6 +33,8 @@ subprojects {
                 .using(module("org.apache.commons:commons-lang3:3.18.0"))
             substitute(module("org.bouncycastle:bcprov-jdk18on:1.79"))
                 .using(module("org.bouncycastle:bcprov-jdk18on:1.84"))
+            substitute(module("org.bouncycastle:bcpkix-jdk18on:1.79"))
+                .using(module("org.bouncycastle:bcpkix-jdk18on:1.84"))
         }
     }
 }
@@ -50,6 +52,8 @@ buildscript {
                 .using(module("org.apache.commons:commons-lang3:3.18.0"))
             substitute(module("org.bouncycastle:bcprov-jdk18on:1.79"))
                 .using(module("org.bouncycastle:bcprov-jdk18on:1.84"))
+            substitute(module("org.bouncycastle:bcpkix-jdk18on:1.79"))
+                .using(module("org.bouncycastle:bcpkix-jdk18on:1.84"))
         }
     }
 }
