@@ -36,6 +36,8 @@ jobs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v6
+      env:
+        JAVA_HOME: ${{ steps.setup-jdk.outputs.path }}
 
     - name: Setup KVM
       run: |
