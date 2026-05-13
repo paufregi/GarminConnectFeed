@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.Course
+import paufregi.connectfeed.data.api.garmin.models.Gear
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import retrofit2.Response
@@ -44,6 +45,11 @@ interface GarminConnect {
         @Path("id") id: Long,
         @Body updateActivity: UpdateActivity,
     ): Response<Unit>
+
+    @GET("/gear-service/gear/v2/list")
+    suspend fun getActiveGear(
+        @Query("gearStatuses") status: String = "ACTIVE"
+    ): Response<List<Gear>>
 
     companion object {
         const val BASE_URL = "https://connectapi.garmin.com"
