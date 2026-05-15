@@ -8,6 +8,7 @@ updates:
     ignore:
       - dependency-name: "io.netty:netty-codec-http"
       - dependency-name: "io.netty:netty-codec-http2"
+      - dependency-name: "io.netty:netty-handler-proxy"
       - dependency-name: "com.google.protobuf:protobuf-kotlin"
       - dependency-name: "org.apache.httpcomponents:httpclient"
       - dependency-name: "org.apache.commons:commons-lang3"
