@@ -26,8 +26,8 @@ object Formatter {
         workoutFlag: Boolean = false,
     ): String? {
         val details = buildList {
-            if (workoutFlag && workout != null) add("Workout: $workout")
-            if (trainingEffectFlag && trainingEffect != null) add("Training effect: $trainingEffect")
+            workout?.let { if (workoutFlag) add("Workout: $workout") }
+            trainingEffect?.let { if (trainingEffectFlag) add("Training effect: $trainingEffect") }
         }
 
         if (details.isEmpty()) return description
