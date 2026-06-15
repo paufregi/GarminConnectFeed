@@ -30,6 +30,8 @@ class UpdateStravaActivityTest{
     val eventType = EventType.Transportation
     val trainingEffect = "recovery"
     val trainingEffectFlag = true
+    val workout = "workout"
+    val workoutFlag = true
 
     @Before
     fun setup(){
@@ -46,8 +48,8 @@ class UpdateStravaActivityTest{
     fun `Update activity`() = runTest {
         coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
-        val expectedDescription = "$description\n\nTraining: $trainingEffect"
-        val res = useCase(activity, name, description, eventType, trainingEffect, trainingEffectFlag)
+        val expectedDescription = "$description\n\nTraining effect: $trainingEffect\nWorkout: $workout"
+        val res = useCase(activity, name, description, eventType, trainingEffect, trainingEffectFlag, workout, workoutFlag)
 
         assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
@@ -57,15 +59,49 @@ class UpdateStravaActivityTest{
     fun `Update activity - no training effect`() = runTest {
         coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
-        val res = useCase(activity, name, description, eventType, trainingEffect, false)
+        val expectedDescription = "$description\n\nWorkout: $workout"
+        val res = useCase(activity, name, description, eventType, null, trainingEffectFlag, workout, workoutFlag)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(activity, name, description, true) }
+        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
+    }
+
+    @Test
+    fun `Update activity - training effect flag false`() = runTest {
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
+
+        val expectedDescription = "$description\n\nWorkout: $workout"
+        val res = useCase(activity, name, description, eventType, trainingEffect, false, workout, workoutFlag)
+
+        assertThat(res.isSuccess).isTrue()
+        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
+    }
+
+    @Test
+    fun `Update activity - no workout`() = runTest {
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
+
+        val expectedDescription = "$description\n\nTraining effect: $trainingEffect"
+        val res = useCase(activity, name, description, eventType, trainingEffect, trainingEffectFlag, null, workoutFlag)
+
+        assertThat(res.isSuccess).isTrue()
+        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
+    }
+
+    @Test
+    fun `Update activity - workout flag false`() = runTest {
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
+
+        val expectedDescription = "$description\n\nTraining effect: $trainingEffect"
+        val res = useCase(activity, name, description, eventType, trainingEffect, trainingEffectFlag, workout, false)
+
+        assertThat(res.isSuccess).isTrue()
+        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
     }
 
     @Test
     fun `Invalid - no strava activity`() = runTest {
-        val res = useCase(null, name, description, eventType, trainingEffect, trainingEffectFlag)
+        val res = useCase(null, name, description, eventType, trainingEffect, trainingEffectFlag, workout, workoutFlag)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -73,7 +109,7 @@ class UpdateStravaActivityTest{
 
     @Test
     fun `Invalid - no name`() = runTest {
-        val res = useCase(activity, null, description, eventType, trainingEffect, trainingEffectFlag)
+        val res = useCase(activity, null, description, eventType, trainingEffect, trainingEffectFlag, workout, workoutFlag)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")

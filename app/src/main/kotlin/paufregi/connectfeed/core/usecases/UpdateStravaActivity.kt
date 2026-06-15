@@ -15,6 +15,8 @@ class UpdateStravaActivity @Inject constructor(private val garminRepository: Gar
         eventType: EventType?,
         trainingEffect: String?,
         trainingEffectFlag: Boolean,
+        workout: String?,
+        workoutFlag: Boolean,
     ): Result<Unit> {
         if (stravaActivity == null || name == null)
             return Result.failure("Validation error")
@@ -22,7 +24,13 @@ class UpdateStravaActivity @Inject constructor(private val garminRepository: Gar
         return garminRepository.updateStravaActivity(
             activity = stravaActivity,
             name = name,
-            description = Formatter.description(description, trainingEffect, trainingEffectFlag),
+            description = Formatter.description(
+                description = description,
+                trainingEffect = trainingEffect,
+                trainingEffectFlag = trainingEffectFlag,
+                workout = workout,
+                workoutFlag = workoutFlag,
+            ),
             commute = eventType?.commute
         )
     }
