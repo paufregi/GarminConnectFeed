@@ -9,6 +9,7 @@ import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.Course
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
+import paufregi.connectfeed.data.api.garmin.models.Workout
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -38,6 +39,11 @@ interface GarminConnect {
 
     @GET("/userprofile-service/socialProfile")
     suspend fun getUserProfile(): Response<UserProfile>
+
+    @GET("/workout-service/workout/{id}")
+    suspend fun getWorkout(
+        @Path("id") id: String
+    ): Response<Workout>
 
     @PUT("/activity-service/activity/{id}")
     suspend fun updateActivity(
