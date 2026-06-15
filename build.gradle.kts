@@ -21,15 +21,15 @@ subprojects {
         resolutionStrategy.dependencySubstitution {
             listOf("4.1.93.Final", "4.1.110.Final").forEach { version ->
                 substitute(module("io.netty:netty-codec-http2:$version"))
-                    .using(module("io.netty:netty-codec-http2:4.1.133.Final"))
+                    .using(module("io.netty:netty-codec-http2:4.1.135.Final"))
             }
             listOf("4.1.93.Final", "4.1.110.Final").forEach { version ->
                 substitute(module("io.netty:netty-codec-http:$version"))
-                    .using(module("io.netty:netty-codec-http:4.1.133.Final"))
+                    .using(module("io.netty:netty-codec-http:4.1.135.Final"))
             }
             listOf("4.1.93.Final", "4.1.110.Final").forEach { version ->
                 substitute(module("io.netty:netty-handler-proxy:$version"))
-                    .using(module("io.netty:netty-handler-proxy:4.1.133.Final"))
+                    .using(module("io.netty:netty-handler-proxy:4.1.135.Final"))
             }
             substitute(module("org.apache.httpcomponents:httpclient:4.5.6"))
                 .using(module("org.apache.httpcomponents:httpclient:4.5.13"))
