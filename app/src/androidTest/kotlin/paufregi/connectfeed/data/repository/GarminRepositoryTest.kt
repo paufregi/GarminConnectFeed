@@ -19,6 +19,7 @@ import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.data.datastore.StravaStore
@@ -175,6 +176,19 @@ class GarminRepositoryTest {
             CoreCourse(id = 1, name = "Course 1", distance = 10235.00, type = CoreActivityType.Running),
             CoreCourse(id = 2, name = "Course 2", distance = 15008.00, type = CoreActivityType.RoadBiking),
         )
+
+        val res = repo.getCourses()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+    }
+
+    @Test
+    fun `Get workout`() = runTest {
+        authStore.savePreAuthToken(preAuthToken)
+        authStore.saveAuthToken(authToken)
+
+        val expected = Workout(1, "Power - Zone 6")
 
         val res = repo.getCourses()
 

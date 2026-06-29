@@ -25,6 +25,7 @@ import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
+import paufregi.connectfeed.data.api.garmin.models.Workout
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.ProfileEntity
@@ -620,6 +621,66 @@ class GarminRepositoryTest {
     @Test
     fun `Get courses - failure cache`() = runTest {
         coEvery { connect.getCourses() } returns Response.error<List<Course>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.getCourses()
+        val res2 = repo.getCourses()
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res2.isSuccess).isFalse()
+        coVerify(exactly = 2) { connect.getCourses() }
+    }
+
+    @Test
+    fun `Get workout`() = runTest {
+        val workout = Workout(1, "workout")
+        coEvery { connect.getWorkout(any()) } returns Response.success(workout)
+
+        val expected = workout.toCore()
+
+        val res = repo.getWorkout(1)
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+        coVerify { connect.getWorkout(any()) }
+    }
+
+    @Test
+    fun `Get workout - cache`() = runTest {
+        val workout = Workout(1, "workout")
+        coEvery { connect.getWorkout(any()) } returns Response.success(workout)
+
+        val expected = workout.toCore()
+
+        val res = repo.getWorkout(1)
+        val res2 = repo.getWorkout(1)
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+        assertThat(res2.isSuccess).isTrue()
+        assertThat(res2.getOrNull()).isEqualTo(expected)
+        coVerify(exactly = 1) { connect.getWorkout(any()) }
+    }
+
+    @Test
+    fun `Get workout - force refresh`() = runTest {
+        val workout = Workout(1, "workout")
+        coEvery { connect.getWorkout(any()) } returns Response.success(workout)
+
+        val expected = workout.toCore()
+
+        val res = repo.getWorkout(1)
+        val res2 = repo.getWorkout(1, true)
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+        assertThat(res2.isSuccess).isTrue()
+        assertThat(res2.getOrNull()).isEqualTo(expected)
+        coVerify(exactly = 2) { connect.getWorkout(any()) }
+    }
+
+    @Test
+    fun `Get workout - failure cache`() = runTest {
+        coEvery { connect.getWorkout(any()) } returns Response.error<Workout>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getCourses()
         val res2 = repo.getCourses()
