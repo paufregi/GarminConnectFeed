@@ -42,7 +42,7 @@ interface GarminConnect {
 
     @GET("/workout-service/workout/{id}")
     suspend fun getWorkout(
-        @Path("id") id: String
+        @Path("id") id: Long
     ): Response<Workout>
 
     @PUT("/activity-service/activity/{id}")
