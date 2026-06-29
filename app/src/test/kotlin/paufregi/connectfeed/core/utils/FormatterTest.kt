@@ -35,39 +35,49 @@ class FormatterTest {
     @Test
     fun `Formatter description`() {
         val description = "Description"
-        val trainingEffect = "recovery"
-        val result = Formatter.description(description, trainingEffect, true)
-        assertThat(result).isEqualTo("Description\n\nTraining effect: recovery")
+        val trainingEffect = "Recovery"
+        val workout = "Tempo"
+        val result = Formatter.description(description, trainingEffect, true, workout)
+        assertThat(result).isEqualTo("Description\n\nWorkout: tempo\nEffect: recovery")
     }
 
     @Test
-    fun `Formatter description - with workout and training effect`() {
+    fun `Formatter description - no workout`() {
         val description = "Description"
+        val trainingEffect = "Recovery"
+        val result = Formatter.description(description, trainingEffect, true, null)
+        assertThat(result).isEqualTo("Description\n\nEffect: recovery")
+    }
+
+    @Test
+    fun `Formatter description - no training effect`() {
+        val description = "Description"
+        val workout = "Tempo"
+        val result = Formatter.description(description, null, true, workout)
+        assertThat(result).isEqualTo("Description\n\nWorkout: tempo")
+    }
+
+    @Test
+    fun `Formatter description - no training effect & workout`() {
+        val description = "Description"
+        val result = Formatter.description(description, null, true, null)
+        assertThat(result).isEqualTo("Description")
+    }
+
+    @Test
+    fun `Formatter description - training effect flag false`() {
+        val description = "Description"
+        val trainingEffect = "Recovery"
+        val workout = "Tempo"
+        val result = Formatter.description(description, trainingEffect, false, workout)
+        assertThat(result).isEqualTo("Description\n\nWorkout: tempo")
+    }
+
+    @Test
+    fun `Formatter description - no description`() {
         val trainingEffect = "recovery"
         val workout = "Tempo"
-        val result = Formatter.description(description, trainingEffect, true, workout, true)
-        assertThat(result).isEqualTo("Description\n\nWorkout: Tempo\nTraining effect: recovery")
-    }
-
-    @Test
-    fun `Formatter description - flag false`() {
-        val description = "Description"
-        val trainingEffect = "recovery"
-        val result = Formatter.description(description, trainingEffect, false)
-        assertThat(result).isEqualTo("Description")
-    }
-
-    @Test
-    fun `Formatter description - null description`() {
-        val trainingEffect = "recovery"
-        val result = Formatter.description(null, trainingEffect, true)
-        assertThat(result).isEqualTo("\n\nTraining effect: recovery")
-    }
-
-    @Test
-    fun `Formatter description - null training effect`() {
-        val description = "Description"
-        val result = Formatter.description(description, null, true)
-        assertThat(result).isEqualTo("Description")
+        val result = Formatter.description(null, trainingEffect, true, workout)
+        assertThat(result).isEqualTo("Workout: tempo\nEffect: recovery")
     }
 }

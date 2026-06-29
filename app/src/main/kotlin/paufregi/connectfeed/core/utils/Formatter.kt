@@ -23,14 +23,14 @@ object Formatter {
         trainingEffect: String?,
         trainingEffectFlag: Boolean,
         workout: String? = null,
-        workoutFlag: Boolean = false,
     ): String? {
         val details = buildList {
-            workout?.let { if (workoutFlag) add("Workout: $workout") }
-            trainingEffect?.let { if (trainingEffectFlag) add("Training effect: $trainingEffect") }
+            workout?.let { add("Workout: ${workout.lowercase()}") }
+            trainingEffect?.let { if (trainingEffectFlag) add("Effect: ${trainingEffect.lowercase()}") }
         }
 
         if (details.isEmpty()) return description
-        return "${description ?: ""}\n\n${details.joinToString("\n")}"
+        if (description.isNullOrEmpty()) return details.joinToString("\n")
+        return "$description\n\n${details.joinToString("\n")}"
     }
 }
