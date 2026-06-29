@@ -23,6 +23,8 @@ data class Activity(
     val trainingEffectLabel: String?,
     @SerialName("beginTimestamp")
     val beginTimestamp: Long?,
+    @SerialName("workoutId")
+    val workoutId: Long?,
 ) {
     fun toCore(): CoreActivity =
         CoreActivity(
@@ -32,6 +34,7 @@ data class Activity(
             eventType = this.eventType?.toCore(),
             distance = round(this.distance),
             trainingEffect = TrainingEffectConverter.convert(this.trainingEffectLabel),
-            date = this.beginTimestamp?.let { Instant.fromEpochMilliseconds(it) }
+            date = this.beginTimestamp?.let { Instant.fromEpochMilliseconds(it) },
+            workoutId = this.workoutId
         )
 }

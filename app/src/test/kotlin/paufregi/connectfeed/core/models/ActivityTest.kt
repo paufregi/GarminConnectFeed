@@ -15,7 +15,8 @@ class ActivityTest {
             trainingEffect = "recovery",
             type = ActivityType.RoadBiking,
             eventType = EventType.Transportation,
-            date = Instant.parse("2025-01-01T01:01:00Z")
+            date = Instant.parse("2025-01-01T01:01:00Z"),
+            workoutId = 1
         )
 
         val activity2 = Activity(
@@ -24,7 +25,7 @@ class ActivityTest {
             distance = 7804.00,
             trainingEffect = "recovery",
             type = ActivityType.StravaRide,
-            date = Instant.parse("2025-01-01T01:01:30Z")
+            date = Instant.parse("2025-01-01T01:01:30Z"),
         )
 
         assertThat(activity1.match(activity2)).isTrue()

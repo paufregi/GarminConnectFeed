@@ -10,7 +10,8 @@ data class Activity(
     val eventType: EventType? = null,
     val distance: Double? = null,
     val trainingEffect: String? = null,
-    val date: Instant? = null
+    val date: Instant? = null,
+    val workoutId: Long? = null,
 ) {
     fun match(other: Activity): Boolean =
         this.type.compatible(other.type) &&
