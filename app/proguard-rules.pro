@@ -25,5 +25,6 @@
 -keep,allowobfuscation,allowshrinking interface retrofit2.Call
 -keep,allowobfuscation,allowshrinking class retrofit2.Response
 
+-dontwarn com.google.errorprone.annotations.CanIgnoreReturnValue
 -dontwarn java.beans.ConstructorProperties
 -dontwarn java.beans.Transient
