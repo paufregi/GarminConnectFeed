@@ -19,9 +19,7 @@ kotlin {
     jvmToolchain(17)
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
-    }
-    sourceSets.all {
-        languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
+        optIn = listOf("kotlinx.serialization.ExperimentalSerializationApi")
     }
 }
 
@@ -62,6 +60,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
         }
         debug {
