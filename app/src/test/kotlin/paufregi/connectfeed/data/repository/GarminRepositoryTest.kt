@@ -250,7 +250,8 @@ class GarminRepositoryTest {
                 trainingEffectLabel = "recovery",
                 type = ActivityType(id = 1, key = "running"),
                 eventType = EventType(id = 4, key = "training"),
-                beginTimestamp = 1729754100000
+                beginTimestamp = 1729754100000,
+                workoutId = 1
             ),
             Activity(
                 id = 2,
@@ -259,7 +260,8 @@ class GarminRepositoryTest {
                 trainingEffectLabel = "recovery",
                 type = ActivityType(id = 10, key = "road_biking"),
                 eventType = EventType(id = 4, key = "training"),
-                beginTimestamp = 1729705968000
+                beginTimestamp = 1729705968000,
+                workoutId = 2
             )
         )
         coEvery { connect.getActivities(any()) } returns Response.success(activities)
@@ -283,7 +285,8 @@ class GarminRepositoryTest {
                 trainingEffectLabel = "recovery",
                 type = ActivityType(id = 1, key = "running"),
                 eventType = EventType(id = 4, key = "training"),
-                beginTimestamp = 1729754100000
+                beginTimestamp = 1729754100000,
+                workoutId = 1
             ),
             Activity(
                 id = 2,
@@ -292,7 +295,8 @@ class GarminRepositoryTest {
                 trainingEffectLabel = "recovery",
                 type = ActivityType(id = 10, key = "road_biking"),
                 eventType = EventType(id = 4, key = "training"),
-                beginTimestamp = 1729705968000
+                beginTimestamp = 1729705968000,
+                workoutId = 2
             )
         )
         coEvery { connect.getActivities(any()) } returns Response.success(activities)
@@ -319,7 +323,8 @@ class GarminRepositoryTest {
                 trainingEffectLabel = "recovery",
                 type = ActivityType(id = 1, key = "running"),
                 eventType = EventType(id = 4, key = "training"),
-                beginTimestamp = 1729754100000
+                beginTimestamp = 1729754100000,
+                workoutId = 1
             ),
             Activity(
                 id = 2,
@@ -328,7 +333,8 @@ class GarminRepositoryTest {
                 trainingEffectLabel = "recovery",
                 type = ActivityType(id = 10, key = "road_biking"),
                 eventType = EventType(id = 4, key = "training"),
-                beginTimestamp = 1729705968000
+                beginTimestamp = 1729705968000,
+                workoutId = 2
             )
         )
         coEvery { connect.getActivities(any()) } returns Response.success(activities)
