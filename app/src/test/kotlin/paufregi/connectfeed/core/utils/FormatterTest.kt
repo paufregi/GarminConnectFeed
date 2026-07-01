@@ -38,7 +38,7 @@ class FormatterTest {
         val trainingEffect = "Recovery"
         val workout = "Tempo"
         val result = Formatter.description(description, trainingEffect, true, workout)
-        assertThat(result).isEqualTo("Description\n\nWorkout: tempo\nEffect: recovery")
+        assertThat(result).isEqualTo("Description\n\nWorkout: tempo\nBenefit: recovery")
     }
 
     @Test
@@ -46,15 +46,15 @@ class FormatterTest {
         val description = "Description"
         val trainingEffect = "Recovery"
         val result = Formatter.description(description, trainingEffect, true, null)
-        assertThat(result).isEqualTo("Description\n\nEffect: recovery")
+        assertThat(result).isEqualTo("Description\n\nBenefit: recovery")
     }
 
     @Test
     fun `Formatter description - no training effect`() {
         val description = "Description"
-        val workout = "Tempo"
+        val workout = "workout"
         val result = Formatter.description(description, null, true, workout)
-        assertThat(result).isEqualTo("Description\n\nWorkout: tempo")
+        assertThat(result).isEqualTo("Description\n\nWorkout: workout")
     }
 
     @Test
@@ -78,6 +78,6 @@ class FormatterTest {
         val trainingEffect = "recovery"
         val workout = "Tempo"
         val result = Formatter.description(null, trainingEffect, true, workout)
-        assertThat(result).isEqualTo("Workout: tempo\nEffect: recovery")
+        assertThat(result).isEqualTo("Workout: tempo\nBenefit: recovery")
     }
 }
