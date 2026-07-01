@@ -121,7 +121,8 @@ class GarminRepositoryTest {
                 trainingEffect = "recovery",
                 type = CoreActivityType.RoadBiking,
                 eventType = CoreEventType.Transportation,
-                date = Instant.fromEpochMilliseconds(1729754100000)
+                date = Instant.fromEpochMilliseconds(1729754100000),
+                workoutId = 1
             ),
             CoreActivity(
                 id = 2,
@@ -130,7 +131,8 @@ class GarminRepositoryTest {
                 trainingEffect = "recovery",
                 type = CoreActivityType.RoadBiking,
                 eventType = CoreEventType.Transportation,
-                date = Instant.fromEpochMilliseconds(1729705968000)
+                date = Instant.fromEpochMilliseconds(1729705968000),
+                workoutId = 2
             )
         )
 
@@ -190,7 +192,7 @@ class GarminRepositoryTest {
 
         val expected = Workout(1, "Power - Zone 6")
 
-        val res = repo.getCourses()
+        val res = repo.getWorkout(1)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(expected)
