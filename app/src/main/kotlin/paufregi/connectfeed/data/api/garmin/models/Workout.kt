@@ -6,9 +6,9 @@ import paufregi.connectfeed.core.models.Workout as CoreWorkout
 
 @Serializable
 data class Workout(
-    @SerialName("id")
+    @SerialName("workoutId")
     val id: Long,
-    @SerialName("name")
+    @SerialName("workoutName")
     val name: String,
 ) {
     fun toCore(): CoreWorkout = CoreWorkout(
