@@ -688,12 +688,12 @@ class GarminRepositoryTest {
     fun `Get workout - failure cache`() = runTest {
         coEvery { connect.getWorkout(any()) } returns Response.error<Workout>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.getCourses()
-        val res2 = repo.getCourses()
+        val res = repo.getWorkout(1)
+        val res2 = repo.getWorkout(1)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res2.isSuccess).isFalse()
-        coVerify(exactly = 2) { connect.getCourses() }
+        coVerify(exactly = 2) { connect.getWorkout(1) }
     }
 
     @Test
