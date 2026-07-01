@@ -76,11 +76,9 @@ class GarminRepository @Inject constructor(
         }.onFailure { courseCache.invalidate() }
 
     suspend fun getWorkout(id: Long, force: Boolean = false): Result<Workout> =
-        withCache(workoutCache, force) {
-            garminConnect.getWorkout(id)
-                .toResult()
-                .map {  it.toCore() }
-        }.onFailure { workoutCache.invalidate() }
+        garminConnect.getWorkout(id)
+            .toResult()
+            .map {  it.toCore() }
 
 
     suspend fun updateActivity(
