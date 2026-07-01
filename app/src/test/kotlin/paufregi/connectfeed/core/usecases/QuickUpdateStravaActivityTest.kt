@@ -60,7 +60,7 @@ class QuickUpdateStravaActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.getWorkout(any(), any()) } returns Result.success(workout)
+        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nWorkout: ${workout.name}\nBenefit: ${activity.trainingEffect}"
@@ -68,14 +68,14 @@ class QuickUpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
-            repo.getWorkout(workout.id, false)
+            repo.getWorkout(workout.id)
             repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true)
         }
     }
 
     @Test
     fun `Update activity - no rename`() = runTest {
-        coEvery { repo.getWorkout(any(), any()) } returns Result.success(workout)
+        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val profile = Profile(
@@ -92,14 +92,14 @@ class QuickUpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
-            repo.getWorkout(workout.id, false)
+            repo.getWorkout(workout.id)
             repo.updateStravaActivity(stravaActivity, activity.name, expectedDescription, true)
         }
     }
 
     @Test
     fun `Update activity - no training effect`() = runTest {
-        coEvery { repo.getWorkout(any(), any()) } returns Result.success(workout)
+        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val activity = Activity(
@@ -116,14 +116,14 @@ class QuickUpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
-            repo.getWorkout(workout.id, false)
+            repo.getWorkout(workout.id)
             repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true)
         }
     }
 
     @Test
     fun `Update activity - training effect flag false`() = runTest {
-        coEvery { repo.getWorkout(any(), any()) } returns Result.success(workout)
+        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val profile = Profile(
@@ -140,7 +140,7 @@ class QuickUpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
-            repo.getWorkout(workout.id, false)
+            repo.getWorkout(workout.id)
             repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true)
         }
     }
@@ -165,7 +165,7 @@ class QuickUpdateStravaActivityTest{
 
     @Test
     fun `Update activity - no commute`() = runTest {
-        coEvery { repo.getWorkout(any(), any()) } returns Result.success(workout)
+        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val profile = Profile(
@@ -182,7 +182,7 @@ class QuickUpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
-            repo.getWorkout(workout.id, false)
+            repo.getWorkout(workout.id)
             repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, false)
         }
     }

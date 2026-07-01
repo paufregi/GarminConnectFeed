@@ -16,7 +16,7 @@ class QuickUpdateStravaActivity @Inject constructor(private val garminRepository
     ): Result<Unit> {
         if (stravaActivity == null || profile == null) return Result.failure("Validation error")
 
-        val workout = activity?.workoutId?.let { garminRepository.getWorkout(it, false).getOrNull() }
+        val workout = activity?.workoutId?.let { garminRepository.getWorkout(it).getOrNull() }
 
         return garminRepository.updateStravaActivity(
             activity = stravaActivity,

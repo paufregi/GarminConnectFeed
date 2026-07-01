@@ -32,6 +32,7 @@ import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.user
 import retrofit2.Response
 import java.io.File
+import kotlin.Unit
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
@@ -74,7 +75,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Fetch user - failure`() = runTest {
-        coEvery { connect.getUserProfile() } returns Response.error<UserProfile>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.getUserProfile() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.fetchUser()
 
@@ -375,7 +376,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get activities - failure`() = runTest {
-        coEvery { connect.getActivities(any()) } returns Response.error<List<Activity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.getActivities(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getActivities(limit = 5)
 
@@ -385,7 +386,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get activities - failure cache`() = runTest {
-        coEvery { connect.getActivities(any()) } returns Response.error<List<Activity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.getActivities(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getActivities(limit = 5)
         val res2 = repo.getActivities(limit = 5)
@@ -512,7 +513,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get Strava activities - failure`() = runTest {
-        coEvery { strava.getActivities(perPage = any()) } returns Response.error<List<StravaActivity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { strava.getActivities(perPage = any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getStravaActivities(limit = 5)
 
@@ -522,7 +523,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get Strava activities - failure cache`() = runTest {
-        coEvery { strava.getActivities(perPage = any()) } returns Response.error<List<StravaActivity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { strava.getActivities(perPage = any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getStravaActivities(limit = 5)
         val res2 = repo.getStravaActivities(limit = 5)
@@ -616,7 +617,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get courses - failure`() = runTest {
-        coEvery { connect.getCourses() } returns Response.error<List<Course>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.getCourses() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getCourses()
 
@@ -626,7 +627,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get courses - failure cache`() = runTest {
-        coEvery { connect.getCourses() } returns Response.error<List<Course>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.getCourses() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getCourses()
         val res2 = repo.getCourses()
@@ -647,53 +648,20 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(expected)
-        coVerify { connect.getWorkout(any()) }
+        coVerify { connect.getWorkout(1) }
     }
 
     @Test
-    fun `Get workout - cache`() = runTest {
+    fun `Get workout - failure`() = runTest {
         val workout = Workout(1, "workout")
-        coEvery { connect.getWorkout(any()) } returns Response.success(workout)
+        coEvery { connect.getWorkout(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val expected = workout.toCore()
 
         val res = repo.getWorkout(1)
-        val res2 = repo.getWorkout(1)
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(expected)
-        assertThat(res2.isSuccess).isTrue()
-        assertThat(res2.getOrNull()).isEqualTo(expected)
-        coVerify(exactly = 1) { connect.getWorkout(any()) }
-    }
-
-    @Test
-    fun `Get workout - force refresh`() = runTest {
-        val workout = Workout(1, "workout")
-        coEvery { connect.getWorkout(any()) } returns Response.success(workout)
-
-        val expected = workout.toCore()
-
-        val res = repo.getWorkout(1)
-        val res2 = repo.getWorkout(1, true)
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(expected)
-        assertThat(res2.isSuccess).isTrue()
-        assertThat(res2.getOrNull()).isEqualTo(expected)
-        coVerify(exactly = 2) { connect.getWorkout(any()) }
-    }
-
-    @Test
-    fun `Get workout - failure cache`() = runTest {
-        coEvery { connect.getWorkout(any()) } returns Response.error<Workout>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val res = repo.getWorkout(1)
-        val res2 = repo.getWorkout(1)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res2.isSuccess).isFalse()
-        coVerify(exactly = 2) { connect.getWorkout(1) }
+        coVerify { connect.getWorkout(1) }
     }
 
     @Test
@@ -737,7 +705,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Update activity - failure`() = runTest {
-        coEvery { connect.updateActivity(any(), any()) } returns Response.error<Unit>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { connect.updateActivity(any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
         val activity = CoreActivity(
             id = 1,
             name = "activity",
@@ -804,7 +772,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Update strava activity - failure`() = runTest {
-        coEvery { strava.updateActivity(any(), any()) } returns Response.error<Unit>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { strava.updateActivity(any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val activity = CoreActivity(
             id = 1,

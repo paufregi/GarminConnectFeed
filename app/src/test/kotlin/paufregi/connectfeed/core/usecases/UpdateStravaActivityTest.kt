@@ -46,7 +46,7 @@ class UpdateStravaActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.getWorkout(any(), any()) } returns Result.success(workout)
+        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nWorkout: ${workout.name}\nBenefit: $trainingEffect"
@@ -54,14 +54,14 @@ class UpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
-            repo.getWorkout(workout.id, false)
+            repo.getWorkout(workout.id)
             repo.updateStravaActivity(activity, name, expectedDescription, true)
         }
     }
 
     @Test
     fun `Update activity - no training effect`() = runTest {
-        coEvery { repo.getWorkout(any(), any()) } returns Result.success(workout)
+        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nWorkout: ${workout.name}"
@@ -69,14 +69,14 @@ class UpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
-            repo.getWorkout(workout.id, false)
+            repo.getWorkout(workout.id)
             repo.updateStravaActivity(activity, name, expectedDescription, true)
         }
     }
 
     @Test
     fun `Update activity - training effect flag false`() = runTest {
-        coEvery { repo.getWorkout(any(), any()) } returns Result.success(workout)
+        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nWorkout: ${workout.name}"
@@ -84,7 +84,7 @@ class UpdateStravaActivityTest{
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
-            repo.getWorkout(workout.id, false)
+            repo.getWorkout(workout.id)
             repo.updateStravaActivity(activity, name, expectedDescription, true)
         }
     }
