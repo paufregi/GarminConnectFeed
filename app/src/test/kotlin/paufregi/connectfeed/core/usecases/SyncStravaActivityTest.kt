@@ -13,6 +13,7 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class SyncStravaActivityTest{
@@ -25,7 +26,8 @@ class SyncStravaActivityTest{
         type = ActivityType.Running,
         eventType = EventType.Transportation,
         distance = 10234.00,
-        trainingEffect = "recovery"
+        trainingEffect = "recovery",
+        workoutId = 1
     )
     val stravaActivity = Activity(
         id = 1,
@@ -34,6 +36,7 @@ class SyncStravaActivityTest{
         distance = 10234.00
     )
     val description: String = "description"
+    val workout = Workout(1, "workout")
 
     @Before
     fun setup(){
@@ -48,9 +51,47 @@ class SyncStravaActivityTest{
 
     @Test
     fun `Sync activity`() = runTest {
+        coEvery { repo.getWorkout(any(), any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val expectedDescription = "$description\n\nTraining: recovery"
+        val expectedDescription = "$description\n\nWorkout: ${workout.name}\nBenefit: ${activity.trainingEffect}"
+        val res = useCase(activity, stravaActivity, description, true)
+
+        assertThat(res.isSuccess).isTrue()
+        coVerify {
+            repo.getWorkout(workout.id, false)
+            repo.updateStravaActivity(stravaActivity, activity.name, expectedDescription, true)
+        }
+    }
+
+    @Test
+    fun `Update activity - no training effect`() = runTest {
+        coEvery { repo.getWorkout(any(), any()) } returns Result.success(workout)
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
+
+        val expectedDescription = "$description\n\nWorkout: ${workout.name}"
+        val res = useCase(activity, stravaActivity, description, false)
+
+        assertThat(res.isSuccess).isTrue()
+        coVerify {
+            repo.getWorkout(workout.id, false)
+            repo.updateStravaActivity(stravaActivity, activity.name, expectedDescription, true)
+        }
+    }
+
+    @Test
+    fun `Update activity - no workout`() = runTest {
+        val activity = Activity(
+            id = 1,
+            name = "name",
+            type = ActivityType.Running,
+            eventType = EventType.Transportation,
+            distance = 10234.00,
+            trainingEffect = "recovery",
+        )
+        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
+
+        val expectedDescription = "$description\n\nBenefit: ${activity.trainingEffect}"
         val res = useCase(activity, stravaActivity, description, true)
 
         assertThat(res.isSuccess).isTrue()
@@ -58,17 +99,8 @@ class SyncStravaActivityTest{
     }
 
     @Test
-    fun `Update activity - no training effect`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
-
-        val res = useCase(activity, stravaActivity, description, false)
-
-        assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(stravaActivity, activity.name, description, true) }
-    }
-
-    @Test
     fun `Update activity - no commute`() = runTest {
+        coEvery { repo.getWorkout(any(), any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val activity = Activity(
@@ -77,13 +109,18 @@ class SyncStravaActivityTest{
             type = ActivityType.Running,
             eventType = EventType.Training,
             distance = 10234.00,
-            trainingEffect = "recovery"
+            trainingEffect = "recovery",
+            workoutId = 1
         )
 
-        val res = useCase(activity, stravaActivity, description, false)
+        val expectedDescription = "$description\n\nWorkout: ${workout.name}\nBenefit: ${activity.trainingEffect}"
+        val res = useCase(activity, stravaActivity, description, true)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(stravaActivity, activity.name, description, false) }
+        coVerify {
+            repo.getWorkout(workout.id, false)
+            repo.updateStravaActivity(stravaActivity, activity.name, expectedDescription, false)
+        }
     }
 
     @Test
