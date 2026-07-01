@@ -18,7 +18,8 @@ class ActivityTest {
             type = ActivityType(id = 1, key = "running"),
             eventType = EventType(id = 4, key = "training"),
             trainingEffectLabel = "TEMPO",
-            beginTimestamp = 1735693200000
+            beginTimestamp = 1735693200000,
+            workoutId = 2
         )
 
         val coreActivity = CoreActivity(
@@ -28,7 +29,8 @@ class ActivityTest {
             eventType = CoreEventType.Training,
             distance = 15008.00,
             trainingEffect = "tempo",
-            date = Instant.fromEpochMilliseconds(1735693200000)
+            date = Instant.fromEpochMilliseconds(1735693200000),
+            workoutId = 2
         )
 
         assertThat(activity.toCore()).isEqualTo(coreActivity)

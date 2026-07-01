@@ -128,7 +128,8 @@ class EditViewModel @Inject constructor(
                         description = state.value.description,
                         eventType = state.value.eventType,
                         trainingEffect = state.value.activity?.trainingEffect,
-                        trainingEffectFlag = state.value.trainingEffect
+                        trainingEffectFlag = state.value.trainingEffect,
+                        workoutId = state.value.activity?.workoutId
                     )
                 } else {
                     Result.success(Unit)
