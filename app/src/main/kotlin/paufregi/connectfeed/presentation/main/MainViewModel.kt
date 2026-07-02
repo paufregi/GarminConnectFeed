@@ -14,6 +14,7 @@ class MainViewModel @Inject constructor(
     isLoggedIn: IsLoggedIn
 ) : ViewModel() {
 
-    val state = isLoggedIn().map { MainState(it)}
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), MainState())
+    val state = isLoggedIn()
+        .map { MainState(it) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, MainState())
 }

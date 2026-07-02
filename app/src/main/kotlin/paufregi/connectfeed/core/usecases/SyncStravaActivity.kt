@@ -15,10 +15,14 @@ class SyncStravaActivity @Inject constructor(private val garminRepository: Garmi
     ): Result<Unit> {
         if (activity == null || stravaActivity == null) return Result.failure("Validation error")
 
+        val workout = activity.workoutId?.let { id ->
+            garminRepository.getWorkout(id).getOrNull()
+        }
+
         return garminRepository.updateStravaActivity(
             activity = stravaActivity,
             name = activity.name,
-            description = Formatter.description(description, activity.trainingEffect, trainingEffect),
+            description = Formatter.description(description, activity.trainingEffect, trainingEffect, workout?.name),
             commute = activity.eventType?.commute
         )
     }

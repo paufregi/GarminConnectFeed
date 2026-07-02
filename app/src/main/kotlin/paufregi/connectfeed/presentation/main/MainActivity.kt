@@ -31,12 +31,15 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        splashScreen.setKeepOnScreenCondition { viewModel.state.value.loggedIn == null }
+
         enableEdgeToEdge()
         setContent {
             val nav = rememberNavController()
             val state by viewModel.state.collectAsStateWithLifecycle()
-            installSplashScreen().setKeepOnScreenCondition { state.loggedIn == null }
 
             state.loggedIn?.let {
                 Theme {

@@ -9,6 +9,7 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.models.Metadata
@@ -33,6 +34,7 @@ class GarminRepository @Inject constructor(
 ) {
     val activitiesCache: Cache<Result<List<Activity>>> = Cache()
     val courseCache: Cache<Result<List<Course>>> = Cache()
+    val workoutCache: Cache<Result<Workout>> = Cache()
     val stravaActivityCache: Cache<Result<List<Activity>>> = Cache()
 
     suspend fun fetchUser(): Result<User> =
@@ -72,6 +74,11 @@ class GarminRepository @Inject constructor(
                 .toResult(emptyList())
                 .map { it.map { it.toCore() } }
         }.onFailure { courseCache.invalidate() }
+
+    suspend fun getWorkout(id: Long): Result<Workout> =
+        garminConnect.getWorkout(id)
+            .toResult()
+            .map {  it.toCore() }
 
 
     suspend fun updateActivity(

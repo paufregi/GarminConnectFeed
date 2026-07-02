@@ -18,9 +18,19 @@ object Formatter {
     @SuppressLint("DefaultLocale")
     val distance = { distance: Double -> String.format("%.2f", distance / 1000) }
 
-    fun description(description: String?, trainingEffect: String?, trainingEffectFlag: Boolean): String? =
-        if (trainingEffectFlag && trainingEffect != null)
-            "${description ?: ""}\n\nTraining: $trainingEffect"
-        else
-            description
+    fun description(
+        description: String?,
+        trainingEffect: String?,
+        trainingEffectFlag: Boolean,
+        workout: String? = null,
+    ): String? {
+        val details = buildList {
+            workout?.let { add("Workout: ${it.lowercase()}") }
+            trainingEffect?.let { if (trainingEffectFlag) add("Benefit: ${it.lowercase()}") }
+        }
+
+        if (details.isEmpty()) return description
+        if (description.isNullOrEmpty()) return details.joinToString("\n")
+        return "$description\n\n${details.joinToString("\n")}"
+    }
 }
