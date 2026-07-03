@@ -1,12 +1,13 @@
 package paufregi.connectfeed.presentation.profiles
 
+import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.ActivityType
@@ -14,23 +15,21 @@ import paufregi.connectfeed.core.models.Profile
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
+@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class ProfilesScreenTest {
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
-
     @Test
-    fun `Default values`() {
-        composeTestRule.setContent {
+    fun `Default values`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             ProfilesContent(state = ProfilesState())
         }
-        composeTestRule.onNodeWithText("No profile").assertIsDisplayed()
+        onNodeWithText("No profile").assertIsDisplayed()
     }
 
     @Test
-    fun `Profile list`() {
-        composeTestRule.setContent {
+    fun `Profile list`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             ProfilesContent(state = ProfilesState(
                 profiles = listOf(
                     Profile(name = "Profile 1", type = ActivityType.Running),
@@ -39,9 +38,9 @@ class ProfilesScreenTest {
                 )
             ))
         }
-        composeTestRule.onNodeWithText("Profile 1").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Profile 2").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Profile 3").assertIsDisplayed()
+        onNodeWithText("Profile 1").assertIsDisplayed()
+        onNodeWithText("Profile 2").assertIsDisplayed()
+        onNodeWithText("Profile 3").assertIsDisplayed()
     }
 
 }

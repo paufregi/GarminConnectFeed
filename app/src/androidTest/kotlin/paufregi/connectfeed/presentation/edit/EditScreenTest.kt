@@ -1,18 +1,19 @@
 package paufregi.connectfeed.presentation.edit
 
+import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Activity
@@ -23,11 +24,9 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
+@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class EditScreenTest {
-
-    @get:Rule
-    val composeTestRule = createComposeRule()
 
     val activities = listOf(
         Activity(
@@ -70,10 +69,10 @@ class EditScreenTest {
         Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
         Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType.Cycling),
     )
-
+    
     @Test
-    fun `Default values`() {
-        composeTestRule.setContent {
+    fun `Default values`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             EditContent(state = EditState(
                 process = ProcessState.Idle,
                 activities = activities,
@@ -81,25 +80,25 @@ class EditScreenTest {
                 courses = courses
             ))
         }
-        composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Name").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Event type").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Course").assertIsNotDisplayed()
-        composeTestRule.onNodeWithText("Description").assertIsNotDisplayed()
-        composeTestRule.onNodeWithText("Water").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("feel_text").assertTextContains("None selected")
-        composeTestRule.onNodeWithTag("effort_text").assertTextContains("0 - None selected")
-        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Strava Sync").assertIsNotDisplayed()
-        composeTestRule.onNodeWithText("Reset").assertIsEnabled()
-        composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
+        onNodeWithText("Activity").assertIsDisplayed()
+        onNodeWithText("Name").assertIsDisplayed()
+        onNodeWithText("Event type").assertIsDisplayed()
+        onNodeWithText("Course").assertIsNotDisplayed()
+        onNodeWithText("Description").assertIsNotDisplayed()
+        onNodeWithText("Water").assertIsDisplayed()
+        onNodeWithTag("feel_text").assertTextContains("None selected")
+        onNodeWithTag("effort_text").assertTextContains("0 - None selected")
+        onNodeWithTag("navigation_bar").assertIsDisplayed()
+        onNodeWithText("Edit").assertIsDisplayed()
+        onNodeWithText("Quick Edit").assertIsDisplayed()
+        onNodeWithText("Strava Sync").assertIsNotDisplayed()
+        onNodeWithText("Reset").assertIsEnabled()
+        onNodeWithText("Save").assertIsNotEnabled()
     }
 
     @Test
-    fun `Default values - with Strava`() {
-        composeTestRule.setContent {
+    fun `Default values - with Strava`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             EditContent(state = EditState(
                 process = ProcessState.Idle,
                 activities = activities,
@@ -108,26 +107,26 @@ class EditScreenTest {
                 courses = courses
             ))
         }
-        composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Name").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Event type").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Course").assertIsNotDisplayed()
-        composeTestRule.onNodeWithText("Description").assertIsNotDisplayed()
-        composeTestRule.onNodeWithText("Water").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("feel_text").assertTextContains("None selected")
-        composeTestRule.onNodeWithTag("effort_text").assertTextContains("0 - None selected")
-        composeTestRule.onNodeWithTag("training_effect_checkbox").assertIsNotDisplayed()
-        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Sync Strava").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Reset").assertIsEnabled()
-        composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
+        onNodeWithText("Activity").assertIsDisplayed()
+        onNodeWithText("Name").assertIsDisplayed()
+        onNodeWithText("Event type").assertIsDisplayed()
+        onNodeWithText("Course").assertIsNotDisplayed()
+        onNodeWithText("Description").assertIsNotDisplayed()
+        onNodeWithText("Water").assertIsDisplayed()
+        onNodeWithTag("feel_text").assertTextContains("None selected")
+        onNodeWithTag("effort_text").assertTextContains("0 - None selected")
+        onNodeWithTag("training_effect_checkbox").assertIsNotDisplayed()
+        onNodeWithTag("navigation_bar").assertIsDisplayed()
+        onNodeWithText("Edit").assertIsDisplayed()
+        onNodeWithText("Quick Edit").assertIsDisplayed()
+        onNodeWithText("Sync Strava").assertIsDisplayed()
+        onNodeWithText("Reset").assertIsEnabled()
+        onNodeWithText("Save").assertIsNotEnabled()
     }
 
     @Test
-    fun `Values selected`() {
-        composeTestRule.setContent {
+    fun `Values selected`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             EditContent(state = EditState(
                 process = ProcessState.Idle,
                 activities = activities,
@@ -142,25 +141,25 @@ class EditScreenTest {
                 effort = 80f,
             ))
         }
-        composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
-        composeTestRule.onNodeWithText("Name").assertTextContains("New name")
-        composeTestRule.onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
-        composeTestRule.onNodeWithText("Course").assertTextContains(courses[0].name)
-        composeTestRule.onNodeWithText("Description").assertIsNotDisplayed()
-        composeTestRule.onNodeWithText("Water").assertTextContains("10")
-        composeTestRule.onNodeWithTag("feel_text").assertTextContains("Normal")
-        composeTestRule.onNodeWithTag("effort_text").assertTextContains("8 - Very Hard")
-        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Sync Strava").assertIsNotDisplayed()
-        composeTestRule.onNodeWithText("Reset").assertIsEnabled()
-        composeTestRule.onNodeWithText("Save").assertIsEnabled()
+        onNodeWithText("Activity").assertTextContains(activities[0].name)
+        onNodeWithText("Name").assertTextContains("New name")
+        onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
+        onNodeWithText("Course").assertTextContains(courses[0].name)
+        onNodeWithText("Description").assertIsNotDisplayed()
+        onNodeWithText("Water").assertTextContains("10")
+        onNodeWithTag("feel_text").assertTextContains("Normal")
+        onNodeWithTag("effort_text").assertTextContains("8 - Very Hard")
+        onNodeWithTag("navigation_bar").assertIsDisplayed()
+        onNodeWithText("Edit").assertIsDisplayed()
+        onNodeWithText("Quick Edit").assertIsDisplayed()
+        onNodeWithText("Sync Strava").assertIsNotDisplayed()
+        onNodeWithText("Reset").assertIsEnabled()
+        onNodeWithText("Save").assertIsEnabled()
     }
 
     @Test
-    fun `Values selected - with Strava`() {
-        composeTestRule.setContent {
+    fun `Values selected - with Strava`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             EditContent(state = EditState(
                 process = ProcessState.Idle,
                 activities = activities,
@@ -179,53 +178,53 @@ class EditScreenTest {
                 trainingEffect = true
             ))
         }
-        composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
-        composeTestRule.onNodeWithText("Strava activity").assertTextContains(stravaActivities[0].name)
-        composeTestRule.onNodeWithText("Name").assertTextContains("New name")
-        composeTestRule.onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
-        composeTestRule.onNodeWithText("Course").assertTextContains(courses[0].name)
-        composeTestRule.onNodeWithText("Description").assertTextContains("random text")
-        composeTestRule.onNodeWithText("Water").assertTextContains("10")
-        composeTestRule.onNodeWithTag("feel_text").assertTextContains("Normal")
-        composeTestRule.onNodeWithTag("effort_text").assertTextContains("8 - Very Hard")
-        composeTestRule.onNodeWithTag("training_effect_checkbox").assertIsOn()
-        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Sync Strava").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Reset").assertIsEnabled()
-        composeTestRule.onNodeWithText("Save").assertIsEnabled()
+        onNodeWithText("Activity").assertTextContains(activities[0].name)
+        onNodeWithText("Strava activity").assertTextContains(stravaActivities[0].name)
+        onNodeWithText("Name").assertTextContains("New name")
+        onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
+        onNodeWithText("Course").assertTextContains(courses[0].name)
+        onNodeWithText("Description").assertTextContains("random text")
+        onNodeWithText("Water").assertTextContains("10")
+        onNodeWithTag("feel_text").assertTextContains("Normal")
+        onNodeWithTag("effort_text").assertTextContains("8 - Very Hard")
+        onNodeWithTag("training_effect_checkbox").assertIsOn()
+        onNodeWithTag("navigation_bar").assertIsDisplayed()
+        onNodeWithText("Edit").assertIsDisplayed()
+        onNodeWithText("Quick Edit").assertIsDisplayed()
+        onNodeWithText("Sync Strava").assertIsDisplayed()
+        onNodeWithText("Reset").assertIsEnabled()
+        onNodeWithText("Save").assertIsEnabled()
     }
 
     @Test
-    fun `Loading spinner`() {
-        composeTestRule.setContent {
+    fun `Loading spinner` () = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             EditContent(state = EditState(
                 process = ProcessState.Processing,
             ))
         }
-        composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
+        onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
-    fun `Update - success`() {
-        composeTestRule.setContent {
+    fun `Update - success` () = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             EditContent(state = EditState(
                 process = ProcessState.Success("Activity updated"),
             ))
         }
-        composeTestRule.onNodeWithTag("status_info_text").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Activity updated").assertIsDisplayed()
+        onNodeWithTag("status_info_text").assertIsDisplayed()
+        onNodeWithText("Activity updated").assertIsDisplayed()
     }
 
     @Test
-    fun `Update - failure`() {
-        composeTestRule.setContent {
+    fun `Update - failure` () = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             EditContent(state = EditState(
                 process = ProcessState.Failure("Couldn't update activity"),
             ))
         }
-        composeTestRule.onNodeWithTag("status_info_text").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Couldn't update activity").assertIsDisplayed()
+        onNodeWithTag("status_info_text").assertIsDisplayed()
+        onNodeWithText("Couldn't update activity").assertIsDisplayed()
     }
 }
