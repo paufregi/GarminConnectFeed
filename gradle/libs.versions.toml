@@ -1,7 +1,7 @@
 [versions]
 activity = "1.13.0"
 androidGradlePlugin = "9.2.1"
-coil = "3.4.0"
+coil = "3.5.0"
 commonsCsv = "1.14.1"
 compose = "1.11.4"
 materialIconExtended = "1.7.8"
