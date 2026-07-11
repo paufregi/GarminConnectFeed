@@ -1,71 +1,70 @@
 package paufregi.connectfeed.presentation.login
 
+import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
+@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class LoginScreenTest {
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
-
     @Test
-    fun `Form - empty`() {
-        composeTestRule.setContent {
+    fun `Form - empty` () = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             LoginContent(state = LoginState())
         }
-        composeTestRule.onNodeWithText("Username").assertTextContains("")
-        composeTestRule.onNodeWithText("Password").assertTextContains("")
-        composeTestRule.onNodeWithText("Sign in").assertIsNotEnabled()
+        onNodeWithText("Username").assertTextContains("")
+        onNodeWithText("Password").assertTextContains("")
+        onNodeWithText("Sign in").assertIsNotEnabled()
     }
 
     @Test
-    fun `Form - filled`() {
-        composeTestRule.setContent {
+    fun `Form - filled` () = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             LoginContent(state = LoginState(username = "userTest", password = "passTest"))
         }
-        composeTestRule.onNodeWithText("Username").assertTextContains("userTest")
-        composeTestRule.onNodeWithText("Password").assertTextContains("••••••••")
-        composeTestRule.onNodeWithText("Sign in").assertIsEnabled()
+        onNodeWithText("Username").assertTextContains("userTest")
+        onNodeWithText("Password").assertTextContains("••••••••")
+        onNodeWithText("Sign in").assertIsEnabled()
     }
 
     @Test
-    fun `Form - filled with visible password`() {
-        composeTestRule.setContent {
+    fun `Form - filled with visible password` () = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             LoginContent(state = LoginState(username = "userTest", password = "passTest", showPassword = true))
         }
-        composeTestRule.onNodeWithText("Username").assertTextContains("userTest")
-        composeTestRule.onNodeWithText("Password").assertTextContains("passTest")
-        composeTestRule.onNodeWithText("Sign in").assertIsEnabled()
+        onNodeWithText("Username").assertTextContains("userTest")
+        onNodeWithText("Password").assertTextContains("passTest")
+        onNodeWithText("Sign in").assertIsEnabled()
     }
 
     @Test
-    fun `Loading spinning`() {
-        composeTestRule.setContent {
+    fun `Loading spinning` () = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             LoginContent(state = LoginState(process = ProcessState.Processing))
         }
-        composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
+        onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
-    fun `Sign in - failure`() {
-        composeTestRule.setContent {
+    fun `Sign in - failure` () = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             LoginContent(state = LoginState(process = ProcessState.Failure("error")))
         }
-        composeTestRule.onNodeWithText("error").assertIsDisplayed()
+        onNodeWithText("error").assertIsDisplayed()
     }
 }

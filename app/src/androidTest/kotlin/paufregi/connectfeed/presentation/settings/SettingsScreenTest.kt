@@ -1,15 +1,16 @@
 package paufregi.connectfeed.presentation.settings
 
+import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Release
@@ -19,84 +20,82 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
+@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class SettingsScreenTest {
 
     val user = User(1, "Paul", "url")
     val version = Version(1, 2, 3)
-
-    @get:Rule
-    val composeTestRule = createComposeRule()
-
+    
     @Test
-    fun `Default screen`() {
-        composeTestRule.setContent {
+    fun `Default screen`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             SettingsContent(state = SettingsState(user = user, currentVersion = version, latestRelease = Release(version, "url")))
         }
-        composeTestRule.onNodeWithText("Refresh").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Connect").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Sign out").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Version: v1.2.3").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Update").assertIsNotDisplayed()
+        onNodeWithText("Refresh").assertIsDisplayed()
+        onNodeWithText("Connect").assertIsDisplayed()
+        onNodeWithText("Sign out").assertIsDisplayed()
+        onNodeWithText("Version: v1.2.3").assertIsDisplayed()
+        onNodeWithText("Update").assertIsNotDisplayed()
     }
 
     @Test
-    fun `Default screen - Strava connected`() {
-        composeTestRule.setContent {
+    fun `Default screen - Strava connected`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             SettingsContent(state = SettingsState(user = user, hasStrava = true, currentVersion = version, latestRelease = Release(version, "url")))
         }
-        composeTestRule.onNodeWithText("Refresh").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Remove").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Sign out").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Version: v1.2.3").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Update").assertIsNotDisplayed()
+        onNodeWithText("Refresh").assertIsDisplayed()
+        onNodeWithText("Remove").assertIsDisplayed()
+        onNodeWithText("Sign out").assertIsDisplayed()
+        onNodeWithText("Version: v1.2.3").assertIsDisplayed()
+        onNodeWithText("Update").assertIsNotDisplayed()
     }
 
     @Test
-    fun `Default screen - Update available`() {
-        composeTestRule.setContent {
+    fun `Default screen - Update available`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             SettingsContent(state = SettingsState(user = user, currentVersion = version, latestRelease = Release(Version(2,0,0), "url")))
         }
-        composeTestRule.onNodeWithText("Refresh").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Connect").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Sign out").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Version: v1.2.3").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Update").assertIsDisplayed()
+        onNodeWithText("Refresh").assertIsDisplayed()
+        onNodeWithText("Connect").assertIsDisplayed()
+        onNodeWithText("Sign out").assertIsDisplayed()
+        onNodeWithText("Version: v1.2.3").assertIsDisplayed()
+        onNodeWithText("Update").assertIsDisplayed()
     }
 
     @Test
-    fun `Updating bar`() {
-        composeTestRule.setContent {
+    fun `Updating bar`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             SettingsContent(state = SettingsState(updating = true, currentVersion = version, latestRelease = Release(Version(2,0,0), "url")))
         }
-        composeTestRule.onNodeWithText("Update").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Update").assertIsNotEnabled()
-        composeTestRule.onNodeWithTag("updating_bar").assertIsDisplayed()
+        onNodeWithText("Update").assertIsDisplayed()
+        onNodeWithText("Update").assertIsNotEnabled()
+        onNodeWithTag("updating_bar").assertIsDisplayed()
     }
 
     @Test
-    fun `Loading spinner`() {
-        composeTestRule.setContent {
+    fun `Loading spinner`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             SettingsContent(state = SettingsState(process = ProcessState.Processing))
         }
-        composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
+        onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
-    fun `Success process`() {
-        composeTestRule.setContent {
+    fun `Success process`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             SettingsContent(state = SettingsState(process = ProcessState.Success("message")))
         }
-        composeTestRule.onNodeWithText("message").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Ok").assertIsDisplayed()
+        onNodeWithText("message").assertIsDisplayed()
+        onNodeWithText("Ok").assertIsDisplayed()
     }
 
     @Test
-    fun `Failed process`() {
-        composeTestRule.setContent {
+    fun `Failed process`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             SettingsContent(state = SettingsState(process = ProcessState.Failure("error")))
         }
-        composeTestRule.onNodeWithText("error").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Ok").assertIsDisplayed()
+        onNodeWithText("error").assertIsDisplayed()
+        onNodeWithText("Ok").assertIsDisplayed()
     }
 }

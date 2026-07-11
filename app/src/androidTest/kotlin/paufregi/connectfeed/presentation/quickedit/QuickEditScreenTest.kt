@@ -1,17 +1,18 @@
 package paufregi.connectfeed.presentation.quickedit
 
+import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Activity
@@ -21,11 +22,9 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
+@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class QuickEditScreenTest {
-
-    @get:Rule
-    val composeTestRule = createComposeRule()
 
     val activities = listOf(
         Activity(
@@ -66,27 +65,27 @@ class QuickEditScreenTest {
     )
 
     @Test
-    fun `Default values`() {
-        composeTestRule.setContent {
+    fun `Default values`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             QuickEditContent(state = QuickEditState(
                 process = ProcessState.Idle,
                 activities = activities,
                 profiles = profiles,
             ))
         }
-        composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Profile").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Strava Sync").assertIsNotDisplayed()
-        composeTestRule.onNodeWithText("Reset").assertIsEnabled()
-        composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
+        onNodeWithText("Activity").assertIsDisplayed()
+        onNodeWithText("Profile").assertIsDisplayed()
+        onNodeWithTag("navigation_bar").assertIsDisplayed()
+        onNodeWithText("Edit").assertIsDisplayed()
+        onNodeWithText("Quick Edit").assertIsDisplayed()
+        onNodeWithText("Strava Sync").assertIsNotDisplayed()
+        onNodeWithText("Reset").assertIsEnabled()
+        onNodeWithText("Save").assertIsNotEnabled()
     }
 
     @Test
-    fun `Default values - with Strava`() {
-        composeTestRule.setContent {
+    fun `Default values - with Strava`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             QuickEditContent(state = QuickEditState(
                 process = ProcessState.Idle,
                 activities = activities,
@@ -94,20 +93,20 @@ class QuickEditScreenTest {
                 profiles = profiles,
             ))
         }
-        composeTestRule.onNodeWithText("Activity").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Strava activity").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Profile").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Quick Edit").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Sync Strava").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Reset").assertIsEnabled()
-        composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
+        onNodeWithText("Activity").assertIsDisplayed()
+        onNodeWithText("Strava activity").assertIsDisplayed()
+        onNodeWithText("Profile").assertIsDisplayed()
+        onNodeWithTag("navigation_bar").assertIsDisplayed()
+        onNodeWithText("Edit").assertIsDisplayed()
+        onNodeWithText("Quick Edit").assertIsDisplayed()
+        onNodeWithText("Sync Strava").assertIsDisplayed()
+        onNodeWithText("Reset").assertIsEnabled()
+        onNodeWithText("Save").assertIsNotEnabled()
     }
 
     @Test
-    fun `Values selected`() {
-        composeTestRule.setContent {
+    fun `Values selected`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             QuickEditContent(state = QuickEditState(
                 process = ProcessState.Idle,
                 activities = activities,
@@ -116,16 +115,16 @@ class QuickEditScreenTest {
                 profile = profiles[0],
             ))
         }
-        composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
-        composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
-        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Reset").assertIsEnabled()
-        composeTestRule.onNodeWithText("Save").assertIsEnabled()
+        onNodeWithText("Activity").assertTextContains(activities[0].name)
+        onNodeWithText("Profile").assertTextContains(profiles[0].name)
+        onNodeWithTag("navigation_bar").assertIsDisplayed()
+        onNodeWithText("Reset").assertIsEnabled()
+        onNodeWithText("Save").assertIsEnabled()
     }
 
     @Test
-    fun `Values selected - with Strava`() {
-        composeTestRule.setContent {
+    fun `Values selected - with Strava`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             QuickEditContent(state = QuickEditState(
                 process = ProcessState.Idle,
                 activities = activities,
@@ -136,43 +135,43 @@ class QuickEditScreenTest {
                 profile = profiles[0],
             ))
         }
-        composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
-        composeTestRule.onNodeWithText("Strava activity").assertTextContains(stravaActivities[0].name)
-        composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
-        composeTestRule.onNodeWithTag("navigation_bar").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Reset").assertIsEnabled()
-        composeTestRule.onNodeWithText("Save").assertIsEnabled()
+        onNodeWithText("Activity").assertTextContains(activities[0].name)
+        onNodeWithText("Strava activity").assertTextContains(stravaActivities[0].name)
+        onNodeWithText("Profile").assertTextContains(profiles[0].name)
+        onNodeWithTag("navigation_bar").assertIsDisplayed()
+        onNodeWithText("Reset").assertIsEnabled()
+        onNodeWithText("Save").assertIsEnabled()
     }
 
     @Test
-    fun `Loading spinner`() {
-        composeTestRule.setContent {
+    fun `Loading spinner`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             QuickEditContent(state = QuickEditState(
                 process = ProcessState.Processing,
             ))
         }
-        composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
+        onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
-    fun `Update - success`() {
-        composeTestRule.setContent {
+    fun `Update - success`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             QuickEditContent(state = QuickEditState(
                 process = ProcessState.Success("Activity updated"),
             ))
         }
-        composeTestRule.onNodeWithTag("status_info_text").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Activity updated").assertIsDisplayed()
+        onNodeWithTag("status_info_text").assertIsDisplayed()
+        onNodeWithText("Activity updated").assertIsDisplayed()
     }
 
     @Test
-    fun `Update - failure`() {
-        composeTestRule.setContent {
+    fun `Update - failure`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
             QuickEditContent(state = QuickEditState(
                 process = ProcessState.Failure("Couldn't update activity"),
             ))
         }
-        composeTestRule.onNodeWithTag("status_info_text").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Couldn't update activity").assertIsDisplayed()
+        onNodeWithTag("status_info_text").assertIsDisplayed()
+        onNodeWithText("Couldn't update activity").assertIsDisplayed()
     }
 }
