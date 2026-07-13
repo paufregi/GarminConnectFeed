@@ -23,11 +23,13 @@ import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.ActivityType
 import paufregi.connectfeed.data.api.garmin.models.Course
 import paufregi.connectfeed.data.api.garmin.models.EventType
+import paufregi.connectfeed.data.api.garmin.models.Gear
 import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import paufregi.connectfeed.data.api.garmin.models.Workout
+import paufregi.connectfeed.gearsJson
 import paufregi.connectfeed.userProfileJson
 import paufregi.connectfeed.workoutJson
 import java.io.File
@@ -245,6 +247,43 @@ class GarminConnectTest {
         server.enqueue(400)
 
         val res = api.getWorkout(1)
+
+        assertThat(res.isSuccessful).isFalse()
+        verify { authInterceptor.intercept(any()) }
+    }
+
+    @Test
+    fun `Get gears`() = runTest {
+        server.enqueue(code = 200, body = gearsJson)
+
+        val res = api.getGears()
+
+        val expected = listOf(
+            Gear(id = "522f1e21-0822-451d-88a3-b0b661802c2f", brand = "Mizuno", model = "Neo Vista", name = null, type = "SHOES"),
+            Gear(id = "789dccf8-b669-4903-bf46-7d8d9369124e", brand = "Giant", model = "Contend AR", name = "Nova", type = "BIKE"),
+        )
+
+        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.body()).isEqualTo(expected)
+        verify { authInterceptor.intercept(any()) }
+    }
+
+    @Test
+    fun `Get gears - empty`() = runTest {
+        server.enqueue(code = 200, body = "[]")
+
+        val res = api.getGears()
+
+        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.body()).isEqualTo(emptyList<Gear>())
+        verify { authInterceptor.intercept(any()) }
+    }
+
+    @Test
+    fun `Get gears - failure`() = runTest {
+        server.enqueue(400)
+
+        val res = api.getGears()
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
