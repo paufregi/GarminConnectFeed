@@ -1,12 +1,21 @@
 package paufregi.connectfeed
 
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.appstractive.jwt.jwt
+import mockwebserver3.Dispatcher
+import mockwebserver3.MockResponse
+import mockwebserver3.RecordedRequest
+import okhttp3.Headers
+import okhttp3.tls.HandshakeCertificates
+import okhttp3.tls.HeldCertificate
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.utils.truncatedToSecond
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.github.models.Asset
 import paufregi.connectfeed.data.api.github.models.Release
+import paufregi.connectfeed.R
+import java.net.URLDecoder
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -14,24 +23,23 @@ import kotlin.time.Instant
 import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
 fun createAuthToken(issuedTime: Instant) = AuthToken(
-
     accessToken = jwt { claims { issuedAt(issuedTime) } }.toString(),
     refreshToken = "REFRESH_TOKEN",
     expiresAt = issuedTime + 10.seconds,
-    refreshExpiresAt = issuedTime + 30.seconds,
+    refreshExpiresAt = issuedTime + 30.seconds
 )
 
-fun createStravaToken(expiresTime: Instant) = StravaAuthToken(
+fun createStravaToken(expiresAt: Instant) = StravaAuthToken(
     accessToken = "ACCESS_TOKEN",
     refreshToken = "REFRESH_TOKEN",
-    expiresAt = expiresTime
+    expiresAt = expiresAt
 )
 
 val today: Instant = Clock.System.now().truncatedToSecond()
 val tomorrow: Instant = today + 1.days
 val yesterday: Instant = today - 1.days
 
-val user = User(id = 1, name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
+val user = User(id= 1, name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
 val preAuthToken = PreAuthToken("TOKEN", "SECRET")
 val authToken = createAuthToken(tomorrow)
 
@@ -52,13 +60,13 @@ val githubRelease = Release(
 
 val authTokenJson = """
     {
-        "scope": "SCOPE",
-        "jti": "JTI",
-        "access_token": "${authToken.accessToken}",
-        "token_type": "Bearer",
-        "refresh_token": "${authToken.refreshToken}",
-        "expires_in": 10000,
-        "refresh_token_expires_in": 30000
+    "scope": "SCOPE",
+    "jti": "JTI",
+    "access_token": "${authToken.accessToken}",
+    "token_type": "Bearer",
+    "refresh_token": "${authToken.refreshToken}",
+    "expires_in": 10000,
+    "refresh_token_expires_in": 30000
     }
     """.trimIndent()
 
@@ -1190,6 +1198,132 @@ val githubLatestReleaseJson = """
       ],
       "tarball_url": "https://api.github.com/repos/paufregi/GarminConnectFeed/tarball/v2.2.2",
       "zipball_url": "https://api.github.com/repos/paufregi/GarminConnectFeed/zipball/v2.2.2",
+      "zipball_url": "https://api.github.com/repos/paufregi/GarminConnectFeed/zipball/v2.2.2",
       "body": "### v2.2.2\r\n\r\nThis release enhances the Renpho reader by implementing robust error handling for incompatible file formats. \r\nUsers will now receive an informative error message instead of experiencing an unexpected crash."
     }
 """.trimIndent()
+
+const val connectPort = 8081
+const val garminSSOPort = 8082
+const val stravaPort = 8083
+const val githubPort = 8084
+
+fun RecordedRequest.getFields(): Map<String, String> {
+    val body = body?.utf8() ?: ""
+    val contentType = headers["Content-Type"] ?: ""
+    if (body.isEmpty() || contentType != "application/x-www-form-urlencoded") return emptyMap()
+    val items = body.split("&")
+    return items.associate {
+        val (key, value) = it.split("=")
+        URLDecoder.decode(key, Charsets.UTF_8) to URLDecoder.decode(value, Charsets.UTF_8)
+    }
+}
+
+private fun loadServerCert(): String {
+    val path = "raw/server.pem"
+    val inputStream = Thread.currentThread().contextClassLoader?.getResourceAsStream(path)
+    if (inputStream != null) {
+        return inputStream.bufferedReader().use { it.readText() }
+    }
+    return try {
+        val context = getInstrumentation().context
+        context.resources.openRawResource(R.raw.server).bufferedReader().use { it.readText() }
+    } catch (_: Exception) {
+        throw IllegalArgumentException("Resource not found: server")
+    }
+}
+
+var sslSocketFactory = HandshakeCertificates.Builder()
+    .heldCertificate(HeldCertificate.decode(loadServerCert()))
+    .build().sslSocketFactory()
+
+val connectDispatcher: Dispatcher = object : Dispatcher() {
+    override fun dispatch(request: RecordedRequest): MockResponse {
+        val path = request.url.encodedPath
+        return when {
+            path.startsWith("/oauth-service/oauth/preauthorized") && request.method == "GET" ->
+                MockResponse(code = 200, body = preAuthTokenBody)
+
+            path == "/oauth-service/oauth/exchange/user/2.0" && request.method == "POST" ->
+                MockResponse(code = 200, body = authTokenJson)
+
+            path == "/upload-service/upload" && request.method == "POST" ->
+                MockResponse(200)
+
+            path == "/userprofile-service/socialProfile" && request.method == "GET" ->
+                MockResponse(code = 200, body = userProfileJson)
+
+            path == "/course-service/course" && request.method == "GET" ->
+                MockResponse(code = 200, body = coursesJson)
+
+            (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
+                MockResponse(code = 200, body = activitiesJson)
+
+            (path.startsWith("/activity-service/activity") && request.method == "PUT") ->
+                MockResponse(200)
+
+            (path.startsWith("/workout-service/workout") && request.method == "GET") ->
+                MockResponse(code = 200, body = workoutJson)
+
+            else -> MockResponse(404)
+        }
+    }
+}
+
+val garminSSODispatcher: Dispatcher = object : Dispatcher() {
+    override fun dispatch(request: RecordedRequest): MockResponse {
+        val path = request.url.encodedPath
+        return when {
+            path.startsWith("/sso/signin") && request.method == "GET" ->
+                MockResponse(code = 200, body = htmlCSRF)
+
+            path.startsWith("/sso/signin") && request.method == "POST" ->
+                MockResponse(code = 200, body = htmlTicket)
+
+            else -> MockResponse(404)
+        }
+    }
+}
+
+val stravaDispatcher: Dispatcher = object : Dispatcher() {
+    override fun dispatch(request: RecordedRequest): MockResponse {
+        val path = request.url.encodedPath
+        val fields = request.getFields()
+        return when {
+            path.startsWith("/oauth/mobile/authorize") ->
+                MockResponse(302, Headers.headersOf("Location", "paufregi.connectfeed://strava/auth?code=123456"))
+
+            path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "authorization_code" ->
+                MockResponse(code = 200, body = stravaAuthTokenJson)
+
+            path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "refresh_token" ->
+                MockResponse(code = 200, body = stravaRefreshTokenJson)
+
+            path == "/oauth/deauthorize" && request.method == "POST" ->
+                MockResponse(code = 200, body = stravaDeauthorizationJson)
+
+            path.startsWith("/athlete/activities") && request.method == "GET" ->
+                MockResponse(code = 200, body = stravaActivitiesJson)
+
+            path.startsWith("/activities/") && request.method == "PUT" ->
+                MockResponse(200)
+
+            path == "/athlete" && request.method == "PUT" ->
+                MockResponse(code = 200, body = stravaDetailedAthlete)
+
+            else -> MockResponse(404)
+        }
+    }
+}
+
+val githubDispatcher: Dispatcher = object : Dispatcher() {
+    override fun dispatch(request: RecordedRequest): MockResponse {
+        val path = request.url.encodedPath
+        return when {
+            path == "/repos/paufregi/GarminConnectFeed/releases/latest" && request.method == "GET" ->
+                MockResponse(code = 200, body = githubLatestReleaseJson)
+
+            else -> MockResponse(404)
+        }
+    }
+}
