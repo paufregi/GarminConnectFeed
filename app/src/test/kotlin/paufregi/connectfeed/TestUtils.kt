@@ -908,6 +908,47 @@ val workoutJson = """
     }
 """.trimIndent()
 
+val gearsJson = """
+    [
+        {
+            "uuid": "522f1e21-0822-451d-88a3-b0b661802c2f",
+            "userProfilePk": 1,
+            "gearType": "SHOES",
+            "status": "ACTIVE",
+            "brand": "Mizuno",
+            "model": "Neo Vista",
+            "usageType": "DISTANCE",
+            "maxUsageDistanceMeters": 1000000.0,
+            "maxUsageDurationSeconds": 0,
+            "firstUseDate": "2026-03-18",
+            "numActivitiesLinked": 2,
+            "durationUsedSeconds": 17086,
+            "distanceUsedMeters": 51955.4501953125,
+            "daysUsed": 2,
+            "processing": false,
+            "createdDate": "2026-03-23T01:15:28.0"
+        },
+        {
+            "uuid": "789dccf8-b669-4903-bf46-7d8d9369124e",
+            "userProfilePk": 1,
+            "gearType": "BIKE",
+            "status": "ACTIVE",
+            "name": "Nova",
+            "brand": "Giant",
+            "model": "Contend AR",
+            "usageType": "DISTANCE",
+            "maxUsageDurationSeconds": 0,
+            "firstUseDate": "2021-08-16",
+            "numActivitiesLinked": 1009,
+            "durationUsedSeconds": 2808622,
+            "distanceUsedMeters": 17226955.28363037,
+            "daysUsed": 753,
+            "processing": false,
+            "createdDate": "2021-09-15T22:46:54.0"
+        }
+    ]
+""".trimIndent()
+
 val stravaAuthTokenJson = """
     {
         "token_type": "Bearer",
