@@ -19,7 +19,6 @@ kotlin {
     jvmToolchain(17)
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
-        optIn = listOf("kotlinx.serialization.ExperimentalSerializationApi")
     }
 }
 
@@ -57,6 +56,10 @@ android {
         buildConfig = true
     }
 
+    testFixtures {
+        enable = true
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -88,9 +91,17 @@ android {
             }
         }
     }
+
+    sourceSets {
+        getByName("testFixtures") {
+            resources.directories.add("src/main/res")
+        }
+    }
 }
 
 dependencies {
+    api(libs.jwt.kt)
+
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -107,7 +118,6 @@ dependencies {
     implementation(libs.retrofit.converter)
     implementation(libs.okhttp)
     implementation(libs.okhttp.signpost)
-    implementation(libs.jwt.kt)
     implementation(libs.fit)
     implementation(libs.commons.csv)
     implementation(libs.kotlinx.serialization.json)
@@ -120,25 +130,22 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugRuntimeOnly(libs.androidx.ui.test.manifest)
 
-    testRuntimeOnly(libs.androidx.test.core)
-    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(testFixtures(project(":app")))
     testImplementation(libs.junit)
-    testImplementation(libs.truth)
     testImplementation(libs.mockk)
-    testImplementation(libs.okhttp.mockwebserver)
-    testImplementation(libs.turbine)
 
+    androidTestImplementation(testFixtures(project(":app")))
     androidTestImplementation(libs.android.core.testing)
-    androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.kotlinx.coroutines.test)
-    androidTestImplementation(libs.truth)
     androidTestImplementation(libs.hilt.testing)
-    androidTestImplementation(libs.okhttp.mockwebserver)
-    androidTestImplementation(libs.okhttp.tls)
-    androidTestImplementation(libs.turbine)
     
-    kspAndroidTest(libs.hilt.compiler)
+    testFixturesApi(libs.kotlinx.coroutines.test)
+    testFixturesApi(libs.turbine)
+    testFixturesApi(libs.truth)
+    testFixturesApi(libs.androidx.compose.runtime)
+    testFixturesApi(libs.okhttp.mockwebserver)
+    testFixturesApi(libs.okhttp.tls)
+    testFixturesApi(libs.androidx.test.core)
 }
