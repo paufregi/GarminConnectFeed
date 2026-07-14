@@ -34,7 +34,6 @@ class GarminRepository @Inject constructor(
 ) {
     val activitiesCache: Cache<Result<List<Activity>>> = Cache()
     val courseCache: Cache<Result<List<Course>>> = Cache()
-    val workoutCache: Cache<Result<Workout>> = Cache()
     val stravaActivityCache: Cache<Result<List<Activity>>> = Cache()
 
     suspend fun fetchUser(): Result<User> =
@@ -43,7 +42,7 @@ class GarminRepository @Inject constructor(
             .map { it.toCore() }
 
     fun getAllProfiles(user: User): Flow<List<Profile>> =
-        garminDao.getAllProfiles(user.id).map { it.map { it.toCore() } }
+        garminDao.getAllProfiles(user.id).map { r -> r.map { it.toCore() } }
 
     suspend fun getProfile(id: Long): Profile? =
         garminDao.getProfile(id)?.toCore()
@@ -58,27 +57,27 @@ class GarminRepository @Inject constructor(
         withCache(activitiesCache, force) {
             garminConnect.getActivities(limit)
                 .toResult(emptyList())
-                .map { it.map { it.toCore() } }
+                .map { r -> r.map { it.toCore() } }
         }.onFailure { activitiesCache.invalidate() }
 
     suspend fun getStravaActivities(limit: Int, force: Boolean = false): Result<List<Activity>> =
         withCache(stravaActivityCache, force) {
             strava.getActivities(perPage = limit)
                 .toResult(emptyList())
-                .map { it.map { it.toCore() } }
+                .map { r -> r.map { it.toCore() } }
         }.onFailure { stravaActivityCache.invalidate() }
 
     suspend fun getCourses(force: Boolean = false): Result<List<Course>> =
         withCache(courseCache, force) {
             garminConnect.getCourses()
                 .toResult(emptyList())
-                .map { it.map { it.toCore() } }
+                .map { r -> r.map { it.toCore() } }
         }.onFailure { courseCache.invalidate() }
 
     suspend fun getWorkout(id: Long): Result<Workout> =
         garminConnect.getWorkout(id)
             .toResult()
-            .map {  it.toCore() }
+            .map { it.toCore() }
 
 
     suspend fun updateActivity(
