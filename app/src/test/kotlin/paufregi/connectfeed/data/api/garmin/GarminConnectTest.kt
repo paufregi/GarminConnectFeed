@@ -31,7 +31,7 @@ import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import paufregi.connectfeed.data.api.garmin.models.Workout
 import paufregi.connectfeed.gearsJson
 import paufregi.connectfeed.userProfileJson
-import paufregi.connectfeed.workoutJson
+import paufregi.connectfeed.workoutsJson
 import java.io.File
 
 class GarminConnectTest {
@@ -233,7 +233,7 @@ class GarminConnectTest {
 
     @Test
     fun `Get workout`() = runTest {
-        server.enqueue(code = 200, body = workoutJson)
+        server.enqueue(code = 200, body = workoutsJson)
 
         val res = api.getWorkout(1)
 

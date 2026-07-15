@@ -14,7 +14,6 @@ import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.github.models.Asset
 import paufregi.connectfeed.data.api.github.models.Release
-import paufregi.connectfeed.R
 import java.net.URLDecoder
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
@@ -670,7 +669,7 @@ val coursesJson = """
     ]
 """.trimIndent()
 
-val workoutJson = """
+val workoutsJson = """
 {
         "workoutId": 1,
         "ownerId": 1,
@@ -1311,7 +1310,7 @@ val connectDispatcher: Dispatcher = object : Dispatcher(){
                 MockResponse(200)
 
             (path.startsWith("/workout-service/workout") && request.method == "GET") ->
-                MockResponse(code = 200, body = workoutJson)
+                MockResponse(code = 200, body = workoutsJson)
 
             else -> MockResponse(404)
         }
