@@ -17,6 +17,8 @@ import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
+import paufregi.connectfeed.core.models.Gear
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.models.Workout
@@ -193,6 +195,22 @@ class GarminRepositoryTest {
         val expected = Workout(1, "Power - Zone 6")
 
         val res = repo.getWorkout(1)
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+    }
+
+    @Test
+    fun `Get gears`() = runTest {
+        authStore.savePreAuthToken(preAuthToken)
+        authStore.saveAuthToken(authToken)
+
+        val expected = listOf(
+            Gear(id = "522f1e21-0822-451d-88a3-b0b661802c2f", name = "Mizuno Neo Vista", type = GearType.Shoe),
+            Gear(id = "789dccf8-b669-4903-bf46-7d8d9369124e", name = "Nova", type = GearType.Bike),
+        )
+
+        val res = repo.getGears()
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(expected)
