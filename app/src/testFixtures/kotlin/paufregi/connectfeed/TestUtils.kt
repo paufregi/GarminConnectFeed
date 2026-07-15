@@ -1110,6 +1110,51 @@ val stravaActivitiesJson = """
     } ]
 """.trimIndent()
 
+val stravaAthlete = """
+    {
+      "id" : 1234567890987654321,
+      "username" : "paufregi",
+      "resource_state" : 3,
+      "firstname" : "Paul",
+      "lastname" : "Ellis",
+      "city" : "Auckland",
+      "state" : "NZ",
+      "country" : "NZ",
+      "sex" : "M",
+      "premium" : true,
+      "created_at" : "2017-11-14T02:30:05Z",
+      "updated_at" : "2018-02-06T19:32:20Z",
+      "badge_type_id" : 4,
+      "profile_medium" : "https://xxxxxx.cloudfront.net/pictures/athletes/123456789/123456789/2/medium.jpg",
+      "profile" : "https://xxxxx.cloudfront.net/pictures/athletes/123456789/123456789/2/large.jpg",
+      "friend" : null,
+      "follower" : null,
+      "follower_count" : 5,
+      "friend_count" : 5,
+      "mutual_friend_count" : 0,
+      "athlete_type" : 1,
+      "date_preference" : "%m/%d/%Y",
+      "measurement_preference" : "meters",
+      "clubs" : [ ],
+      "ftp" : null,
+      "weight" : 0,
+      "bikes" : [ {
+        "id" : "b12345678987655",
+        "primary" : true,
+        "name" : "Giant Contend",
+        "resource_state" : 2,
+        "distance" : 0
+      } ],
+      "shoes" : [ {
+        "id" : "g12345678987655",
+        "primary" : true,
+        "name" : "Mizuno Neo Vista",
+        "resource_state" : 2,
+        "distance" : 4904
+      } ]
+    }
+""".trimIndent()
+
 val stravaDetailedAthlete = """
     {    
       "id" : 1,
@@ -1237,7 +1282,7 @@ var sslSocketFactory = HandshakeCertificates.Builder()
     .heldCertificate(HeldCertificate.decode(loadServerCert()))
     .build().sslSocketFactory()
 
-val connectDispatcher: Dispatcher = object : Dispatcher() {
+val connectDispatcher: Dispatcher = object : Dispatcher(){
     override fun dispatch(request: RecordedRequest): MockResponse {
         val path = request.url.encodedPath
         return when {
@@ -1255,6 +1300,9 @@ val connectDispatcher: Dispatcher = object : Dispatcher() {
 
             path == "/course-service/course" && request.method == "GET" ->
                 MockResponse(code = 200, body = coursesJson)
+
+            path == "/gear-service/gear/v2/list" && request.method == "GET" ->
+                MockResponse(code = 200, body = gearsJson)
 
             (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
                 MockResponse(code = 200, body = activitiesJson)
@@ -1301,6 +1349,9 @@ val stravaDispatcher: Dispatcher = object : Dispatcher() {
 
             path == "/oauth/deauthorize" && request.method == "POST" ->
                 MockResponse(code = 200, body = stravaDeauthorizationJson)
+
+            path == "/athlete" && request.method == "GET" ->
+                MockResponse(code = 200, body = stravaAthlete)
 
             path.startsWith("/athlete/activities") && request.method == "GET" ->
                 MockResponse(code = 200, body = stravaActivitiesJson)
