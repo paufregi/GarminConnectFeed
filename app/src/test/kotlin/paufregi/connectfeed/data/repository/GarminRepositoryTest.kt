@@ -21,6 +21,7 @@ import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.ActivityType
 import paufregi.connectfeed.data.api.garmin.models.Course
 import paufregi.connectfeed.data.api.garmin.models.EventType
+import paufregi.connectfeed.data.api.garmin.models.Gear
 import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
@@ -37,6 +38,7 @@ import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.EventType as CoreEventType
+import paufregi.connectfeed.core.models.Gear as CoreGear
 import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity as StravaUpdateActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateProfile as StravaUpdateProfile
@@ -653,15 +655,53 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get workout - failure`() = runTest {
-        val workout = Workout(1, "workout")
-        coEvery { connect.getWorkout(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val expected = workout.toCore()
+        coEvery { connect.getWorkout(any()) } returns Response.error(
+            400,
+            "error".toResponseBody("text/plain; charset=UTF-8".toMediaType())
+        )
 
         val res = repo.getWorkout(1)
 
         assertThat(res.isSuccess).isFalse()
         coVerify { connect.getWorkout(1) }
+    }
+
+    @Test
+    fun `Get gears`() = runTest {
+        val gears = listOf(
+            Gear(id = "1", brand = "Mizuno", model = "Neo Vista", name = null, type = "SHOE"),
+            Gear(id = "2", brand = "Giant", model = "Contend AR", name = "Nova", type = "BIKE")
+        )
+        coEvery { connect.getGears() } returns Response.success(gears)
+
+        val expected = gears.map { it.toCore() }
+
+        val res = repo.getGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+        coVerify { connect.getGears() }
+    }
+
+    @Test
+    fun `Get gears - empty list`() = runTest {
+        coEvery { connect.getGears() } returns Response.success(emptyList())
+
+        val res = repo.getGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreGear>())
+        coVerify { connect.getGears() }
+    }
+
+    @Test
+    fun `Get gears - failure`() = runTest {
+        coEvery { connect.getGears() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.getGears()
+
+        assertThat(res.isSuccess).isFalse()
+        coVerify { connect.getGears() }
     }
 
     @Test

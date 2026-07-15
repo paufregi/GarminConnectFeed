@@ -7,6 +7,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.models.Workout
@@ -79,6 +80,10 @@ class GarminRepository @Inject constructor(
             .toResult()
             .map { it.toCore() }
 
+    suspend fun getGears(): Result<List<Gear>> =
+        garminConnect.getGears()
+            .toResult()
+            .map { r -> r.map { it.toCore() } }
 
     suspend fun updateActivity(
         activity: Activity,
