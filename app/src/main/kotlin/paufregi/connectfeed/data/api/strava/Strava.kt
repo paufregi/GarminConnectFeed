@@ -5,6 +5,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.Activity
+import paufregi.connectfeed.data.api.strava.models.Athlete
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateProfile
 import retrofit2.Response
@@ -17,6 +18,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface Strava {
+
+    @GET("athlete")
+    suspend fun getAthlete(): Response<Athlete>
 
     @GET("athlete/activities")
     suspend fun getActivities(
