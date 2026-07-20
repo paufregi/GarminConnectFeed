@@ -20,7 +20,7 @@ class GearTest {
         val coreGear = CoreGear(
             id = "123",
             name = "name",
-            gearType = CoreGearType.Bike,
+            type = CoreGearType.Bike,
             distance = null
         )
 
@@ -40,7 +40,7 @@ class GearTest {
         val coreGear = CoreGear(
             id = "123",
             name = "brand model",
-            gearType = CoreGearType.Shoe,
+            type = CoreGearType.Shoe,
             distance = null
         )
 
@@ -60,7 +60,7 @@ class GearTest {
         val coreGear = CoreGear(
             id = "123",
             name = "name",
-            gearType = null,
+            type = null,
             distance = null
         )
 

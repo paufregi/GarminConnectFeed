@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.Gear as CoreGear
 
-
 @Serializable
 data class Gear(
     @SerialName("uuid")
@@ -27,7 +26,7 @@ data class Gear(
         CoreGear(
             id = id,
             name = name ?: "$brand $model",
-            gearType = toCoreGearType(),
+            type = toCoreGearType(),
             distance = null
         )
 
