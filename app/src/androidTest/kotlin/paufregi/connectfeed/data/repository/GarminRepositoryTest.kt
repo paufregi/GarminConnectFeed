@@ -217,6 +217,21 @@ class GarminRepositoryTest {
     }
 
     @Test
+    fun `Get Strava gears`() = runTest {
+        stravaStore.saveToken(stravaAuthToken)
+
+        val expected = listOf(
+            Gear(id = "b12345678987655", name = "Giant Contend", type = GearType.Bike),
+            Gear(id = "g12345678987655", name = "Mizuno Neo Vista", type = GearType.Shoe),
+        )
+
+        val res = repo.getStravaGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+    }
+
+    @Test
     fun `Update activity`() = runTest {
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)

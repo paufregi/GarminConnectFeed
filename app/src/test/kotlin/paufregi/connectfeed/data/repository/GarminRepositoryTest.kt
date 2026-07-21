@@ -14,6 +14,7 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.GarminConnect
@@ -28,18 +29,19 @@ import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import paufregi.connectfeed.data.api.garmin.models.Workout
 import paufregi.connectfeed.data.api.strava.Strava
+import paufregi.connectfeed.data.api.strava.models.Athlete
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.user
 import retrofit2.Response
 import java.io.File
-import kotlin.Unit
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Gear as CoreGear
 import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
+import paufregi.connectfeed.data.api.strava.models.Gear as StravaGear
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity as StravaUpdateActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateProfile as StravaUpdateProfile
 
@@ -777,6 +779,85 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isFalse()
         coVerify { connect.updateActivity(activity.id, expectedRequest) }
+    }
+
+    @Test
+    fun `Get Strava gears`() = runTest {
+        val athlete = Athlete(
+            bikes = listOf(StravaGear("1", "bike1"), StravaGear("2", "bike2")),
+            shoes = listOf(StravaGear("3", "shoe1"), StravaGear("4", "shoe2")),
+        )
+        coEvery { strava.getAthlete() } returns Response.success(athlete)
+
+        val expected = athlete.bikes.map { it.toCore(GearType.Bike) } +
+            athlete.shoes.map { it.toCore(GearType.Shoe) }
+
+        val res = repo.getStravaGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+        coVerify { strava.getAthlete() }
+    }
+
+    @Test
+    fun `Get Strava gears - no bikes`() = runTest {
+        val athlete = Athlete(
+            bikes = emptyList(),
+            shoes = listOf(StravaGear("3", "shoe1"), StravaGear("4", "shoe2")),
+        )
+        coEvery { strava.getAthlete() } returns Response.success(athlete)
+
+        val expected = athlete.shoes.map { it.toCore(GearType.Shoe) }
+
+        val res = repo.getStravaGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+        coVerify { strava.getAthlete() }
+    }
+
+    @Test
+    fun `Get Strava gears - no shoes`() = runTest {
+        val athlete = Athlete(
+            bikes = listOf(StravaGear("1", "bike1"), StravaGear("2", "bike2")),
+            shoes = emptyList(),
+        )
+        coEvery { strava.getAthlete() } returns Response.success(athlete)
+
+        val expected = athlete.bikes.map { it.toCore(GearType.Bike) }
+
+        val res = repo.getStravaGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+        coVerify { strava.getAthlete() }
+    }
+
+    @Test
+    fun `Get Strava gears - no gears`() = runTest {
+        val athlete = Athlete(
+            bikes = emptyList(),
+            shoes = emptyList(),
+        )
+        coEvery { strava.getAthlete() } returns Response.success(athlete)
+
+        val expected = emptyList<CoreGear>()
+
+        val res = repo.getStravaGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+        coVerify { strava.getAthlete() }
+    }
+
+    @Test
+    fun `Get Strava gears - failure`() = runTest {
+        coEvery { strava.getAthlete() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.getStravaGears()
+
+        assertThat(res.isSuccess).isFalse()
+        coVerify { strava.getAthlete() }
     }
 
     @Test
