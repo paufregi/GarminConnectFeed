@@ -32,7 +32,7 @@ data class Gear(
 
     private fun toCoreGearType(): GearType? = when (type) {
         "BIKE" -> GearType.Bike
-        "SHOE" -> GearType.Shoe
+        "SHOES" -> GearType.Shoe
         else -> null
     }
 }
