@@ -34,7 +34,7 @@ class GearTest {
             brand = "brand",
             model = "model",
             name = null,
-            type = "SHOE"
+            type = "SHOES"
         )
 
         val coreGear = CoreGear(
