@@ -8,6 +8,7 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Gear
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.models.Workout
@@ -84,6 +85,13 @@ class GarminRepository @Inject constructor(
         garminConnect.getGears()
             .toResult()
             .map { r -> r.map { it.toCore() } }
+
+    suspend fun getStravaGears(): Result<List<Gear>> =
+        strava.getAthlete()
+            .toResult()
+            .map { a ->
+                a.bikes.map { it.toCore(GearType.Bike) } + a.shoes.map { it.toCore(GearType.Shoe) }
+            }
 
     suspend fun updateActivity(
         activity: Activity,
