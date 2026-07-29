@@ -10,6 +10,8 @@ import androidx.compose.material.icons.filled.Tune
 import kotlinx.serialization.Serializable
 import paufregi.connectfeed.presentation.Navigation.HOME
 import paufregi.connectfeed.presentation.ui.components.NavigationItem
+import paufregi.connectfeed.presentation.ui.icons.strava.Shoe
+import paufregi.connectfeed.presentation.ui.icons.strava.StravaIcons
 
 sealed interface Route {
     @Serializable
@@ -37,6 +39,9 @@ sealed interface Route {
     data object Profiles : Route
 
     @Serializable
+    data object Gears : Route
+
+    @Serializable
     data object ProfileList : Route
 
     @Serializable
@@ -49,11 +54,13 @@ sealed interface Route {
 object Navigation {
     const val HOME = 0
     const val PROFILES = 1
+    const val GEARS = 2
     const val SETTINGS = 3
 
     val topItems = listOf(
         NavigationItem(HOME,"Home", Icons.Filled.Home, Route.Home),
-        NavigationItem(PROFILES,"Profiles", Icons.Filled.Tune, Route.Profiles),
+        NavigationItem(PROFILES,"Profiles", Icons.Default.Tune, Route.Profiles),
+        NavigationItem(GEARS,"Gears", StravaIcons.Shoe, Route.Gears),
     )
 
     val bottomItems = listOf(
