@@ -30,9 +30,9 @@ data class Gear(
             distance = null
         )
 
-    private fun toCoreGearType(): GearType? = when (type) {
+    private fun toCoreGearType(): GearType = when (type) {
         "BIKE" -> GearType.Bike
         "SHOES" -> GearType.Shoe
-        else -> null
+        else -> GearType.Unknown
     }
 }
