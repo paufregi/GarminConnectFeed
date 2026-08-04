@@ -22,4 +22,8 @@ class GearsViewModel @Inject constructor(
     val state = combine(_state, isStravaLoggedIn(),
     ) { state, strava -> state.copy(hasStrava = strava) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), GearsState())
+
+    fun onAction(action: GearsAction) = when (action) {
+        is GearsAction.Sync -> null
+    }
 }
