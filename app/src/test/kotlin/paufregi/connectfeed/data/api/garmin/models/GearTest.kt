@@ -60,7 +60,7 @@ class GearTest {
         val coreGear = CoreGear(
             id = "123",
             name = "name",
-            type = null,
+            type = CoreGearType.Unknown,
             distance = null
         )
 
