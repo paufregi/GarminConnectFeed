@@ -46,6 +46,7 @@ data class ActivityType(
         // Other
         9L -> CoreActivityType.Walking
         3L -> CoreActivityType.Hiking
+        89L -> CoreActivityType.Multisport
         252L -> CoreActivityType.Snowboarding
         231L -> CoreActivityType.Kayaking
         239L -> CoreActivityType.StandUpPaddling
