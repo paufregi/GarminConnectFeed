@@ -18,6 +18,7 @@ import paufregi.connectfeed.presentation.ui.icons.garmin.IndoorRide
 import paufregi.connectfeed.presentation.ui.icons.garmin.JumpRope
 import paufregi.connectfeed.presentation.ui.icons.garmin.Kayaking
 import paufregi.connectfeed.presentation.ui.icons.garmin.MountainBiking
+import paufregi.connectfeed.presentation.ui.icons.garmin.Multisport
 import paufregi.connectfeed.presentation.ui.icons.garmin.OpenWaterSwimming
 import paufregi.connectfeed.presentation.ui.icons.garmin.RoadBiking
 import paufregi.connectfeed.presentation.ui.icons.garmin.Running
@@ -93,6 +94,7 @@ fun iconFor(type: ActivityType): ImageVector? =
         // Other
         is ActivityType.Walking -> Icons.Connect.Walking
         is ActivityType.Hiking -> Icons.Connect.Hiking
+        is ActivityType.Multisport -> Icons.Connect.Multisport
         is ActivityType.Snowboarding -> Icons.Connect.Snowboarding
         is ActivityType.Kayaking -> Icons.Connect.Kayaking
         is ActivityType.StandUpPaddling -> Icons.Connect.StandUpPaddling
