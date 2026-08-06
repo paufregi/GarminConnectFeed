@@ -15,6 +15,7 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.data.api.strava.models.AuthToken
+import paufregi.connectfeed.data.api.strava.models.SummaryAthlete
 import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaAuthToken
@@ -59,8 +60,8 @@ class StravaAuthRepositoryTest {
 
     @Test
     fun `Store token`() = runTest {
-        val authToken1 = AuthToken("ACCESS_TOKEN_1", "REFRESH_TOKEN_1", today)
-        val authToken2 = AuthToken("ACCESS_TOKEN_2", "REFRESH_TOKEN_2", tomorrow)
+        val authToken1 = AuthToken("ACCESS_TOKEN_1", "REFRESH_TOKEN_1", today, SummaryAthlete(1))
+        val authToken2 = AuthToken("ACCESS_TOKEN_2", "REFRESH_TOKEN_2", tomorrow, SummaryAthlete(1))
         repo.getToken().test{
             assertThat(awaitItem()).isNull()
             repo.saveToken(authToken1)
@@ -72,6 +73,23 @@ class StravaAuthRepositoryTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @Test
+    fun `Store athlete id`() = runTest {
+        val athlete1 = SummaryAthlete(1)
+        val athlete2 = SummaryAthlete(2)
+        repo.getAthleteId().test{
+            assertThat(awaitItem()).isNull()
+            repo.saveAthleteId(athlete1.id)
+            assertThat(awaitItem()).isEqualTo(athlete1.id)
+            repo.saveAthleteId(athlete2.id)
+            assertThat(awaitItem()).isEqualTo(athlete2.id)
+            repo.clear()
+            assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
 
     @Test
     fun `Exchange token`() = runTest {
