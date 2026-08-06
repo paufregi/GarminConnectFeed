@@ -11,7 +11,11 @@ class StravaAuthRepository(
 ) {
     fun getToken() = stravaStore.getToken()
 
+    fun getAthleteId() = stravaStore.getAthleteId()
+
     suspend fun saveToken(authToken: AuthToken) = stravaStore.saveToken(authToken)
+
+    suspend fun saveAthleteId(athleteId: Long) = stravaStore.saveAthleteId(athleteId)
 
     suspend fun clear() = stravaStore.clear()
 
