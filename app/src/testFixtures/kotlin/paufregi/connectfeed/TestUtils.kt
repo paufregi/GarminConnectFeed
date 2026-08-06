@@ -14,6 +14,7 @@ import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.github.models.Asset
 import paufregi.connectfeed.data.api.github.models.Release
+import paufregi.connectfeed.data.api.strava.models.SummaryAthlete
 import java.net.URLDecoder
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
@@ -28,10 +29,11 @@ fun createAuthToken(issuedTime: Instant) = AuthToken(
     refreshExpiresAt = issuedTime + 30.seconds
 )
 
-fun createStravaToken(expiresAt: Instant) = StravaAuthToken(
+fun createStravaToken(expiresAt: Instant, athleteId: Long) = StravaAuthToken(
     accessToken = "ACCESS_TOKEN",
     refreshToken = "REFRESH_TOKEN",
-    expiresAt = expiresAt
+    expiresAt = expiresAt,
+    athlete = SummaryAthlete(athleteId),
 )
 
 val today: Instant = Clock.System.now().truncatedToSecond()
@@ -42,7 +44,7 @@ val user = User(id= 1, name = "Paul", profileImageUrl = "https://profile.image.c
 val preAuthToken = PreAuthToken("TOKEN", "SECRET")
 val authToken = createAuthToken(tomorrow)
 
-val stravaAuthToken = createStravaToken(today)
+val stravaAuthToken = createStravaToken(today, athleteId = 1)
 val stravaRefreshedAuthToken = StravaAuthToken(accessToken = "NEW_ACCESS_TOKEN", refreshToken = "NEW_REFRESH_TOKEN", expiresAt = tomorrow)
 
 val preAuthTokenBody = "oauth_token=${preAuthToken.token}&oauth_token_secret=${preAuthToken.secret}"
@@ -1111,7 +1113,7 @@ val stravaActivitiesJson = """
 
 val stravaAthlete = """
     {
-      "id" : 1234567890987654321,
+      "id" : 1,
       "username" : "paufregi",
       "resource_state" : 3,
       "firstname" : "Paul",
