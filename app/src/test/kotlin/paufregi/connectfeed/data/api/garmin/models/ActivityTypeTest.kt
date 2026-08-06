@@ -182,6 +182,13 @@ class ActivityTypeTest {
     }
 
     @Test
+    fun `To Core activity type - multisport`() {
+        val activityType = ActivityType(id = 89, key = "multi_sport")
+
+        assertThat(activityType.toCore()).isEqualTo(CoreActivityType.Multisport)
+    }
+
+    @Test
     fun `To Core activity type - snowboarding`() {
         val activityType = ActivityType(id = 252, key = "snowboarding")
 
