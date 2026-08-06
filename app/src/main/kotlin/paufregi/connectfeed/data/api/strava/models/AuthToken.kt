@@ -15,7 +15,10 @@ data class AuthToken(
     @SerialName("expires_at")
     @Serializable(with = InstantSerializer::class)
     val expiresAt: Instant,
+    @SerialName("athlete")
+    val athlete: SummaryAthlete,
 ) {
     fun isExpired(now: Instant = Clock.System.now()): Boolean =
         expiresAt < now
+
 }
