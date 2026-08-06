@@ -15,6 +15,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.data.api.strava.models.AuthToken
+import paufregi.connectfeed.data.api.strava.models.SummaryAthlete
 import paufregi.connectfeed.today
 import paufregi.connectfeed.tomorrow
 import javax.inject.Inject
@@ -44,8 +45,8 @@ class StravaStoreTest {
 
     @Test
     fun `Save retrieve and delete Token`() = runTest {
-        val authToken1 = AuthToken("ACCESS_TOKEN_1", "REFRESH_TOKEN_1", today)
-        val authToken2 = AuthToken("ACCESS_TOKEN_2", "REFRESH_TOKEN_2", tomorrow)
+        val authToken1 = AuthToken("ACCESS_TOKEN_1", "REFRESH_TOKEN_1", today, SummaryAthlete(1))
+        val authToken2 = AuthToken("ACCESS_TOKEN_2", "REFRESH_TOKEN_2", tomorrow, SummaryAthlete(1))
 
         dataStore.getToken().test {
             assertThat(awaitItem()).isNull()
@@ -53,6 +54,23 @@ class StravaStoreTest {
             assertThat(awaitItem()).isEqualTo(authToken1)
             dataStore.saveToken(authToken2)
             assertThat(awaitItem()).isEqualTo(authToken2)
+            dataStore.clear()
+            assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Save retrieve and delete athlete id`() = runTest {
+        val athleteId1 = 1L
+        val athleteId2 = 2L
+
+        dataStore.getAthleteId().test {
+            assertThat(awaitItem()).isNull()
+            dataStore.saveAthleteId(athleteId1)
+            assertThat(awaitItem()).isEqualTo(athleteId1)
+            dataStore.saveAthleteId(athleteId2)
+            assertThat(awaitItem()).isEqualTo(athleteId2)
             dataStore.clear()
             assertThat(awaitItem()).isNull()
             cancelAndIgnoreRemainingEvents()
