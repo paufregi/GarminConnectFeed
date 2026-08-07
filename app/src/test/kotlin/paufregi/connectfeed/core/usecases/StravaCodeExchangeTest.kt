@@ -32,10 +32,11 @@ class StravaCodeExchangeTest{
 
     @Test
     fun `Exchange code`() = runTest {
-        val token = createStravaToken(tomorrow)
+        val token = createStravaToken(tomorrow, athleteId = 1)
 
         coEvery { repo.exchange(any(), any(), any()) } returns Result.success(token)
         coEvery { repo.saveToken(any()) } returns Unit
+        coEvery { repo.saveAthleteId(any()) } returns Unit
 
         val result = useCase("code")
 
@@ -44,6 +45,7 @@ class StravaCodeExchangeTest{
         coVerify {
             repo.exchange("CLIENT_ID", "CLIENT_SECRET", "code")
             repo.saveToken(token)
+            repo.saveAthleteId(token.athlete.id)
         }
     }
 
