@@ -11,6 +11,9 @@ class StravaCodeExchange @Inject constructor(
 ) {
     suspend operator fun invoke(code: String): Result<Unit> =
         stravaAuthRepository.exchange(clientId, clientSecret, code)
-            .onSuccess { stravaAuthRepository.saveToken(it) }
+            .onSuccess {
+                stravaAuthRepository.saveToken(it)
+                stravaAuthRepository.saveAthleteId(it.athlete.id)
+            }
             .map { }
 }
