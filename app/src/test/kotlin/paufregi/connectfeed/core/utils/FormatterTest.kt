@@ -35,10 +35,10 @@ class FormatterTest {
     @Test
     fun `Formatter description`() {
         val description = "Description"
-        val trainingEffect = "Recovery"
-        val workout = "Tempo"
+        val trainingEffect = "VO2 Max"
+        val workout = "VO2 Max - Zone 5"
         val result = Formatter.description(description, trainingEffect, true, workout)
-        assertThat(result).isEqualTo("Description\n\nWorkout: tempo\nBenefit: recovery")
+        assertThat(result).isEqualTo("Description\n\nWorkout: VO₂Max - zone 5\nBenefit: VO₂Max")
     }
 
     @Test
