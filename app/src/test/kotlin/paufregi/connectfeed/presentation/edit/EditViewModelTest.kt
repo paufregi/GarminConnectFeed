@@ -19,10 +19,12 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetStravaActivities
+import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.core.utils.failure
@@ -39,6 +41,7 @@ class EditViewModelTest {
     private val getCourses = mockk<GetCourses>()
     private val updateActivity = mockk<UpdateActivity>()
     private val updateStravaActivity = mockk<UpdateStravaActivity>()
+    private val getWorkout = mockk<GetWorkout>()
 
     private lateinit var viewModel: EditViewModel
 
@@ -112,6 +115,8 @@ class EditViewModelTest {
         Course(id = 2, name = "course2", distance = 12134.00, type = ActivityType.Cycling)
     )
 
+    val workout = Workout(1, "workout")
+
     @Before
     fun setup() {
 
@@ -136,7 +141,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -182,6 +188,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -227,6 +234,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -272,6 +280,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -317,6 +326,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -362,6 +372,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -407,6 +418,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -454,6 +466,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -503,6 +516,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -552,6 +566,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout,
         )
 
         viewModel.state.test {
@@ -599,6 +614,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -648,6 +664,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout,
         )
 
         viewModel.state.test {
@@ -697,6 +714,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -744,6 +762,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -793,6 +812,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout,
         )
 
         viewModel.state.test {
@@ -842,6 +862,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout,
         )
 
         viewModel.state.test {
@@ -889,6 +910,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout,
         )
 
         viewModel.state.test {
@@ -937,6 +959,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout,
         )
 
         viewModel.state.test {
@@ -984,6 +1007,7 @@ class EditViewModelTest {
             getCourses,
             updateActivity,
             updateStravaActivity,
+            getWorkout,
         )
 
         viewModel.state.test {
@@ -1024,7 +1048,15 @@ class EditViewModelTest {
         coEvery { getCourses(any()) } returns Result.success(courses)
         every { getEventTypes() } returns eventTypes
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(
+            getActivities,
+            getStravaActivities,
+            getEventTypes,
+            getCourses,
+            updateActivity,
+            updateStravaActivity,
+            getWorkout
+        )
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetWater(100))
@@ -1064,7 +1096,7 @@ class EditViewModelTest {
         coEvery { getCourses(any()) } returns Result.success(courses)
         every { getEventTypes() } returns eventTypes
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, getWorkout)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetEffort(50f))
@@ -1104,7 +1136,7 @@ class EditViewModelTest {
         coEvery { getCourses(any()) } returns Result.success(courses)
         every { getEventTypes() } returns eventTypes
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, getWorkout)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetFeel(80f))
@@ -1144,7 +1176,7 @@ class EditViewModelTest {
         coEvery { getCourses(any()) } returns Result.success(courses)
         every { getEventTypes() } returns eventTypes
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, getWorkout)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetTrainingEffect(true))
@@ -1182,11 +1214,12 @@ class EditViewModelTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
         coEvery { getCourses(any()) } returns Result.success(courses)
+        coEvery { getWorkout(any()) } returns Result.success(workout)
         every { getEventTypes() } returns eventTypes
-        coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, getWorkout)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetActivity(activities[0]))
@@ -1225,8 +1258,65 @@ class EditViewModelTest {
             getActivities(false)
             getStravaActivities(false)
             getCourses(false)
-            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f)
-            updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true, 1)
+            getWorkout(workout.id)
+            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f, workout)
+            updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true, workout)
+        }
+        verify{ getEventTypes() }
+    }
+
+    @Test
+    fun `Save activity - failed to load workout`() = runTest {
+        coEvery { getActivities(any()) } returns Result.success(activities)
+        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getCourses(any()) } returns Result.success(courses)
+        coEvery { getWorkout(any()) } returns Result.failure("No workout")
+        every { getEventTypes() } returns eventTypes
+        coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, getWorkout)
+
+        viewModel.state.test {
+            viewModel.onAction(EditAction.SetActivity(activities[0]))
+            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[0]))
+            viewModel.onAction(EditAction.SetCourse(courses[0]))
+            viewModel.onAction(EditAction.SetEventType(eventTypes[0]))
+            viewModel.onAction(EditAction.SetName("name"))
+            viewModel.onAction(EditAction.SetDescription("description"))
+            viewModel.onAction(EditAction.SetWater(100))
+            viewModel.onAction(EditAction.SetEffort(50f))
+            viewModel.onAction(EditAction.SetFeel(80f))
+            viewModel.onAction(EditAction.SetTrainingEffect(true))
+            viewModel.onAction(EditAction.Save)
+            skipItems(11)
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Success("Activity updated"))
+            assertThat(state.activities).isEqualTo(activities)
+            assertThat(state.stravaActivities).isEqualTo(stravaActivities)
+            assertThat(state.eventTypes).isEqualTo(eventTypes)
+            assertThat(state.courses).isEqualTo(courses)
+            assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.stravaActivity).isEqualTo(stravaActivities[0])
+            assertThat(state.name).isEqualTo("name")
+            assertThat(state.eventType).isEqualTo(eventTypes[0])
+            assertThat(state.course).isEqualTo(courses[0])
+            assertThat(state.description).isEqualTo("description")
+            assertThat(state.water).isEqualTo(100)
+            assertThat(state.effort).isEqualTo(50f)
+            assertThat(state.feel).isEqualTo(80f)
+            assertThat(state.trainingEffect).isTrue()
+            assertThat(state.hasStrava).isTrue()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify{
+            getActivities(false)
+            getStravaActivities(false)
+            getCourses(false)
+            getWorkout(workout.id)
+            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f, null)
+            updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true, null)
         }
         verify{ getEventTypes() }
     }
@@ -1236,11 +1326,12 @@ class EditViewModelTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
         coEvery { getCourses(any()) } returns Result.success(courses)
+        coEvery { getWorkout(any()) } returns Result.success(workout)
         every { getEventTypes() } returns eventTypes
-        coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
+        coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
         coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, getWorkout)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetActivity(activities[0]))
@@ -1279,8 +1370,9 @@ class EditViewModelTest {
             getActivities(false)
             getStravaActivities(false)
             getCourses(false)
-            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f)
-            updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true, 1)
+            getWorkout(workout.id)
+            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f, workout)
+            updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true, workout)
         }
         verify{ getEventTypes() }
     }
@@ -1291,17 +1383,7 @@ class EditViewModelTest {
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
         coEvery { getCourses(any()) } returns Result.success(courses)
         every { getEventTypes() } returns eventTypes
-        coEvery {
-            updateActivity(
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } returns Result.success(Unit)
+        coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery {
             updateStravaActivity(
                 any(),
@@ -1320,7 +1402,8 @@ class EditViewModelTest {
             getEventTypes,
             getCourses,
             updateActivity,
-            updateStravaActivity
+            updateStravaActivity,
+            getWorkout
         )
 
         viewModel.state.test {
@@ -1360,7 +1443,8 @@ class EditViewModelTest {
             getActivities(false)
             getStravaActivities(false)
             getCourses(false)
-            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f)
+            getWorkout(workout.id)
+            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f, workout)
             updateStravaActivity(
                 stravaActivities[0],
                 "name",
@@ -1368,7 +1452,7 @@ class EditViewModelTest {
                 eventTypes[0],
                 "recovery",
                 true,
-                1
+                workout
             )
         }
         verify { getEventTypes() }
@@ -1380,10 +1464,10 @@ class EditViewModelTest {
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
         coEvery { getCourses(any()) } returns Result.success(courses)
         every { getEventTypes() } returns eventTypes
-        coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
+        coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
         coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, getWorkout)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.SetActivity(activities[0]))
@@ -1422,8 +1506,8 @@ class EditViewModelTest {
             getActivities(false)
             getStravaActivities(false)
             getCourses(false)
-            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f)
-            updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true, 1)
+            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f, workout)
+            updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true, workout)
         }
         verify{ getEventTypes() }
     }
@@ -1435,7 +1519,7 @@ class EditViewModelTest {
         coEvery { getCourses(any()) } returns Result.success(courses)
         every { getEventTypes() } returns eventTypes
 
-        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity)
+        viewModel = EditViewModel(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, getWorkout)
 
         viewModel.state.test {
             viewModel.onAction(EditAction.Restart)

@@ -14,6 +14,7 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class UpdateActivityTest{
@@ -27,6 +28,7 @@ class UpdateActivityTest{
         distance = 10234.00,
         trainingEffect = "recovery"
     )
+    val workout = Workout(1, "VO2 max")
     val name = "newName"
     val eventType = EventType.Training
     val course = Course(id = 1, name = "courseName", distance = 1.0, type = ActivityType.Running)
@@ -47,17 +49,28 @@ class UpdateActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val res = useCase(activity, name, eventType, course, water, feel, effort)
+        val description = "Workout: VO₂ max"
+        val res = useCase(activity, name, eventType, course, water, feel, effort, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateActivity(activity, name, eventType, course, water, feel, effort) }
+        coVerify { repo.updateActivity(activity, name, description, eventType, course, water, feel, effort) }
+    }
+
+    @Test
+    fun `Update activity - no workout`() = runTest {
+        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+
+        val res = useCase(activity, name, eventType, course, water, feel, effort, null)
+
+        assertThat(res.isSuccess).isTrue()
+        coVerify { repo.updateActivity(activity, name, null, eventType, course, water, feel, effort) }
     }
 
     @Test
     fun `Invalid - no activity`() = runTest {
-        val res = useCase(null, name, eventType, course, water, feel, effort)
+        val res = useCase(null, name, eventType, course, water, feel, effort, workout)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -74,7 +87,7 @@ class UpdateActivityTest{
         )
         val course = Course(id = 1, name = "courseName", distance = 1.0, type = ActivityType.Running)
 
-        val res = useCase(activity, name, eventType, course, water, feel, effort)
+        val res = useCase(activity, name, eventType, course, water, feel, effort, workout)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")

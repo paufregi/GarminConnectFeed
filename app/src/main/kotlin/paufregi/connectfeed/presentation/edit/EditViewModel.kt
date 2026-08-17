@@ -15,6 +15,7 @@ import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetStravaActivities
+import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.core.utils.runCatchingResult
@@ -29,6 +30,7 @@ class EditViewModel @Inject constructor(
     val getCourses: GetCourses,
     val updateActivity: UpdateActivity,
     val updateStravaActivity: UpdateStravaActivity,
+    val getWorkout: GetWorkout
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditState())
@@ -107,6 +109,8 @@ class EditViewModel @Inject constructor(
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
 
+        val workout = state.value.activity?.workoutId?.let { getWorkout(it) }?.getOrNull()
+
         coroutineScope {
             val asyncUpdateActivity = async {
                 updateActivity(
@@ -116,7 +120,8 @@ class EditViewModel @Inject constructor(
                     course = state.value.course,
                     water = state.value.water,
                     feel = state.value.feel,
-                    effort = state.value.effort
+                    effort = state.value.effort,
+                    workout = workout
                 )
             }
 
@@ -129,7 +134,7 @@ class EditViewModel @Inject constructor(
                         eventType = state.value.eventType,
                         trainingEffect = state.value.activity?.trainingEffect,
                         trainingEffectFlag = state.value.trainingEffect,
-                        workoutId = state.value.activity?.workoutId
+                        workout = workout
                     )
                 } else {
                     Result.success(Unit)
