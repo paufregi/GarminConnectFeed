@@ -20,7 +20,7 @@ class TrainingEffectConverterTest {
     @Test
     fun `Covert VO2Max`() {
         val trainingEffect = TrainingEffectConverter.convert("VO2MAX")
-        assertThat(trainingEffect).isEqualTo("VO₂Max")
+        assertThat(trainingEffect).isEqualTo("VO₂ max")
     }
 
     @Test
