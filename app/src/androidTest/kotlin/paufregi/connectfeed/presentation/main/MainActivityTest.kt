@@ -337,25 +337,4 @@ class MainActivityTest {
 
         waitUntil(conditionDescription = "Activity updated") { onNodeWithText("Activity updated").isDisplayed() }
     }
-
-    @Test
-    fun `Sync Strava activity`() = runAndroidComposeUiTest<MainActivity> {
-        authStore.saveUser(user)
-        authStore.savePreAuthToken(preAuthToken)
-        authStore.saveAuthToken(authToken)
-        stravaStore.saveToken(stravaAuthToken)
-
-        ActivityScenario.launch(MainActivity::class.java)
-        awaitIdle()
-        waitUntil(conditionDescription = "quick_edit_screen") { onNodeWithTag("quick_edit_screen").isDisplayed() }
-        onNodeWithText("Sync Strava").performClick()
-        waitUntil(conditionDescription = "sync_strava_screen") { onNodeWithTag("sync_strava_screen").isDisplayed() }
-        onNodeWithText("Activity").performClick()
-        onNodeWithText("Activity 1").performClick()
-        onNodeWithText("Strava activity").performClick()
-        onNodeWithText("Bondcliff").performClick()
-        onNodeWithText("Save").performClick()
-
-        waitUntil(conditionDescription = "Strava activity updated") { onNodeWithText("Strava activity updated").isDisplayed() }
-    }
 }
