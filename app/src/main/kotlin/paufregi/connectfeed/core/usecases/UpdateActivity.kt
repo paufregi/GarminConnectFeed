@@ -4,8 +4,8 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Workout
+import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.core.utils.vo2max
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ class UpdateActivity @Inject constructor(private val garminRepository: GarminRep
         return garminRepository.updateActivity(
             activity = activity,
             name = name,
-            description = workout?.name?.lowercase()?.vo2max(),
+            description = Formatter.workout(workout?.name),
             eventType = eventType,
             course = course,
             water = water,

@@ -3,8 +3,8 @@ package paufregi.connectfeed.core.usecases
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Workout
+import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.core.utils.vo2max
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
@@ -22,7 +22,7 @@ class QuickUpdateActivity @Inject constructor(private val garminRepository: Garm
         return garminRepository.updateActivity(
             activity = activity,
             name = if (profile.rename) profile.name else null,
-            description = workout?.name?.lowercase()?.vo2max(),
+            description = Formatter.workout(workout?.name),
             eventType = profile.eventType,
             course = profile.course,
             water = water,
