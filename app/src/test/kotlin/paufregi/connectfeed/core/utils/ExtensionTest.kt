@@ -185,6 +185,48 @@ class ExtensionTest {
     }
 
     @Test
+    fun `String - vo2max - lowercase`() {
+        val result = "vo2max workout".vo2max()
+        assertThat(result).isEqualTo("VO₂Max workout")
+    }
+
+    @Test
+    fun `String - vo2max - uppercase`() {
+        val result = "VO2MAX workout".vo2max()
+        assertThat(result).isEqualTo("VO₂Max workout")
+    }
+
+    @Test
+    fun `String - vo2max - mixed`() {
+        val result = "Vo2Max workout".vo2max()
+        assertThat(result).isEqualTo("VO₂Max workout")
+    }
+
+    @Test
+    fun `String - vo2max - subscript unicode`() {
+        val result = "vo₂max workout".vo2max()
+        assertThat(result).isEqualTo("VO₂Max workout")
+    }
+
+    @Test
+    fun `String - vo2max - with space`() {
+        val result = "vo2 max workout".vo2max()
+        assertThat(result).isEqualTo("VO₂Max workout")
+    }
+
+    @Test
+    fun `String - vo2max - multiple occurrences`() {
+        val result = "vo2max and VO2MAX".vo2max()
+        assertThat(result).isEqualTo("VO₂Max and VO₂Max")
+    }
+
+    @Test
+    fun `String - vo2max - no match unchanged`() {
+        val result = "workout recovery".vo2max()
+        assertThat(result).isEqualTo("workout recovery")
+    }
+
+    @Test
     fun `Semaphore - withPermit - blocks when no permits are available`() = runTest {
         val semaphore = Semaphore(1)
         var actionExecuted = false
