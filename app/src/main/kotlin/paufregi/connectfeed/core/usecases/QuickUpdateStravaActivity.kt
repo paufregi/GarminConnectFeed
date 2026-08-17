@@ -2,6 +2,7 @@ package paufregi.connectfeed.core.usecases
 
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
@@ -13,10 +14,9 @@ class QuickUpdateStravaActivity @Inject constructor(private val garminRepository
         stravaActivity: Activity?,
         profile: Profile?,
         description: String?,
+        workout: Workout?
     ): Result<Unit> {
         if (stravaActivity == null || profile == null) return Result.failure("Validation error")
-
-        val workout = activity?.workoutId?.let { garminRepository.getWorkout(it).getOrNull() }
 
         return garminRepository.updateStravaActivity(
             activity = stravaActivity,
