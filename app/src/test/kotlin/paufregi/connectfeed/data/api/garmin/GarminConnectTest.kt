@@ -166,6 +166,7 @@ class GarminConnectTest {
         val updateActivity = UpdateActivity(
             id = 1,
             name = "newName",
+            description = "newDescription",
             eventType = EventType(id = 1, key = "key"),
             metadata = Metadata(courseId = 1),
             summary = Summary(500, null, null),
@@ -182,6 +183,7 @@ class GarminConnectTest {
         val updateActivity = UpdateActivity(
             id = 1,
             name = "newName",
+            description = "newDescription",
             eventType = EventType(id = 1, key = "key"),
             metadata = Metadata(courseId = 1),
             summary = Summary(500, null, null),

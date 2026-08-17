@@ -9,6 +9,8 @@ data class UpdateActivity(
     val id: Long,
     @SerialName("activityName")
     val name: String?,
+    @SerialName("description")
+    val description: String?,
     @SerialName("eventTypeDTO")
     val eventType: EventType,
     @SerialName("metadataDTO")

@@ -32,7 +32,6 @@ import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.user
 import retrofit2.Response
 import java.io.File
-import kotlin.Unit
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
@@ -656,8 +655,6 @@ class GarminRepositoryTest {
         val workout = Workout(1, "workout")
         coEvery { connect.getWorkout(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val expected = workout.toCore()
-
         val res = repo.getWorkout(1)
 
         assertThat(res.isSuccess).isFalse()
@@ -675,6 +672,7 @@ class GarminRepositoryTest {
             type = CoreActivityType.Cycling
         )
         val name = "newName"
+        val description = "newDescription"
         val eventType = CoreEventType.Training
         val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
         val water = 2
@@ -684,6 +682,7 @@ class GarminRepositoryTest {
         val expectedRequest = UpdateActivity(
             id = 1,
             name = name,
+            description = description,
             eventType = EventType(id = eventType.id, key = eventType.key),
             metadata = Metadata(courseId = course.id),
             summary = Summary(water = water, feel = feel, effort = effort)
@@ -692,6 +691,7 @@ class GarminRepositoryTest {
         val res = repo.updateActivity(
             activity = activity,
             name = name,
+            description = description,
             eventType = eventType,
             course = course,
             water = water,
@@ -713,13 +713,15 @@ class GarminRepositoryTest {
             type = CoreActivityType.Cycling
         )
         val name = "newName"
+        val description = "newDescription"
         val eventType = CoreEventType.Training
         val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
         val water = 2
 
         val expectedRequest = UpdateActivity(
             id = 1,
-            name = "newName",
+            name = name,
+            description = description,
             eventType = EventType(id = eventType.id, key = eventType.key),
             metadata = Metadata(courseId = 1),
             summary = Summary(water = 2, feel = null, effort = null)
@@ -728,6 +730,7 @@ class GarminRepositoryTest {
         val res = repo.updateActivity(
             activity = activity,
             name = name,
+            description = description,
             eventType = eventType,
             course = course,
             water = water,

@@ -205,6 +205,7 @@ class GarminRepositoryTest {
 
         val activity = CoreActivity(id = 1, name = "activity", distance = 17803.00, trainingEffect = "", type = CoreActivityType.Cycling)
         val name = "newName"
+        val description = "newDescription"
         val eventType = CoreEventType.Training
         val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
         val water = 2
@@ -214,6 +215,7 @@ class GarminRepositoryTest {
         val res = repo.updateActivity(
             activity = activity,
             name = name,
+            description = description,
             eventType = eventType,
             course = course,
             water = water,
