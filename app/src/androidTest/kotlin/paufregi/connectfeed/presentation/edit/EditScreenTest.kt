@@ -119,7 +119,6 @@ class EditScreenTest {
         onNodeWithTag("navigation_bar").assertIsDisplayed()
         onNodeWithText("Edit").assertIsDisplayed()
         onNodeWithText("Quick Edit").assertIsDisplayed()
-        onNodeWithText("Sync Strava").assertIsDisplayed()
         onNodeWithText("Reset").assertIsEnabled()
         onNodeWithText("Save").assertIsNotEnabled()
     }
@@ -152,7 +151,6 @@ class EditScreenTest {
         onNodeWithTag("navigation_bar").assertIsDisplayed()
         onNodeWithText("Edit").assertIsDisplayed()
         onNodeWithText("Quick Edit").assertIsDisplayed()
-        onNodeWithText("Sync Strava").assertIsNotDisplayed()
         onNodeWithText("Reset").assertIsEnabled()
         onNodeWithText("Save").assertIsEnabled()
     }
@@ -191,7 +189,6 @@ class EditScreenTest {
         onNodeWithTag("navigation_bar").assertIsDisplayed()
         onNodeWithText("Edit").assertIsDisplayed()
         onNodeWithText("Quick Edit").assertIsDisplayed()
-        onNodeWithText("Sync Strava").assertIsDisplayed()
         onNodeWithText("Reset").assertIsEnabled()
         onNodeWithText("Save").assertIsEnabled()
     }
