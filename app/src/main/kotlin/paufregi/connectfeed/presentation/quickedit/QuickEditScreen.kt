@@ -71,7 +71,6 @@ internal fun QuickEditContent(
     Screen(
         tagName = "quick_edit_screen",
         location = HomeNavigation.QUICK_EDIT,
-        hasStrava = state.hasStrava,
         nav = nav,
         state = state.process,
         success = successActivityUpdate(
