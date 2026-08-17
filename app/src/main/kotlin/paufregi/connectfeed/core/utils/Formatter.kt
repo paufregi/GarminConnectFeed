@@ -26,7 +26,7 @@ object Formatter {
     ): String? {
         val details = buildList {
             workout?.let { add("Workout: ${it.lowercase().vo2max()}") }
-            trainingEffect?.let { if (trainingEffectFlag) add("Benefit: ${it.lowercase().vo2max()}") }
+            trainingEffect?.let { if (trainingEffectFlag) add("Benefit: $it") }
         }
 
         if (details.isEmpty()) return description
