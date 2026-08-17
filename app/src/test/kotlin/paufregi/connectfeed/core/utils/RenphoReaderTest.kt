@@ -15,23 +15,23 @@ class RenphoReaderTest {
     fun `Convert Renpho CSV to list of weights`() {
         Locale.setDefault(Locale.ENGLISH)
         val csvText = """
-            Date,Time,Weight(kg),BMI,Body Fat(%),Skeletal Muscle(%),Fat-Free Mass(kg),Subcutaneous Fat(%),Visceral Fat,Body Water(%),Muscle Mass(kg),Bone Mass(kg),Protein(%),BMR(kcal),Metabolic Age,Optimal Weight(kg),Target to optimal weight(kg),Target to optimal fat mass(kg),Target to optimal muscle mass(kg),Body Type,Remarks
-            2025.05.10,01:02:03,75.00,23.4,22.6,49.9,58.05,20.4,7.0,55.9,55.13,2.92,17.6,1631,34,--,--,--,--,--,--
+            No.,Date,Time,Weight(kg),BMI,Body Fat Percentage(%),Body Fat Mass(kg),Muscle Percentage(%),Muscle Mass(kg),Skeletal Muscle Percentage(%),Skeletal Muscle Mass(kg),Bone Percentage(%),Bone Mass(kg),Protein Percentage(%),Protein Mass(kg),Body Water Percentage(%),Body Water Mass(kg),Fat-Free Mass(kg),Subcutaneous Fat(%),Visceral Fat,BMR(kcal),Metabolic Age,WHR (Waist-to-Hip Ratio),Optimal Weight(kg),Weight Level,Body Type,Target to optimal weight(kg),Target to optimal muscle mass(kg),Target to optimal fat mass(kg),Remarks
+            1,2026.08.16,07:59:46,74.15,23.1,14.1,10.46,81.6,60.51,55.5,41.15,4.3,3.18,19.6,14.53,62.0,45.97,63.69,12.3,6,1743,36,--,--,--,--,--,--,--,,
         """.trimIndent()
 
         val stubInputStream = IOUtils.toInputStream(csvText, "UTF-8")
 
         val expected = Weight(
-            timestamp = Date.from(Instant.parse("2025-05-09T13:02:03Z")),
-            weight = 75.00f,
-            bmi = 23.4f,
-            fat = 22.6f,
-            visceralFat = 7,
-            water = 55.9f,
-            muscle = 55.13f,
-            bone = 2.92f,
-            basalMet = 1631f,
-            metabolicAge = 34,
+            timestamp = Date.from(Instant.parse("2026-08-15T19:59:46Z")),
+            weight = 74.15f,
+            bmi = 23.1f,
+            fat = 14.1f,
+            visceralFat = 6,
+            water = 62.0f,
+            muscle = 60.51f,
+            bone = 3.18f,
+            basalMet = 1743f,
+            metabolicAge = 36,
         )
 
         val result = RenphoReader.read(stubInputStream)
