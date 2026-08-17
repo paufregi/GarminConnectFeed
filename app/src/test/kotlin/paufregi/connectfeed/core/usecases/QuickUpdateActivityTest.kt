@@ -15,6 +15,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class QuickUpdateActivityTest{
@@ -39,6 +40,7 @@ class QuickUpdateActivityTest{
         feelAndEffort = true,
         trainingEffect = true
     )
+    val workout = Workout(1, "VO2 max")
 
     @Before
     fun setup(){
@@ -53,16 +55,28 @@ class QuickUpdateActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
-        val res = useCase(activity, profile, 20, 50f, 90f)
+        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+
+        val description = "Workout: VO₂ max"
+        val res = useCase(activity, profile, 20, 50f, 90f, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateActivity(activity, profile.name, profile.eventType, profile.course, 20, 50f, 90f) }
+        coVerify { repo.updateActivity(activity, profile.name, description, profile.eventType, profile.course, 20, 50f, 90f, ) }
+    }
+
+    @Test
+    fun `Update activity - no workout`() = runTest {
+        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+
+        val res = useCase(activity, profile, 20, 50f, 90f, null)
+
+        assertThat(res.isSuccess).isTrue()
+        coVerify { repo.updateActivity(activity, profile.name, null, profile.eventType, profile.course, 20, 50f, 90f, ) }
     }
 
     @Test
     fun `Invalid - no activity`() = runTest {
-        val res = useCase(null, profile, null, null, null)
+        val res = useCase(null, profile, null, null, null, null)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -70,7 +84,7 @@ class QuickUpdateActivityTest{
 
     @Test
     fun `Invalid - no profile`() = runTest {
-        val res = useCase(activity, null, null, null, null)
+        val res = useCase(activity, null, null, null, null, null)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -78,7 +92,7 @@ class QuickUpdateActivityTest{
 
     @Test
     fun `Invalid - both null`() = runTest {
-        val res = useCase(null, null, null, null, null)
+        val res = useCase(null, null, null, null, null, null)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")

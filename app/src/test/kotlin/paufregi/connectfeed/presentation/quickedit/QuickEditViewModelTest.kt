@@ -704,6 +704,7 @@ class QuickEditViewModelTest {
             getStravaActivities(false)
             quickUpdateActivity(activities[0], profiles[0], 25, 50f, 80f, workout)
             quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description", workout)
+            getWorkout(workout.id)
             getProfiles()
         }
     }

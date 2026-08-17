@@ -44,7 +44,7 @@ class QuickUpdateStravaActivityTest{
         rename = true,
         trainingEffect = true,
     )
-    val workout = Workout(1, "workout")
+    val workout = Workout(1, "VO2 max")
     val description: String = "description"
 
     @Before
@@ -60,22 +60,17 @@ class QuickUpdateStravaActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val expectedDescription = "$description\n\nWorkout: ${workout.name}\nBenefit: ${activity.trainingEffect}"
-        val res = useCase(activity, stravaActivity, profile, description)
+        val expectedDescription = "$description\n\nWorkout: VO₂ max\nBenefit: ${activity.trainingEffect}"
+        val res = useCase(activity, stravaActivity, profile, description, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            repo.getWorkout(workout.id)
-            repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true)
-        }
+        coVerify { repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - no rename`() = runTest {
-        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val profile = Profile(
@@ -87,19 +82,15 @@ class QuickUpdateStravaActivityTest{
             trainingEffect = true,
         )
 
-        val expectedDescription = "$description\n\nWorkout: ${workout.name}\nBenefit: ${activity.trainingEffect}"
-        val res = useCase(activity, stravaActivity, profile, description)
+        val expectedDescription = "$description\n\nWorkout: VO₂ max\nBenefit: ${activity.trainingEffect}"
+        val res = useCase(activity, stravaActivity, profile, description, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            repo.getWorkout(workout.id)
-            repo.updateStravaActivity(stravaActivity, activity.name, expectedDescription, true)
-        }
+        coVerify { repo.updateStravaActivity(stravaActivity, activity.name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - no training effect`() = runTest {
-        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val activity = Activity(
@@ -111,19 +102,15 @@ class QuickUpdateStravaActivityTest{
             workoutId = 1
         )
 
-        val expectedDescription = "$description\n\nWorkout: ${workout.name}"
-        val res = useCase(activity, stravaActivity, profile, description)
+        val expectedDescription = "$description\n\nWorkout: VO₂ max"
+        val res = useCase(activity, stravaActivity, profile, description, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            repo.getWorkout(workout.id)
-            repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true)
-        }
+        coVerify { repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - training effect flag false`() = runTest {
-        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val profile = Profile(
@@ -135,14 +122,11 @@ class QuickUpdateStravaActivityTest{
             trainingEffect = false,
         )
 
-        val expectedDescription = "$description\n\nWorkout: ${workout.name}"
-        val res = useCase(activity, stravaActivity, profile, description)
+        val expectedDescription = "$description\n\nWorkout: VO₂ max"
+        val res = useCase(activity, stravaActivity, profile, description, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            repo.getWorkout(workout.id)
-            repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true)
-        }
+        coVerify { repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true) }
     }
 
     @Test
@@ -157,7 +141,7 @@ class QuickUpdateStravaActivityTest{
             trainingEffect = "recovery",
         )
         val expectedDescription = "$description\n\nBenefit: ${activity.trainingEffect}"
-        val res = useCase(activity, stravaActivity, profile, description)
+        val res = useCase(activity, stravaActivity, profile, description, null)
 
         assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true) }
@@ -165,7 +149,6 @@ class QuickUpdateStravaActivityTest{
 
     @Test
     fun `Update activity - no commute`() = runTest {
-        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val profile = Profile(
@@ -177,19 +160,16 @@ class QuickUpdateStravaActivityTest{
             trainingEffect = true
         )
 
-        val expectedDescription = "$description\n\nWorkout: ${workout.name}\nBenefit: ${activity.trainingEffect}"
-        val res = useCase(activity, stravaActivity, profile, description)
+        val expectedDescription = "$description\n\nWorkout: VO₂ max\nBenefit: ${activity.trainingEffect}"
+        val res = useCase(activity, stravaActivity, profile, description, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            repo.getWorkout(workout.id)
-            repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, false)
-        }
+        coVerify { repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, false) }
     }
 
     @Test
     fun `Invalid - no strava activity`() = runTest {
-        val res = useCase(activity, null, profile, description)
+        val res = useCase(activity, null, profile, description, workout)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -197,7 +177,7 @@ class QuickUpdateStravaActivityTest{
 
     @Test
     fun `Invalid - no profile`() = runTest {
-        val res = useCase(activity, null, null, null)
+        val res = useCase(activity, null, null, null, null)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -205,7 +185,7 @@ class QuickUpdateStravaActivityTest{
 
     @Test
     fun `Invalid - all nulls`() = runTest {
-        val res = useCase(null, null, null, null)
+        val res = useCase(null, null, null, null, null)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")

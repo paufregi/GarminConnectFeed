@@ -48,44 +48,34 @@ class UpdateStravaActivityTest{
     fun `Update activity`() = runTest {
         coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
+
         val expectedDescription = "$description\n\nWorkout: VO₂ max\nBenefit: $trainingEffect"
         val res = useCase(activity, name, description, eventType, trainingEffect, trainingEffectFlag, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            repo.getWorkout(workout.id)
-            repo.updateStravaActivity(activity, name, expectedDescription, true)
-        }
+        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - no training effect`() = runTest {
-        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nWorkout: VO₂ max"
         val res = useCase(activity, name, description, eventType, null, trainingEffectFlag, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            repo.getWorkout(workout.id)
-            repo.updateStravaActivity(activity, name, expectedDescription, true)
-        }
+        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - training effect flag false`() = runTest {
-        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nWorkout: VO₂ max"
         val res = useCase(activity, name, description, eventType, trainingEffect, false, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            repo.getWorkout(workout.id)
-            repo.updateStravaActivity(activity, name, expectedDescription, true)
-        }
+        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
     }
 
     @Test
