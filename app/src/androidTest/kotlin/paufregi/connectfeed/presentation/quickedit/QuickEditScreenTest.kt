@@ -99,7 +99,6 @@ class QuickEditScreenTest {
         onNodeWithTag("navigation_bar").assertIsDisplayed()
         onNodeWithText("Edit").assertIsDisplayed()
         onNodeWithText("Quick Edit").assertIsDisplayed()
-        onNodeWithText("Sync Strava").assertIsDisplayed()
         onNodeWithText("Reset").assertIsEnabled()
         onNodeWithText("Save").assertIsNotEnabled()
     }

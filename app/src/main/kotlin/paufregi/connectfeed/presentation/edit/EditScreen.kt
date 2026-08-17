@@ -74,7 +74,6 @@ internal fun EditContent(
     Screen(
         tagName = "edit_screen",
         location = HomeNavigation.EDIT,
-        hasStrava = state.hasStrava,
         nav = nav,
         state = state.process,
         success = successActivityUpdate(

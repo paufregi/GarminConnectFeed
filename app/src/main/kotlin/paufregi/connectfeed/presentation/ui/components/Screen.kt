@@ -100,7 +100,6 @@ fun Screen(
 @ExperimentalMaterial3Api
 fun Screen(
     tagName: String = "screen",
-    hasStrava: Boolean,
     location: HomeNavigation,
     nav: NavHostController = rememberNavController(),
     floatingActionButton: @Composable () -> Unit = {},
@@ -121,7 +120,7 @@ fun Screen(
             selectedIndex = location.menuIndex,
             bottomBar = @Composable {
                 NavigationBar(
-                    items = HomeNavigation.items(hasStrava),
+                    items = HomeNavigation.items,
                     selectedIndex = location.barIndex,
                     nav = nav,
                 )

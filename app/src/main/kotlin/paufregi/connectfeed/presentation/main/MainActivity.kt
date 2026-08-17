@@ -21,7 +21,6 @@ import paufregi.connectfeed.presentation.profile.ProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
 import paufregi.connectfeed.presentation.settings.SettingsScreen
-import paufregi.connectfeed.presentation.syncstrava.SyncStravaScreen
 import paufregi.connectfeed.presentation.ui.theme.Theme
 
 @AndroidEntryPoint
@@ -54,7 +53,6 @@ class MainActivity : ComponentActivity() {
                             navigation<Route.Home>(startDestination = Route.QuickEdit) {
                                 composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }
                                 composable<Route.Edit> { EditScreen(nav = nav) }
-                                composable<Route.SyncStrava> { SyncStravaScreen(nav = nav) }
                             }
                             navigation<Route.Profiles>(startDestination = Route.ProfileList) {
                                 composable<Route.ProfileList> { ProfilesScreen(nav = nav) }
