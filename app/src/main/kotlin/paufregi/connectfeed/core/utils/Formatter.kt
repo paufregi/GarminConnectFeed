@@ -18,6 +18,9 @@ object Formatter {
     @SuppressLint("DefaultLocale")
     val distance = { distance: Double -> String.format("%.2f", distance / 1000) }
 
+    fun workout(workout: String?) =
+        workout?.let { "Workout: ${it.lowercase().vo2max()}" }
+
     fun description(
         description: String?,
         trainingEffect: String?,
@@ -25,7 +28,7 @@ object Formatter {
         workout: String? = null,
     ): String? {
         val details = buildList {
-            workout?.let { add("Workout: ${it.lowercase().vo2max()}") }
+            workout?.let { add(workout(it)) }
             trainingEffect?.let { if (trainingEffectFlag) add("Benefit: $it") }
         }
 
