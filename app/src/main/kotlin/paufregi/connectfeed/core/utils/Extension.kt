@@ -6,6 +6,11 @@ import java.util.Date
 import java.util.concurrent.Semaphore
 import kotlin.time.Instant
 
+fun String.vo2max(): String {
+    val regex = Regex("vo[2₂]\\s*(max)", RegexOption.IGNORE_CASE)
+    return this.replace(regex, "VO₂Max")
+}
+
 fun Instant.truncatedToSecond(): Instant =
     Instant.fromEpochSeconds(this.epochSeconds)
 
