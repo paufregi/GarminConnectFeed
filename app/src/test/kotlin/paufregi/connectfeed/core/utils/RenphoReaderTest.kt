@@ -21,8 +21,9 @@ class RenphoReaderTest {
 
         val stubInputStream = IOUtils.toInputStream(csvText, "UTF-8")
 
+        val formatter = Formatter.dateTimeForImport(Locale.getDefault())
         val expected = Weight(
-            timestamp = Date.from(Instant.parse("2026-08-15T19:59:46Z")),
+            timestamp = formatter.parse("2026.08.16 07:59:46")!!,
             weight = 74.15f,
             bmi = 23.1f,
             fat = 14.1f,
