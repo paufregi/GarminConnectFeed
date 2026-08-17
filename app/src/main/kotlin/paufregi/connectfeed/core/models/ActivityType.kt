@@ -26,6 +26,14 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
     data object IndoorRide: ActivityType("Indoor Cycling", Cycling) // 25
     data object VirtualRide: ActivityType("Virtual Ride", Cycling) // 152
 
+    // Swimming
+    data object Swimming: ActivityType("Swimming") // 26
+    data object PoolSwimming: ActivityType("Pool Swimming", Swimming) // 27
+    data object OpenWaterSwimming: ActivityType("Open Water Swimming", Swimming) // 28
+
+    // Multisport
+    data object Multisport: ActivityType("Multisport") // 89
+
     // Fitness
     data object HIIT: ActivityType("HIIT", Fitness) // 180
     data object Breathwork: ActivityType("Breathwork", Fitness) // 164
@@ -34,15 +42,9 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
     data object StrengthTraining: ActivityType("Strength Training", Fitness) // 13
     data object Yoga: ActivityType("Yoga", Fitness) // 163
 
-    // Swimming
-    data object Swimming: ActivityType("Swimming") // 26
-    data object PoolSwimming: ActivityType("Pool Swimming", Swimming) // 27
-    data object OpenWaterSwimming: ActivityType("Open Water Swimming", Swimming) // 28
-
     // Other
     data object Walking: ActivityType("Walking", Other) // 9
     data object Hiking: ActivityType("Hiking", Other) // 3
-    data object Multisport: ActivityType("Multisport", Other) // 89
 
     // Other
     data object Snowboarding: ActivityType("Snowboarding", Other) // 252
