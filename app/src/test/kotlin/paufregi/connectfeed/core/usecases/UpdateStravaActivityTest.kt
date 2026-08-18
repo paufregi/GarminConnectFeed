@@ -26,7 +26,7 @@ class UpdateStravaActivityTest{
         type = ActivityType.Running,
         distance = 10234.00,
     )
-    val workout = Workout(1, "workout")
+    val workout = Workout(1, "VO2 max")
     val name = "newName"
     val description = "description"
     val eventType = EventType.Transportation
@@ -46,47 +46,36 @@ class UpdateStravaActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
-        val expectedDescription = "$description\n\nWorkout: ${workout.name}\nBenefit: $trainingEffect"
-        val res = useCase(activity, name, description, eventType, trainingEffect, trainingEffectFlag, workout.id)
+
+        val expectedDescription = "$description\n\nWorkout: VO₂ max\nBenefit: $trainingEffect"
+        val res = useCase(activity, name, description, eventType, trainingEffect, trainingEffectFlag, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            repo.getWorkout(workout.id)
-            repo.updateStravaActivity(activity, name, expectedDescription, true)
-        }
+        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - no training effect`() = runTest {
-        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
-        val expectedDescription = "$description\n\nWorkout: ${workout.name}"
-        val res = useCase(activity, name, description, eventType, null, trainingEffectFlag, workout.id)
+        val expectedDescription = "$description\n\nWorkout: VO₂ max"
+        val res = useCase(activity, name, description, eventType, null, trainingEffectFlag, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            repo.getWorkout(workout.id)
-            repo.updateStravaActivity(activity, name, expectedDescription, true)
-        }
+        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - training effect flag false`() = runTest {
-        coEvery { repo.getWorkout(any()) } returns Result.success(workout)
         coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
-        val expectedDescription = "$description\n\nWorkout: ${workout.name}"
-        val res = useCase(activity, name, description, eventType, trainingEffect, false, workout.id)
+        val expectedDescription = "$description\n\nWorkout: VO₂ max"
+        val res = useCase(activity, name, description, eventType, trainingEffect, false, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            repo.getWorkout(workout.id)
-            repo.updateStravaActivity(activity, name, expectedDescription, true)
-        }
+        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
     }
 
     @Test
@@ -103,7 +92,7 @@ class UpdateStravaActivityTest{
 
     @Test
     fun `Invalid - no strava activity`() = runTest {
-        val res = useCase(null, name, description, eventType, trainingEffect, trainingEffectFlag, workout.id)
+        val res = useCase(null, name, description, eventType, trainingEffect, trainingEffectFlag, workout)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -111,7 +100,7 @@ class UpdateStravaActivityTest{
 
     @Test
     fun `Invalid - no name`() = runTest {
-        val res = useCase(activity, null, description, eventType, trainingEffect, trainingEffectFlag, workout.id)
+        val res = useCase(activity, null, description, eventType, trainingEffect, trainingEffectFlag, workout)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")

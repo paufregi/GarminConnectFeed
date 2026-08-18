@@ -84,6 +84,7 @@ class GarminRepository @Inject constructor(
     suspend fun updateActivity(
         activity: Activity,
         name: String?,
+        description: String?,
         eventType: EventType?,
         course: Course?,
         water: Int?,
@@ -93,6 +94,7 @@ class GarminRepository @Inject constructor(
         val request = UpdateActivity(
             id = activity.id,
             name = name,
+            description = description,
             eventType = DataEventType(eventType?.id, eventType?.key),
             metadata = Metadata(course?.id),
             summary = Summary(water, feel, effort)

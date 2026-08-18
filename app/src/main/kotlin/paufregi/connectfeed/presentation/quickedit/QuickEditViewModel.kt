@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.GetStravaActivities
+import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
 import paufregi.connectfeed.core.utils.runCatchingResult
@@ -28,6 +29,7 @@ class QuickEditViewModel @Inject constructor(
     getProfiles: GetProfiles,
     val quickUpdateActivity: QuickUpdateActivity,
     val quickUpdateStravaActivity: QuickUpdateStravaActivity,
+    val getWorkout: GetWorkout
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(QuickEditState())
@@ -96,6 +98,8 @@ class QuickEditViewModel @Inject constructor(
         _state.update { it.copy(process = ProcessState.Processing) }
         val errors = mutableListOf<String>()
 
+        val workout = state.value.activity?.workoutId?.let { getWorkout(it) }?.getOrNull()
+
         coroutineScope {
             val asyncQuickUpdate = async {
                 quickUpdateActivity(
@@ -103,7 +107,8 @@ class QuickEditViewModel @Inject constructor(
                     profile = state.value.profile,
                     water = state.value.water,
                     feel = state.value.feel,
-                    effort = state.value.effort
+                    effort = state.value.effort,
+                    workout = workout
                 )
             }
 
@@ -114,6 +119,7 @@ class QuickEditViewModel @Inject constructor(
                         stravaActivity = state.value.stravaActivity,
                         profile = state.value.profile,
                         description = state.value.description,
+                        workout = workout
                     )
                 } else {
                     Result.success(Unit)

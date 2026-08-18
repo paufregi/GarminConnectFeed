@@ -33,18 +33,47 @@ class FormatterTest {
     }
 
     @Test
+    fun `Formatter workout`() {
+        val workout = "Workout Of the Day"
+        val result = Formatter.workout(workout)
+        assertThat(result).isEqualTo("Workout: workout of the day")
+    }
+
+    @Test
+    fun `Formatter workout - VO2 max`() {
+        val workout = "VO2 Max - Zone 5"
+        val result = Formatter.workout(workout)
+        assertThat(result).isEqualTo("Workout: VO₂ max - zone 5")
+    }
+
+    @Test
+    fun `Formatter workout - null`() {
+        val result = Formatter.workout(null)
+        assertThat(result).isNull()
+    }
+
+    @Test
     fun `Formatter description`() {
         val description = "Description"
-        val trainingEffect = "VO2 Max"
+        val trainingEffect = "recovery"
+        val workout = "workout"
+        val result = Formatter.description(description, trainingEffect, true, workout)
+        assertThat(result).isEqualTo("Description\n\nWorkout: workout\nBenefit: recovery")
+    }
+
+    @Test
+    fun `Formatter description - workout VO2 max`() {
+        val description = "Description"
+        val trainingEffect = "recovery"
         val workout = "VO2 Max - Zone 5"
         val result = Formatter.description(description, trainingEffect, true, workout)
-        assertThat(result).isEqualTo("Description\n\nWorkout: VO₂Max - zone 5\nBenefit: VO₂Max")
+        assertThat(result).isEqualTo("Description\n\nWorkout: VO₂ max - zone 5\nBenefit: recovery")
     }
 
     @Test
     fun `Formatter description - no workout`() {
         val description = "Description"
-        val trainingEffect = "Recovery"
+        val trainingEffect = "recovery"
         val result = Formatter.description(description, trainingEffect, true, null)
         assertThat(result).isEqualTo("Description\n\nBenefit: recovery")
     }
