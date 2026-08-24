@@ -59,4 +59,10 @@ Use these instructions when generating or modifying code in this repository.
 - Keep API changes minimal and backward-compatible when possible.
 - If uncertain, follow patterns from nearest existing implementation in the same feature folder.
 
+## Code Review
+
+Detailed, project-specific review criteria (architecture rules, security checks, Room migration
+requirements, test coverage expectations, dependency conventions) are in
+`.github/copilot-review-instructions.md`. Apply those rules when reviewing pull requests.
+
 
