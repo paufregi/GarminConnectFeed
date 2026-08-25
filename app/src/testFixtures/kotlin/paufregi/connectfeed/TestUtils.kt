@@ -1,6 +1,5 @@
 package paufregi.connectfeed
 
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.appstractive.jwt.jwt
 import mockwebserver3.Dispatcher
 import mockwebserver3.MockResponse
@@ -1275,17 +1274,10 @@ fun RecordedRequest.getFields(): Map<String, String> {
 }
 
 private fun loadServerCert(): String {
-    val path = "raw/server.pem"
-    val inputStream = Thread.currentThread().contextClassLoader?.getResourceAsStream(path)
-    if (inputStream != null) {
-        return inputStream.bufferedReader().use { it.readText() }
-    }
-    return try {
-        val context = getInstrumentation().context
-        context.resources.openRawResource(R.raw.server).bufferedReader().use { it.readText() }
-    } catch (_: Exception) {
-        throw IllegalArgumentException("Resource not found: server")
-    }
+    val inputStream = Thread.currentThread().contextClassLoader
+        ?.getResourceAsStream("server.pem")
+        ?: throw IllegalArgumentException("Resource not found: server.pem")
+    return inputStream.bufferedReader().use { it.readText() }
 }
 
 var sslSocketFactory = HandshakeCertificates.Builder()
