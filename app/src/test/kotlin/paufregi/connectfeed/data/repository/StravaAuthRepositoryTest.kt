@@ -41,7 +41,7 @@ class StravaAuthRepositoryTest {
 
     @Test
     fun `Get token`() = runTest {
-        val token = createStravaToken(tomorrow)
+        val token = createStravaToken(tomorrow, 1)
         every { store.getToken() } returns flowOf(token)
 
         repo.getToken().test {
@@ -54,7 +54,7 @@ class StravaAuthRepositoryTest {
 
     @Test
     fun `Save token`() = runTest {
-        val token = createStravaToken(tomorrow)
+        val token = createStravaToken(tomorrow, 1)
         coEvery { store.saveToken(any()) } returns Unit
 
         repo.saveToken(token)
@@ -73,7 +73,7 @@ class StravaAuthRepositoryTest {
 
     @Test
     fun `Exchange token`() = runTest {
-        val token = createStravaToken(tomorrow)
+        val token = createStravaToken(tomorrow, 1)
         coEvery { auth.exchange(any(), any(), any()) } returns Response.success(token)
 
         val res = repo.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
@@ -97,7 +97,7 @@ class StravaAuthRepositoryTest {
 
     @Test
     fun `Refresh token`() = runTest {
-        val token = createStravaToken(tomorrow)
+        val token = createStravaToken(tomorrow, 1)
         coEvery { auth.refreshAccessToken(any(), any(), any()) } returns Response.success(token)
 
         val res = repo.refresh("CLIENT_ID", "CLIENT_SECRET", "CODE")

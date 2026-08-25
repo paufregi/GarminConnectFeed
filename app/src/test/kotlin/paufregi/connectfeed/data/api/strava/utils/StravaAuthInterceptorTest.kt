@@ -64,7 +64,7 @@ class StravaAuthInterceptorTest {
 
     @Test
     fun `Success - cached token`() = runTest {
-        val token = createStravaToken(tomorrow)
+        val token = createStravaToken(tomorrow, 1)
 
         every { authRepo.getToken() } returns flowOf(token)
 
@@ -78,8 +78,8 @@ class StravaAuthInterceptorTest {
 
     @Test
     fun `Success - expired token`() = runTest {
-        val expiredToken = createStravaToken(yesterday)
-        val validToken = createStravaToken(yesterday)
+        val expiredToken = createStravaToken(yesterday, 1)
+        val validToken = createStravaToken(yesterday, 1)
 
         every { authRepo.getToken() } returns flowOf(expiredToken)
         coEvery { authRepo.refresh(any(), any(), any()) } returns Result.success(validToken)
@@ -110,7 +110,7 @@ class StravaAuthInterceptorTest {
 
     @Test
     fun `Failure - refresh`() = runTest {
-        val expiredToken = createStravaToken(yesterday)
+        val expiredToken = createStravaToken(yesterday, 1)
 
         every { authRepo.getToken() } returns flowOf(expiredToken)
         coEvery { authRepo.refresh(any(), any(), any()) } returns Result.failure("error")

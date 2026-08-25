@@ -45,7 +45,12 @@ val preAuthToken = PreAuthToken("TOKEN", "SECRET")
 val authToken = createAuthToken(tomorrow)
 
 val stravaAuthToken = createStravaToken(today, athleteId = 1)
-val stravaRefreshedAuthToken = StravaAuthToken(accessToken = "NEW_ACCESS_TOKEN", refreshToken = "NEW_REFRESH_TOKEN", expiresAt = tomorrow)
+val stravaRefreshedAuthToken = StravaAuthToken(
+    accessToken = "NEW_ACCESS_TOKEN",
+    refreshToken = "NEW_REFRESH_TOKEN",
+    expiresAt = tomorrow,
+    athlete = SummaryAthlete(1),
+)
 
 val preAuthTokenBody = "oauth_token=${preAuthToken.token}&oauth_token_secret=${preAuthToken.secret}"
 
@@ -981,13 +986,20 @@ val stravaRefreshTokenJson = """
         "expires_at": ${stravaRefreshedAuthToken.expiresAt.toEpochMilliseconds()},
         "expires_in": 21600,
         "refresh_token": "${stravaRefreshedAuthToken.refreshToken}",
-        "access_token": "${stravaRefreshedAuthToken.accessToken}"
+        "access_token": "${stravaRefreshedAuthToken.accessToken}",
+        "athlete": {
+            "id" : 1,
+            "username" : "paufregi",
+            "firstname" : "Paul",
+            "lastname" : "Test",
+            "weight": 76.1
+        }
     }
     """.trimIndent()
 
 val stravaDeauthorizationJson = """
     {
-        "access_token": "REVOKED_ACCESS_TOKEN",
+        "access_token": "REVOKED_ACCESS_TOKEN"
     }
     """.trimIndent()
 
