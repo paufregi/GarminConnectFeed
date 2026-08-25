@@ -8,7 +8,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class AuthTokenTest {
 
-    private val token = createStravaToken(today)
+    private val token = createStravaToken(today, 1)
 
     @Test
     fun `Valid access token`() {
