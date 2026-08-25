@@ -83,8 +83,8 @@ android {
         animationsDisabled = true
         managedDevices {
             allDevices {
-                register("pixel9Pro", ManagedVirtualDevice::class) {
-                    device = "Pixel 9 Pro"
+                register("pixel10", ManagedVirtualDevice::class) {
+                    device = "Pixel 10"
                     apiLevel = 36
                     systemImageSource = "google"
                 }
