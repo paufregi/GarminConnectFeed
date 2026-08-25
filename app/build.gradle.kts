@@ -140,7 +140,8 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.testing)
-    
+
+    kspAndroidTest(libs.hilt.compiler)
     testFixturesApi(libs.kotlinx.coroutines.test)
     testFixturesApi(libs.turbine)
     testFixturesApi(libs.truth)
