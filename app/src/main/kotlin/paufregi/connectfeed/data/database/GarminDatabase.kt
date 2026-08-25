@@ -12,7 +12,7 @@ import paufregi.connectfeed.data.database.entities.StravaGearEntity
 
 @Database(
     entities = [ProfileEntity::class, GearEntity::class, StravaGearEntity::class],
-    version = 1,
+    version = 2,
 )
 @TypeConverters(ActivityTypeConverter::class, EventTypeConverter::class, GearTypeConverter::class)
 abstract class GarminDatabase : RoomDatabase() {
