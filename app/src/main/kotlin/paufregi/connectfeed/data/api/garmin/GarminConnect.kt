@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.Course
+import paufregi.connectfeed.data.api.garmin.models.Gear
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import paufregi.connectfeed.data.api.garmin.models.Workout
@@ -44,6 +45,9 @@ interface GarminConnect {
     suspend fun getWorkout(
         @Path("id") id: Long
     ): Response<Workout>
+
+    @GET("/gear-service/gear/v2/list")
+    suspend fun getGears(): Response<List<Gear>>
 
     @PUT("/activity-service/activity/{id}")
     suspend fun updateActivity(
