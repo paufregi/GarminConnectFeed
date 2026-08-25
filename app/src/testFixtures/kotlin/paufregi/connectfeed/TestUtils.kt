@@ -1,6 +1,5 @@
 package paufregi.connectfeed
 
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.appstractive.jwt.jwt
 import mockwebserver3.Dispatcher
 import mockwebserver3.MockResponse
@@ -14,7 +13,6 @@ import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.github.models.Asset
 import paufregi.connectfeed.data.api.github.models.Release
-import paufregi.connectfeed.test.R
 import java.net.URLDecoder
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
@@ -32,18 +30,23 @@ fun createAuthToken(issuedTime: Instant) = AuthToken(
 fun createStravaToken(expiresAt: Instant) = StravaAuthToken(
     accessToken = "ACCESS_TOKEN",
     refreshToken = "REFRESH_TOKEN",
-    expiresAt = expiresAt
+    expiresAt = expiresAt,
 )
 
 val today: Instant = Clock.System.now().truncatedToSecond()
 val tomorrow: Instant = today + 1.days
+val yesterday: Instant = today - 1.days
 
 val user = User(id= 1, name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
 val preAuthToken = PreAuthToken("TOKEN", "SECRET")
 val authToken = createAuthToken(tomorrow)
 
 val stravaAuthToken = createStravaToken(today)
-val stravaRefreshedAuthToken = StravaAuthToken(accessToken = "NEW_ACCESS_TOKEN", refreshToken = "NEW_REFRESH_TOKEN", expiresAt = tomorrow)
+val stravaRefreshedAuthToken = StravaAuthToken(
+    accessToken = "NEW_ACCESS_TOKEN",
+    refreshToken = "NEW_REFRESH_TOKEN",
+    expiresAt = tomorrow,
+)
 
 val preAuthTokenBody = "oauth_token=${preAuthToken.token}&oauth_token_secret=${preAuthToken.secret}"
 
@@ -915,6 +918,47 @@ val workoutJson = """
     }
 """.trimIndent()
 
+val gearsJson = """
+    [
+        {
+            "uuid": "522f1e21-0822-451d-88a3-b0b661802c2f",
+            "userProfilePk": 1,
+            "gearType": "SHOES",
+            "status": "ACTIVE",
+            "brand": "Mizuno",
+            "model": "Neo Vista",
+            "usageType": "DISTANCE",
+            "maxUsageDistanceMeters": 1000000.0,
+            "maxUsageDurationSeconds": 0,
+            "firstUseDate": "2026-03-18",
+            "numActivitiesLinked": 2,
+            "durationUsedSeconds": 17086,
+            "distanceUsedMeters": 51955.4501953125,
+            "daysUsed": 2,
+            "processing": false,
+            "createdDate": "2026-03-23T01:15:28.0"
+        },
+        {
+            "uuid": "789dccf8-b669-4903-bf46-7d8d9369124e",
+            "userProfilePk": 1,
+            "gearType": "BIKE",
+            "status": "ACTIVE",
+            "name": "Nova",
+            "brand": "Giant",
+            "model": "Contend AR",
+            "usageType": "DISTANCE",
+            "maxUsageDurationSeconds": 0,
+            "firstUseDate": "2021-08-16",
+            "numActivitiesLinked": 1009,
+            "durationUsedSeconds": 2808622,
+            "distanceUsedMeters": 17226955.28363037,
+            "daysUsed": 753,
+            "processing": false,
+            "createdDate": "2021-09-15T22:46:54.0"
+        }
+    ]
+""".trimIndent()
+
 val stravaAuthTokenJson = """
     {
         "token_type": "Bearer",
@@ -938,13 +982,20 @@ val stravaRefreshTokenJson = """
         "expires_at": ${stravaRefreshedAuthToken.expiresAt.toEpochMilliseconds()},
         "expires_in": 21600,
         "refresh_token": "${stravaRefreshedAuthToken.refreshToken}",
-        "access_token": "${stravaRefreshedAuthToken.accessToken}"
+        "access_token": "${stravaRefreshedAuthToken.accessToken}",
+        "athlete": {
+            "id" : 1,
+            "username" : "paufregi",
+            "firstname" : "Paul",
+            "lastname" : "Test",
+            "weight": 76.1
+        }
     }
     """.trimIndent()
 
 val stravaDeauthorizationJson = """
     {
-        "access_token": "REVOKED_ACCESS_TOKEN",
+        "access_token": "REVOKED_ACCESS_TOKEN"
     }
     """.trimIndent()
 
@@ -1068,6 +1119,51 @@ val stravaActivitiesJson = """
     } ]
 """.trimIndent()
 
+val stravaAthlete = """
+    {
+      "id" : 1,
+      "username" : "paufregi",
+      "resource_state" : 3,
+      "firstname" : "Paul",
+      "lastname" : "Ellis",
+      "city" : "Auckland",
+      "state" : "NZ",
+      "country" : "NZ",
+      "sex" : "M",
+      "premium" : true,
+      "created_at" : "2017-11-14T02:30:05Z",
+      "updated_at" : "2018-02-06T19:32:20Z",
+      "badge_type_id" : 4,
+      "profile_medium" : "https://xxxxxx.cloudfront.net/pictures/athletes/123456789/123456789/2/medium.jpg",
+      "profile" : "https://xxxxx.cloudfront.net/pictures/athletes/123456789/123456789/2/large.jpg",
+      "friend" : null,
+      "follower" : null,
+      "follower_count" : 5,
+      "friend_count" : 5,
+      "mutual_friend_count" : 0,
+      "athlete_type" : 1,
+      "date_preference" : "%m/%d/%Y",
+      "measurement_preference" : "meters",
+      "clubs" : [ ],
+      "ftp" : null,
+      "weight" : 0,
+      "bikes" : [ {
+        "id" : "b12345678987655",
+        "primary" : true,
+        "name" : "Giant Contend",
+        "resource_state" : 2,
+        "distance" : 0
+      } ],
+      "shoes" : [ {
+        "id" : "g12345678987655",
+        "primary" : true,
+        "name" : "Mizuno Neo Vista",
+        "resource_state" : 2,
+        "distance" : 4904
+      } ]
+    }
+""".trimIndent()
+
 val stravaDetailedAthlete = """
     {    
       "id" : 1,
@@ -1176,15 +1272,18 @@ fun RecordedRequest.getFields(): Map<String, String> {
     }
 }
 
-fun loadRes(res: Int): String =
-    getInstrumentation().context.resources.openRawResource(res).bufferedReader()
-        .use { it.readText() }
+private fun loadServerCert(): String {
+    val inputStream = Thread.currentThread().contextClassLoader
+        ?.getResourceAsStream("server.pem")
+        ?: throw IllegalArgumentException("Resource not found: server.pem")
+    return inputStream.bufferedReader().use { it.readText() }
+}
 
-var sslSocketFactory = HandshakeCertificates.Builder()
-    .heldCertificate(HeldCertificate.decode(loadRes(R.raw.server)))
+val sslSocketFactory = HandshakeCertificates.Builder()
+    .heldCertificate(HeldCertificate.decode(loadServerCert()))
     .build().sslSocketFactory()
 
-val connectDispatcher: Dispatcher = object : Dispatcher() {
+val connectDispatcher: Dispatcher = object : Dispatcher(){
     override fun dispatch(request: RecordedRequest): MockResponse {
         val path = request.url.encodedPath
         return when {
@@ -1202,6 +1301,9 @@ val connectDispatcher: Dispatcher = object : Dispatcher() {
 
             path == "/course-service/course" && request.method == "GET" ->
                 MockResponse(code = 200, body = coursesJson)
+
+            path == "/gear-service/gear/v2/list" && request.method == "GET" ->
+                MockResponse(code = 200, body = gearsJson)
 
             (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
                 MockResponse(code = 200, body = activitiesJson)
@@ -1249,6 +1351,9 @@ val stravaDispatcher: Dispatcher = object : Dispatcher() {
             path == "/oauth/deauthorize" && request.method == "POST" ->
                 MockResponse(code = 200, body = stravaDeauthorizationJson)
 
+            path == "/athlete" && request.method == "GET" ->
+                MockResponse(code = 200, body = stravaAthlete)
+
             path.startsWith("/athlete/activities") && request.method == "GET" ->
                 MockResponse(code = 200, body = stravaActivitiesJson)
 
@@ -1274,5 +1379,3 @@ val githubDispatcher: Dispatcher = object : Dispatcher() {
         }
     }
 }
-
-
