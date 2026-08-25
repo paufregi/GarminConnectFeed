@@ -38,7 +38,7 @@ jobs:
         run: ./gradlew test
 
       - name: Android tests
-        run: ./gradlew pixel9ProCheck
+        run: ./gradlew pixel10Check
 
       - name: Lint
         run: ./gradlew lint
