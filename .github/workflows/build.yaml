@@ -34,6 +34,10 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Install system image
+        run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "system-images;android-35;google_apis;x86_64" 2>&1 || true
+
       - name: Build
         run: ./gradlew assemble
 

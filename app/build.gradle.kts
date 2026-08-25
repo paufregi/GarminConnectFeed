@@ -86,7 +86,7 @@ android {
                 register("pixel9Pro", ManagedVirtualDevice::class) {
                     device = "Pixel 9 Pro"
                     apiLevel = 36
-                    systemImageSource = "aosp"
+                    systemImageSource = "google"
                 }
             }
         }
