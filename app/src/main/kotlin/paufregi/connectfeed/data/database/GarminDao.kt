@@ -53,4 +53,8 @@ interface GarminDao {
     @Transaction
     @Query("SELECT * FROM gears WHERE id = :id")
     suspend fun getGearWithStravaGear(id: String): GearWithStravaGear?
+
+    @Transaction
+    @Query("SELECT * FROM gears WHERE userId = :userId ORDER BY type, name")
+    fun getAllGearsWithStravaGears(userId: Long): Flow<List<GearWithStravaGear>>
 }

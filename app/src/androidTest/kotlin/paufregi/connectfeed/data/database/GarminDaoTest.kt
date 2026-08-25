@@ -236,4 +236,65 @@ class GarminDaoTest {
             )
         )
     }
+
+    @Test
+    fun `Retrieve all gears with strava relations for user`() = runTest {
+        val stravaGear1 = StravaGearEntity(
+            id = "strava-1",
+            stravaAthleteId = 10,
+            name = "Mizuno Neo Vista",
+            type = GearType.Shoe,
+        )
+        val stravaGear2 = StravaGearEntity(
+            id = "strava-2",
+            stravaAthleteId = 10,
+            name = "Giant Contend",
+            type = GearType.Bike,
+        )
+        val gearWithStrava = GearEntity(
+            id = "gear-1",
+            userId = 1,
+            name = "Daily Trainer",
+            type = GearType.Shoe,
+            distance = 1234,
+            stravaGearId = stravaGear1.id,
+        )
+        val gearWithoutStrava = GearEntity(
+            id = "gear-2",
+            userId = 1,
+            name = "Backup Runner",
+            type = GearType.Shoe,
+            distance = 500,
+        )
+        val otherUserGear = GearEntity(
+            id = "gear-3",
+            userId = 2,
+            name = "Other User Gear",
+            type = GearType.Bike,
+            distance = 2000,
+            stravaGearId = stravaGear2.id,
+        )
+
+        dao.saveStravaGear(stravaGear1)
+        dao.saveStravaGear(stravaGear2)
+        dao.saveGear(gearWithStrava)
+        dao.saveGear(gearWithoutStrava)
+        dao.saveGear(otherUserGear)
+
+        dao.getAllGearsWithStravaGears(1).test {
+            assertThat(awaitItem()).containsExactly(
+                GearWithStravaGear(gear = gearWithoutStrava, stravaGear = null),
+                GearWithStravaGear(gear = gearWithStrava, stravaGear = stravaGear1),
+            )
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Retrieve all gears with strava relations returns empty for user with no gears`() = runTest {
+        dao.getAllGearsWithStravaGears(999).test {
+            assertThat(awaitItem()).isEmpty()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 }
