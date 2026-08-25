@@ -1252,7 +1252,6 @@ val githubLatestReleaseJson = """
       ],
       "tarball_url": "https://api.github.com/repos/paufregi/GarminConnectFeed/tarball/v2.2.2",
       "zipball_url": "https://api.github.com/repos/paufregi/GarminConnectFeed/zipball/v2.2.2",
-      "zipball_url": "https://api.github.com/repos/paufregi/GarminConnectFeed/zipball/v2.2.2",
       "body": "### v2.2.2\r\n\r\nThis release enhances the Renpho reader by implementing robust error handling for incompatible file formats. \r\nUsers will now receive an informative error message instead of experiencing an unexpected crash."
     }
 """.trimIndent()
@@ -1280,7 +1279,7 @@ private fun loadServerCert(): String {
     return inputStream.bufferedReader().use { it.readText() }
 }
 
-var sslSocketFactory = HandshakeCertificates.Builder()
+val sslSocketFactory = HandshakeCertificates.Builder()
     .heldCertificate(HeldCertificate.decode(loadServerCert()))
     .build().sslSocketFactory()
 
