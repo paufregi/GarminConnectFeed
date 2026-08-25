@@ -91,17 +91,9 @@ android {
             }
         }
     }
-
-    sourceSets {
-        getByName("testFixtures") {
-            resources.directories.add("src/main/res")
-        }
-    }
 }
 
 dependencies {
-    api(libs.jwt.kt)
-
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -116,6 +108,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter)
+    implementation(libs.jwt.kt)
     implementation(libs.okhttp)
     implementation(libs.okhttp.signpost)
     implementation(libs.fit)
@@ -148,5 +141,6 @@ dependencies {
     testFixturesApi(libs.androidx.compose.runtime)
     testFixturesApi(libs.okhttp.mockwebserver)
     testFixturesApi(libs.okhttp.tls)
+    testFixturesApi(libs.jwt.kt)
     testFixturesApi(libs.androidx.test.core)
 }
