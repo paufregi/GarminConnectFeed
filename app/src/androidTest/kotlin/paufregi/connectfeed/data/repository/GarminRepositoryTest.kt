@@ -111,6 +111,29 @@ class GarminRepositoryTest {
     }
 
     @Test
+    fun `Store gears`() = runTest {
+        val gear = Gear(
+            id = "gear-1",
+            name = "gear1",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        repo.saveGear(user, gear)
+        assertThat(repo.getGear(gear.id)).isEqualTo(gear)
+
+        repo.deleteGear(user, gear)
+        assertThat(repo.getGear(gear.id)).isNull()
+
+        repo.getAllGears(user).test {
+            assertThat(awaitItem()).isEmpty()
+            repo.saveGear(user, gear)
+            assertThat(awaitItem()).containsExactly(gear)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `Get activities`() = runTest {
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)

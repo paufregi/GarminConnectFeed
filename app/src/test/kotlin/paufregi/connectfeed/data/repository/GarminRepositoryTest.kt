@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.ActivityType
@@ -29,6 +30,7 @@ import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import paufregi.connectfeed.data.api.garmin.models.Workout
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.database.GarminDao
+import paufregi.connectfeed.data.database.entities.GearEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.user
 import retrofit2.Response
@@ -240,6 +242,133 @@ class GarminRepositoryTest {
         repo.deleteProfile(user, profile)
 
         coVerify { dao.deleteProfile(profileEntity) }
+    }
+
+    @Test
+    fun `Get all gears`() = runTest {
+        val gears = listOf(
+            CoreGear(
+                id = "gear-1",
+                name = "gear 1",
+                type = GearType.Shoe,
+                distance = 1000
+            ),
+            CoreGear(
+                id = "gear-2",
+                name = "gear 2",
+                type = GearType.Bike,
+                distance = 2000
+            )
+        )
+        val gearEntities = listOf(
+            GearEntity(
+                id = "gear-1",
+                userId = user.id,
+                name = "gear 1",
+                type = GearType.Shoe,
+                distance = 1000
+            ),
+            GearEntity(
+                id = "gear-2",
+                userId = user.id,
+                name = "gear 2",
+                type = GearType.Bike,
+                distance = 2000
+            )
+        )
+
+        coEvery { dao.getAllGears(any()) } returns flowOf(gearEntities)
+
+        val res = repo.getAllGears(user)
+
+        res.test {
+            assertThat(awaitItem()).isEqualTo(gears)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify { dao.getAllGears(user.id) }
+    }
+
+    @Test
+    fun `Get gear`() = runTest {
+        val gear = CoreGear(
+            id = "gear-1",
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+        val gearEntity = GearEntity(
+            id = "gear-1",
+            userId = user.id,
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        coEvery { dao.getGear(any()) } returns gearEntity
+
+        val res = repo.getGear("gear-1")
+
+        assertThat(res).isEqualTo(gear)
+
+        coVerify { dao.getGear("gear-1") }
+    }
+
+    @Test
+    fun `Get gear - no result`() = runTest {
+        coEvery { dao.getGear(any()) } returns null
+
+        val res = repo.getGear("gear-1")
+
+        assertThat(res).isNull()
+
+        coVerify { dao.getGear("gear-1") }
+    }
+
+    @Test
+    fun `Save gear`() = runTest {
+        val gear = CoreGear(
+            id = "gear-1",
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+        val gearEntity = GearEntity(
+            id = "gear-1",
+            userId = user.id,
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        coEvery { dao.saveGear(any()) } returns Unit
+
+        repo.saveGear(user, gear)
+
+        coVerify { dao.saveGear(gearEntity) }
+    }
+
+    @Test
+    fun `Delete gear`() = runTest {
+        val gear = CoreGear(
+            id = "gear-1",
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+        val gearEntity = GearEntity(
+            id = "gear-1",
+            userId = user.id,
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        coEvery { dao.deleteGear(any()) } returns Unit
+
+        repo.deleteGear(user, gear)
+
+        coVerify { dao.deleteGear(gearEntity) }
     }
 
     @Test

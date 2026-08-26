@@ -54,6 +54,18 @@ class GarminRepository @Inject constructor(
     suspend fun deleteProfile(user: User, profile: Profile) =
         garminDao.deleteProfile(profile.toEntity(user.id))
 
+    fun getAllGears(user: User): Flow<List<Gear>> =
+        garminDao.getAllGears(user.id).map { it.map { it.toCore() } }
+
+    suspend fun getGear(id: String): Gear? =
+        garminDao.getGear(id)?.toCore()
+
+    suspend fun saveGear(user: User, gear: Gear) =
+        garminDao.saveGear(gear.toEntity(user.id))
+
+    suspend fun deleteGear(user: User, gear: Gear) =
+        garminDao.deleteGear(gear.toEntity(user.id))
+
     suspend fun getActivities(limit: Int, force: Boolean = false): Result<List<Activity>> =
         withCache(activitiesCache, force) {
             garminConnect.getActivities(limit)
