@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.edit.EditScreen
+import paufregi.connectfeed.presentation.gears.GearsScreen
 import paufregi.connectfeed.presentation.login.LoginScreen
 import paufregi.connectfeed.presentation.profile.ProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
@@ -58,6 +59,7 @@ class MainActivity : ComponentActivity() {
                                 composable<Route.ProfileList> { ProfilesScreen(nav = nav) }
                                 composable<Route.Profile> { ProfileScreen(nav = nav) }
                             }
+                            composable<Route.Gears> { GearsScreen(nav = nav) }
                             composable<Route.Settings> { SettingsScreen(nav = nav) }
                         }
                     }
