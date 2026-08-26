@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
-val ConnectIcons.Gear: ImageVector
+val ConnectIcons.Shoe: ImageVector
     get() = image ?: ImageVector.Builder(
         name = "Connect.Kayaking",
         defaultWidth = 24.dp,

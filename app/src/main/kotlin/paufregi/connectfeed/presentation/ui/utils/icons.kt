@@ -3,7 +3,9 @@ package paufregi.connectfeed.presentation.ui.utils
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.vector.ImageVector
 import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.presentation.ui.icons.garmin.Activity
+import paufregi.connectfeed.presentation.ui.icons.garmin.Bike
 import paufregi.connectfeed.presentation.ui.icons.garmin.Breathwork
 import paufregi.connectfeed.presentation.ui.icons.garmin.Cardio
 import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
@@ -22,6 +24,7 @@ import paufregi.connectfeed.presentation.ui.icons.garmin.Multisport
 import paufregi.connectfeed.presentation.ui.icons.garmin.OpenWaterSwimming
 import paufregi.connectfeed.presentation.ui.icons.garmin.RoadBiking
 import paufregi.connectfeed.presentation.ui.icons.garmin.Running
+import paufregi.connectfeed.presentation.ui.icons.garmin.Shoe
 import paufregi.connectfeed.presentation.ui.icons.garmin.Snowboarding
 import paufregi.connectfeed.presentation.ui.icons.garmin.StandUpPaddling
 import paufregi.connectfeed.presentation.ui.icons.garmin.StrengthTraining
@@ -127,4 +130,11 @@ fun iconFor(type: ActivityType): ImageVector? =
         is ActivityType.StravaSurfing -> Icons.Strava.Surfing
         is ActivityType.StravaWindsurf -> Icons.Strava.Windsurf
         is ActivityType.StravaFootball -> Icons.Strava.Football
+    }
+
+fun iconFor(type: GearType): ImageVector? =
+    when (type) {
+        GearType.Bike -> Icons.Connect.Bike
+        GearType.Shoe -> Icons.Connect.Shoe
+        GearType.Unknown -> Icons.Connect.Activity
     }
