@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -40,6 +41,7 @@ import paufregi.connectfeed.presentation.ui.components.SimpleScaffold
 import paufregi.connectfeed.presentation.ui.components.failureInfo
 import paufregi.connectfeed.presentation.ui.components.successInfo
 import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.utils.iconFor
 
 @Composable
 @ExperimentalMaterial3Api
@@ -98,7 +100,10 @@ internal fun GearsContent(
             item { Text("No gears") }
         } else {
             items(state.gears, key = { it.id }) { gear ->
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(modifier = Modifier
+                    .height(50.dp)
+                    .fillMaxWidth()
+                ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -106,6 +111,7 @@ internal fun GearsContent(
                             .fillMaxWidth()
                             .padding(10.dp)
                     ) {
+                        iconFor(gear.type)?.let { i -> Icon(i, i.name, Modifier.size(24.dp)) }
                         Text(
                             text = gear.name,
                             modifier = Modifier
