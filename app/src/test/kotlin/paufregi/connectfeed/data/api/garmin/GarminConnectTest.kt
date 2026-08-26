@@ -266,9 +266,17 @@ class GarminConnectTest {
                 brand = "Mizuno",
                 model = "Neo Vista",
                 name = null,
-                type = "SHOES"
+                type = "SHOES",
+                distance = 51955.4501953125
             ),
-            Gear(id = "789dccf8-b669-4903-bf46-7d8d9369124e", brand = "Giant", model = "Contend AR", name = "Nova", type = "BIKE"),
+            Gear(
+                id = "789dccf8-b669-4903-bf46-7d8d9369124e",
+                brand = "Giant",
+                model = "Contend AR",
+                name = "Nova",
+                type = "BIKE",
+                distance = 17226955.28363037
+            ),
         )
 
         assertThat(res.isSuccessful).isTrue()

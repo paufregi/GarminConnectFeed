@@ -4,5 +4,5 @@ data class Gear(
     val id: String,
     val name: String,
     val type: GearType = GearType.Unknown,
-    val distance: Long? = null,
+    val distance: Int? = null,
 )

@@ -14,14 +14,15 @@ class GearTest {
             brand = "brand",
             model = "model",
             name = "name",
-            type = "BIKE"
+            type = "BIKE",
+            distance = 12345.6
         )
 
         val coreGear = CoreGear(
             id = "123",
             name = "name",
             type = CoreGearType.Bike,
-            distance = null
+            distance = 12346
         )
 
         assertThat(gear.toCore()).isEqualTo(coreGear)
@@ -34,14 +35,15 @@ class GearTest {
             brand = "brand",
             model = "model",
             name = null,
-            type = "SHOES"
+            type = "SHOES",
+            distance = 1000.0
         )
 
         val coreGear = CoreGear(
             id = "123",
             name = "brand model",
             type = CoreGearType.Shoe,
-            distance = null
+            distance = 1000
         )
 
         assertThat(gear.toCore()).isEqualTo(coreGear)
@@ -54,7 +56,8 @@ class GearTest {
             brand = "brand",
             model = "model",
             name = "name",
-            type = "UNKNOWN"
+            type = "UNKNOWN",
+            distance = null
         )
 
         val coreGear = CoreGear(
