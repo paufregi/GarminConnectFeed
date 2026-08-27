@@ -4,7 +4,6 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
 
     data object Any : ActivityType("Any")
     data object Other: ActivityType("Other")
-    data object Fitness: ActivityType("Fitness")
     data object Unknown : ActivityType("Unknown")
 
     // GARMIN
@@ -16,7 +15,7 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
     data object UltraRun: ActivityType("Ultra Run", Running) // 181
 
     // Cycling
-    data object Cycling: ActivityType("Cycling") // 2 - parent for running
+    data object Cycling: ActivityType("Cycling") // 2 - parent for cycling
     data object DownhillBiking: ActivityType("Downhill Biking", Cycling) // 20
     data object EBiking: ActivityType("E Biking", Cycling) // 176
     data object EBikingMountain: ActivityType("E Biking Mountain", Cycling) // 175
@@ -27,7 +26,7 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
     data object VirtualRide: ActivityType("Virtual Ride", Cycling) // 152
 
     // Swimming
-    data object Swimming: ActivityType("Swimming") // 26
+    data object Swimming: ActivityType("Swimming") // 26 - parent for swimming
     data object PoolSwimming: ActivityType("Pool Swimming", Swimming) // 27
     data object OpenWaterSwimming: ActivityType("Open Water Swimming", Swimming) // 28
 
@@ -35,6 +34,7 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
     data object Multisport: ActivityType("Multisport") // 89
 
     // Fitness
+    data object Fitness: ActivityType("Fitness") // parent for fitness
     data object HIIT: ActivityType("HIIT", Fitness) // 180
     data object Breathwork: ActivityType("Breathwork", Fitness) // 164
     data object Cardio: ActivityType("Cardio", Fitness) // 11
@@ -98,15 +98,15 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
             Running -> 1
             Cycling -> 2
             Swimming -> 3
-            Fitness -> 4
-            Other -> 5
-            Unknown -> 6
-            else -> 7
+            Multisport -> 4
+            Fitness -> 5
+            Other -> 6
+            Unknown -> 7
+            else -> 8
         }
 
     private fun isWildcard(type: ActivityType) = type == Any || type == Unknown
 
     fun compatible(other: ActivityType): Boolean =
         isWildcard(this) || isWildcard(other) || (parent ?: this) == (other.parent ?: other)
-
 }
