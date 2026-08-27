@@ -28,11 +28,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Loading
@@ -114,12 +114,10 @@ internal fun GearsContent(
                         iconFor(gear.type)?.let { i -> Icon(i, i.name, Modifier.size(24.dp)) }
                         Text(
                             text = gear.name,
-                            modifier = Modifier
-                                .weight(1f)
-                                .basicMarquee(),
+                            modifier = Modifier.weight(1f).basicMarquee(),
                             maxLines = 1,
                         )
-                        Text(text = gear.distanceLabel)
+                        gear.distance?.let { Text("${Formatter.distance(it)} km", fontSize = 11.sp) }
                     }
                 }
             }
@@ -127,7 +125,3 @@ internal fun GearsContent(
         }
     }
 }
-
-private val Gear.distanceLabel: String
-    get() = distance?.let { "${Formatter.distance(it.toDouble())} km" } ?: "-"
-
