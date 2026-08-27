@@ -14,9 +14,9 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.ActivityType
@@ -830,6 +830,47 @@ class GarminRepositoryTest {
     }
 
     @Test
+    fun `Associate gears`() = runTest {
+        coEvery { connect.associateGears(any(), any()) } returns Response.success(Unit)
+
+        val activity = CoreActivity(
+            id = 1,
+            name = "activity_1",
+            distance = 10234.00,
+            type = CoreActivityType.Running
+        )
+        val gears = listOf(
+            CoreGear(id = "gear-1", name = "gear 1", type = GearType.Shoe, distance = 1000),
+            CoreGear(id = "gear-2", name = "gear 2", type = GearType.Bike, distance = 2000)
+        )
+
+        val res = repo.associateGears(activity = activity, gears = gears)
+
+        assertThat(res.isSuccess).isTrue()
+        coVerify { connect.associateGears(1, listOf("gear-1", "gear-2")) }
+    }
+
+    @Test
+    fun `Associate gears - failure`() = runTest {
+        coEvery { connect.associateGears(any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val activity = CoreActivity(
+            id = 1,
+            name = "activity_1",
+            distance = 10234.00,
+            type = CoreActivityType.Running
+        )
+        val gears = listOf(
+            CoreGear(id = "gear-1", name = "gear 1", type = GearType.Shoe, distance = 1000)
+        )
+
+        val res = repo.associateGears(activity = activity, gears = gears)
+
+        assertThat(res.isSuccess).isFalse()
+        coVerify { connect.associateGears(1, listOf("gear-1")) }
+    }
+
+    @Test
     fun `Update activity`() = runTest {
         coEvery { connect.updateActivity(any(), any()) } returns Response.success(Unit)
 
@@ -909,6 +950,7 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isFalse()
         coVerify { connect.updateActivity(activity.id, expectedRequest) }
     }
+
 
     @Test
     fun `Update strava activity`() = runTest {

@@ -1305,6 +1305,9 @@ val connectDispatcher: Dispatcher = object : Dispatcher(){
             path == "/gear-service/gear/v2/list" && request.method == "GET" ->
                 MockResponse(code = 200, body = gearsJson)
 
+            (path.startsWith("/gear-service/activity/v2") && path.endsWith("/associated-gear") && request.method == "PUT") ->
+                MockResponse(200)
+
             (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
                 MockResponse(code = 200, body = activitiesJson)
 

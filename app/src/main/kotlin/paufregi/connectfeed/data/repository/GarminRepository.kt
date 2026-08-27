@@ -97,6 +97,11 @@ class GarminRepository @Inject constructor(
             .toResult()
             .map { r -> r.map { it.toCore() } }
 
+    suspend fun associateGears(activity: Activity, gears: List<Gear>): Result<Unit> =
+        garminConnect.associateGears(activity.id, gears.map{it.id})
+            .toResult()
+            .onSuccess { activitiesCache.invalidate() }
+
     suspend fun updateActivity(
         activity: Activity,
         name: String?,
@@ -119,6 +124,7 @@ class GarminRepository @Inject constructor(
             .toResult()
             .onSuccess { activitiesCache.invalidate() }
     }
+
 
     suspend fun updateStravaActivity(
         activity: Activity,
