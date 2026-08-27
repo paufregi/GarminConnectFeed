@@ -1,6 +1,7 @@
 package paufregi.connectfeed.core.utils
 
 import android.annotation.SuppressLint
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -15,8 +16,20 @@ object Formatter {
 
     val dateTimeForImport = { locale: Locale -> SimpleDateFormat("yyyy.MM.dd HH:mm:ss", locale) }
 
+    private val numberFormatter = NumberFormat.getNumberInstance()
+
     @SuppressLint("DefaultLocale")
-    val distance = { distance: Double -> String.format("%.2f", distance / 1000) }
+    fun distance(distance: Double): String = numberFormatter
+        .apply {
+            minimumFractionDigits = 2
+            maximumFractionDigits = 2
+        }
+        .format(distance / 1000)
+
+    @SuppressLint("DefaultLocale")
+    fun distance(distance: Int): String =
+        numberFormatter
+            .format(distance / 1000)
 
     fun workout(workout: String?) =
         workout?.let { "Workout: ${it.lowercase().vo2max()}" }
