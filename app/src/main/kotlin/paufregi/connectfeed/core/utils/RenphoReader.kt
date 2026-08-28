@@ -17,19 +17,19 @@ object RenphoReader {
             .get()
             .parse(inputStream.reader())
             .mapNotNull { record ->
-                val timestamp = formatter.parse("${record["Date"]} ${record["Time"]}")
+                val timestamp = formatter.parse("${record[1]} ${record[2]}")
                 timestamp?.let {
                     Weight(
                         timestamp = it,
-                        weight = record["Weight(kg)"].toFloat(),
-                        bmi = record["BMI"].toFloat(),
-                        fat = record["Body Fat Percentage(%)"].toFloat(),
-                        visceralFat = record["Visceral Fat"].toFloat().toInt().toShort(),
-                        water = record["Body Water Percentage(%)"].toFloat(),
-                        muscle = record["Muscle Mass(kg)"].toFloat(),
-                        bone = record["Bone Mass(kg)"].toFloat(),
-                        basalMet = record["BMR(kcal)"].toFloat(),
-                        metabolicAge = record["Metabolic Age"].toShort(),
+                        weight = record[3].toFloat(),
+                        bmi = record[4].toFloat(),
+                        fat = record[5].toFloat(),
+                        visceralFat = record[19].toFloat().toInt().toShort(),
+                        water = record[15].toFloat(),
+                        muscle = record[8].toFloat(),
+                        bone = record[12].toFloat(),
+                        basalMet = record[20].toFloat(),
+                        metabolicAge = record[21].toShort(),
                     )
                 }
             }

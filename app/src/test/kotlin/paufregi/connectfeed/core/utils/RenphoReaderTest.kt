@@ -38,4 +38,34 @@ class RenphoReaderTest {
         assertThat(result.isSuccess).isTrue()
         assertThat(result.getOrNull()).containsExactly(expected)
     }
+
+    @Test
+    fun `Convert Renpho CSV to list of weights - non english`() {
+        Locale.setDefault(Locale.ENGLISH)
+        val csvText = """
+            No.,La date,Temps,Poids(kg),IMC,Pourcentage de graisse corporelle(%),Masse grasse corporelle(kg),Pourcentage de masse musculaire(%),Masse musculaire(kg),Pourcentage des muscles squelettiques(%),Masse musculaire squelettique(kg),Pourcentage osseux(%),Masse osseuse(kg),Pourcentage de protÃ©ines(%),Masse protÃ©ique(kg),Pourcentage dâeau corporelle(%),Masse dâeau corporelle(kg),Poids hors masse grasse(kg),Gras sous-cutanÃ©(%),Graisse viscÃ©rale,MÃ©tabolisme de base(kcal),Ãge mÃ©tabolique,RTH (rapport taille-hanches),Poids optimal(kg),Niveau de poids,Type de corps,Objectif de poids optimal(kg),Objectif de masse musculaire optimale(kg),Objectif masse grasse optimale(kg),Remarques
+            1,2026.08.16,07:59:46,74.15,23.1,14.1,10.46,81.6,60.51,55.5,41.15,4.3,3.18,19.6,14.53,62.0,45.97,63.69,12.3,6,1743,36,--,--,--,--,--,--,--,,
+        """.trimIndent()
+
+        val stubInputStream = IOUtils.toInputStream(csvText, "UTF-8")
+
+        val formatter = Formatter.dateTimeForImport(Locale.getDefault())
+        val expected = Weight(
+            timestamp = formatter.parse("2026.08.16 07:59:46")!!,
+            weight = 74.15f,
+            bmi = 23.1f,
+            fat = 14.1f,
+            visceralFat = 6,
+            water = 62.0f,
+            muscle = 60.51f,
+            bone = 3.18f,
+            basalMet = 1743f,
+            metabolicAge = 36,
+        )
+
+        val result = RenphoReader.read(stubInputStream)
+
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).containsExactly(expected)
+    }
 }
