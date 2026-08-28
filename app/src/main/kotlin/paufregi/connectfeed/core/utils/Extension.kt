@@ -32,6 +32,9 @@ fun <T> Response<T>.toResult(emptyBody: T): Result<T> =
         false -> Result.failure(Exception(this.errorBody()?.string() ?: "Unknown error"))
     }
 
+inline fun <T, R> Result<T>.andThen(block: (T) -> Result<R>): Result<R> =
+    fold(onSuccess = block, onFailure = { Result.failure(it) })
+
 fun <T> Result.Companion.failure(cause: String): Result<T> = failure(Exception(cause))
 
 fun <T> Result<T>.mapFailure(transform: (exception: Throwable) -> Throwable): Result<T> =
