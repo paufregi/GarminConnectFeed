@@ -232,12 +232,14 @@ class GarminRepositoryTest {
             Gear(
                 id = "522f1e21-0822-451d-88a3-b0b661802c2f",
                 name = "Mizuno Neo Vista",
-                type = GearType.Shoe
+                type = GearType.Shoe,
+                distance = 51955
             ),
             Gear(
                 id = "789dccf8-b669-4903-bf46-7d8d9369124e",
                 name = "Nova",
-                type = GearType.Bike
+                type = GearType.Bike,
+                distance = 17226955
             ),
         )
 

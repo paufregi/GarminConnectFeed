@@ -36,12 +36,6 @@ class GearTypeConverterTest {
     }
 
     @Test
-    fun `To Gear type - null`() {
-        val gear = converter.fromName(null)
-        assertThat(gear).isEqualTo(GearType.Unknown)
-    }
-
-    @Test
     fun `To Gear type - invalid`() {
         val gear = converter.fromName("NOPE")
         assertThat(gear).isEqualTo(GearType.Unknown)

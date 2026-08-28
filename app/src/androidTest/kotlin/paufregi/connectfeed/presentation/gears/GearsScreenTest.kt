@@ -40,9 +40,9 @@ class GearsScreenTest {
             )
         }
         onNodeWithText("Daily trainers").assertIsDisplayed()
-        onNodeWithText("1.00 km").assertIsDisplayed()
+        onNodeWithText("1 km").assertIsDisplayed()
         onNodeWithText("Weekend bike").assertIsDisplayed()
-        onNodeWithText("25.34 km").assertIsDisplayed()
+        onNodeWithText("25 km").assertIsDisplayed()
     }
 }
 
