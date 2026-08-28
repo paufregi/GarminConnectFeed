@@ -16,11 +16,13 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.ActivityType
 import paufregi.connectfeed.data.api.garmin.models.Course
 import paufregi.connectfeed.data.api.garmin.models.EventType
+import paufregi.connectfeed.data.api.garmin.models.Gear
 import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
@@ -28,6 +30,7 @@ import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import paufregi.connectfeed.data.api.garmin.models.Workout
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.database.GarminDao
+import paufregi.connectfeed.data.database.entities.GearEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.user
 import retrofit2.Response
@@ -36,6 +39,7 @@ import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.EventType as CoreEventType
+import paufregi.connectfeed.core.models.Gear as CoreGear
 import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity as StravaUpdateActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateProfile as StravaUpdateProfile
@@ -238,6 +242,133 @@ class GarminRepositoryTest {
         repo.deleteProfile(user, profile)
 
         coVerify { dao.deleteProfile(profileEntity) }
+    }
+
+    @Test
+    fun `Get all gears`() = runTest {
+        val gears = listOf(
+            CoreGear(
+                id = "gear-1",
+                name = "gear 1",
+                type = GearType.Shoe,
+                distance = 1000
+            ),
+            CoreGear(
+                id = "gear-2",
+                name = "gear 2",
+                type = GearType.Bike,
+                distance = 2000
+            )
+        )
+        val gearEntities = listOf(
+            GearEntity(
+                id = "gear-1",
+                userId = user.id,
+                name = "gear 1",
+                type = GearType.Shoe,
+                distance = 1000
+            ),
+            GearEntity(
+                id = "gear-2",
+                userId = user.id,
+                name = "gear 2",
+                type = GearType.Bike,
+                distance = 2000
+            )
+        )
+
+        coEvery { dao.getAllGears(any()) } returns flowOf(gearEntities)
+
+        val res = repo.getAllGears(user)
+
+        res.test {
+            assertThat(awaitItem()).isEqualTo(gears)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify { dao.getAllGears(user.id) }
+    }
+
+    @Test
+    fun `Get gear`() = runTest {
+        val gear = CoreGear(
+            id = "gear-1",
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+        val gearEntity = GearEntity(
+            id = "gear-1",
+            userId = user.id,
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        coEvery { dao.getGear(any()) } returns gearEntity
+
+        val res = repo.getGear("gear-1")
+
+        assertThat(res).isEqualTo(gear)
+
+        coVerify { dao.getGear("gear-1") }
+    }
+
+    @Test
+    fun `Get gear - no result`() = runTest {
+        coEvery { dao.getGear(any()) } returns null
+
+        val res = repo.getGear("gear-1")
+
+        assertThat(res).isNull()
+
+        coVerify { dao.getGear("gear-1") }
+    }
+
+    @Test
+    fun `Save gear`() = runTest {
+        val gear = CoreGear(
+            id = "gear-1",
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+        val gearEntity = GearEntity(
+            id = "gear-1",
+            userId = user.id,
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        coEvery { dao.saveGear(any()) } returns Unit
+
+        repo.saveGear(user, gear)
+
+        coVerify { dao.saveGear(gearEntity) }
+    }
+
+    @Test
+    fun `Delete gear`() = runTest {
+        val gear = CoreGear(
+            id = "gear-1",
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+        val gearEntity = GearEntity(
+            id = "gear-1",
+            userId = user.id,
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        coEvery { dao.deleteGear(any()) } returns Unit
+
+        repo.deleteGear(user, gear)
+
+        coVerify { dao.deleteGear(gearEntity) }
     }
 
     @Test
@@ -652,13 +783,50 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get workout - failure`() = runTest {
-        val workout = Workout(1, "workout")
         coEvery { connect.getWorkout(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val res = repo.getWorkout(1)
 
         assertThat(res.isSuccess).isFalse()
         coVerify { connect.getWorkout(1) }
+    }
+
+    @Test
+    fun `Get gears`() = runTest {
+        val gears = listOf(
+            Gear(id = "1", brand = "Mizuno", model = "Neo Vista", name = null, type = "SHOE"),
+            Gear(id = "2", brand = "Giant", model = "Contend AR", name = "Nova", type = "BIKE")
+        )
+        coEvery { connect.getGears() } returns Response.success(gears)
+
+        val expected = gears.map { it.toCore() }
+
+        val res = repo.getGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+        coVerify { connect.getGears() }
+    }
+
+    @Test
+    fun `Get gears - empty list`() = runTest {
+        coEvery { connect.getGears() } returns Response.success(emptyList())
+
+        val res = repo.getGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreGear>())
+        coVerify { connect.getGears() }
+    }
+
+    @Test
+    fun `Get gears - failure`() = runTest {
+        coEvery { connect.getGears() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.getGears()
+
+        assertThat(res.isSuccess).isFalse()
+        coVerify { connect.getGears() }
     }
 
     @Test

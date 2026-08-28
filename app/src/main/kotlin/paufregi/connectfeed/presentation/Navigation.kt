@@ -9,6 +9,8 @@ import androidx.compose.material.icons.filled.Tune
 import kotlinx.serialization.Serializable
 import paufregi.connectfeed.presentation.Navigation.HOME
 import paufregi.connectfeed.presentation.ui.components.NavigationItem
+import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
+import paufregi.connectfeed.presentation.ui.icons.garmin.Shoe
 
 sealed interface Route {
     @Serializable
@@ -36,6 +38,9 @@ sealed interface Route {
     data object ProfileList : Route
 
     @Serializable
+    data object Gears : Route
+
+    @Serializable
     data object Settings : Route
 
     @Serializable
@@ -45,11 +50,13 @@ sealed interface Route {
 object Navigation {
     const val HOME = 0
     const val PROFILES = 1
+    const val GEARS = 2
     const val SETTINGS = 3
 
     val topItems = listOf(
         NavigationItem(HOME,"Home", Icons.Filled.Home, Route.Home),
         NavigationItem(PROFILES,"Profiles", Icons.Filled.Tune, Route.Profiles),
+        NavigationItem(GEARS,"Gears", Icons.Connect.Shoe, Route.Gears),
     )
 
     val bottomItems = listOf(

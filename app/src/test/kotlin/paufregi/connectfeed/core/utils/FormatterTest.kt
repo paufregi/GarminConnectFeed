@@ -26,10 +26,17 @@ class FormatterTest {
     }
 
     @Test
-    fun `Formatter distance`() {
+    fun `Formatter distance - double`() {
         val distance = 1234567.0
         val result = Formatter.distance(distance)
-        assertThat(result).isEqualTo("1234.57")
+        assertThat(result).isEqualTo("1,234.57")
+    }
+
+    @Test
+    fun `Formatter distance - integer`() {
+        val distance = 1234567
+        val result = Formatter.distance(distance)
+        assertThat(result).isEqualTo("1,234")
     }
 
     @Test

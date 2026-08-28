@@ -7,6 +7,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.models.Workout
@@ -34,7 +35,6 @@ class GarminRepository @Inject constructor(
 ) {
     val activitiesCache: Cache<Result<List<Activity>>> = Cache()
     val courseCache: Cache<Result<List<Course>>> = Cache()
-    val workoutCache: Cache<Result<Workout>> = Cache()
     val stravaActivityCache: Cache<Result<List<Activity>>> = Cache()
 
     suspend fun fetchUser(): Result<User> =
@@ -53,6 +53,18 @@ class GarminRepository @Inject constructor(
 
     suspend fun deleteProfile(user: User, profile: Profile) =
         garminDao.deleteProfile(profile.toEntity(user.id))
+
+    fun getAllGears(user: User): Flow<List<Gear>> =
+        garminDao.getAllGears(user.id).map { it.map { it.toCore() } }
+
+    suspend fun getGear(id: String): Gear? =
+        garminDao.getGear(id)?.toCore()
+
+    suspend fun saveGear(user: User, gear: Gear) =
+        garminDao.saveGear(gear.toEntity(user.id))
+
+    suspend fun deleteGear(user: User, gear: Gear) =
+        garminDao.deleteGear(gear.toEntity(user.id))
 
     suspend fun getActivities(limit: Int, force: Boolean = false): Result<List<Activity>> =
         withCache(activitiesCache, force) {
@@ -80,6 +92,10 @@ class GarminRepository @Inject constructor(
             .toResult()
             .map {  it.toCore() }
 
+    suspend fun getGears(): Result<List<Gear>> =
+        garminConnect.getGears()
+            .toResult()
+            .map { r -> r.map { it.toCore() } }
 
     suspend fun updateActivity(
         activity: Activity,

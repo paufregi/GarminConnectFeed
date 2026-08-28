@@ -12,8 +12,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.data.database.entities.GearEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import javax.inject.Inject
 
@@ -85,6 +87,40 @@ class GarminDaoTest {
             assertThat(awaitItem()).isEmpty()
             dao.saveProfile(profile)
             assertThat(awaitItem()).containsExactly(profile)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Save delete and retrieve gears`() = runTest {
+        val gear = GearEntity(
+            id = "gear-1",
+            userId = 1,
+            name = "gear1",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+        val gear2 = GearEntity(
+            id = "gear-2",
+            userId = 2,
+            name = "gear2",
+            type = GearType.Bike,
+            distance = 2000
+        )
+
+        dao.saveGear(gear)
+        assertThat(dao.getGear(gear.id)).isEqualTo(gear)
+
+        dao.saveGear(gear2)
+        assertThat(dao.getGear(gear2.id)).isEqualTo(gear2)
+
+        dao.deleteGear(gear)
+        assertThat(dao.getGear(gear.id)).isNull()
+
+        dao.getAllGears(1).test {
+            assertThat(awaitItem()).isEmpty()
+            dao.saveGear(gear)
+            assertThat(awaitItem()).containsExactly(gear)
             cancelAndIgnoreRemainingEvents()
         }
     }
