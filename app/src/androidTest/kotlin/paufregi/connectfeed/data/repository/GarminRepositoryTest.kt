@@ -249,27 +249,6 @@ class GarminRepositoryTest {
         assertThat(res.getOrNull()).isEqualTo(expected)
     }
 
-    @Test
-    fun `Associate gears`() = runTest {
-        authStore.savePreAuthToken(preAuthToken)
-        authStore.saveAuthToken(authToken)
-
-        val activity = CoreActivity(
-            id = 1,
-            name = "activity",
-            distance = 17803.00,
-            trainingEffect = "",
-            type = CoreActivityType.Cycling
-        )
-        val gears = listOf(
-            Gear(id = "gear-1", name = "gear 1", type = GearType.Shoe, distance = 1000),
-            Gear(id = "gear-2", name = "gear 2", type = GearType.Bike, distance = 2000),
-        )
-
-        val res = repo.associateGears(activity = activity, gears = gears)
-
-        assertThat(res.isSuccess).isTrue()
-    }
 
     @Test
     fun `Update activity`() = runTest {
@@ -293,7 +272,8 @@ class GarminRepositoryTest {
             course = course,
             water = water,
             effort = effort,
-            feel = feel
+            feel = feel,
+            gears = null,
         )
 
         assertThat(res.isSuccess).isTrue()

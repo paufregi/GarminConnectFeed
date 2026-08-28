@@ -49,23 +49,23 @@ class UpdateActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val description = "Workout: VO₂ max"
         val res = useCase(activity, name, eventType, course, water, feel, effort, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateActivity(activity, name, description, eventType, course, water, feel, effort) }
+        coVerify { repo.updateActivity(activity, name, description, eventType, course, water, feel, effort, null) }
     }
 
     @Test
     fun `Update activity - no workout`() = runTest {
-        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val res = useCase(activity, name, eventType, course, water, feel, effort, null)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateActivity(activity, name, null, eventType, course, water, feel, effort) }
+        coVerify { repo.updateActivity(activity, name, null, eventType, course, water, feel, effort, null) }
     }
 
     @Test

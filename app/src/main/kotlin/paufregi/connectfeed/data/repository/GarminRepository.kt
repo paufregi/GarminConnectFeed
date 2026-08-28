@@ -11,6 +11,7 @@ import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.models.Workout
+import paufregi.connectfeed.core.utils.andThen
 import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.models.Metadata
@@ -97,10 +98,6 @@ class GarminRepository @Inject constructor(
             .toResult()
             .map { r -> r.map { it.toCore() } }
 
-    suspend fun associateGears(activity: Activity, gears: List<Gear>): Result<Unit> =
-        garminConnect.associateGears(activity.id, gears.map{it.id})
-            .toResult()
-            .onSuccess { activitiesCache.invalidate() }
 
     suspend fun updateActivity(
         activity: Activity,
@@ -110,7 +107,8 @@ class GarminRepository @Inject constructor(
         course: Course?,
         water: Int?,
         feel: Float?,
-        effort: Float?
+        effort: Float?,
+        gears: List<Gear>?,
     ): Result<Unit> {
         val request = UpdateActivity(
             id = activity.id,
@@ -120,9 +118,15 @@ class GarminRepository @Inject constructor(
             metadata = Metadata(course?.id),
             summary = Summary(water, feel, effort)
         )
-        return garminConnect.updateActivity(activity.id, request)
-            .toResult()
+
+        return garminConnect.updateActivity(activity.id, request).toResult()
             .onSuccess { activitiesCache.invalidate() }
+            .andThen {
+                gears
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { garminConnect.associateGears(activity.id, it.map { gear -> gear.id }).toResult() }
+                    ?: Result.success(Unit)
+            }
     }
 
 

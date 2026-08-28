@@ -829,46 +829,6 @@ class GarminRepositoryTest {
         coVerify { connect.getGears() }
     }
 
-    @Test
-    fun `Associate gears`() = runTest {
-        coEvery { connect.associateGears(any(), any()) } returns Response.success(Unit)
-
-        val activity = CoreActivity(
-            id = 1,
-            name = "activity_1",
-            distance = 10234.00,
-            type = CoreActivityType.Running
-        )
-        val gears = listOf(
-            CoreGear(id = "gear-1", name = "gear 1", type = GearType.Shoe, distance = 1000),
-            CoreGear(id = "gear-2", name = "gear 2", type = GearType.Bike, distance = 2000)
-        )
-
-        val res = repo.associateGears(activity = activity, gears = gears)
-
-        assertThat(res.isSuccess).isTrue()
-        coVerify { connect.associateGears(1, listOf("gear-1", "gear-2")) }
-    }
-
-    @Test
-    fun `Associate gears - failure`() = runTest {
-        coEvery { connect.associateGears(any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val activity = CoreActivity(
-            id = 1,
-            name = "activity_1",
-            distance = 10234.00,
-            type = CoreActivityType.Running
-        )
-        val gears = listOf(
-            CoreGear(id = "gear-1", name = "gear 1", type = GearType.Shoe, distance = 1000)
-        )
-
-        val res = repo.associateGears(activity = activity, gears = gears)
-
-        assertThat(res.isSuccess).isFalse()
-        coVerify { connect.associateGears(1, listOf("gear-1")) }
-    }
 
     @Test
     fun `Update activity`() = runTest {
@@ -905,11 +865,13 @@ class GarminRepositoryTest {
             course = course,
             water = water,
             effort = effort,
-            feel = feel
+            feel = feel,
+            gears = null,
         )
 
         assertThat(res.isSuccess).isTrue()
         coVerify { connect.updateActivity(activity.id, expectedRequest) }
+        coVerify(exactly = 0) { connect.associateGears(any(), any()) }
     }
 
     @Test
@@ -944,13 +906,106 @@ class GarminRepositoryTest {
             course = course,
             water = water,
             effort = null,
-            feel = null
+            feel = null,
+            gears = null,
         )
 
         assertThat(res.isSuccess).isFalse()
         coVerify { connect.updateActivity(activity.id, expectedRequest) }
+        coVerify(exactly = 0) { connect.associateGears(any(), any()) }
     }
 
+    @Test
+    fun `Update activity - with gears`() = runTest {
+        coEvery { connect.updateActivity(any(), any()) } returns Response.success(Unit)
+        coEvery { connect.associateGears(any(), any()) } returns Response.success(Unit)
+
+        val activity = CoreActivity(
+            id = 1,
+            name = "activity",
+            distance = 17803.00,
+            type = CoreActivityType.Cycling
+        )
+        val gears = listOf(
+            CoreGear(id = "gear-1", name = "gear 1", type = GearType.Bike, distance = 1000),
+            CoreGear(id = "gear-2", name = "gear 2", type = GearType.Bike, distance = 2000),
+        )
+
+        val res = repo.updateActivity(
+            activity = activity,
+            name = "newName",
+            description = "newDescription",
+            eventType = CoreEventType.Training,
+            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
+            water = 2,
+            effort = 50f,
+            feel = 80f,
+            gears = gears,
+        )
+
+        assertThat(res.isSuccess).isTrue()
+        coVerify { connect.updateActivity(any(), any()) }
+        coVerify { connect.associateGears(activity.id, listOf("gear-1", "gear-2")) }
+    }
+
+    @Test
+    fun `Update activity - empty gears`() = runTest {
+        coEvery { connect.updateActivity(any(), any()) } returns Response.success(Unit)
+
+        val activity = CoreActivity(
+            id = 1,
+            name = "activity",
+            distance = 17803.00,
+            type = CoreActivityType.Cycling
+        )
+
+        val res = repo.updateActivity(
+            activity = activity,
+            name = "newName",
+            description = "newDescription",
+            eventType = CoreEventType.Training,
+            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
+            water = 2,
+            effort = 50f,
+            feel = 80f,
+            gears = emptyList(),
+        )
+
+        assertThat(res.isSuccess).isTrue()
+        coVerify { connect.updateActivity(any(), any()) }
+    }
+
+    @Test
+    fun `Update activity - associate gears failure`() = runTest {
+        coEvery { connect.updateActivity(any(), any()) } returns Response.success(Unit)
+        coEvery { connect.associateGears(any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val activity = CoreActivity(
+            id = 1,
+            name = "activity",
+            distance = 17803.00,
+            type = CoreActivityType.Cycling
+        )
+        val gears = listOf(
+            CoreGear(id = "gear-1", name = "gear 1", type = GearType.Bike, distance = 1000),
+        )
+
+        val res = repo.updateActivity(
+            activity = activity,
+            name = "newName",
+            description = "newDescription",
+            eventType = CoreEventType.Training,
+            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
+            water = 2,
+            effort = 50f,
+            feel = 80f,
+            gears = gears,
+        )
+
+        assertThat(res.isSuccess).isFalse()
+        coVerify { connect.updateActivity(any(), any()) }
+        coVerify { connect.associateGears(activity.id, listOf("gear-1")) }
+    }
 
     @Test
     fun `Update strava activity`() = runTest {

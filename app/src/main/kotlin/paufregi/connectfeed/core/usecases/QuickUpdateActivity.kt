@@ -27,7 +27,8 @@ class QuickUpdateActivity @Inject constructor(private val garminRepository: Garm
             course = profile.course,
             water = water,
             feel = feel,
-            effort = effort
+            effort = effort,
+            gears = null,
         )
     }
 }

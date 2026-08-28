@@ -55,23 +55,23 @@ class QuickUpdateActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val description = "Workout: VO₂ max"
         val res = useCase(activity, profile, 20, 50f, 90f, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateActivity(activity, profile.name, description, profile.eventType, profile.course, 20, 50f, 90f, ) }
+        coVerify { repo.updateActivity(activity, profile.name, description, profile.eventType, profile.course, 20, 50f, 90f, null) }
     }
 
     @Test
     fun `Update activity - no workout`() = runTest {
-        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val res = useCase(activity, profile, 20, 50f, 90f, null)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateActivity(activity, profile.name, null, profile.eventType, profile.course, 20, 50f, 90f, ) }
+        coVerify { repo.updateActivity(activity, profile.name, null, profile.eventType, profile.course, 20, 50f, 90f, null) }
     }
 
     @Test

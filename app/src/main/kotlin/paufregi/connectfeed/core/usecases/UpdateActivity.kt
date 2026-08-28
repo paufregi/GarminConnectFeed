@@ -31,7 +31,8 @@ class UpdateActivity @Inject constructor(private val garminRepository: GarminRep
             course = course,
             water = water,
             feel = feel,
-            effort = effort
+            effort = effort,
+            gears = null,
         )
     }
 }
