@@ -3,6 +3,7 @@ package paufregi.connectfeed.core.usecases
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.core.utils.failure
@@ -18,7 +19,8 @@ class UpdateActivity @Inject constructor(private val garminRepository: GarminRep
         water: Int?,
         feel: Float?,
         effort: Float?,
-        workout: Workout?
+        workout: Workout?,
+        gears: List<Gear>?,
     ): Result<Unit> {
         if (activity == null || name == null || (course != null && !activity.type.allowCourse))
             return Result.failure("Validation error")
@@ -32,7 +34,7 @@ class UpdateActivity @Inject constructor(private val garminRepository: GarminRep
             water = water,
             feel = feel,
             effort = effort,
-            gears = null,
+            gears = gears,
         )
     }
 }
