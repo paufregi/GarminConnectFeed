@@ -14,6 +14,8 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Gear
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.data.repository.GarminRepository
@@ -41,6 +43,7 @@ class QuickUpdateActivityTest{
         trainingEffect = true
     )
     val workout = Workout(1, "VO2 max")
+    val gears = listOf(Gear(id = "shoe-1", name = "Shoe 1", type = GearType.Shoe))
 
     @Before
     fun setup(){
@@ -58,25 +61,36 @@ class QuickUpdateActivityTest{
         coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val description = "Workout: VO₂ max"
-        val res = useCase(activity, profile, 20, 50f, 90f, workout)
+        val res = useCase(activity, profile, 20, 50f, 90f, workout, gears)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateActivity(activity, profile.name, description, profile.eventType, profile.course, 20, 50f, 90f, null) }
+        coVerify { repo.updateActivity(activity, profile.name, description, profile.eventType, profile.course, 20, 50f, 90f, gears) }
     }
 
     @Test
     fun `Update activity - no workout`() = runTest {
         coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val res = useCase(activity, profile, 20, 50f, 90f, null)
+        val res = useCase(activity, profile, 20, 50f, 90f, null, null)
 
         assertThat(res.isSuccess).isTrue()
         coVerify { repo.updateActivity(activity, profile.name, null, profile.eventType, profile.course, 20, 50f, 90f, null) }
     }
 
     @Test
+    fun `Update activity - no gears`() = runTest {
+        coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+
+        val description = "Workout: VO₂ max"
+        val res = useCase(activity, profile, 20, 50f, 90f, workout, null)
+
+        assertThat(res.isSuccess).isTrue()
+        coVerify { repo.updateActivity(activity, profile.name, description, profile.eventType, profile.course, 20, 50f, 90f, null) }
+    }
+
+    @Test
     fun `Invalid - no activity`() = runTest {
-        val res = useCase(null, profile, null, null, null, null)
+        val res = useCase(null, profile, null, null, null, null, null)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -84,7 +98,7 @@ class QuickUpdateActivityTest{
 
     @Test
     fun `Invalid - no profile`() = runTest {
-        val res = useCase(activity, null, null, null, null, null)
+        val res = useCase(activity, null, null, null, null, null, null)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -92,7 +106,7 @@ class QuickUpdateActivityTest{
 
     @Test
     fun `Invalid - both null`() = runTest {
-        val res = useCase(null, null, null, null, null, null)
+        val res = useCase(null, null, null, null, null, null, null)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")

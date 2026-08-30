@@ -1,6 +1,7 @@
 package paufregi.connectfeed.core.usecases
 
 import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.utils.Formatter
@@ -16,6 +17,7 @@ class QuickUpdateActivity @Inject constructor(private val garminRepository: Garm
         feel: Float?,
         effort: Float?,
         workout: Workout?,
+        gears: List<Gear>?,
     ): Result<Unit> {
         if (activity == null || profile == null) return Result.failure("Validation error")
 
@@ -28,7 +30,7 @@ class QuickUpdateActivity @Inject constructor(private val garminRepository: Garm
             water = water,
             feel = feel,
             effort = effort,
-            gears = null,
+            gears = gears,
         )
     }
 }

@@ -108,7 +108,8 @@ class QuickEditViewModel @Inject constructor(
                     water = state.value.water,
                     feel = state.value.feel,
                     effort = state.value.effort,
-                    workout = workout
+                    workout = workout,
+                    gears = null,
                 )
             }
 

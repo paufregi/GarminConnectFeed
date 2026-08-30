@@ -668,7 +668,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { getWorkout(any()) } returns Result.success(workout)
 
@@ -702,7 +702,7 @@ class QuickEditViewModelTest {
         coVerify {
             getActivities(false)
             getStravaActivities(false)
-            quickUpdateActivity(activities[0], profiles[0], 25, 50f, 80f, workout)
+            quickUpdateActivity(activities[0], profiles[0], 25, 50f, 80f, workout, null)
             quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description", workout)
             getWorkout(workout.id)
             getProfiles()
@@ -714,7 +714,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { getWorkout(any()) } returns Result.failure(Exception("No workout"))
 
@@ -748,7 +748,7 @@ class QuickEditViewModelTest {
         coVerify {
             getActivities(false)
             getStravaActivities(false)
-            quickUpdateActivity(activities[0], profiles[0], 25, 50f, 80f, null)
+            quickUpdateActivity(activities[0], profiles[0], 25, 50f, 80f, null, null)
             quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description", null)
             getProfiles()
             getWorkout(workout.id)
@@ -760,7 +760,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any()) } returns Result.failure("failure")
+        coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("failure")
         coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { getWorkout(any()) } returns Result.success(workout)
 
@@ -794,7 +794,7 @@ class QuickEditViewModelTest {
         coVerify {
             getActivities(false)
             getStravaActivities(false)
-            quickUpdateActivity(activities[0], profiles[0], 25, 50f, 80f, workout)
+            quickUpdateActivity(activities[0], profiles[0], 25, 50f, 80f, workout, null)
             quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description", workout)
             getProfiles()
             getWorkout(workout.id)
@@ -806,7 +806,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any()) } returns Result.failure("failure")
         coEvery { getWorkout(any()) } returns Result.success(workout)
 
@@ -840,7 +840,7 @@ class QuickEditViewModelTest {
         coVerify {
             getActivities(false)
             getStravaActivities(false)
-            quickUpdateActivity(activities[0], profiles[0], 25, 50f, 80f, workout)
+            quickUpdateActivity(activities[0], profiles[0], 25, 50f, 80f, workout, null)
             quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description", workout)
             getProfiles()
             getWorkout(workout.id)
@@ -852,7 +852,7 @@ class QuickEditViewModelTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
         every { getProfiles() } returns flowOf(profiles)
-        coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any()) } returns Result.failure("failure")
+        coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("failure")
         coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any()) } returns Result.failure("failure")
         coEvery { getWorkout(workout.id) } returns Result.success(workout)
 
@@ -886,7 +886,7 @@ class QuickEditViewModelTest {
         coVerify {
             getActivities(false)
             getStravaActivities(false)
-            quickUpdateActivity(activities[0], profiles[0], 25, 50f, 80f, workout)
+            quickUpdateActivity(activities[0], profiles[0], 25, 50f, 80f, workout, null)
             quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "description", workout)
             getProfiles()
             getWorkout(workout.id)
