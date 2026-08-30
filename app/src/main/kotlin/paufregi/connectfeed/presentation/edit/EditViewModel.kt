@@ -116,6 +116,7 @@ class EditViewModel @Inject constructor(
         val errors = mutableListOf<String>()
 
         val workout = state.value.activity?.workoutId?.let { getWorkout(it) }?.getOrNull()
+        val gears = state.value.gear?.let { listOf(it) }
 
         coroutineScope {
             val asyncUpdateActivity = async {
@@ -128,7 +129,7 @@ class EditViewModel @Inject constructor(
                     feel = state.value.feel,
                     effort = state.value.effort,
                     workout = workout,
-                    gears = null,
+                    gears = gears,
                 )
             }
 
