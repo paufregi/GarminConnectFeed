@@ -43,7 +43,7 @@ class QuickUpdateActivityTest{
         trainingEffect = true
     )
     val workout = Workout(1, "VO2 max")
-    val gears = listOf(Gear(id = "shoe-1", name = "Shoe 1", type = GearType.Shoe))
+    val gear = Gear(id = "shoe-1", name = "Shoe 1", type = GearType.Shoe)
 
     @Before
     fun setup(){
@@ -61,10 +61,10 @@ class QuickUpdateActivityTest{
         coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val description = "Workout: VO₂ max"
-        val res = useCase(activity, profile, 20, 50f, 90f, workout, gears)
+        val res = useCase(activity, profile, 20, 50f, 90f, workout, gear)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateActivity(activity, profile.name, description, profile.eventType, profile.course, 20, 50f, 90f, gears) }
+        coVerify { repo.updateActivity(activity, profile.name, description, profile.eventType, profile.course, 20, 50f, 90f, gear) }
     }
 
     @Test

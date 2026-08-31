@@ -37,7 +37,7 @@ class UpdateActivityTest{
     val water = 10
     val feel = 50f
     val effort = 90f
-    val gears = listOf(Gear(id = "shoe-1", name = "Shoe 1", type = GearType.Shoe))
+    val gear = Gear(id = "shoe-1", name = "Shoe 1", type = GearType.Shoe)
 
     @Before
     fun setup(){
@@ -55,10 +55,10 @@ class UpdateActivityTest{
         coEvery { repo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val description = "Workout: VO₂ max"
-        val res = useCase(activity, name, eventType, course, water, feel, effort, workout, gears)
+        val res = useCase(activity, name, eventType, course, water, feel, effort, workout, gear)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateActivity(activity, name, description, eventType, course, water, feel, effort, gears) }
+        coVerify { repo.updateActivity(activity, name, description, eventType, course, water, feel, effort, gear) }
     }
 
     @Test

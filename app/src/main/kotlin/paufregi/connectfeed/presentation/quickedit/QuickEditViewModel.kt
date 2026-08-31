@@ -117,7 +117,6 @@ class QuickEditViewModel @Inject constructor(
         val errors = mutableListOf<String>()
 
         val workout = state.value.activity?.workoutId?.let { getWorkout(it) }?.getOrNull()
-        val gears = state.value.gear?.let { listOf(it) }
 
         coroutineScope {
             val asyncQuickUpdate = async {
@@ -128,7 +127,7 @@ class QuickEditViewModel @Inject constructor(
                     feel = state.value.feel,
                     effort = state.value.effort,
                     workout = workout,
-                    gears = gears,
+                    gear = state.value.gear,
                 )
             }
 

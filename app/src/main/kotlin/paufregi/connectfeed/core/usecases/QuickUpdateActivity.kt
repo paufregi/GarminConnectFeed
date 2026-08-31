@@ -17,7 +17,7 @@ class QuickUpdateActivity @Inject constructor(private val garminRepository: Garm
         feel: Float?,
         effort: Float?,
         workout: Workout?,
-        gears: List<Gear>?,
+        gear: Gear?,
     ): Result<Unit> {
         if (activity == null || profile == null) return Result.failure("Validation error")
 
@@ -30,7 +30,7 @@ class QuickUpdateActivity @Inject constructor(private val garminRepository: Garm
             water = water,
             feel = feel,
             effort = effort,
-            gears = gears,
+            gear = gear,
         )
     }
 }

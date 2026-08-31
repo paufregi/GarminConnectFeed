@@ -108,7 +108,7 @@ class GarminRepository @Inject constructor(
         water: Int?,
         feel: Float?,
         effort: Float?,
-        gears: List<Gear>?,
+        gear: Gear?,
     ): Result<Unit> {
         val request = UpdateActivity(
             id = activity.id,
@@ -122,9 +122,8 @@ class GarminRepository @Inject constructor(
         return garminConnect.updateActivity(activity.id, request).toResult()
             .onSuccess { activitiesCache.invalidate() }
             .andThen {
-                gears
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.let { garminConnect.associateGears(activity.id, it.map { gear -> gear.id }).toResult() }
+                gear
+                    ?.let { garminConnect.associateGears(activity.id, listOf(it.id)).toResult() }
                     ?: Result.success(Unit)
             }
     }

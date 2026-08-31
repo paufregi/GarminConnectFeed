@@ -263,6 +263,7 @@ class GarminRepositoryTest {
         val water = 2
         val effort = 50f
         val feel = 80f
+        val gear = Gear("bike-1", "bike", GearType.Bike, 1000)
 
         val res = repo.updateActivity(
             activity = activity,
@@ -273,7 +274,7 @@ class GarminRepositoryTest {
             water = water,
             effort = effort,
             feel = feel,
-            gears = null,
+            gear = gear,
         )
 
         assertThat(res.isSuccess).isTrue()
