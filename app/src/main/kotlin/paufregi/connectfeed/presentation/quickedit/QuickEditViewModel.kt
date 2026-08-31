@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetActivities
+import paufregi.connectfeed.core.usecases.GetGears
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.GetStravaActivities
 import paufregi.connectfeed.core.usecases.GetWorkout
@@ -27,6 +28,7 @@ class QuickEditViewModel @Inject constructor(
     val getActivities: GetActivities,
     val getStravaActivities: GetStravaActivities,
     getProfiles: GetProfiles,
+    val getGears: GetGears,
     val quickUpdateActivity: QuickUpdateActivity,
     val quickUpdateStravaActivity: QuickUpdateStravaActivity,
     val getWorkout: GetWorkout
@@ -34,7 +36,9 @@ class QuickEditViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(QuickEditState())
 
-    val state = combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles) }
+    val state = combine(_state, getProfiles(), getGears()) { state, profiles, gears ->
+        state.copy(profiles = profiles, gears = gears)
+    }
             .onStart { load() }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), QuickEditState())
 
@@ -64,28 +68,42 @@ class QuickEditViewModel @Inject constructor(
     fun onAction(action: QuickEditAction) = when (action) {
         is QuickEditAction.SetActivity -> _state.update {
             val profile = it.profile?.takeIf { p -> p.type.compatible(action.activity.type) }
+            val stravaActivity =
+                it.stravaActivity?.takeIf { a -> a.type.compatible(action.activity.type) }
+                    ?: it.stravaActivities.find { a -> a.match(action.activity) }
             it.copy(
                 activity = action.activity,
                 profile = profile,
-                stravaActivity = it.stravaActivity?.takeIf { a -> a.type.compatible(action.activity.type) } ?: it.stravaActivities.find { a -> a.match(action.activity) },
+                stravaActivity = stravaActivity,
+                gear = it.gear?.takeIf { g -> g.type.compatible(action.activity.type) },
                 water = it.water?.takeUnless { profile == null }
             )
         }
         is QuickEditAction.SetStravaActivity -> _state.update {
             val profile = it.profile?.takeIf { p -> p.type.compatible(action.activity.type) }
+            val activity =
+                it.activity?.takeIf { a -> a.type.compatible(action.activity.type) }
+                    ?: it.activities.find { a -> a.match(action.activity) }
             it.copy(
                 stravaActivity = action.activity,
                 profile = profile,
-                activity = it.activity?.takeIf { a -> a.type.compatible(action.activity.type) } ?: it.activities.find { a -> a.match(action.activity) },
+                activity = activity,
+                gear = it.gear?.takeIf { g -> activity?.type?.let(g.type::compatible) == true },
                 water = it.water?.takeUnless { profile == null }
             )
         }
-        is QuickEditAction.SetProfile -> _state.update { it.copy(
-            profile = action.profile,
-            activity = it.activity?.takeIf { a -> a.type.compatible(action.profile.type) },
-            stravaActivity = it.stravaActivity?.takeIf { a -> a.type.compatible(action.profile.type) },
-            water = action.profile.water,
-        ) }
+        is QuickEditAction.SetProfile -> _state.update {
+            val activity = it.activity?.takeIf { a -> a.type.compatible(action.profile.type) }
+            val stravaActivity = it.stravaActivity?.takeIf { a -> a.type.compatible(action.profile.type) }
+            it.copy(
+                profile = action.profile,
+                activity = activity,
+                stravaActivity = stravaActivity,
+                gear = it.gear?.takeIf { g -> activity?.type?.let(g.type::compatible) == true },
+                water = action.profile.water,
+            )
+        }
+        is QuickEditAction.SetGear -> _state.update { it.copy(gear = action.gear) }
         is QuickEditAction.SetDescription -> _state.update { it.copy(description = action.description) }
         is QuickEditAction.SetWater -> _state.update { it.copy(water = action.water) }
         is QuickEditAction.SetEffort -> _state.update { it.copy(effort = action.effort?.takeIf { e -> e > 0 }) }
@@ -99,6 +117,7 @@ class QuickEditViewModel @Inject constructor(
         val errors = mutableListOf<String>()
 
         val workout = state.value.activity?.workoutId?.let { getWorkout(it) }?.getOrNull()
+        val gears = state.value.gear?.let { listOf(it) }
 
         coroutineScope {
             val asyncQuickUpdate = async {
@@ -109,7 +128,7 @@ class QuickEditViewModel @Inject constructor(
                     feel = state.value.feel,
                     effort = state.value.effort,
                     workout = workout,
-                    gears = null,
+                    gears = gears,
                 )
             }
 
