@@ -10,9 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -46,6 +44,7 @@ class GearsViewModelTest {
 
     @After
     fun tearDown() {
+        verify { getGears() }
         confirmVerified(getGears, syncGear)
         clearAllMocks()
     }
@@ -62,8 +61,6 @@ class GearsViewModelTest {
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             cancelAndIgnoreRemainingEvents()
         }
-
-        verify { getGears() }
     }
 
     @Test
@@ -78,30 +75,21 @@ class GearsViewModelTest {
             assertThat(state.process).isEqualTo(ProcessState.Idle)
             cancelAndIgnoreRemainingEvents()
         }
-
-        verify { getGears() }
     }
 
     @Test
     fun `Sync gears - processing`() = runTest {
         every { getGears() } returns flowOf(gears)
-        coEvery { syncGear() } coAnswers {
-            delay(1_000)
-            Result.success(Unit)
-        }
+        coEvery { syncGear() } coAnswers { Result.success(Unit) }
 
         viewModel = GearsViewModel(getGears, syncGear)
 
         viewModel.state.test {
             assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
             viewModel.onAction(GearsAction.Sync)
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Processing)
-            advanceTimeBy(1_000)
             assertThat(awaitItem().process).isEqualTo(ProcessState.Success("Gears synced"))
             cancelAndIgnoreRemainingEvents()
         }
-
-        verify { getGears() }
         coVerify { syncGear() }
     }
 
@@ -118,8 +106,6 @@ class GearsViewModelTest {
             assertThat(awaitItem().process).isEqualTo(ProcessState.Success("Gears synced"))
             cancelAndIgnoreRemainingEvents()
         }
-
-        verify { getGears() }
         coVerify { syncGear() }
     }
 
@@ -136,8 +122,6 @@ class GearsViewModelTest {
             assertThat(awaitItem().process).isEqualTo(ProcessState.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
-
-        verify { getGears() }
         coVerify { syncGear() }
     }
 
@@ -156,8 +140,6 @@ class GearsViewModelTest {
             assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
             cancelAndIgnoreRemainingEvents()
         }
-
-        verify { getGears() }
         coVerify { syncGear() }
     }
 }

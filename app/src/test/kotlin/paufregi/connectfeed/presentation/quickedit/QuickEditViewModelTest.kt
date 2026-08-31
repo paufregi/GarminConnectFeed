@@ -211,7 +211,7 @@ class QuickEditViewModelTest {
     }
 
     @Test
-    fun `Initial state - Fails to load activities`() = runTest {
+    fun `Fails to load activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.failure("error")
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
 
@@ -243,7 +243,7 @@ class QuickEditViewModelTest {
     }
 
     @Test
-    fun `Initial state - Fails to load strava activities`() = runTest {
+    fun `Fails to load strava activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
         coEvery { getStravaActivities(any()) } returns Result.failure("error")
 
@@ -275,7 +275,7 @@ class QuickEditViewModelTest {
     }
 
     @Test
-    fun `Initial state - Fails to load all activities`() = runTest {
+    fun `Fails to load all activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.failure("error")
         coEvery { getStravaActivities(any()) } returns Result.failure("error")
 
