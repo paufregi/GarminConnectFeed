@@ -76,7 +76,6 @@ fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     onClick = onClick
 )
 
-@SuppressLint("DefaultLocale")
 @ExperimentalMaterial3Api
 fun Gear.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
