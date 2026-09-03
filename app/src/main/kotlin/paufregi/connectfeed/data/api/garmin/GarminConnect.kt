@@ -55,6 +55,12 @@ interface GarminConnect {
         @Body updateActivity: UpdateActivity,
     ): Response<Unit>
 
+    @PUT("/gear-service/activity/v2/{activityId}/associated-gear")
+    suspend fun associateGears(
+        @Path("activityId") activityId: Long,
+        @Body gears: List<String>,
+    ): Response<Unit>
+
     companion object {
         const val BASE_URL = "https://connectapi.garmin.com"
 

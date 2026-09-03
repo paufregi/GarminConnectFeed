@@ -109,6 +109,32 @@ class ExtensionTest {
     }
 
     @Test
+    fun `Result - andThen - success`() {
+        val result = Result.success("input").andThen { Result.success(it.uppercase()) }
+
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo("INPUT")
+    }
+
+    @Test
+    fun `Result - andThen - chained failure`() {
+        val result = Result.success("input")
+            .andThen { Result.failure<String>("andThen error") }
+
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("andThen error")
+    }
+
+    @Test
+    fun `Result - andThen - short circuit on failure`() {
+        val result = Result.failure<String>("source error")
+            .andThen { Result.success(it.uppercase()) }
+
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("source error")
+    }
+
+    @Test
     fun `Result - mapFailure - success`() {
         val result = Result.success("ok").mapFailure { Exception("new error") }
         assertThat(result.isSuccess).isTrue()

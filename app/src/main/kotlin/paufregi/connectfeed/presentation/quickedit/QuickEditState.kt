@@ -1,6 +1,7 @@
 package paufregi.connectfeed.presentation.quickedit
 
 import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
@@ -9,9 +10,11 @@ data class QuickEditState(
     val activities: List<Activity> = emptyList(),
     val stravaActivities: List<Activity> = emptyList(),
     val profiles: List<Profile> = emptyList(),
+    val gears: List<Gear> = emptyList(),
     val activity: Activity? = null,
     val stravaActivity: Activity? = null,
     val profile: Profile? = null,
+    val gear: Gear? = null,
     val description: String? = null,
     val water: Int? = null,
     val effort: Float? = null,

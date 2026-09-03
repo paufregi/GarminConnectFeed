@@ -3,6 +3,7 @@ package paufregi.connectfeed.presentation.edit
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 data class EditState(
@@ -11,11 +12,13 @@ data class EditState(
     val stravaActivities: List<Activity> = emptyList(),
     val eventTypes: List<EventType> = emptyList(),
     val courses: List<Course> = emptyList(),
+    val gears: List<Gear> = emptyList(),
     val activity: Activity? = null,
     val stravaActivity: Activity? = null,
     val name: String? = null,
     val eventType: EventType? = null,
     val course: Course? = null,
+    val gear: Gear? = null,
     val description: String? = null,
     val water: Int? = null,
     val effort: Float? = null,

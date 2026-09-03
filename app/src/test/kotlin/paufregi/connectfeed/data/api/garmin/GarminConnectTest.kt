@@ -304,4 +304,26 @@ class GarminConnectTest {
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
     }
+
+    @Test
+    fun `Associate gears`() = runTest {
+        server.enqueue(200)
+
+        val gears = listOf("522f1e21-0822-451d-88a3-b0b661802c2f", "789dccf8-b669-4903-bf46-7d8d9369124e")
+        val res = api.associateGears(activityId = 1, gears = gears)
+
+        assertThat(res.isSuccessful).isTrue()
+        verify { authInterceptor.intercept(any()) }
+    }
+
+    @Test
+    fun `Associate gears - failure`() = runTest {
+        server.enqueue(400)
+
+        val gears = listOf("522f1e21-0822-451d-88a3-b0b661802c2f")
+        val res = api.associateGears(activityId = 1, gears = gears)
+
+        assertThat(res.isSuccessful).isFalse()
+        verify { authInterceptor.intercept(any()) }
+    }
 }

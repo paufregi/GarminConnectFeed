@@ -20,6 +20,8 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Gear
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
@@ -69,6 +71,11 @@ class EditScreenTest {
         Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
         Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType.Cycling),
     )
+
+    val gears = listOf(
+        Gear(id = "bike-1", name = "Bike 1", type = GearType.Bike),
+        Gear(id = "shoe-1", name = "Shoe 1", type = GearType.Shoe),
+    )
     
     @Test
     fun `Default values`() = runAndroidComposeUiTest<ComponentActivity> {
@@ -84,6 +91,7 @@ class EditScreenTest {
         onNodeWithText("Name").assertIsDisplayed()
         onNodeWithText("Event type").assertIsDisplayed()
         onNodeWithText("Course").assertIsNotDisplayed()
+        onNodeWithText("Gear").assertIsNotDisplayed()
         onNodeWithText("Description").assertIsNotDisplayed()
         onNodeWithText("Water").assertIsDisplayed()
         onNodeWithTag("feel_text").assertTextContains("None selected")
@@ -132,9 +140,11 @@ class EditScreenTest {
                 name = "New name",
                 eventTypes = eventTypes,
                 courses = courses,
+                gears = gears,
                 activity = activities[0],
                 eventType = eventTypes[0],
                 course = courses[0],
+                gear = gears[1],
                 water = 10,
                 feel = 50f,
                 effort = 80f,
@@ -144,6 +154,7 @@ class EditScreenTest {
         onNodeWithText("Name").assertTextContains("New name")
         onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
         onNodeWithText("Course").assertTextContains(courses[0].name)
+        onNodeWithText("Gear").assertTextContains(gears[1].name)
         onNodeWithText("Description").assertIsNotDisplayed()
         onNodeWithText("Water").assertTextContains("10")
         onNodeWithTag("feel_text").assertTextContains("Normal")
@@ -165,10 +176,12 @@ class EditScreenTest {
                 eventTypes = eventTypes,
                 name = "New name",
                 courses = courses,
+                gears = gears,
                 activity = activities[0],
                 stravaActivity = stravaActivities[0],
                 eventType = eventTypes[0],
                 course = courses[0],
+                gear = gears[1],
                 description = "random text",
                 water = 10,
                 feel = 50f,
@@ -181,6 +194,7 @@ class EditScreenTest {
         onNodeWithText("Name").assertTextContains("New name")
         onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
         onNodeWithText("Course").assertTextContains(courses[0].name)
+        onNodeWithText("Gear").assertTextContains(gears[1].name)
         onNodeWithText("Description").assertTextContains("random text")
         onNodeWithText("Water").assertTextContains("10")
         onNodeWithTag("feel_text").assertTextContains("Normal")

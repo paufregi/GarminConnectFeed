@@ -125,6 +125,16 @@ internal fun QuickEditContent(
                     it.toDropdownItem { onAction(QuickEditAction.SetProfile(it)) }
                 }
         )
+        if (state.activity != null && state.gears.isNotEmpty()) {
+            Dropdown(
+                label = { Text("Gear") },
+                selected = state.gear?.toDropdownItem { },
+                modifier = Modifier.fillMaxWidth(),
+                items = state.gears
+                    .filter { it.type.compatible(state.activity.type) }
+                    .map { it.toDropdownItem { onAction(QuickEditAction.SetGear(it)) } }
+            )
+        }
         if (state.stravaActivity != null) {
             TextField(
                 label = { Text("Description") },
