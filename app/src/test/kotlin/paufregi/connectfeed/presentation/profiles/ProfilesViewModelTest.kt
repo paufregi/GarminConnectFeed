@@ -46,6 +46,7 @@ class ProfilesViewModelTest {
 
     @After
     fun tearDown(){
+        verify { getProfiles() }
         confirmVerified(getProfiles, deleteProfile)
         clearAllMocks()
     }
@@ -61,8 +62,6 @@ class ProfilesViewModelTest {
             assertThat(state.profiles).isEqualTo(profiles)
             cancelAndIgnoreRemainingEvents()
         }
-
-        verify { getProfiles() }
     }
 
     @Test
@@ -76,8 +75,6 @@ class ProfilesViewModelTest {
             assertThat(state.profiles).isEqualTo(emptyList<Profile>())
             cancelAndIgnoreRemainingEvents()
         }
-
-        verify { getProfiles() }
     }
 
     @Test
@@ -89,7 +86,6 @@ class ProfilesViewModelTest {
 
         viewModel.onAction(ProfileAction.Delete(profiles[0]))
 
-        verify { getProfiles() }
         coVerify { deleteProfile(profiles[0]) }
     }
 }

@@ -65,13 +65,16 @@ class SettingsViewModelTest {
 
     @After
     fun tearDown(){
+        verify {
+            getUser()
+            isStravaLoggedIn()
+        }
         confirmVerified(getUser, refreshUser, signOut, isStravaLoggedIn, disconnectStrava, stravaUri, getLatestRelease, downloader)
         clearAllMocks()
     }
 
     @Test
     fun `Initial state`() = runTest {
-        every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
 
@@ -86,17 +89,11 @@ class SettingsViewModelTest {
             assertThat(state.latestRelease).isEqualTo(release)
             cancelAndIgnoreRemainingEvents()
         }
-
-        verify {
-            getUser()
-            isStravaLoggedIn()
-        }
         coVerify { getLatestRelease() }
     }
 
     @Test
     fun `Initial state - no strava`() = runTest {
-        every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(false)
         coEvery { getLatestRelease() } returns Result.success(release)
 
@@ -121,7 +118,6 @@ class SettingsViewModelTest {
 
     @Test
     fun `Initial state - fail to load latest release`() = runTest {
-        every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(false)
         coEvery { getLatestRelease() } returns Result.failure("error")
 
@@ -137,17 +133,12 @@ class SettingsViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify {
-            getUser()
-            isStravaLoggedIn()
-        }
         coVerify { getLatestRelease() }
     }
 
     @Test
     fun `Refresh user - success`() = runTest {
         coEvery { refreshUser() } returns Result.success(Unit)
-        every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
 
@@ -161,10 +152,6 @@ class SettingsViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify {
-            getUser()
-            isStravaLoggedIn()
-        }
         coVerify {
             refreshUser()
             getLatestRelease()
@@ -174,7 +161,6 @@ class SettingsViewModelTest {
     @Test
     fun `Refresh user - failure`() = runTest {
         coEvery { refreshUser() } returns Result.failure("error")
-        every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
 
@@ -188,10 +174,6 @@ class SettingsViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify {
-            getUser()
-            isStravaLoggedIn()
-        }
         coVerify {
             refreshUser()
             getLatestRelease()
@@ -202,7 +184,6 @@ class SettingsViewModelTest {
     fun `Sign out`() = runTest {
         coEvery { signOut() } returns Unit
         coEvery { disconnectStrava() } returns Unit
-        every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
 
@@ -216,10 +197,6 @@ class SettingsViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify {
-            getUser()
-            isStravaLoggedIn()
-        }
         coVerify {
             signOut()
             disconnectStrava()
@@ -230,7 +207,6 @@ class SettingsViewModelTest {
     @Test
     fun `Sign out strava`() = runTest {
         coEvery { disconnectStrava() } returns Unit
-        every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
 
@@ -243,10 +219,6 @@ class SettingsViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify {
-            getUser()
-            isStravaLoggedIn()
-        }
         coVerify {
             disconnectStrava()
             getLatestRelease()
@@ -256,7 +228,6 @@ class SettingsViewModelTest {
     @Test
     fun `Update action`() = runTest {
         coEvery { disconnectStrava() } returns Unit
-        every { getUser() } returns flowOf(user)
         every { isStravaLoggedIn() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
         coEvery { downloader.downloadApk(any()) } returns Result.success(Unit)
@@ -269,10 +240,6 @@ class SettingsViewModelTest {
         }
         viewModel.onAction(SettingsAction.Update)
 
-        verify {
-            getUser()
-            isStravaLoggedIn()
-        }
         coVerify {
             downloader.downloadApk(release)
             getLatestRelease()

@@ -128,6 +128,16 @@ internal fun EditContent(
                     .map { it.toDropdownItem { onAction(EditAction.SetCourse(it)) } }
             )
         }
+        if (state.activity != null && state.gears.isNotEmpty()) {
+            Dropdown(
+                label = { Text("Gear") },
+                selected = state.gear?.toDropdownItem { },
+                modifier = Modifier.fillMaxWidth(),
+                items = state.gears
+                    .filter { it.type.compatible(state.activity.type) }
+                    .map { it.toDropdownItem { onAction(EditAction.SetGear(it)) } }
+            )
+        }
         if (state.stravaActivity != null) {
             TextField(
                 label = { Text("Description") },
@@ -221,3 +231,5 @@ internal fun EditContent(
         }
     }
 }
+
+

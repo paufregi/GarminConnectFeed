@@ -34,6 +34,7 @@ class MainViewModelTest {
 
     @After
     fun tearDown(){
+        verify { isLoggedIn() }
         confirmVerified(isLoggedIn)
         clearAllMocks()
     }
@@ -49,8 +50,6 @@ class MainViewModelTest {
             assertThat(state.loggedIn).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
-
-        verify { isLoggedIn() }
     }
 
     @Test
@@ -64,7 +63,5 @@ class MainViewModelTest {
             assertThat(state.loggedIn).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
-
-        verify { isLoggedIn() }
     }
 }

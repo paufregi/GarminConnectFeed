@@ -249,6 +249,7 @@ class GarminRepositoryTest {
         assertThat(res.getOrNull()).isEqualTo(expected)
     }
 
+
     @Test
     fun `Update activity`() = runTest {
         authStore.savePreAuthToken(preAuthToken)
@@ -262,6 +263,7 @@ class GarminRepositoryTest {
         val water = 2
         val effort = 50f
         val feel = 80f
+        val gear = Gear("bike-1", "bike", GearType.Bike, 1000)
 
         val res = repo.updateActivity(
             activity = activity,
@@ -271,7 +273,8 @@ class GarminRepositoryTest {
             course = course,
             water = water,
             effort = effort,
-            feel = feel
+            feel = feel,
+            gear = gear,
         )
 
         assertThat(res.isSuccess).isTrue()

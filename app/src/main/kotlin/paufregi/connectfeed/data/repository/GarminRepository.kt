@@ -11,6 +11,7 @@ import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.models.Workout
+import paufregi.connectfeed.core.utils.andThen
 import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.models.Metadata
@@ -97,6 +98,7 @@ class GarminRepository @Inject constructor(
             .toResult()
             .map { r -> r.map { it.toCore() } }
 
+
     suspend fun updateActivity(
         activity: Activity,
         name: String?,
@@ -105,7 +107,8 @@ class GarminRepository @Inject constructor(
         course: Course?,
         water: Int?,
         feel: Float?,
-        effort: Float?
+        effort: Float?,
+        gear: Gear?,
     ): Result<Unit> {
         val request = UpdateActivity(
             id = activity.id,
@@ -115,10 +118,16 @@ class GarminRepository @Inject constructor(
             metadata = Metadata(course?.id),
             summary = Summary(water, feel, effort)
         )
-        return garminConnect.updateActivity(activity.id, request)
-            .toResult()
+
+        return garminConnect.updateActivity(activity.id, request).toResult()
             .onSuccess { activitiesCache.invalidate() }
+            .andThen {
+                gear
+                    ?.let { garminConnect.associateGears(activity.id, listOf(it.id)).toResult() }
+                    ?: Result.success(Unit)
+            }
     }
+
 
     suspend fun updateStravaActivity(
         activity: Activity,
