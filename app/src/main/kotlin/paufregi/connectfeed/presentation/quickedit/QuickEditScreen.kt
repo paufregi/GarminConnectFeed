@@ -125,7 +125,7 @@ internal fun QuickEditContent(
                     it.toDropdownItem { onAction(QuickEditAction.SetProfile(it)) }
                 }
         )
-        if (state.activity != null && state.gears.isNotEmpty()) {
+        if (state.activity != null && state.gears.any { it.type.compatible(state.activity.type) } ) {
             Dropdown(
                 label = { Text("Gear") },
                 selected = state.gear?.toDropdownItem { },

@@ -128,7 +128,7 @@ internal fun EditContent(
                     .map { it.toDropdownItem { onAction(EditAction.SetCourse(it)) } }
             )
         }
-        if (state.activity != null && state.gears.isNotEmpty()) {
+        if (state.activity != null && state.gears.any { it.type.compatible(state.activity.type) } ) {
             Dropdown(
                 label = { Text("Gear") },
                 selected = state.gear?.toDropdownItem { },

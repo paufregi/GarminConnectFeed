@@ -869,12 +869,12 @@ class GarminRepositoryTest {
             water = water,
             effort = effort,
             feel = feel,
-            gear = null,
+            gear = gear,
         )
 
         assertThat(res.isSuccess).isTrue()
         coVerify { connect.updateActivity(activity.id, expectedUpdateRequest) }
-        coVerify(exactly = 0) { connect.associateGears(any(), listOf(gear.id)) }
+        coVerify { connect.associateGears(activity.id, listOf(gear.id)) }
     }
 
     @Test
@@ -886,6 +886,15 @@ class GarminRepositoryTest {
             name = "activity",
             distance = 17803.00,
             type = CoreActivityType.Cycling
+        )
+
+        val expectedRequest = UpdateActivity(
+            id = 1,
+            name = "newName",
+            description = "newDescription",
+            eventType = EventType(id = CoreEventType.Training.id, key = CoreEventType.Training.key),
+            metadata = Metadata(courseId = 1),
+            summary = Summary(water = 2, feel = 80f, effort = 50f)
         )
 
         val res = repo.updateActivity(
@@ -901,7 +910,7 @@ class GarminRepositoryTest {
         )
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { connect.updateActivity(any(), any()) }
+        coVerify { connect.updateActivity(activity.id, expectedRequest) }
     }
 
     @Test
