@@ -1,8 +1,11 @@
 package paufregi.connectfeed.presentation.ui.components
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -27,21 +30,25 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.utils.Formatter
+import paufregi.connectfeed.presentation.ui.icons.strava.Logo
+import paufregi.connectfeed.presentation.ui.icons.strava.Strava
 import paufregi.connectfeed.presentation.ui.utils.iconFor
 
 data class DropdownItem(
     val text: String,
     val distance: String? = null,
     val icon: ImageVector? = null,
+    val supportingIcon: ImageVector? = null,
     val onClick: () -> Unit
 )
 
 @SuppressLint("DefaultLocale")
 @ExperimentalMaterial3Api
-fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+fun Activity.toDropdownItem(onClick: () -> Unit, stravaActivity: Activity? = null) = DropdownItem(
     text = name,
     distance = distance?.takeIf { it > 0 }?.let { Formatter.distance(it) },
     icon = iconFor(this.type),
+    supportingIcon = stravaActivity?.let { Icons.Strava.Logo },
     onClick = onClick
 )
 
@@ -105,7 +112,17 @@ fun Dropdown(
                 .fillMaxWidth(),
             label = label,
             value = selected?.text ?: "",
-            supportingText = { selected?.distance?.let { Text(text = "$it km", fontSize = 11.sp) } },
+            supportingText = {
+                if (selected?.distance != null || selected?.supportingIcon != null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = selected.distance?.let { "$it km" } ?: "", fontSize = 11.sp)
+                        selected.supportingIcon?.let { Icon(it, it.name, Modifier.size(12.dp)) }
+                    }
+                }
+            },
             leadingIcon = { selected?.icon?.let { Icon(it, it.name, Modifier.size(24.dp)) } },
             onValueChange = {},
             readOnly = true,
