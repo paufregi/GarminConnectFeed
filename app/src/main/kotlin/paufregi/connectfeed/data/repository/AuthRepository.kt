@@ -38,13 +38,15 @@ class AuthRepository @Inject constructor(
         username: String,
         password: String,
     ): Result<PreAuthToken> {
-        val csrf = garminSSO.getCSRF().toResult().getOrNull()
-        if (csrf == null) return Result.failure(Exception("Problem with the login page"))
+        val csrf = garminSSO.getCSRF()
+            .toResult()
+            .getOrNull()
+            ?: return Result.failure(Exception("Problem with the login page"))
 
         val ticket = garminSSO.login(username = username, password = password, csrf = csrf)
             .toResult()
             .getOrNull()
-        if (ticket == null) return Result.failure(Exception("Couldn't login"))
+            ?: return Result.failure(Exception("Couldn't login"))
 
         return preAuth.preauthorize(ticket)
             .toResult()
