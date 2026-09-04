@@ -1,5 +1,7 @@
 package paufregi.connectfeed.core.utils
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import retrofit2.Response
 import java.util.Calendar
 import java.util.Date
@@ -65,5 +67,11 @@ inline fun <T> Semaphore.withPermit(action: () -> T): T {
         action()
     } finally {
         release()
+    }
+}
+
+inline fun <T> MutableStateFlow<T>.updateIf(predicate: (T) -> Boolean, function: (T) -> T) {
+    if (predicate(value)) {
+        this.update(function)
     }
 }

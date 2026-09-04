@@ -3,6 +3,7 @@ package paufregi.connectfeed.core.utils
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Test
@@ -13,7 +14,6 @@ import kotlin.time.Instant
 import java.time.Instant as JInstant
 
 class ExtensionTest {
-
     @Test
     fun `Instant - truncatedToSecond`() {
         val instant = Instant.parse("2025-01-01T10:20:30.456Z")
@@ -266,5 +266,29 @@ class ExtensionTest {
             action.await()
             assertThat(actionExecuted).isTrue()
         }
+    }
+
+    @Test
+    fun `MutableStateFlow - updateIf - true`() {
+        val state = MutableStateFlow(1)
+
+        state.updateIf(
+            predicate = { true },
+            function = { it + 1 }
+        )
+
+        assertThat(state.value).isEqualTo(2)
+    }
+
+    @Test
+    fun `MutableStateFlow - updateIf - false`() {
+        val state = MutableStateFlow(1)
+
+        state.updateIf(
+            predicate = { false },
+            function = { it + 1 }
+        )
+
+        assertThat(state.value).isEqualTo(1)
     }
 }
