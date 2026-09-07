@@ -36,18 +36,18 @@ import paufregi.connectfeed.presentation.ui.utils.iconFor
 
 data class DropdownItem(
     val text: String,
-    val distance: String? = null,
     val icon: ImageVector? = null,
+    val supportingText: String? = null,
     val supportingIcon: ImageVector? = null,
-    val onClick: () -> Unit
+    val onClick: () -> Unit = {}
 )
 
 @SuppressLint("DefaultLocale")
 @ExperimentalMaterial3Api
-fun Activity.toDropdownItem(onClick: () -> Unit, stravaActivity: Activity? = null) = DropdownItem(
+fun Activity.toDropdownItem(onClick: () -> Unit = {}, stravaActivity: Activity? = null) = DropdownItem(
     text = name,
-    distance = distance?.takeIf { it > 0 }?.let { Formatter.distance(it) },
     icon = iconFor(this.type),
+    supportingText = distance?.takeIf { it > 0 }?.let { Formatter.distance(it) },
     supportingIcon = stravaActivity?.let { Icons.Strava.Logo },
     onClick = onClick
 )
@@ -69,8 +69,8 @@ fun EventType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 @ExperimentalMaterial3Api
 fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
-    distance = Formatter.distance(distance),
     icon = iconFor(type),
+    supportingText = distance.takeIf { it > 0 }?.let { Formatter.distance(it) },
     onClick = onClick
 )
 
@@ -78,8 +78,8 @@ fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 @ExperimentalMaterial3Api
 fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
-    distance = course?.let { Formatter.distance(it.distance) },
     icon = iconFor(type),
+    supportingText = course?.let { Formatter.distance(it.distance) },
     onClick = onClick
 )
 
@@ -113,13 +113,13 @@ fun Dropdown(
             label = label,
             value = selected?.text ?: "",
             supportingText = {
-                if (selected?.distance != null || selected?.supportingIcon != null) {
+                if (selected?.supportingText != null || selected?.supportingIcon != null) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(text = selected.distance?.let { "$it km" } ?: "", fontSize = 11.sp)
-                        selected.supportingIcon?.let { Icon(it, it.name, Modifier.size(12.dp)) }
+                        Text(text = selected.supportingText ?: "", fontSize = 11.sp)
+//                        selected.supportingIcon?.let { Icon(it, it.name, Modifier.size(12.dp)) }
                     }
                 }
             },
@@ -139,7 +139,7 @@ fun Dropdown(
                 DropdownMenuItem(
                     text = { Text(it.text) },
                     leadingIcon = { it.icon?.let { i -> Icon(i, i.name, Modifier.size(24.dp)) } },
-                    trailingIcon = { it.distance?.let { d -> Text(text = "$d km", fontSize = 11.sp) } },
+                    trailingIcon = { it.supportingText?.let { d -> Text(text = d, fontSize = 11.sp) } },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     onClick = {
                         it.onClick()
