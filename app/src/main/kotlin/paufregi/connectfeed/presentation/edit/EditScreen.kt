@@ -89,20 +89,21 @@ internal fun EditContent(
 
         Dropdown(
             label = { Text("Activity") },
-            selected = state.activity?.toDropdownItem { },
+            selected = state.activity?.toDropdownItem(),
             modifier = Modifier.fillMaxWidth(),
             items = state.activities
                 .filter { state.stravaActivity == null || it.type.compatible(state.stravaActivity.type) }
-                .map { it.toDropdownItem { onAction(EditAction.SetActivity(it)) } }
+                .map { it.toDropdownItem(onClick = { onAction(EditAction.SetActivity(it)) }) }
         )
         if (state.hasStrava) {
             Dropdown(
                 label = { Text("Strava activity") },
-                selected = state.stravaActivity?.toDropdownItem { },
+                selected = state.stravaActivity?.toDropdownItem(),
+
                 modifier = Modifier.fillMaxWidth(),
                 items = state.stravaActivities
                     .filter { state.activity == null || it.type.compatible(state.activity.type) }
-                    .map { it.toDropdownItem { onAction(EditAction.SetStravaActivity(it)) } }
+                    .map { it.toDropdownItem(onClick = { onAction(EditAction.SetStravaActivity(it)) }) }
             )
         }
         TextField(
