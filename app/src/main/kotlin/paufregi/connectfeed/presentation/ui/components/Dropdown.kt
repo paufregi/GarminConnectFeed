@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,6 +31,7 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.utils.Formatter
+import paufregi.connectfeed.presentation.ui.icons.IconWithStravaBadge
 import paufregi.connectfeed.presentation.ui.icons.strava.Logo
 import paufregi.connectfeed.presentation.ui.icons.strava.Strava
 import paufregi.connectfeed.presentation.ui.utils.iconFor
@@ -119,7 +121,7 @@ fun Dropdown(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(text = selected.supportingText ?: "", fontSize = 11.sp)
-//                        selected.supportingIcon?.let { Icon(it, it.name, Modifier.size(12.dp)) }
+                        selected.supportingIcon?.let { Icon(it, it.name, tint = Color.Unspecified, modifier = Modifier.size(16.dp)) }
                     }
                 }
             },
@@ -138,8 +140,8 @@ fun Dropdown(
             items.forEach {
                 DropdownMenuItem(
                     text = { Text(it.text) },
-                    leadingIcon = { it.icon?.let { i -> Icon(i, i.name, Modifier.size(24.dp)) } },
-                    trailingIcon = { it.supportingText?.let { d -> Text(text = d, fontSize = 11.sp) } },
+                    leadingIcon = { it.icon?.let { i -> IconWithStravaBadge(i, 24.dp, i.name, badge = true) } },
+                    trailingIcon = { it.supportingText?.let { t -> Text(text = t, fontSize = 11.sp) } },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     onClick = {
                         it.onClick()
