@@ -230,15 +230,6 @@ class QuickEditViewModelTest {
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.gears).isEqualTo(gears)
-            assertThat(state.activity).isNull()
-            assertThat(state.stravaActivity).isNull()
-            assertThat(state.profile).isNull()
-            assertThat(state.gear).isNull()
-            assertThat(state.description).isNull()
-            assertThat(state.water).isNull()
-            assertThat(state.effort).isNull()
-            assertThat(state.feel).isNull()
-            assertThat(state.hasStrava).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -262,15 +253,6 @@ class QuickEditViewModelTest {
             assertThat(state.stravaActivities).isEmpty()
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.gears).isEqualTo(gears)
-            assertThat(state.activity).isNull()
-            assertThat(state.stravaActivity).isNull()
-            assertThat(state.profile).isNull()
-            assertThat(state.gear).isNull()
-            assertThat(state.description).isNull()
-            assertThat(state.water).isNull()
-            assertThat(state.effort).isNull()
-            assertThat(state.feel).isNull()
-            assertThat(state.hasStrava).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -294,15 +276,6 @@ class QuickEditViewModelTest {
             assertThat(state.stravaActivities).isEmpty()
             assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.gears).isEqualTo(gears)
-            assertThat(state.activity).isNull()
-            assertThat(state.stravaActivity).isNull()
-            assertThat(state.profile).isNull()
-            assertThat(state.gear).isNull()
-            assertThat(state.description).isNull()
-            assertThat(state.water).isNull()
-            assertThat(state.effort).isNull()
-            assertThat(state.feel).isNull()
-            assertThat(state.hasStrava).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -752,7 +725,7 @@ class QuickEditViewModelTest {
     }
 
     @Test
-    fun `Save action`() = runTest {
+    fun `Save activity`() = runTest {
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
@@ -787,7 +760,42 @@ class QuickEditViewModelTest {
     }
 
     @Test
-    fun `Save action - no Strava activity`() = runTest {
+    fun `Save activity - workout failure`() = runTest {
+        coEvery { getWorkout(any()) } returns Result.failure("no workout")
+        coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
+
+        val initState = initialState.copy(
+            activity = activities[0],
+            stravaActivity = stravaActivities[0],
+            profile = profiles[0],
+            gear = gears[0],
+            description = "Tempo day",
+            water = 750,
+            effort = 50f,
+            feel = 80f
+        )
+
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
+
+        viewModel.state.test {
+            viewModel.onAction(QuickEditAction.Save)
+            skipItems(2)
+            val expectedState = initState.copy(process = ProcessState.Success("Activity updated"))
+            assertThat(awaitItem()).isEqualTo(expectedState)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify {
+            getWorkout(workout.id)
+            quickUpdateActivity(activities[0], profiles[0], 750, 80f, 50f, null, gears[0])
+            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "Tempo day", null)
+        }
+    }
+
+    @Test
+    fun `Save activity - no Strava`() = runTest {
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
@@ -961,7 +969,6 @@ class QuickEditViewModelTest {
         val expectedState = initialState.copy(
             process = ProcessState.Failure("Couldn't load activities"),
             stravaActivities = stravaActivities
-
         )
 
         viewModel = createViewModel()

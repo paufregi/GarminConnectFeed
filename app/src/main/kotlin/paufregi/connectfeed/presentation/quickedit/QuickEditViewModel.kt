@@ -32,8 +32,8 @@ import javax.inject.Inject
 class QuickEditViewModel @Inject constructor(
     val getActivities: GetActivities,
     val getStravaActivities: GetStravaActivities,
-    getProfiles: GetProfiles,
-    getGears: GetGears,
+    val getProfiles: GetProfiles,
+    val getGears: GetGears,
     val quickUpdateActivity: QuickUpdateActivity,
     val quickUpdateStravaActivity: QuickUpdateStravaActivity,
     val getWorkout: GetWorkout
@@ -46,7 +46,7 @@ class QuickEditViewModel @Inject constructor(
     }
 
     private val _state = MutableStateFlow(QuickEditState())
-    private var autoLoad = true
+        private var autoLoad = true
 
     val state = combine(_state, getProfiles(), getGears()) {
             state, profiles, gears -> state.copy(profiles = profiles, gears = gears)
@@ -79,8 +79,6 @@ class QuickEditViewModel @Inject constructor(
 
     fun onAction(action: QuickEditAction) = when (action) {
         is QuickEditAction.SetActivity -> _state.update {
-            Log.i("QuickEditViewModel", "SetActivity: ${action.activity}")
-            Log.i("QuickEditViewModel", "StravaActivty: ${it.stravaActivities.find { a -> a.match(action.activity) }}")
             it.copy(
                 activity = action.activity,
                 stravaActivity = it.stravaActivities.find { a -> a.match(action.activity) },
