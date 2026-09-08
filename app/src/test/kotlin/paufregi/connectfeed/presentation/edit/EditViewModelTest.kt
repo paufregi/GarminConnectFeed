@@ -53,6 +53,19 @@ class EditViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
+    private fun createViewModel() = EditViewModel(
+        getActivities,
+        getStravaActivities,
+        getGears,
+        getEventTypes,
+        getCourses,
+        getWorkout,
+        updateActivity,
+        updateStravaActivity,
+    )
+
+    val workout = Workout(1, "workout")
+
     val activities = listOf(
         Activity(
             id = 1L,
@@ -62,7 +75,7 @@ class EditViewModelTest {
             distance = 10234.00,
             trainingEffect = "recovery",
             date = Instant.fromEpochMilliseconds(1735693200000),
-            workoutId = 1
+            workoutId = workout.id
         ),
         Activity(
             id = 2L,
@@ -71,8 +84,7 @@ class EditViewModelTest {
             eventType = EventType.Training,
             distance = 17803.00,
             trainingEffect = "base",
-            date = Instant.fromEpochMilliseconds(1729705968000),
-            workoutId = 2
+            date = Instant.fromEpochMilliseconds(1729705968000)
         ),
         Activity(
             id = 3L,
@@ -81,8 +93,7 @@ class EditViewModelTest {
             eventType = EventType.Training,
             distance = 5234.00,
             trainingEffect = "base",
-            date = Instant.fromEpochMilliseconds(1729705968000),
-            workoutId = 3
+            date = Instant.fromEpochMilliseconds(1729705968000)
         ),
     )
 
@@ -112,31 +123,24 @@ class EditViewModelTest {
 
     val eventTypes = listOf(
         EventType.Training,
-        EventType.Recreation
+        EventType.Recreation,
     )
 
     val courses = listOf(
         Course(id = 1, name = "course1", distance = 1234.00, type = ActivityType.Running),
-        Course(id = 2, name = "course2", distance = 12134.00, type = ActivityType.Cycling)
+        Course(id = 2, name = "course2", distance = 12134.00, type = ActivityType.Cycling),
     )
 
-    val workout = Workout(1, "workout")
-
     val gears = listOf(
-        Gear(id = "bike-1", name = "Bike 1", type = GearType.Bike),
         Gear(id = "shoe-1", name = "Shoe 1", type = GearType.Shoe),
+        Gear(id = "bike-1", name = "Bike 1", type = GearType.Bike),
         Gear(id = "unknown-1", name = "Unknown 1", type = GearType.Unknown),
     )
 
-    private fun createViewModel() = EditViewModel(
-        getActivities,
-        getStravaActivities,
-        getEventTypes,
-        getCourses,
-        updateActivity,
-        updateStravaActivity,
-        getWorkout,
-        getGears
+    val initialState = EditState(
+        process = ProcessState.Idle,
+        gears = gears,
+        eventTypes = eventTypes
     )
 
     @Before
@@ -147,11 +151,8 @@ class EditViewModelTest {
 
     @After
     fun tearDown() {
-        verify {
-            getGears()
-            getEventTypes()
-        }
-        confirmVerified(getActivities, getStravaActivities, getEventTypes, getCourses, updateActivity, updateStravaActivity, getWorkout, getGears)
+        verify { getGears() }
+        confirmVerified(getActivities, getStravaActivities, updateActivity, updateStravaActivity, getWorkout, getGears)
         clearAllMocks()
     }
 
@@ -208,11 +209,13 @@ class EditViewModelTest {
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
             assertThat(state.eventTypes).isEqualTo(eventTypes)
             assertThat(state.courses).isEqualTo(courses)
+            assertThat(state.gears).isEqualTo(gears)
             assertThat(state.activity).isNull()
             assertThat(state.stravaActivity).isNull()
             assertThat(state.name).isNull()
             assertThat(state.eventType).isNull()
             assertThat(state.course).isNull()
+            assertThat(state.gear).isNull()
             assertThat(state.description).isNull()
             assertThat(state.water).isNull()
             assertThat(state.effort).isNull()
@@ -242,19 +245,7 @@ class EditViewModelTest {
             assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't load Garmin activities"))
             assertThat(state.activities).isEmpty()
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
-            assertThat(state.eventTypes).isEqualTo(eventTypes)
             assertThat(state.courses).isEqualTo(courses)
-            assertThat(state.activity).isNull()
-            assertThat(state.stravaActivity).isNull()
-            assertThat(state.name).isNull()
-            assertThat(state.eventType).isNull()
-            assertThat(state.course).isNull()
-            assertThat(state.description).isNull()
-            assertThat(state.water).isNull()
-            assertThat(state.effort).isNull()
-            assertThat(state.feel).isNull()
-            assertThat(state.trainingEffect).isFalse()
-            assertThat(state.hasStrava).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -278,19 +269,7 @@ class EditViewModelTest {
             assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't load Strava activities"))
             assertThat(state.activities).isEqualTo(activities)
             assertThat(state.stravaActivities).isEmpty()
-            assertThat(state.eventTypes).isEqualTo(eventTypes)
             assertThat(state.courses).isEqualTo(courses)
-            assertThat(state.activity).isNull()
-            assertThat(state.stravaActivity).isNull()
-            assertThat(state.name).isNull()
-            assertThat(state.eventType).isNull()
-            assertThat(state.course).isNull()
-            assertThat(state.description).isNull()
-            assertThat(state.water).isNull()
-            assertThat(state.effort).isNull()
-            assertThat(state.feel).isNull()
-            assertThat(state.trainingEffect).isFalse()
-            assertThat(state.hasStrava).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -314,19 +293,7 @@ class EditViewModelTest {
             assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't load courses"))
             assertThat(state.activities).isEqualTo(activities)
             assertThat(state.stravaActivities).isEqualTo(stravaActivities)
-            assertThat(state.eventTypes).isEqualTo(eventTypes)
             assertThat(state.courses).isEmpty()
-            assertThat(state.activity).isNull()
-            assertThat(state.stravaActivity).isNull()
-            assertThat(state.name).isNull()
-            assertThat(state.eventType).isNull()
-            assertThat(state.course).isNull()
-            assertThat(state.description).isNull()
-            assertThat(state.water).isNull()
-            assertThat(state.effort).isNull()
-            assertThat(state.feel).isNull()
-            assertThat(state.trainingEffect).isFalse()
-            assertThat(state.hasStrava).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -350,19 +317,7 @@ class EditViewModelTest {
             assertThat(state.process).isEqualTo(ProcessState.Failure("Couldn't load Garmin & Strava activities & courses"))
             assertThat(state.activities).isEmpty()
             assertThat(state.stravaActivities).isEmpty()
-            assertThat(state.eventTypes).isEqualTo(eventTypes)
             assertThat(state.courses).isEmpty()
-            assertThat(state.activity).isNull()
-            assertThat(state.stravaActivity).isNull()
-            assertThat(state.name).isNull()
-            assertThat(state.eventType).isNull()
-            assertThat(state.course).isNull()
-            assertThat(state.description).isNull()
-            assertThat(state.water).isNull()
-            assertThat(state.effort).isNull()
-            assertThat(state.feel).isNull()
-            assertThat(state.trainingEffect).isFalse()
-            assertThat(state.hasStrava).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -371,836 +326,675 @@ class EditViewModelTest {
             getStravaActivities(false)
             getCourses(false)
         }
-        verify { getEventTypes() }
     }
 
     @Test
     fun `Set activity`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
+        val initState = initialState.copy(
+            activity = activities[1],
+            name = "name",
+            eventType = eventTypes[0],
+            course = courses[0],
+            gear = gears[0],
+            description = "description",
+            water = 100,
+            effort = 50f,
+            feel = 75f
+        )
+
+        val expectedState = initialState.copy(
+            activity = activities[0],
+        )
 
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetActivity(activities[0]))
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                activity = activities[0],
-                stravaActivity = stravaActivities[0],
-            )
-            assertThat(state).isEqualTo(expectedState)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
-        }
-    }
-
-    @Test
-    fun `Set activity after Strava activity & course - matching`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
-        viewModel = createViewModel()
-
-        viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[0]))
-            viewModel.onAction(EditAction.SetCourse(courses[0]))
-            viewModel.onAction(EditAction.SetActivity(activities[2]))
-            skipItems(2)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                activity = activities[2],
-                stravaActivity = stravaActivities[0],
-                course = courses[0],
-            )
-            assertThat(state).isEqualTo(expectedState)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
-        }
-    }
-
-    @Test
-    fun `Set activity & & course Strava activity - no matching`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
-        viewModel = createViewModel()
-
-        viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[0]))
-            viewModel.onAction(EditAction.SetCourse(courses[0]))
-            viewModel.onAction(EditAction.SetActivity(activities[1]))
-            skipItems(2)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                activity = activities[1],
-                stravaActivity = stravaActivities[1],
-                course = null,
-            )
-            assertThat(state).isEqualTo(expectedState)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
-        }
-    }
-
-    @Test
-    fun `Set Strava activity`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
-        viewModel = createViewModel()
-
-        viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[0]))
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                activity = activities[0],
-                stravaActivity = stravaActivities[0],
-            )
-            assertThat(state).isEqualTo(expectedState)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
-        }
-    }
-
-    @Test
-    fun `Set Strava activity after activity & course - matching`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
-        viewModel = createViewModel()
-
-        viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetActivity(activities[0]))
-            viewModel.onAction(EditAction.SetCourse(courses[0]))
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[2]))
-            skipItems(2)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                activity = activities[0],
-                stravaActivity = stravaActivities[2],
-                course = courses[0],
-            )
-            assertThat(state).isEqualTo(expectedState)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
-        }
-    }
-
-    @Test
-    fun `Set Strava activity after activity & course - no matching`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
-        viewModel = createViewModel()
-
-        viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetActivity(activities[0]))
-            viewModel.onAction(EditAction.SetCourse(courses[0]))
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[1]))
-            skipItems(2)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                activity = activities[1],
-                stravaActivity = stravaActivities[1],
-                course = null,
-            )
-            assertThat(state).isEqualTo(expectedState)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
-        }
-    }
-
-    @Test
-    fun `Set course`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
-        viewModel = createViewModel()
-
-        viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetCourse(courses[0]))
-            val state = awaitItem()
-            val expectedState = initialState.copy(course = courses[0])
-            assertThat(state).isEqualTo(expectedState)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
-        }
-    }
-
-    @Test
-    fun `Set course after activity & Strava activity - matching`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
-        viewModel = createViewModel()
-
-        viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetActivity(activities[0]))
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[2]))
-            viewModel.onAction(EditAction.SetCourse(courses[0]))
-            skipItems(2)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                activity = activities[0],
-                stravaActivity = stravaActivities[2],
-                course = courses[0],
-            )
-            assertThat(state).isEqualTo(expectedState)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
-        }
-    }
-
-    @Test
-    fun `Set course after activity & Strava activity - no matching`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
-        viewModel = createViewModel()
-
-        viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetActivity(activities[1]))
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[1]))
-            viewModel.onAction(EditAction.SetCourse(courses[0]))
             skipItems(1)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                activity = null,
-                stravaActivity = null,
-                course = courses[0],
-            )
-            assertThat(state).isEqualTo(expectedState)
+            viewModel.onAction(EditAction.SetActivity(activities[0]))
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
+    }
 
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
+    @Test
+    fun `Set activity with Strava`() = runTest {
+        val initState = initialState.copy(
+            stravaActivities = stravaActivities,
+        )
+
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetActivity(activities[0]))
+            val expectedState = initState.copy(
+                activity = activities[0],
+                stravaActivity = stravaActivities[0],
+            )
+            assertThat(awaitItem()).isEqualTo(expectedState)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Set activity with Strava - no match`() = runTest {
+        val initState = initialState.copy(
+            stravaActivities = stravaActivities.drop(1),
+        )
+
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetActivity(activities[0]))
+            val expectedState = initState.copy(
+                activity = activities[0],
+            )
+            assertThat(awaitItem()).isEqualTo(expectedState)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Set name`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
+        val initState = initialState.copy(activity = activities[0])
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetName("name"))
-            val state = awaitItem()
-            val expectedState = initialState.copy(name = "name")
-            assertThat(state).isEqualTo(expectedState)
+            skipItems(1)
+            viewModel.onAction(EditAction.SetName("Trail run"))
+            val expectedState = initState.copy(name = "Trail run")
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
         }
     }
 
     @Test
     fun `Set name - blank`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
+        val initState = initialState.copy(activity = activities[0], name = "Trail run")
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetName("test"))
-            viewModel.onAction(EditAction.SetName(""))
             skipItems(1)
-            val state = awaitItem()
-            val expectedState = initialState.copy(name = null)
-            assertThat(state).isEqualTo(expectedState)
+            viewModel.onAction(EditAction.SetName(""))
+            val expectedState = initState.copy(name = null)
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
         }
     }
 
     @Test
-    fun `Set description`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
+    fun `Set name - no activity`() = runTest {
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetDescription("description"))
-            val state = awaitItem()
-            val expectedState = initialState.copy(description = "description")
-            assertThat(state).isEqualTo(expectedState)
+            skipItems(1)
+            viewModel.onAction(EditAction.SetName("Trail run"))
+            expectNoEvents()
             cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
         }
     }
 
     @Test
     fun `Set event type`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
+        val initState = initialState.copy(activity = activities[0])
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
+            skipItems(1)
             viewModel.onAction(EditAction.SetEventType(EventType.Recreation))
-            val state = awaitItem()
-            val expectedState = initialState.copy(eventType = EventType.Recreation)
-            assertThat(state).isEqualTo(expectedState)
+            val expectedState = initState.copy(eventType = EventType.Recreation)
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
+    }
 
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
+    @Test
+    fun `Set event type - no activity`() = runTest {
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetEventType(EventType.Recreation))
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Set course`() = runTest {
+        val initState = initialState.copy(activity = activities[0])
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetCourse(courses[0]))
+            val expectedState = initState.copy(course = courses[0])
+            assertThat(awaitItem()).isEqualTo(expectedState)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Set course - incompatible`() = runTest {
+        val initState = initialState.copy(activity = activities[0])
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetCourse(courses[1]))
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Set course - no activity`() = runTest {
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetCourse(courses[1]))
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Set gear`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
+        val initState = initialState.copy(activity = activities[0])
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
+            skipItems(1)
             viewModel.onAction(EditAction.SetGear(gears[0]))
-            val state = awaitItem()
-            val expectedState = initialState.copy(gear = gears[0])
-            assertThat(state).isEqualTo(expectedState)
+            val expectedState = initState.copy(gear = gears[0])
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
-        }
-        verify { getEventTypes() }
     }
 
     @Test
-    fun `Set activity clears incompatible gear`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
+    fun `Set gear - incompatible`() = runTest {
+        val initState = initialState.copy(activity = activities[0])
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetGear(gears[1]))
-            viewModel.onAction(EditAction.SetActivity(activities[1]))
             skipItems(1)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                activity = activities[1],
-                stravaActivity = stravaActivities[1],
-                gear = null,
-            )
-            assertThat(state).isEqualTo(expectedState)
+            viewModel.onAction(EditAction.SetGear(gears[1]))
+            expectNoEvents()
             cancelAndIgnoreRemainingEvents()
         }
-
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
-        }
-        verify { getEventTypes() }
     }
 
     @Test
-    fun `Set Strava activity clears incompatible gear`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
+    fun `Set gear - no activity`() = runTest {
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetGear(gears[1]))
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[1]))
             skipItems(1)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                activity = activities[1],
-                stravaActivity = stravaActivities[1],
-                gear = null,
-            )
-            assertThat(state).isEqualTo(expectedState)
+            viewModel.onAction(EditAction.SetGear(gears[1]))
+            expectNoEvents()
             cancelAndIgnoreRemainingEvents()
         }
+    }
 
-        coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
+    @Test
+    fun `Set description`() = runTest {
+        val initState = initialState.copy(activity = activities[0])
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetDescription("Tempo day"))
+            val expectedState = initState.copy(description = "Tempo day")
+            assertThat(awaitItem()).isEqualTo(expectedState)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Set description - no activity`() = runTest {
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetDescription("Tempo day"))
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Set water`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
+        val initState = initialState.copy(activity = activities[0])
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetWater(100))
-            val state = awaitItem()
-            val expectedState = initialState.copy(water = 100)
-            assertThat(state).isEqualTo(expectedState)
+            skipItems(1)
+            viewModel.onAction(EditAction.SetWater(750))
+            val expectedState = initState.copy(water = 750)
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
+    }
 
-        coVerify{
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
+    @Test
+    fun `Set water - no activity`() = runTest {
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetWater(750))
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Set effort`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
+        val initState = initialState.copy(activity = activities[0])
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
+            skipItems(1)
             viewModel.onAction(EditAction.SetEffort(50f))
-            val state = awaitItem()
-            val expectedState = initialState.copy(effort = 50f)
-            assertThat(state).isEqualTo(expectedState)
+            val expectedState = initState.copy(effort = 50f)
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
+    }
 
-        coVerify{
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
+    @Test
+    fun `Set effort - no activity`() = runTest {
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetEffort(50f))
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Set feel`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
+        val initState = initialState.copy(activity = activities[0])
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
+            skipItems(1)
             viewModel.onAction(EditAction.SetFeel(80f))
-            val state = awaitItem()
-            val expectedState = initialState.copy(feel = 80f)
-            assertThat(state).isEqualTo(expectedState)
+            val expectedState = initState.copy(feel = 80f)
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
+    }
 
-        coVerify{
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
+    @Test
+    fun `Set feel - no activity`() = runTest {
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetFeel(80f))
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Set training effect`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
-
+        val initState = initialState.copy(activity = activities[0])
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
+            skipItems(1)
             viewModel.onAction(EditAction.SetTrainingEffect(true))
-            val state = awaitItem()
-            val expectedState = initialState.copy(trainingEffect = true)
-            assertThat(state).isEqualTo(expectedState)
+            val expectedState = initState.copy(trainingEffect = true)
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
+    }
 
-        coVerify{
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
+    @Test
+    fun `Set training effect - no activity`() = runTest {
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetTrainingEffect(true))
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Save activity`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
+        val initState = initialState.copy(
+            activity = activities[0],
+            stravaActivity = stravaActivities[0],
+            name = "Name",
+            eventType = EventType.Training,
+            course = courses[0],
+            gear = gears[1],
+            description = "description",
+            water = 100,
+            effort = 50f,
+            feel = 80f,
+            trainingEffect = true,
+        )
+
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetActivity(activities[0]))
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[0]))
-            viewModel.onAction(EditAction.SetCourse(courses[0]))
-            viewModel.onAction(EditAction.SetGear(gears[1]))
-            viewModel.onAction(EditAction.SetEventType(eventTypes[0]))
-            viewModel.onAction(EditAction.SetName("name"))
-            viewModel.onAction(EditAction.SetDescription("description"))
-            viewModel.onAction(EditAction.SetWater(100))
-            viewModel.onAction(EditAction.SetEffort(50f))
-            viewModel.onAction(EditAction.SetFeel(80f))
-            viewModel.onAction(EditAction.SetTrainingEffect(true))
             viewModel.onAction(EditAction.Save)
-            skipItems(11)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                process = ProcessState.Success("Activity updated"),
-                activity = activities[0],
-                stravaActivity = stravaActivities[0],
-                name = "name",
-                eventType = eventTypes[0],
-                course = courses[0],
-                gear = gears[1],
-                description = "description",
-                water = 100,
-                effort = 50f,
-                feel = 80f,
-                trainingEffect = true,
-            )
-            assertThat(state).isEqualTo(expectedState)
+            skipItems(2)
+            val expectedState = initState.copy(process = ProcessState.Success("Activity updated"))
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify{
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
+        coVerify {
             getWorkout(workout.id)
-            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f, workout, gears[1])
-            updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true, workout)
+            updateActivity(
+                activities[0],
+                "Name",
+                EventType.Training,
+                courses[0],
+                100,
+                80f,
+                50f,
+                workout,
+                gears[1],
+            )
+            updateStravaActivity(
+                stravaActivities[0],
+                "Name",
+                "description",
+                EventType.Training,
+                "recovery",
+                true,
+                workout,
+            )
         }
     }
 
     @Test
-    fun `Save activity - failed to load workout`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
+    fun `Save activity - no strava`() = runTest {
+        coEvery { getWorkout(any()) } returns Result.success(workout)
+        coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+
+        val initState = initialState.copy(
+            activity = activities[0],
+            name = "Name",
+            eventType = EventType.Training,
+            course = courses[0],
+            gear = gears[1],
+            description = "description",
+            water = 100,
+            effort = 50f,
+            feel = 80f,
+            trainingEffect = true,
+        )
+
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
+
+        viewModel.state.test {
+            viewModel.onAction(EditAction.Save)
+            skipItems(2)
+            val expectedState = initState.copy(process = ProcessState.Success("Activity updated"))
+            assertThat(awaitItem()).isEqualTo(expectedState)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify {
+            getWorkout(workout.id)
+            updateActivity(
+                activities[0],
+                "Name",
+                EventType.Training,
+                courses[0],
+                100,
+                80f,
+                50f,
+                workout,
+                gears[1],
+            )
+        }
+    }
+
+    @Test
+    fun `Save activity - workout failure`() = runTest {
         coEvery { getWorkout(any()) } returns Result.failure("No workout")
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
+        val initState = initialState.copy(
+            activity = activities[0],
+            stravaActivity = stravaActivities[0],
+            name = "Name",
+            eventType = EventType.Training,
+            course = courses[0],
+            description = "description",
+        )
+
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetActivity(activities[0]))
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[0]))
-            viewModel.onAction(EditAction.SetCourse(courses[0]))
-            viewModel.onAction(EditAction.SetEventType(eventTypes[0]))
-            viewModel.onAction(EditAction.SetName("name"))
-            viewModel.onAction(EditAction.SetDescription("description"))
-            viewModel.onAction(EditAction.SetWater(100))
-            viewModel.onAction(EditAction.SetEffort(50f))
-            viewModel.onAction(EditAction.SetFeel(80f))
-            viewModel.onAction(EditAction.SetTrainingEffect(true))
             viewModel.onAction(EditAction.Save)
-            skipItems(10)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                process = ProcessState.Success("Activity updated"),
-                activity = activities[0],
-                stravaActivity = stravaActivities[0],
-                name = "name",
-                eventType = eventTypes[0],
-                course = courses[0],
-                gear = null,
-                description = "description",
-                water = 100,
-                effort = 50f,
-                feel = 80f,
-                trainingEffect = true,
-            )
-            assertThat(state).isEqualTo(expectedState)
+            skipItems(2)
+            val expectedState = initState.copy(process = ProcessState.Success("Activity updated"))
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify{
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
+        coVerify {
             getWorkout(workout.id)
-            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f, null, null)
-            updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true, null)
+            updateActivity(
+                activities[0],
+                "Name",
+                EventType.Training,
+                courses[0],
+                null,
+                null,
+                null,
+                null,
+                null,
+            )
+            updateStravaActivity(
+                stravaActivities[0],
+                "Name",
+                "description",
+                EventType.Training,
+                "recovery",
+                false,
+                null,
+            )
         }
     }
 
     @Test
-    fun `Save activity - failure`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
+    fun `Save activity - Garmin failure`() = runTest {
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
         coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
+        val initState = initialState.copy(
+            activity = activities[0],
+            stravaActivity = stravaActivities[0],
+            name = "Name",
+            eventType = EventType.Training,
+            course = courses[0],
+            description = "description",
+        )
+
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetActivity(activities[0]))
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[0]))
-            viewModel.onAction(EditAction.SetCourse(courses[0]))
-            viewModel.onAction(EditAction.SetEventType(eventTypes[0]))
-            viewModel.onAction(EditAction.SetName("name"))
-            viewModel.onAction(EditAction.SetDescription("description"))
-            viewModel.onAction(EditAction.SetWater(100))
-            viewModel.onAction(EditAction.SetEffort(50f))
-            viewModel.onAction(EditAction.SetFeel(80f))
-            viewModel.onAction(EditAction.SetTrainingEffect(true))
             viewModel.onAction(EditAction.Save)
-            skipItems(10)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                process = ProcessState.Failure("Couldn't update Garmin activity"),
-                activity = activities[0],
-                stravaActivity = stravaActivities[0],
-                name = "name",
-                eventType = eventTypes[0],
-                course = courses[0],
-                description = "description",
-                water = 100,
-                effort = 50f,
-                feel = 80f,
-                trainingEffect = true,
-            )
-            assertThat(state).isEqualTo(expectedState)
+            skipItems(2)
+            val expectedState = initState.copy(process = ProcessState.Failure("Couldn't update Garmin activity"))
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify{
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
+        coVerify {
             getWorkout(workout.id)
-            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f, workout, null)
-            updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true, workout)
+            updateActivity(
+                activities[0],
+                "Name",
+                EventType.Training,
+                courses[0],
+                null,
+                null,
+                null,
+                workout,
+                null,
+            )
+            updateStravaActivity(
+                stravaActivities[0],
+                "Name",
+                "description",
+                EventType.Training,
+                "recovery",
+                false,
+                workout,
+            )
         }
     }
 
     @Test
     fun `Save activity - Strava failure`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
-        coEvery {
-            updateStravaActivity(
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } returns Result.failure("error")
+        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
+
+        val initState = initialState.copy(
+            activity = activities[0],
+            stravaActivity = stravaActivities[0],
+            name = "Name",
+            eventType = EventType.Training,
+            course = courses[0],
+            description = "description",
+        )
 
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetActivity(activities[0]))
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[0]))
-            viewModel.onAction(EditAction.SetCourse(courses[0]))
-            viewModel.onAction(EditAction.SetEventType(eventTypes[0]))
-            viewModel.onAction(EditAction.SetName("name"))
-            viewModel.onAction(EditAction.SetDescription("description"))
-            viewModel.onAction(EditAction.SetWater(100))
-            viewModel.onAction(EditAction.SetEffort(50f))
-            viewModel.onAction(EditAction.SetFeel(80f))
-            viewModel.onAction(EditAction.SetTrainingEffect(true))
             viewModel.onAction(EditAction.Save)
-            skipItems(10)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                process = ProcessState.Failure("Couldn't update Strava activity"),
-                activity = activities[0],
-                stravaActivity = stravaActivities[0],
-                name = "name",
-                eventType = eventTypes[0],
-                course = courses[0],
-                description = "description",
-                water = 100,
-                effort = 50f,
-                feel = 80f,
-                trainingEffect = true,
-            )
-            assertThat(state).isEqualTo(expectedState)
+            skipItems(2)
+            val expectedState = initState.copy(process = ProcessState.Failure("Couldn't update Strava activity"))
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
 
         coVerify {
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
             getWorkout(workout.id)
-            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f, workout, null)
+            updateActivity(
+                activities[0],
+                "Name",
+                EventType.Training,
+                courses[0],
+                null,
+                null,
+                null,
+                workout,
+                null,
+            )
             updateStravaActivity(
                 stravaActivities[0],
-                "name",
+                "Name",
                 "description",
-                eventTypes[0],
+                EventType.Training,
                 "recovery",
-                true,
-                workout
+                false,
+                workout,
             )
         }
     }
 
     @Test
-    fun `Save activity - both failure`() = runTest {
-        coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
-        coEvery { getCourses(any()) } returns Result.success(courses)
+    fun `Save activity - Garmin and Strava failure`() = runTest {
+        coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
         coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
-        coEvery { getWorkout(any()) } returns Result.success(workout)
+
+        val initState = initialState.copy(
+            activity = activities[0],
+            stravaActivity = stravaActivities[0],
+            name = "Name",
+            eventType = EventType.Training,
+            course = courses[0],
+            description = "description",
+        )
 
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
-            viewModel.onAction(EditAction.SetActivity(activities[0]))
-            viewModel.onAction(EditAction.SetStravaActivity(stravaActivities[0]))
-            viewModel.onAction(EditAction.SetCourse(courses[0]))
-            viewModel.onAction(EditAction.SetEventType(eventTypes[0]))
-            viewModel.onAction(EditAction.SetName("name"))
-            viewModel.onAction(EditAction.SetDescription("description"))
-            viewModel.onAction(EditAction.SetWater(100))
-            viewModel.onAction(EditAction.SetEffort(50f))
-            viewModel.onAction(EditAction.SetFeel(80f))
-            viewModel.onAction(EditAction.SetTrainingEffect(true))
             viewModel.onAction(EditAction.Save)
-            skipItems(10)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                process = ProcessState.Failure("Couldn't update Garmin & Strava activity"),
-                activity = activities[0],
-                stravaActivity = stravaActivities[0],
-                name = "name",
-                eventType = eventTypes[0],
-                course = courses[0],
-                description = "description",
-                water = 100,
-                effort = 50f,
-                feel = 80f,
-                trainingEffect = true,
-            )
-            assertThat(state).isEqualTo(expectedState)
+            skipItems(2)
+            val expectedState = initState.copy(process = ProcessState.Failure("Couldn't update Garmin & Strava activity"))
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify{
-            getActivities(false)
-            getStravaActivities(false)
-            getCourses(false)
-            updateActivity(activities[0], "name", eventTypes[0], courses[0], 100, 80f, 50f, workout, null)
-            updateStravaActivity(stravaActivities[0], "name", "description", eventTypes[0], "recovery", true, workout)
+        coVerify {
             getWorkout(workout.id)
+            updateActivity(
+                activities[0],
+                "Name",
+                EventType.Training,
+                courses[0],
+                null,
+                null,
+                null,
+                workout,
+                null,
+            )
+            updateStravaActivity(
+                stravaActivities[0],
+                "Name",
+                "description",
+                EventType.Training,
+                "recovery",
+                false,
+                workout,
+            )
         }
     }
 
@@ -1210,38 +1004,224 @@ class EditViewModelTest {
         coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
         coEvery { getCourses(any()) } returns Result.success(courses)
 
+        val initState = initialState.copy(
+            activity = activities[0],
+            stravaActivity = stravaActivities[0],
+            name = "Name",
+            eventType = EventType.Training,
+            course = courses[0],
+            gear = gears[1],
+            description = "description",
+            water = 100,
+            effort = 50f,
+            feel = 80f,
+            trainingEffect = true,
+        )
+
+        val expectedState = initialState.copy(
+            activities = activities,
+            stravaActivities = stravaActivities,
+            courses = courses,
+        )
+
         viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
 
         viewModel.state.test {
-            val initialState = awaitItem()
             viewModel.onAction(EditAction.Restart)
-            skipItems(2)
-            val state = awaitItem()
-            val expectedState = initialState.copy(
-                process = ProcessState.Idle,
-                activity = null,
-                stravaActivity = null,
-                name = null,
-                eventType = null,
-                course = null,
-                gear = null,
-                description = null,
-                water = null,
-                effort = null,
-                feel = null,
-                trainingEffect = false,
-            )
-            assertThat(state).isEqualTo(expectedState)
+            skipItems(3)
+            assertThat(awaitItem()).isEqualTo(expectedState)
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify{
-            getActivities(false)
+        coVerify {
             getActivities(true)
-            getStravaActivities(false)
             getStravaActivities(true)
-            getCourses(false)
             getCourses(true)
         }
     }
+
+    @Test
+    fun `Restart action - fails to reload activities`() = runTest {
+        coEvery { getActivities(any()) } returns Result.failure("error")
+        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getCourses(any()) } returns Result.success(courses)
+
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState.copy(activity = activities[0], gear = gears[0]))
+
+        val initState = initialState.copy(
+            activity = activities[0],
+            stravaActivity = stravaActivities[0],
+            name = "Name",
+            eventType = EventType.Training,
+            course = courses[0],
+            gear = gears[1],
+            description = "description",
+            water = 100,
+            effort = 50f,
+            feel = 80f,
+            trainingEffect = true,
+        )
+
+        val expectedState = initialState.copy(
+            process = ProcessState.Failure("Couldn't load Garmin activities"),
+            stravaActivities = stravaActivities,
+            courses = courses,
+        )
+
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
+
+        viewModel.state.test {
+            viewModel.onAction(EditAction.Restart)
+            skipItems(3)
+            assertThat(awaitItem()).isEqualTo(expectedState)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify {
+            getActivities(true)
+            getStravaActivities(true)
+            getCourses(true)
+        }
+    }
+
+    @Test
+    fun `Restart action - fails to reload strava activities`() = runTest {
+        coEvery { getActivities(any()) } returns Result.success(activities)
+        coEvery { getStravaActivities(any()) } returns Result.failure("error")
+        coEvery { getCourses(any()) } returns Result.success(courses)
+
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState.copy(activity = activities[0], gear = gears[0]))
+
+        val initState = initialState.copy(
+            activity = activities[0],
+            stravaActivity = stravaActivities[0],
+            name = "Name",
+            eventType = EventType.Training,
+            course = courses[0],
+            gear = gears[1],
+            description = "description",
+            water = 100,
+            effort = 50f,
+            feel = 80f,
+            trainingEffect = true,
+        )
+
+        val expectedState = initialState.copy(
+            process = ProcessState.Failure("Couldn't load Strava activities"),
+            activities = activities,
+            courses = courses,
+        )
+
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
+
+        viewModel.state.test {
+            viewModel.onAction(EditAction.Restart)
+            skipItems(3)
+            assertThat(awaitItem()).isEqualTo(expectedState)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify {
+            getActivities(true)
+            getStravaActivities(true)
+            getCourses(true)
+        }
+    }
+
+    @Test
+    fun `Restart action - fails to reload all activities`() = runTest {
+        coEvery { getActivities(any()) } returns Result.failure("error")
+        coEvery { getStravaActivities(any()) } returns Result.failure("error")
+        coEvery { getCourses(any()) } returns Result.success(courses)
+
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState.copy(activity = activities[0], gear = gears[0]))
+
+        val initState = initialState.copy(
+            activity = activities[0],
+            stravaActivity = stravaActivities[0],
+            name = "Name",
+            eventType = EventType.Training,
+            course = courses[0],
+            gear = gears[1],
+            description = "description",
+            water = 100,
+            effort = 50f,
+            feel = 80f,
+            trainingEffect = true,
+        )
+
+        val expectedState = initialState.copy(
+            process = ProcessState.Failure("Couldn't load Garmin & Strava activities"),
+            courses = courses,
+        )
+
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
+
+        viewModel.state.test {
+            viewModel.onAction(EditAction.Restart)
+            skipItems(3)
+            assertThat(awaitItem()).isEqualTo(expectedState)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify {
+            getActivities(true)
+            getStravaActivities(true)
+            getCourses(true)
+        }
+    }
+
+    @Test
+    fun `Restart action - fails to reload courses`() = runTest {
+        coEvery { getActivities(any()) } returns Result.success(activities)
+        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getCourses(any()) } returns Result.failure("error")
+
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initialState.copy(activity = activities[0], gear = gears[0]))
+
+        val initState = initialState.copy(
+            activity = activities[0],
+            stravaActivity = stravaActivities[0],
+            name = "Name",
+            eventType = EventType.Training,
+            course = courses[0],
+            gear = gears[1],
+            description = "description",
+            water = 100,
+            effort = 50f,
+            feel = 80f,
+            trainingEffect = true,
+        )
+
+        val expectedState = initialState.copy(
+            process = ProcessState.Failure("Couldn't load courses"),
+            activities = activities,
+            stravaActivities = stravaActivities,
+        )
+
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
+
+        viewModel.state.test {
+            viewModel.onAction(EditAction.Restart)
+            skipItems(3)
+            assertThat(awaitItem()).isEqualTo(expectedState)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify {
+            getActivities(true)
+            getStravaActivities(true)
+            getCourses(true)
+        }
+    }
+
 }

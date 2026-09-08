@@ -1,8 +1,10 @@
 package paufregi.connectfeed.presentation.edit
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,25 +23,36 @@ import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.usecases.UpdateStravaActivity
 import paufregi.connectfeed.core.utils.runCatchingResult
+import paufregi.connectfeed.core.utils.updateIf
+import paufregi.connectfeed.presentation.quickedit.QuickEditState
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
 @HiltViewModel
+@ExperimentalCoroutinesApi
 class EditViewModel @Inject constructor(
     val getActivities: GetActivities,
     val getStravaActivities: GetStravaActivities,
+    val getGears: GetGears,
     val getEventTypes: GetEventTypes,
     val getCourses: GetCourses,
+    val getWorkout: GetWorkout,
     val updateActivity: UpdateActivity,
     val updateStravaActivity: UpdateStravaActivity,
-    val getWorkout: GetWorkout,
-    val getGears: GetGears,
 ) : ViewModel() {
+
+    @VisibleForTesting
+    internal fun seedStateForTest(state: EditState) {
+        _state.value = state
+        autoLoad = false
+    }
+
+    private var autoLoad = true
 
     private val _state = MutableStateFlow(EditState())
 
     val state = combine(_state, getGears()) { state, gears -> state.copy(gears = gears) }
-        .onStart { load() }
+        .onStart { if (autoLoad) load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), EditState())
 
     private fun load(force: Boolean = false) = viewModelScope.launch {
@@ -84,29 +97,35 @@ class EditViewModel @Inject constructor(
     fun onAction(action: EditAction) = when (action) {
         is EditAction.SetActivity -> _state.update { it.copy(
             activity = action.activity,
-            stravaActivity = it.stravaActivity?.takeIf { a -> a.type.compatible(action.activity.type) } ?: it.stravaActivities.find { a -> a.match(action.activity) },
-            course = it.course?.takeIf { c -> c.type.compatible(action.activity.type) && action.activity.type.allowCourse },
-            gear = it.gear?.takeIf { g -> g.type.compatible(action.activity.type) }
+            stravaActivity = it.stravaActivities.find { a -> a.match(action.activity) },
+            course = null,
+            gear = null,
+            eventType = null,
+            name = null,
+            description = null,
+            water = null,
+            effort = null,
+            feel = null,
+            trainingEffect = false,
         ) }
-        is EditAction.SetStravaActivity -> _state.update { it.copy(
-            stravaActivity = action.activity,
-            activity = it.activity?.takeIf { a -> a.type.compatible(action.activity.type) } ?: it.activities.find { a -> a.match(action.activity) },
-            course = it.course?.takeIf { c -> c.type.compatible(action.activity.type) && action.activity.type.allowCourse },
-            gear = it.gear?.takeIf { g -> g.type.compatible(action.activity.type) }
-        ) }
-        is EditAction.SetDescription -> _state.update { it.copy(description = action.description) }
-        is EditAction.SetName -> _state.update { it.copy(name = action.name?.takeIf { n -> n.isNotEmpty() }) }
-        is EditAction.SetEventType -> _state.update { it.copy(eventType = action.eventType) }
-        is EditAction.SetCourse -> _state.update { it.copy(
-            course = action.course,
-            activity = it.activity?.takeIf { a -> action.course == null || action.course.type.compatible(a.type) },
-            stravaActivity = it.stravaActivity?.takeIf { a -> action.course == null || action.course.type.compatible(a.type) },
-        ) }
-        is EditAction.SetGear -> _state.update { it.copy(gear = action.gear) }
-        is EditAction.SetWater -> _state.update { it.copy(water = action.water) }
-        is EditAction.SetEffort -> _state.update { it.copy(effort = action.effort?.takeIf { e -> e > 0 }) }
-        is EditAction.SetFeel -> _state.update { it.copy(feel = action.feel) }
-        is EditAction.SetTrainingEffect -> _state.update { it.copy(trainingEffect = action.trainingEffect) }
+        is EditAction.SetDescription -> _state.updateIf( { it.activity != null } )
+            { it.copy(description = action.description) }
+        is EditAction.SetName -> _state.updateIf( { it.activity != null } )
+            { it.copy(name = action.name?.takeIf { n -> n.isNotEmpty() }) }
+        is EditAction.SetEventType -> _state.updateIf( { it.activity != null } )
+            { it.copy(eventType = action.eventType) }
+        is EditAction.SetCourse ->  _state.updateIf( { it.activity != null && action.course != null && action.course.type.compatible(it.activity.type) })
+            { it.copy( course = action.course ) }
+        is EditAction.SetGear -> _state.updateIf( { it.activity != null && action.gear != null && action.gear.type.compatible(it.activity.type) } )
+            { it.copy(gear = action.gear) }
+        is EditAction.SetWater -> _state.updateIf( { it.activity != null } )
+            { it.copy(water = action.water) }
+        is EditAction.SetEffort -> _state.updateIf( { it.activity != null } )
+            { it.copy(effort = action.effort?.takeIf { e -> e > 0 }) }
+        is EditAction.SetFeel -> _state.updateIf( { it.activity != null } )
+            { it.copy(feel = action.feel) }
+        is EditAction.SetTrainingEffect -> _state.updateIf( { it.activity != null } )
+            { it.copy(trainingEffect = action.trainingEffect) }
         is EditAction.Save -> saveAction()
         is EditAction.Restart -> restartAction()
     }
@@ -133,9 +152,9 @@ class EditViewModel @Inject constructor(
             }
 
             val asyncUpdateStravaActivity = async {
-                if (state.value.hasStrava && state.value.stravaActivity != null) {
+                state.value.stravaActivity?.let {
                     updateStravaActivity(
-                        stravaActivity = state.value.stravaActivity,
+                        stravaActivity = it,
                         name = state.value.name ?: state.value.activity?.name,
                         description = state.value.description,
                         eventType = state.value.eventType,
@@ -143,9 +162,7 @@ class EditViewModel @Inject constructor(
                         trainingEffectFlag = state.value.trainingEffect,
                         workout = workout
                     )
-                } else {
-                    Result.success(Unit)
-                }
+                }?: Result.success(Unit)
             }
 
             runCatchingResult { asyncUpdateActivity.await() }
