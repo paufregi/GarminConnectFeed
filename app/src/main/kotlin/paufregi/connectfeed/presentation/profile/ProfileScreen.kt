@@ -168,6 +168,22 @@ internal fun ProfileContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(
+                    onClick = { onAction(ProfileAction.SetGear(!state.profile.gear)) }
+                )
+        ) {
+            Checkbox(
+                modifier = Modifier.testTag("gear_checkbox"),
+                checked = state.profile.gear,
+                onCheckedChange = { onAction(ProfileAction.SetGear(it)) },
+            )
+            Text(text = "Set gear")
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
                     onClick = { onAction(ProfileAction.SetTrainingEffect(!state.profile.trainingEffect)) }
                 )
         ) {

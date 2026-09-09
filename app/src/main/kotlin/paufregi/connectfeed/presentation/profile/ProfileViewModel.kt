@@ -71,6 +71,7 @@ class ProfileViewModel @Inject constructor(
         is ProfileAction.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = action.water)) }
         is ProfileAction.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = action.rename)) }
         is ProfileAction.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = action.customWater)) }
+        is ProfileAction.SetGear -> _state.update { it.copy(profile = it.profile.copy(gear = action.gear)) }
         is ProfileAction.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = action.feelAndEffort)) }
         is ProfileAction.SetTrainingEffect -> _state.update { it.copy(profile = it.profile.copy(trainingEffect = action.trainingEffect)) }
         is ProfileAction.Save -> saveAction()
