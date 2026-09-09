@@ -499,6 +499,22 @@ class EditViewModelTest {
     }
 
     @Test
+    fun `Set course - not allowed for activity type`() = runTest {
+        val swimmingActivity = activities[0].copy(type = ActivityType.Swimming)
+        val swimmingCourse = Course(id = 3, name = "swim course", distance = 1000.00, type = ActivityType.Swimming)
+        val initState = initialState.copy(activity = swimmingActivity)
+        viewModel = createViewModel()
+        viewModel.seedStateForTest(initState)
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(EditAction.SetCourse(swimmingCourse))
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `Set course - no activity`() = runTest {
         viewModel = createViewModel()
         viewModel.seedStateForTest(initialState)
