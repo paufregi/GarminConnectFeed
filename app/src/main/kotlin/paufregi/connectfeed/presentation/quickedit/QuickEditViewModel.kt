@@ -91,7 +91,7 @@ class QuickEditViewModel @Inject constructor(
         }
         is QuickEditAction.SetProfile -> _state.updateIf(
             { it.activity != null && action.profile.type.compatible(it.activity.type) }
-        ) { it.copy(profile = action.profile) }
+        ) { it.copy(profile = action.profile, water = action.profile.water) }
         is QuickEditAction.SetGear -> _state.updateIf(
             { it.activity != null && it.profile != null && action.gear.type.compatible(it.activity.type) }
         ) { it.copy(gear = action.gear) }
