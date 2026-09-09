@@ -71,7 +71,5 @@ inline fun <T> Semaphore.withPermit(action: () -> T): T {
 }
 
 inline fun <T> MutableStateFlow<T>.updateIf(predicate: (T) -> Boolean, function: (T) -> T) {
-    if (predicate(value)) {
-        this.update(function)
-    }
+    update { current -> if (predicate(current)) function(current) else current }
 }
