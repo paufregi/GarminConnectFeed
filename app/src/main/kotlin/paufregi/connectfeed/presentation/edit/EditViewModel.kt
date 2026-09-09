@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.edit
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -95,25 +94,20 @@ class EditViewModel @Inject constructor(
     }
 
     fun onAction(action: EditAction) = when (action) {
-        is EditAction.SetActivity -> {
-            _state.update {
-                it.copy(
-                    activity = action.activity,
-                    stravaActivity = it.stravaActivities.find { a -> a.match(action.activity) },
-                    course = null,
-                    gear = null,
-                    eventType = null,
-                    name = null,
-                    description = null,
-                    water = null,
-                    effort = null,
-                    feel = null,
-                    trainingEffect = false,
-                )
-            }
-            Log.i("EditViewModel", "Strava activities: ${state.value.stravaActivities}")
-            Log.i("EditViewModel", "Strava selected: ${state.value.stravaActivity}")
-
+        is EditAction.SetActivity -> _state.update {
+            it.copy(
+                activity = action.activity,
+                stravaActivity = it.stravaActivities.find { a -> a.match(action.activity) },
+                course = null,
+                gear = null,
+                eventType = null,
+                name = null,
+                description = null,
+                water = null,
+                effort = null,
+                feel = null,
+                trainingEffect = false,
+            )
         }
         is EditAction.SetDescription -> _state.updateIf( { it.activity != null } )
             { it.copy(description = action.description) }
