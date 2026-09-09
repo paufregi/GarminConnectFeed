@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.edit.EditScreen
 import paufregi.connectfeed.presentation.gears.GearsScreen
@@ -26,6 +27,7 @@ import paufregi.connectfeed.presentation.ui.theme.Theme
 
 @AndroidEntryPoint
 @ExperimentalMaterial3Api
+@ExperimentalCoroutinesApi
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()

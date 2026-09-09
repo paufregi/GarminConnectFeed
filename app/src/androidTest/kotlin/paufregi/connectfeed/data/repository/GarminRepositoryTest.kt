@@ -184,7 +184,7 @@ class GarminRepositoryTest {
                 name = "Bondcliff",
                 distance = 23676.0,
                 type = CoreActivityType.StravaRide,
-                date = Instant.parse("2018-04-30T12:35:51Z")
+                date = Instant.parse("2024-10-24T07:15:30Z")
                 )
         )
 

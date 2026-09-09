@@ -64,7 +64,7 @@ class StravaTest {
                 name = "Bondcliff",
                 distance = 23676.5,
                 sportType = "Ride",
-                startDate = "2018-04-30T12:35:51Z"
+                startDate = "2024-10-24T07:15:30Z"
             )
         )
 
