@@ -217,8 +217,7 @@ internal fun EditContent(
 
             Button(
                 text = "Save",
-                enabled = state.activity != null &&
-                        (!state.hasStrava || state.stravaActivity != null),
+                enabled = state.activity != null,
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()

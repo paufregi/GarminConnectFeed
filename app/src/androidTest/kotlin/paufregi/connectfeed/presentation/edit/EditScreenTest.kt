@@ -30,7 +30,7 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 @RunWith(AndroidJUnit4::class)
 class EditScreenTest {
 
-    val activities = listOf(
+    private val activities = listOf(
         Activity(
             id = 1L,
             name = "Running",
@@ -47,7 +47,7 @@ class EditScreenTest {
         )
     )
 
-    val stravaActivities = listOf(
+    private val stravaActivities = listOf(
         Activity(
             id = 1L,
             name = "Running",
@@ -62,179 +62,178 @@ class EditScreenTest {
         )
     )
 
-    val eventTypes = listOf(
+    private val eventTypes = listOf(
         EventType.Training,
         EventType.Transportation
     )
 
-    val courses = listOf(
+    private val courses = listOf(
         Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
         Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType.Cycling),
     )
 
-    val gears = listOf(
+    private val gears = listOf(
         Gear(id = "bike-1", name = "Bike 1", type = GearType.Bike),
         Gear(id = "shoe-1", name = "Shoe 1", type = GearType.Shoe),
     )
+
+    private val incompatibleGears = listOf(
+        Gear(id = "shoe-2", name = "Shoe 2", type = GearType.Shoe)
+    )
     
     @Test
-    fun `Default values`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Base screen`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            EditContent(state = EditState(
-                process = ProcessState.Idle,
-                activities = activities,
-                eventTypes = eventTypes,
-                courses = courses
-            ))
+            EditContent(
+                state = EditState(
+                    process = ProcessState.Idle,
+                    activities = activities,
+                    eventTypes = eventTypes,
+                    courses = courses
+                )
+            )
         }
+
         onNodeWithText("Activity").assertIsDisplayed()
-        onNodeWithText("Name").assertIsDisplayed()
-        onNodeWithText("Event type").assertIsDisplayed()
+        onNodeWithText("Name").assertIsNotDisplayed()
+        onNodeWithText("Event type").assertIsNotDisplayed()
         onNodeWithText("Course").assertIsNotDisplayed()
         onNodeWithText("Gear").assertIsNotDisplayed()
         onNodeWithText("Description").assertIsNotDisplayed()
-        onNodeWithText("Water").assertIsDisplayed()
-        onNodeWithTag("feel_text").assertTextContains("None selected")
-        onNodeWithTag("effort_text").assertTextContains("0 - None selected")
-        onNodeWithTag("navigation_bar").assertIsDisplayed()
-        onNodeWithText("Edit").assertIsDisplayed()
-        onNodeWithText("Quick Edit").assertIsDisplayed()
-        onNodeWithText("Strava Sync").assertIsNotDisplayed()
+        onNodeWithText("Water").assertIsNotDisplayed()
+        onNodeWithTag("feel_text").assertIsNotDisplayed()
+        onNodeWithTag("effort_text").assertIsNotDisplayed()
+        onNodeWithTag("training_effect_checkbox").assertIsNotDisplayed()
         onNodeWithText("Reset").assertIsEnabled()
         onNodeWithText("Save").assertIsNotEnabled()
     }
 
     @Test
-    fun `Default values - with Strava`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Activity selected`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            EditContent(state = EditState(
-                process = ProcessState.Idle,
-                activities = activities,
-                stravaActivities = stravaActivities,
-                eventTypes = eventTypes,
-                courses = courses
-            ))
+            EditContent(
+                state = EditState(
+                    process = ProcessState.Idle,
+                    activities = activities,
+                    eventTypes = eventTypes,
+                    courses = courses,
+                    gears = gears,
+                    activity = activities[0],
+                    eventType = eventTypes[0],
+                    course = courses[0],
+                    gear = gears[1],
+                    name = "New name",
+                    water = 10,
+                    feel = 50f,
+                    effort = 80f,
+                )
+            )
         }
+
+        onNodeWithText("Activity").assertIsDisplayed()
+        onNodeWithText("Name").assertTextContains("New name")
+        onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
+        onNodeWithText("Course").assertTextContains(courses[0].name)
+        onNodeWithText("Gear").assertTextContains(gears[1].name)
+        onNodeWithText("Description").assertIsNotDisplayed()
+        onNodeWithText("Water").assertTextContains("10")
+        onNodeWithTag("feel_text").assertTextContains("Normal")
+        onNodeWithTag("effort_text").assertTextContains("8 - Very Hard")
+        onNodeWithTag("training_effect_checkbox").assertIsNotDisplayed()
+        onNodeWithText("Reset").assertIsEnabled()
+        onNodeWithText("Save").assertIsEnabled()
+    }
+
+    @Test
+    fun `Activity selected - with Strava`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
+            EditContent(
+                state = EditState(
+                    process = ProcessState.Idle,
+                    activities = activities,
+                    stravaActivities = stravaActivities,
+                    eventTypes = eventTypes,
+                    courses = courses,
+                    gears = gears,
+                    activity = activities[0],
+                    stravaActivity = stravaActivities[0],
+                    eventType = eventTypes[0],
+                    course = courses[0],
+                    gear = gears[1],
+                    description = "random text",
+                    water = 10,
+                    feel = 50f,
+                    effort = 80f,
+                    trainingEffect = true,
+                )
+            )
+        }
+
+        onNodeWithText("Description").assertTextContains("random text")
+        onNodeWithTag("training_effect_checkbox").assertIsOn()
+        onNodeWithText("Save").assertIsEnabled()
+    }
+
+    @Test
+    fun `Activity selected - no gears available`() = runAndroidComposeUiTest<ComponentActivity> {
+        setContent {
+            EditContent(
+                state = EditState(
+                    process = ProcessState.Idle,
+                    activities = activities,
+                    eventTypes = eventTypes,
+                    courses = courses,
+                    gears = incompatibleGears,
+                    activity = activities[1],
+                )
+            )
+        }
+
         onNodeWithText("Activity").assertIsDisplayed()
         onNodeWithText("Name").assertIsDisplayed()
         onNodeWithText("Event type").assertIsDisplayed()
-        onNodeWithText("Course").assertIsNotDisplayed()
+        onNodeWithText("Course").assertIsDisplayed()
+        onNodeWithText("Gear").assertIsNotDisplayed()
         onNodeWithText("Description").assertIsNotDisplayed()
-        onNodeWithText("Water").assertIsDisplayed()
-        onNodeWithTag("feel_text").assertTextContains("None selected")
-        onNodeWithTag("effort_text").assertTextContains("0 - None selected")
-        onNodeWithTag("training_effect_checkbox").assertIsNotDisplayed()
-        onNodeWithTag("navigation_bar").assertIsDisplayed()
-        onNodeWithText("Edit").assertIsDisplayed()
-        onNodeWithText("Quick Edit").assertIsDisplayed()
-        onNodeWithText("Reset").assertIsEnabled()
-        onNodeWithText("Save").assertIsNotEnabled()
     }
 
     @Test
-    fun `Values selected`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Loading spinner`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            EditContent(state = EditState(
-                process = ProcessState.Idle,
-                activities = activities,
-                name = "New name",
-                eventTypes = eventTypes,
-                courses = courses,
-                gears = gears,
-                activity = activities[0],
-                eventType = eventTypes[0],
-                course = courses[0],
-                gear = gears[1],
-                water = 10,
-                feel = 50f,
-                effort = 80f,
-            ))
+            EditContent(
+                state = EditState(
+                    process = ProcessState.Processing,
+                )
+            )
         }
-        onNodeWithText("Activity").assertTextContains(activities[0].name)
-        onNodeWithText("Name").assertTextContains("New name")
-        onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
-        onNodeWithText("Course").assertTextContains(courses[0].name)
-        onNodeWithText("Gear").assertTextContains(gears[1].name)
-        onNodeWithText("Description").assertIsNotDisplayed()
-        onNodeWithText("Water").assertTextContains("10")
-        onNodeWithTag("feel_text").assertTextContains("Normal")
-        onNodeWithTag("effort_text").assertTextContains("8 - Very Hard")
-        onNodeWithTag("navigation_bar").assertIsDisplayed()
-        onNodeWithText("Edit").assertIsDisplayed()
-        onNodeWithText("Quick Edit").assertIsDisplayed()
-        onNodeWithText("Reset").assertIsEnabled()
-        onNodeWithText("Save").assertIsEnabled()
-    }
 
-    @Test
-    fun `Values selected - with Strava`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
-            EditContent(state = EditState(
-                process = ProcessState.Idle,
-                activities = activities,
-                stravaActivities = stravaActivities,
-                eventTypes = eventTypes,
-                name = "New name",
-                courses = courses,
-                gears = gears,
-                activity = activities[0],
-                stravaActivity = stravaActivities[0],
-                eventType = eventTypes[0],
-                course = courses[0],
-                gear = gears[1],
-                description = "random text",
-                water = 10,
-                feel = 50f,
-                effort = 80f,
-                trainingEffect = true
-            ))
-        }
-        onNodeWithText("Activity").assertTextContains(activities[0].name)
-        onNodeWithText("Strava activity").assertTextContains(stravaActivities[0].name)
-        onNodeWithText("Name").assertTextContains("New name")
-        onNodeWithText("Event type").assertTextContains(eventTypes[0].name)
-        onNodeWithText("Course").assertTextContains(courses[0].name)
-        onNodeWithText("Gear").assertTextContains(gears[1].name)
-        onNodeWithText("Description").assertTextContains("random text")
-        onNodeWithText("Water").assertTextContains("10")
-        onNodeWithTag("feel_text").assertTextContains("Normal")
-        onNodeWithTag("effort_text").assertTextContains("8 - Very Hard")
-        onNodeWithTag("training_effect_checkbox").assertIsOn()
-        onNodeWithTag("navigation_bar").assertIsDisplayed()
-        onNodeWithText("Edit").assertIsDisplayed()
-        onNodeWithText("Quick Edit").assertIsDisplayed()
-        onNodeWithText("Reset").assertIsEnabled()
-        onNodeWithText("Save").assertIsEnabled()
-    }
-
-    @Test
-    fun `Loading spinner` () = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
-            EditContent(state = EditState(
-                process = ProcessState.Processing,
-            ))
-        }
         onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
-    fun `Update - success` () = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Update success`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            EditContent(state = EditState(
-                process = ProcessState.Success("Activity updated"),
-            ))
+            EditContent(
+                state = EditState(
+                    process = ProcessState.Success("Activity updated"),
+                )
+            )
         }
+
         onNodeWithTag("status_info_text").assertIsDisplayed()
         onNodeWithText("Activity updated").assertIsDisplayed()
     }
 
     @Test
-    fun `Update - failure` () = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Update failure`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            EditContent(state = EditState(
-                process = ProcessState.Failure("Couldn't update activity"),
-            ))
+            EditContent(
+                state = EditState(
+                    process = ProcessState.Failure("Couldn't update activity"),
+                )
+            )
         }
+
         onNodeWithTag("status_info_text").assertIsDisplayed()
         onNodeWithText("Couldn't update activity").assertIsDisplayed()
     }
