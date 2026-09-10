@@ -31,7 +31,6 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.utils.Formatter
-import paufregi.connectfeed.presentation.ui.icons.IconWithStravaBadge
 import paufregi.connectfeed.presentation.ui.icons.strava.Logo
 import paufregi.connectfeed.presentation.ui.icons.strava.Strava
 import paufregi.connectfeed.presentation.ui.utils.iconFor
@@ -140,7 +139,7 @@ fun Dropdown(
             items.forEach {
                 DropdownMenuItem(
                     text = { Text(it.text) },
-                    leadingIcon = { it.icon?.let { i -> IconWithStravaBadge(i, 24.dp, i.name, badge = true) } },
+                    leadingIcon = { it.icon?.let { i -> Icon(i, i.name, Modifier.size(24.dp)) } },
                     trailingIcon = { it.supportingText?.let { t -> Text(text = t, fontSize = 11.sp) } },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     onClick = {
