@@ -18,6 +18,7 @@ import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.Strava
+import paufregi.connectfeed.data.api.strava.models.toGearList
 import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
@@ -97,6 +98,11 @@ class GarminRepository @Inject constructor(
         garminConnect.getGears()
             .toResult()
             .map { r -> r.map { it.toCore() } }
+
+    suspend fun getStravaGears(): Result<List<Gear>> =
+        strava.getAthlete()
+            .toResult()
+            .map { it.toGearList() }
 
 
     suspend fun updateActivity(

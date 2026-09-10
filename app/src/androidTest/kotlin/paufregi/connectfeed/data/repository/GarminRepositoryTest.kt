@@ -249,6 +249,31 @@ class GarminRepositoryTest {
         assertThat(res.getOrNull()).isEqualTo(expected)
     }
 
+    @Test
+    fun `Get strava gears`() = runTest {
+        stravaStore.saveToken(stravaAuthToken)
+
+        val expected = listOf(
+            Gear(
+                id = "shoe-1",
+                name = "Shoe 1",
+                type = GearType.Shoe,
+                distance = 1234
+            ),
+            Gear(
+                id = "bike-1",
+                name = "Bike 1",
+                type = GearType.Bike,
+                distance = 5678
+            ),
+        )
+
+        val res = repo.getStravaGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
+    }
+
 
     @Test
     fun `Update activity`() = runTest {

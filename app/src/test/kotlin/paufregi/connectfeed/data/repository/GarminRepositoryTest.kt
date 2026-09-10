@@ -29,6 +29,9 @@ import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import paufregi.connectfeed.data.api.garmin.models.Workout
 import paufregi.connectfeed.data.api.strava.Strava
+import paufregi.connectfeed.data.api.strava.models.Athlete
+import paufregi.connectfeed.data.api.strava.models.Bike
+import paufregi.connectfeed.data.api.strava.models.Shoe
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.GearEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
@@ -1044,6 +1047,103 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isFalse()
         coVerify { strava.updateActivity(activity.id, expectedRequest) }
+    }
+
+    @Test
+    fun `Get strava gears`() = runTest {
+        val gears = listOf(
+            CoreGear(
+                id = "shoe-1",
+                name = "shoe 1",
+                type = GearType.Shoe,
+                distance = 1000
+            ),
+            CoreGear(
+                id = "bike-1",
+                name = "bike 1",
+                type = GearType.Bike,
+                distance = 2000
+            ),
+        )
+        val athlete = Athlete(
+            id = 1,
+            shoes = listOf(Shoe(id = "shoe-1", name = "shoe 1", distance = 1000)),
+            bikes = listOf(Bike(id = "bike-1", name = "bike 1", distance = 2000)),
+        )
+        coEvery { strava.getAthlete() } returns Response.success(athlete)
+
+        val res = repo.getStravaGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(gears)
+
+        coVerify { strava.getAthlete() }
+    }
+
+    @Test
+    fun `Get strava gears - empty shoes`() = runTest {
+        val athlete = Athlete(
+            id = 1,
+            shoes = emptyList(),
+            bikes = listOf(Bike(id = "bike-1", name = "bike 1", distance = 2000)),
+        )
+        coEvery { strava.getAthlete() } returns Response.success(athlete)
+
+        val res = repo.getStravaGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(
+            listOf(CoreGear(id = "bike-1", name = "bike 1", type = GearType.Bike, distance = 2000))
+        )
+
+        coVerify { strava.getAthlete() }
+    }
+
+    @Test
+    fun `Get strava gears - empty bikes`() = runTest {
+        val athlete = Athlete(
+            id = 1,
+            shoes = listOf(Shoe(id = "shoe-1", name = "shoe 1", distance = 1000)),
+            bikes = emptyList(),
+        )
+        coEvery { strava.getAthlete() } returns Response.success(athlete)
+
+        val res = repo.getStravaGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(
+            listOf(CoreGear(id = "shoe-1", name = "shoe 1", type = GearType.Shoe, distance = 1000))
+        )
+
+        coVerify { strava.getAthlete() }
+    }
+
+    @Test
+    fun `Get strava gears - both empty`() = runTest {
+        val athlete = Athlete(
+            id = 1,
+            shoes = emptyList(),
+            bikes = emptyList(),
+        )
+        coEvery { strava.getAthlete() } returns Response.success(athlete)
+
+        val res = repo.getStravaGears()
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreGear>())
+
+        coVerify { strava.getAthlete() }
+    }
+
+    @Test
+    fun `Get strava gears - failure`() = runTest {
+        coEvery { strava.getAthlete() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.getStravaGears()
+
+        assertThat(res.isSuccess).isFalse()
+
+        coVerify { strava.getAthlete() }
     }
 
     @Test
