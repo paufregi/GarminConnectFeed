@@ -7,18 +7,18 @@ project-tailored feedback on pull requests in this repository.
 
 ## Project at a Glance
 
-| Aspect | Detail |
-|---|---|
-| Language | Kotlin (JVM 17, `kotlinPlugin 2.4.10`) |
-| UI | Jetpack Compose + Material 3 |
-| DI | Hilt 2.60.1 |
-| Local storage | Room 2.8.4 (`GarminDatabase`, `GarminDao`, `ProfileEntity`) |
-| Network | Retrofit 3 / OkHttp 5 (Garmin OAuth1, Strava OAuth2) |
-| State | `StateFlow` + `stateIn(SharingStarted.WhileSubscribed)` |
-| Navigation | Compose Navigation, sealed `Route` objects |
+| Aspect | Detail                                                                   |
+|---|--------------------------------------------------------------------------|
+| Language | Kotlin (JVM 17, `kotlinPlugin 2.4.10`)                                   |
+| UI | Jetpack Compose + Material 3                                             |
+| DI | Hilt 2.60.1                                                              |
+| Local storage | Room 2.8.4 (`GarminDatabase`, `GarminDao`, `ProfileEntity`)              |
+| Network | Retrofit 3 / OkHttp 5 (Garmin OAuth1, Strava OAuth2)                     |
+| State | `StateFlow` + `stateIn(SharingStarted.WhileSubscribed)`                  |
+| Navigation | Compose Navigation, sealed `Route` objects                               |
 | UI process state | `ProcessState` sealed class (`Idle`, `Processing`, `Success`, `Failure`) |
-| Tests (unit) | JUnit4 + MockK + Turbine + Truth (`./gradlew test`) |
-| Tests (UI/instrumented) | `@HiltAndroidTest` Compose tests (`./gradlew pixel9ProCheck`) |
+| Tests (unit) | JUnit4 + MockK + Turbine + Truth (`./gradlew test`)                      |
+| Tests (UI/instrumented) | `@HiltAndroidTest` Compose tests (`./gradlew pixel10Check`)           |
 
 ---
 

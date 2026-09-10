@@ -61,7 +61,7 @@ Run in order. Fix all failures before considering the task done.
 ./gradlew lint
 
 # 4. Instrumented UI/integration tests (run when touching UI, Room, or Hilt wiring)
-./gradlew pixel9ProCheck
+./gradlew pixel10Check
 ```
 
 Tests live in `app/src/test/` (unit) and `app/src/androidTest/` (instrumented).

@@ -33,5 +33,5 @@ Additionally, ConnectFeed provides a user-friendly way to update Garmin and Stra
 
 #### Android Instrumented Tests
 ```
-./gradlew pixel9ProCheck
+./gradlew pixel10Check
 ```

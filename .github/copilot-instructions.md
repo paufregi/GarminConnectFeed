@@ -48,7 +48,7 @@ Use these instructions when generating or modifying code in this repository.
 - Add or update tests for behavior changes.
 - Prefer existing test patterns:
   - Unit tests: `./gradlew test`
-  - Instrumented tests: `./gradlew pixel9ProCheck`
+  - Instrumented tests: `./gradlew pixel10Check`
   - Compose UI tests with Hilt where relevant (`@HiltAndroidTest`)
 - Keep tests near the feature/module being changed (`app/src/test` or `app/src/androidTest`).
 
