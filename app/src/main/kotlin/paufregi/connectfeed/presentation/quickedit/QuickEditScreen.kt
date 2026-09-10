@@ -28,6 +28,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.presentation.HomeNavigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.CustomSlider
@@ -51,6 +52,7 @@ import paufregi.connectfeed.presentation.ui.utils.launchStrava
 
 @Composable
 @ExperimentalMaterial3Api
+@ExperimentalCoroutinesApi
 internal fun QuickEditScreen(nav: NavHostController = rememberNavController()) {
     val viewModel = hiltViewModel<QuickEditViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -86,109 +88,100 @@ internal fun QuickEditContent(
         val focusManager = LocalFocusManager.current
         val interactionSource = remember { MutableInteractionSource() }
 
+
         Dropdown(
             label = { Text("Activity") },
-            selected = state.activity?.toDropdownItem { },
+            selected = state.activity?.toDropdownItem(stravaActivity = state.stravaActivity),
             modifier = Modifier.fillMaxWidth(),
-            items = state.activities
-                .filter { state.stravaActivity == null || it.type.compatible(state.stravaActivity.type) }
-                .map {
-                    it.toDropdownItem {
-                        onAction(QuickEditAction.SetActivity(it))
-                    }
-                }
+            items = state.activities.map {
+                it.toDropdownItem(onClick = {
+                    onAction(QuickEditAction.SetActivity(it))
+                })
+            }
         )
-        if (state.hasStrava) {
+
+        if (state.activity != null) {
             Dropdown(
-                label = { Text("Strava activity") },
-                selected = state.stravaActivity?.toDropdownItem { },
+                label = { Text("Profile") },
+                selected = state.profile?.toDropdownItem { },
                 modifier = Modifier.fillMaxWidth(),
-                items = state.stravaActivities
-                    .filter { state.activity == null || it.type.compatible(state.activity.type) }
-                    .map {
-                        it.toDropdownItem {
-                            onAction(QuickEditAction.SetStravaActivity(it))
-                        }
-                    }
-            )
-        }
-        Dropdown(
-            label = { Text("Profile") },
-            selected = state.profile?.toDropdownItem { },
-            modifier = Modifier.fillMaxWidth(),
-            items = state.profiles
-                .filter {
-                    (state.activity == null || it.type.compatible(state.activity.type)) &&
-                        (state.stravaActivity == null || it.type.compatible(state.stravaActivity.type))
-                }
-                .map {
-                    it.toDropdownItem { onAction(QuickEditAction.SetProfile(it)) }
-                }
-        )
-        if (state.activity != null && state.gears.any { it.type.compatible(state.activity.type) } ) {
-            Dropdown(
-                label = { Text("Gear") },
-                selected = state.gear?.toDropdownItem { },
-                modifier = Modifier.fillMaxWidth(),
-                items = state.gears
+                items = state.profiles
                     .filter { it.type.compatible(state.activity.type) }
-                    .map { it.toDropdownItem { onAction(QuickEditAction.SetGear(it)) } }
+                    .map {
+                        it.toDropdownItem { onAction(QuickEditAction.SetProfile(it)) }
+                    }
             )
-        }
-        if (state.stravaActivity != null) {
-            TextField(
-                label = { Text("Description") },
-                value = state.description ?: "",
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                onValueChange = { onAction(QuickEditAction.SetDescription(it)) }
-            )
-        }
-        if (state.profile?.customWater == true) {
-            TextField(
-                label = { Text("Water") },
-                value = state.water?.toString() ?: "",
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                onValueChange = { onAction(QuickEditAction.SetWater(it.toIntOrNull())) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-        }
-        if (state.profile?.feelAndEffort == true) {
-            Column {
-                IconRadioGroup(
-                    options = listOf(
-                        IconRadioItem(0f, Icons.Connect.FaceVerySad),
-                        IconRadioItem(25f, Icons.Connect.FaceSad),
-                        IconRadioItem(50f, Icons.Connect.FaceNormal),
-                        IconRadioItem(75f, Icons.Connect.FaceHappy),
-                        IconRadioItem(100f, Icons.Connect.FaceVeryHappy),
-                    ),
-                    selected = state.feel,
-                    onClick = { onAction(QuickEditAction.SetFeel(it)) }
+
+            if (state.profile != null) {
+                TextField(
+                    label = { Text("Description") },
+                    value = state.description ?: "",
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                    onValueChange = { onAction(QuickEditAction.SetDescription(it)) }
                 )
-                TextFeel(
-                    state.feel,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(vertical = 10.dp)
-                )
+
+                if (state.profile.gear && state.gears.any { it.type.compatible(state.activity.type) }){
+                    Dropdown(
+                        label = { Text("Gear") },
+                        selected = state.gear?.toDropdownItem { },
+                        modifier = Modifier.fillMaxWidth(),
+                        items = state.gears
+                            .filter { it.type.compatible(state.activity.type) }
+                            .map { it.toDropdownItem { onAction(QuickEditAction.SetGear(it)) } }
+                    )
+                }
+
+                if (state.profile.customWater) {
+                    TextField(
+                        label = { Text("Water") },
+                        value = state.water?.toString() ?: "",
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                        onValueChange = { onAction(QuickEditAction.SetWater(it.toIntOrNull())) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                }
+
+                if (state.profile.feelAndEffort) {
+                    Column {
+                        IconRadioGroup(
+                            options = listOf(
+                                IconRadioItem(0f, Icons.Connect.FaceVerySad),
+                                IconRadioItem(25f, Icons.Connect.FaceSad),
+                                IconRadioItem(50f, Icons.Connect.FaceNormal),
+                                IconRadioItem(75f, Icons.Connect.FaceHappy),
+                                IconRadioItem(100f, Icons.Connect.FaceVeryHappy),
+                            ),
+                            selected = state.feel,
+                            onClick = { onAction(QuickEditAction.SetFeel(it)) }
+                        )
+                        TextFeel(
+                            state.feel,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(vertical = 10.dp)
+                        )
+                    }
+                    Column {
+                        Slider(
+                            value = state.effort ?: 0f,
+                            onValueChange = { onAction(QuickEditAction.SetEffort(it.toInt().toFloat())) },
+                            valueRange = 0f..100f,
+                            steps = 9,
+                            interactionSource = interactionSource,
+                            track = CustomSlider.track,
+                            thumb = CustomSlider.thumb(interactionSource),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        TextEffort(
+                            state.effort ?: 0f,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    }
+                }
             }
-            Column {
-                Slider(
-                    value = state.effort ?: 0f,
-                    onValueChange = { onAction(QuickEditAction.SetEffort(it.toInt().toFloat())) },
-                    valueRange = 0f..100f,
-                    steps = 9,
-                    interactionSource = interactionSource,
-                    track = CustomSlider.track,
-                    thumb = CustomSlider.thumb(interactionSource),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                TextEffort(
-                    state.effort ?: 0f,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-            }
         }
+
+
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth().padding(20.dp)
@@ -200,8 +193,7 @@ internal fun QuickEditContent(
 
             Button(
                 text = "Save",
-                enabled = state.activity != null && state.profile != null &&
-                        (!state.hasStrava || state.stravaActivity != null),
+                enabled = state.activity != null && state.profile != null,
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()

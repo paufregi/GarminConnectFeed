@@ -45,6 +45,8 @@ class ProfileScreenTest {
         onNodeWithTag("custom_water_checkbox").assertIsOff()
         onNodeWithText("Feel & Effort").assertIsDisplayed()
         onNodeWithTag("feel_and_effort_checkbox").assertIsOff()
+        onNodeWithText("Set gear").assertIsDisplayed()
+        onNodeWithTag("gear_checkbox").assertIsOff()
         onNodeWithText("Training effect").assertIsDisplayed()
         onNodeWithTag("training_effect_checkbox").assertIsOff()
         onNodeWithText("Cancel").assertIsDisplayed()
@@ -74,6 +76,7 @@ class ProfileScreenTest {
                     water = 10,
                     rename = true,
                     customWater = true,
+                    gear = true,
                     feelAndEffort = true,
                     trainingEffect = true
                 ))
@@ -86,6 +89,7 @@ class ProfileScreenTest {
         onNodeWithText("Water").assertTextContains("10")
         onNodeWithTag("rename_checkbox").assertIsOn()
         onNodeWithTag("custom_water_checkbox").assertIsOn()
+        onNodeWithTag("gear_checkbox").assertIsOn()
         onNodeWithTag("feel_and_effort_checkbox").assertIsOn()
         onNodeWithTag("training_effect_checkbox").assertIsOn()
         onNodeWithText("Cancel").assertIsDisplayed()

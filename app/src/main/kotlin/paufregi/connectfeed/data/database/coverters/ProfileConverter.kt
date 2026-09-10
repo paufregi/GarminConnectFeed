@@ -13,6 +13,7 @@ fun Profile.toEntity(userId: Long) = ProfileEntity(
     water = water,
     rename = rename,
     customWater = customWater,
+    gear = gear,
     feelAndEffort = feelAndEffort,
     trainingEffect = trainingEffect,
 )
@@ -26,6 +27,7 @@ fun ProfileEntity.toCore() = Profile(
     water = water,
     rename = rename,
     customWater = customWater,
+    gear = gear,
     feelAndEffort = feelAndEffort,
     trainingEffect = trainingEffect,
 )

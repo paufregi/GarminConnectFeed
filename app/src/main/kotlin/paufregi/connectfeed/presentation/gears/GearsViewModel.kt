@@ -3,6 +3,7 @@ package paufregi.connectfeed.presentation.gears
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -15,6 +16,7 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
 @HiltViewModel
+@ExperimentalCoroutinesApi
 class GearsViewModel @Inject constructor(
     getGears: GetGears,
     private val syncGear: SyncGear,

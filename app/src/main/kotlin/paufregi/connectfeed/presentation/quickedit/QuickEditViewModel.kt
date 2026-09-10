@@ -1,8 +1,11 @@
 package paufregi.connectfeed.presentation.quickedit
 
+import android.util.Log
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,27 +23,36 @@ import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.core.usecases.QuickUpdateStravaActivity
 import paufregi.connectfeed.core.utils.runCatchingResult
+import paufregi.connectfeed.core.utils.updateIf
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
 @HiltViewModel
+@ExperimentalCoroutinesApi
 class QuickEditViewModel @Inject constructor(
     val getActivities: GetActivities,
     val getStravaActivities: GetStravaActivities,
-    getProfiles: GetProfiles,
+    val getProfiles: GetProfiles,
     val getGears: GetGears,
     val quickUpdateActivity: QuickUpdateActivity,
     val quickUpdateStravaActivity: QuickUpdateStravaActivity,
     val getWorkout: GetWorkout
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(QuickEditState())
-
-    val state = combine(_state, getProfiles(), getGears()) { state, profiles, gears ->
-        state.copy(profiles = profiles, gears = gears)
+    @VisibleForTesting
+    internal fun seedStateForTest(state: QuickEditState) {
+        _state.value = state
+        autoLoad = false
     }
-            .onStart { load() }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), QuickEditState())
+
+    private val _state = MutableStateFlow(QuickEditState())
+        private var autoLoad = true
+
+    val state = combine(_state, getProfiles(), getGears()) {
+            state, profiles, gears -> state.copy(profiles = profiles, gears = gears)
+    }
+        .onStart { if (autoLoad) load() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), QuickEditState())
 
     private fun load(force: Boolean = false) = viewModelScope.launch {
         _state.update { it.copy(process = ProcessState.Processing) }
@@ -67,47 +79,34 @@ class QuickEditViewModel @Inject constructor(
 
     fun onAction(action: QuickEditAction) = when (action) {
         is QuickEditAction.SetActivity -> _state.update {
-            val profile = it.profile?.takeIf { p -> p.type.compatible(action.activity.type) }
-            val stravaActivity =
-                it.stravaActivity?.takeIf { a -> a.type.compatible(action.activity.type) }
-                    ?: it.stravaActivities.find { a -> a.match(action.activity) }
             it.copy(
                 activity = action.activity,
-                profile = profile,
-                stravaActivity = stravaActivity,
-                gear = it.gear?.takeIf { g -> g.type.compatible(action.activity.type) },
-                water = it.water?.takeUnless { profile == null }
+                stravaActivity = it.stravaActivities.find { a -> a.match(action.activity) },
+                profile = null,
+                gear = null,
+                water = null,
+                effort = null,
+                feel = null
             )
         }
-        is QuickEditAction.SetStravaActivity -> _state.update {
-            val profile = it.profile?.takeIf { p -> p.type.compatible(action.activity.type) }
-            val activity =
-                it.activity?.takeIf { a -> a.type.compatible(action.activity.type) }
-                    ?: it.activities.find { a -> a.match(action.activity) }
-            it.copy(
-                stravaActivity = action.activity,
-                profile = profile,
-                activity = activity,
-                gear = it.gear?.takeIf { g -> activity?.type?.let(g.type::compatible) == true },
-                water = it.water?.takeUnless { profile == null }
-            )
-        }
-        is QuickEditAction.SetProfile -> _state.update {
-            val activity = it.activity?.takeIf { a -> a.type.compatible(action.profile.type) }
-            val stravaActivity = it.stravaActivity?.takeIf { a -> a.type.compatible(action.profile.type) }
-            it.copy(
-                profile = action.profile,
-                activity = activity,
-                stravaActivity = stravaActivity,
-                gear = it.gear?.takeIf { g -> activity?.type?.let(g.type::compatible) == true },
-                water = action.profile.water,
-            )
-        }
-        is QuickEditAction.SetGear -> _state.update { it.copy(gear = action.gear) }
-        is QuickEditAction.SetDescription -> _state.update { it.copy(description = action.description) }
-        is QuickEditAction.SetWater -> _state.update { it.copy(water = action.water) }
-        is QuickEditAction.SetEffort -> _state.update { it.copy(effort = action.effort?.takeIf { e -> e > 0 }) }
-        is QuickEditAction.SetFeel -> _state.update { it.copy(feel = action.feel) }
+        is QuickEditAction.SetProfile -> _state.updateIf(
+            { it.activity != null && action.profile.type.compatible(it.activity.type) }
+        ) { it.copy(profile = action.profile, water = action.profile.water) }
+        is QuickEditAction.SetGear -> _state.updateIf(
+            { it.activity != null && it.profile != null && action.gear.type.compatible(it.activity.type) }
+        ) { it.copy(gear = action.gear) }
+        is QuickEditAction.SetDescription -> _state.updateIf(
+            { it.activity != null && it.profile != null }
+        ) { it.copy(description = action.description) }
+        is QuickEditAction.SetWater -> _state.updateIf(
+            { it.activity != null && it.profile != null && it.profile.customWater }
+        ) { it.copy(water = action.water) }
+        is QuickEditAction.SetEffort -> _state.updateIf(
+            { it.activity != null && it.profile != null && it.profile.feelAndEffort }
+        ) { it.copy(effort = action.effort) }
+        is QuickEditAction.SetFeel -> _state.updateIf(
+            { it.activity != null && it.profile != null && it.profile.feelAndEffort }
+        ) { it.copy(feel = action.feel) }
         is QuickEditAction.Save -> saveAction()
         is QuickEditAction.Restart -> restartAction()
     }
@@ -131,18 +130,16 @@ class QuickEditViewModel @Inject constructor(
                 )
             }
 
-            val asyncQuickUpdateStrava  = async {
-                if (state.value.hasStrava && state.value.stravaActivity != null) {
+            val asyncQuickUpdateStrava = async {
+                state.value.stravaActivity?.let {
                     quickUpdateStravaActivity(
                         activity = state.value.activity,
-                        stravaActivity = state.value.stravaActivity,
+                        stravaActivity = it,
                         profile = state.value.profile,
                         description = state.value.description,
                         workout = workout
                     )
-                } else {
-                    Result.success(Unit)
-                }
+                } ?:  Result.success(Unit)
             }
 
             runCatchingResult { asyncQuickUpdate.await() }

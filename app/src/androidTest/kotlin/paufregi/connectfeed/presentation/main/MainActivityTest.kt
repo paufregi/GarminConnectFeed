@@ -20,7 +20,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.withContext
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -51,6 +52,7 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
+@ExperimentalCoroutinesApi
 @OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
@@ -83,7 +85,7 @@ class MainActivityTest {
     @After
     fun tearDown() = runAndroidComposeUiTest<MainActivity> {
         database.close()
-        runBlocking(Dispatchers.IO){
+        withContext(Dispatchers.IO){
             authStore.dataStore.edit { it.clear() }
             stravaStore.dataStore.edit { it.clear() }
         }
@@ -275,8 +277,6 @@ class MainActivityTest {
         waitUntil(conditionDescription = "quick_edit_screen") { onNodeWithTag("quick_edit_screen").isDisplayed() }
         onNodeWithText("Activity").performClick()
         onNodeWithText("Activity 1").performClick()
-        onNodeWithText("Strava activity").performClick()
-        onNodeWithText("Bondcliff").performClick()
         onNodeWithText("Profile").performClick()
         onNodeWithText("Profile 1").performClick()
         onNodeWithText("Save").performClick()
@@ -322,13 +322,12 @@ class MainActivityTest {
         waitUntil(conditionDescription = "edit_screen") { onNodeWithTag("edit_screen").isDisplayed() }
         onNodeWithText("Activity").performClick()
         onNodeWithText("Activity 1").performClick()
-        onNodeWithText("Strava activity").performClick()
-        onNodeWithText("Bondcliff").performClick()
         onNodeWithText("Name").performTextInput("New Name")
         onNodeWithText("Event type").performClick()
         onNodeWithText("Race").performClick()
         onNodeWithText("Course").performClick()
         onNodeWithText("Course 2").performClick()
+        waitUntil(conditionDescription = "edit_screen", timeoutMillis = 100000) { onNodeWithText("Description").isDisplayed() }
         onNodeWithText("Description").performTextInput("New Description")
         onNodeWithText("Water").performTextInput("50")
         onNodeWithTag("edit_screen").performTouchInput { swipeUp(centerY) }

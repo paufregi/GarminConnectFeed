@@ -26,6 +26,8 @@ data class ProfileEntity(
     @ColumnInfo(defaultValue = "false")
     val customWater: Boolean = false,
     @ColumnInfo(defaultValue = "false")
+    val gear: Boolean = false,
+    @ColumnInfo(defaultValue = "false")
     val feelAndEffort: Boolean = false,
     @ColumnInfo(defaultValue = "false")
     val trainingEffect: Boolean = false,

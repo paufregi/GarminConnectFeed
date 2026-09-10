@@ -496,6 +496,39 @@ class ProfileViewModelTest {
     }
 
     @Test
+    fun `Set gear`() = runTest {
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
+        coEvery { getProfile(any()) } returns null
+        every { getActivityTypesForProfile() } returns types
+        every { getEventTypes() } returns eventTypes
+        coEvery { getCourses() } returns Result.success(courses)
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            viewModel.onAction(ProfileAction.SetGear(true))
+            skipItems(1)
+            val state = awaitItem()
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.profile).isEqualTo(Profile(gear = true))
+            assertThat(state.types).isEqualTo(types)
+            assertThat(state.eventTypes).isEqualTo(eventTypes)
+            assertThat(state.courses).isEqualTo(courses)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify{
+            savedState.toRoute<Route.Profile>()
+            getActivityTypesForProfile()
+            getEventTypes()
+        }
+        coVerify {
+            getProfile(0)
+            getCourses()
+        }
+    }
+
+    @Test
     fun `Set training effect`() = runTest {
         every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null

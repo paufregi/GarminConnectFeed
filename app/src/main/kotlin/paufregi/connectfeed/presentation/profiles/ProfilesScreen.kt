@@ -116,7 +116,7 @@ internal fun ProfilesContent(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.padding(10.dp),
                     ) {
-                        iconFor(it.type)?.let { i -> Icon(i, i.name, Modifier.size(24.dp)) }
+                        iconFor(it.type).let { i -> Icon(i, i.name, Modifier.size(24.dp)) }
                         Text(
                             text = it.name,
                             modifier = Modifier

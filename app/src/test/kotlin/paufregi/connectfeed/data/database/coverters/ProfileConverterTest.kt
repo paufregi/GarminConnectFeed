@@ -20,6 +20,7 @@ class ProfileConverterTest {
         water = 550,
         rename = true,
         customWater = true,
+        gear = true,
         feelAndEffort = true,
         trainingEffect = true
     )
@@ -34,6 +35,7 @@ class ProfileConverterTest {
         water = 550,
         rename = true,
         customWater = true,
+        gear = true,
         feelAndEffort = true,
         trainingEffect = true
     )

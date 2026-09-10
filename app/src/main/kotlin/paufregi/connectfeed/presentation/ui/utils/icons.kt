@@ -60,7 +60,7 @@ import paufregi.connectfeed.presentation.ui.icons.strava.Windsurf
 import paufregi.connectfeed.presentation.ui.icons.strava.Workout
 import paufregi.connectfeed.presentation.ui.icons.strava.Yoga
 
-fun iconFor(type: ActivityType): ImageVector? =
+fun iconFor(type: ActivityType): ImageVector =
     when (type) {
         is ActivityType.Any -> Icons.Connect.Activity
         is ActivityType.Other -> Icons.Connect.Activity
@@ -132,7 +132,7 @@ fun iconFor(type: ActivityType): ImageVector? =
         is ActivityType.StravaFootball -> Icons.Strava.Football
     }
 
-fun iconFor(type: GearType): ImageVector? =
+fun iconFor(type: GearType): ImageVector =
     when (type) {
         GearType.Bike -> Icons.Connect.Bike
         GearType.Shoe -> Icons.Connect.Shoe

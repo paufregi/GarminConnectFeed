@@ -33,6 +33,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Loading
@@ -45,6 +46,7 @@ import paufregi.connectfeed.presentation.ui.utils.iconFor
 
 @Composable
 @ExperimentalMaterial3Api
+@ExperimentalCoroutinesApi
 internal fun GearsScreen(
     nav: NavHostController = rememberNavController(),
 ) {
@@ -111,7 +113,7 @@ internal fun GearsContent(
                             .fillMaxWidth()
                             .padding(10.dp)
                     ) {
-                        iconFor(gear.type)?.let { i -> Icon(i, i.name, Modifier.size(24.dp)) }
+                        iconFor(gear.type).let { i -> Icon(i, i.name, Modifier.size(24.dp)) }
                         Text(
                             text = gear.name,
                             modifier = Modifier.weight(1f).basicMarquee(),

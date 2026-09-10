@@ -9,11 +9,11 @@ import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 class GetGears @Inject constructor(
     private val authRepository: AuthRepository,
     private val garminRepository: GarminRepository
 ) {
-    @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<List<Gear>> =
         authRepository.getUser().flatMapMerge { user ->
             user?.let { garminRepository.getAllGears(it) } ?: flowOf(emptyList())

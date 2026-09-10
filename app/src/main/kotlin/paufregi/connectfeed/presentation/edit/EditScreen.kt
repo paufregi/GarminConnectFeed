@@ -31,6 +31,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.presentation.HomeNavigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.CustomSlider
@@ -54,6 +55,7 @@ import paufregi.connectfeed.presentation.ui.utils.launchStrava
 
 @Composable
 @ExperimentalMaterial3Api
+@ExperimentalCoroutinesApi
 internal fun EditScreen(nav: NavHostController = rememberNavController()) {
     val viewModel = hiltViewModel<EditViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -89,124 +91,119 @@ internal fun EditContent(
 
         Dropdown(
             label = { Text("Activity") },
-            selected = state.activity?.toDropdownItem { },
+            selected = state.activity?.toDropdownItem(stravaActivity = state.stravaActivity),
             modifier = Modifier.fillMaxWidth(),
-            items = state.activities
-                .filter { state.stravaActivity == null || it.type.compatible(state.stravaActivity.type) }
-                .map { it.toDropdownItem { onAction(EditAction.SetActivity(it)) } }
+            items = state.activities.map {
+                it.toDropdownItem(onClick = {
+                    onAction(EditAction.SetActivity(it))
+                })
+            }
         )
-        if (state.hasStrava) {
-            Dropdown(
-                label = { Text("Strava activity") },
-                selected = state.stravaActivity?.toDropdownItem { },
-                modifier = Modifier.fillMaxWidth(),
-                items = state.stravaActivities
-                    .filter { state.activity == null || it.type.compatible(state.activity.type) }
-                    .map { it.toDropdownItem { onAction(EditAction.SetStravaActivity(it)) } }
-            )
-        }
-        TextField(
-            label = { Text("Name") },
-            value = state.name ?: "",
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            onValueChange = { onAction(EditAction.SetName(it)) }
-        )
-        Dropdown(
-            label = { Text("Event type") },
-            selected = state.eventType?.toDropdownItem { },
-            modifier = Modifier.fillMaxWidth(),
-            items = state.eventTypes
-                .map { it.toDropdownItem { onAction(EditAction.SetEventType(it)) } },
-        )
-        if (state.activity != null && state.activity.type.allowCourse) {
-            Dropdown(
-                label = { Text("Course") },
-                selected = state.course?.toDropdownItem { },
-                modifier = Modifier.fillMaxWidth(),
-                items = state.courses
-                    .filter { it.type.compatible(state.activity.type) }
-                    .map { it.toDropdownItem { onAction(EditAction.SetCourse(it)) } }
-            )
-        }
-        if (state.activity != null && state.gears.any { it.type.compatible(state.activity.type) } ) {
-            Dropdown(
-                label = { Text("Gear") },
-                selected = state.gear?.toDropdownItem { },
-                modifier = Modifier.fillMaxWidth(),
-                items = state.gears
-                    .filter { it.type.compatible(state.activity.type) }
-                    .map { it.toDropdownItem { onAction(EditAction.SetGear(it)) } }
-            )
-        }
-        if (state.stravaActivity != null) {
+
+        if (state.activity != null) {
             TextField(
-                label = { Text("Description") },
-                value = state.description ?: "",
+                label = { Text("Name") },
+                value = state.name ?: "",
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                onValueChange = { onAction(EditAction.SetDescription(it)) }
+                onValueChange = { onAction(EditAction.SetName(it)) }
             )
-        }
-        TextField(
-            label = { Text("Water") },
-            value = state.water?.toString() ?: "",
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            onValueChange = { onAction(EditAction.SetWater(it.toIntOrNull())) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-        Column {
-            IconRadioGroup(
-                options = listOf(
-                    IconRadioItem(0f, Icons.Connect.FaceVerySad),
-                    IconRadioItem(25f, Icons.Connect.FaceSad),
-                    IconRadioItem(50f, Icons.Connect.FaceNormal),
-                    IconRadioItem(75f, Icons.Connect.FaceHappy),
-                    IconRadioItem(100f, Icons.Connect.FaceVeryHappy),
-                ),
-                selected = state.feel,
-                onClick = { onAction(EditAction.SetFeel(it)) }
+            Dropdown(
+                label = { Text("Event type") },
+                selected = state.eventType?.toDropdownItem { },
+                modifier = Modifier.fillMaxWidth(),
+                items = state.eventTypes
+                    .map { it.toDropdownItem { onAction(EditAction.SetEventType(it)) } },
             )
-            TextFeel(
-                state.feel,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 10.dp)
-                    .testTag("feel_text")
-            )
-        }
-        Column {
-            Slider(
-                value = state.effort ?: 0f,
-                onValueChange = { onAction(EditAction.SetEffort(it.toInt().toFloat())) },
-                valueRange = 0f..100f,
-                steps = 9,
-                interactionSource = interactionSource,
-                track = CustomSlider.track,
-                thumb = CustomSlider.thumb(interactionSource),
-                modifier = Modifier.fillMaxWidth()
-            )
-            TextEffort(
-                state.effort ?: 0f,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .testTag("effort_text")
-            )
-        }
-        if (state.stravaActivity != null) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        onClick = { onAction(EditAction.SetTrainingEffect(!state.trainingEffect)) }
-                    )
-            ) {
-                Checkbox(
-                    modifier = Modifier.testTag("training_effect_checkbox"),
-                    checked = state.trainingEffect,
-                    onCheckedChange = { onAction(EditAction.SetTrainingEffect(it)) },
+            if (state.activity.type.allowCourse) {
+                Dropdown(
+                    label = { Text("Course") },
+                    selected = state.course?.toDropdownItem { },
+                    modifier = Modifier.fillMaxWidth(),
+                    items = state.courses
+                        .filter { it.type.compatible(state.activity.type) }
+                        .map { it.toDropdownItem { onAction(EditAction.SetCourse(it)) } }
                 )
-                Text(text = "Training effect")
+            }
+            if (state.gears.any { it.type.compatible(state.activity.type) }) {
+                Dropdown(
+                    label = { Text("Gear") },
+                    selected = state.gear?.toDropdownItem { },
+                    modifier = Modifier.fillMaxWidth(),
+                    items = state.gears
+                        .filter { it.type.compatible(state.activity.type) }
+                        .map { it.toDropdownItem { onAction(EditAction.SetGear(it)) } }
+                )
+            }
+            if (state.stravaActivity != null) {
+                TextField(
+                    label = { Text("Description") },
+                    value = state.description ?: "",
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                    onValueChange = { onAction(EditAction.SetDescription(it)) }
+                )
+            }
+            TextField(
+                label = { Text("Water") },
+                value = state.water?.toString() ?: "",
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                onValueChange = { onAction(EditAction.SetWater(it.toIntOrNull())) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+            Column {
+                IconRadioGroup(
+                    options = listOf(
+                        IconRadioItem(0f, Icons.Connect.FaceVerySad),
+                        IconRadioItem(25f, Icons.Connect.FaceSad),
+                        IconRadioItem(50f, Icons.Connect.FaceNormal),
+                        IconRadioItem(75f, Icons.Connect.FaceHappy),
+                        IconRadioItem(100f, Icons.Connect.FaceVeryHappy),
+                    ),
+                    selected = state.feel,
+                    onClick = { onAction(EditAction.SetFeel(it)) }
+                )
+                TextFeel(
+                    state.feel,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(vertical = 10.dp)
+                        .testTag("feel_text")
+                )
+            }
+            Column {
+                Slider(
+                    value = state.effort ?: 0f,
+                    onValueChange = { onAction(EditAction.SetEffort(it.toInt().toFloat())) },
+                    valueRange = 0f..100f,
+                    steps = 9,
+                    interactionSource = interactionSource,
+                    track = CustomSlider.track,
+                    thumb = CustomSlider.thumb(interactionSource),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                TextEffort(
+                    state.effort ?: 0f,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .testTag("effort_text")
+                )
+            }
+            if (state.stravaActivity != null) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            onClick = { onAction(EditAction.SetTrainingEffect(!state.trainingEffect)) }
+                        )
+                ) {
+                    Checkbox(
+                        modifier = Modifier.testTag("training_effect_checkbox"),
+                        checked = state.trainingEffect,
+                        onCheckedChange = { onAction(EditAction.SetTrainingEffect(it)) },
+                    )
+                    Text(text = "Training effect")
+                }
             }
         }
         Row(
@@ -220,8 +217,7 @@ internal fun EditContent(
 
             Button(
                 text = "Save",
-                enabled = state.activity != null &&
-                        (!state.hasStrava || state.stravaActivity != null),
+                enabled = state.activity != null,
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()

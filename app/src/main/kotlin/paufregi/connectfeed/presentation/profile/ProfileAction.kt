@@ -13,6 +13,7 @@ sealed interface ProfileAction {
     data class SetWater(val water: Int?) : ProfileAction
     data class SetRename(val rename: Boolean) : ProfileAction
     data class SetCustomWater(val customWater: Boolean) : ProfileAction
+    data class SetGear(val gear: Boolean) : ProfileAction
     data class SetFeelAndEffort(val feelAndEffort: Boolean) : ProfileAction
     data class SetTrainingEffect(val trainingEffect: Boolean) : ProfileAction
     data object Save : ProfileAction
