@@ -16,9 +16,13 @@ import org.junit.Test
 import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.Activity
+import paufregi.connectfeed.data.api.strava.models.Athlete
+import paufregi.connectfeed.data.api.strava.models.Bike
+import paufregi.connectfeed.data.api.strava.models.Shoe
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity
-import paufregi.connectfeed.data.api.strava.models.UpdateProfile
+import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
 import paufregi.connectfeed.stravaActivitiesJson
+import paufregi.connectfeed.stravaAthlete
 import paufregi.connectfeed.stravaDetailedAthlete
 
 class StravaTest {
@@ -43,6 +47,45 @@ class StravaTest {
     fun tearDown() {
         confirmVerified(authInterceptor)
         clearAllMocks()
+    }
+
+    @Test
+    fun `Get athlete`() = runTest {
+        server.enqueue(code = 200, body = stravaAthlete)
+
+        val res = api.getAthlete()
+
+        val expected = Athlete(
+            id = 1,
+            bikes = listOf(
+                Bike(
+                    id = "b12345678987655",
+                    name = "Giant Contend",
+                    distance = 0,
+                )
+            ),
+            shoes = listOf(
+                Shoe(
+                    id = "g12345678987655",
+                    name = "Mizuno Neo Vista",
+                    distance = 4904,
+                )
+            )
+        )
+
+        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.body()).isEqualTo(expected)
+        verify { authInterceptor.intercept(any()) }
+    }
+
+    @Test
+    fun `Get athlete - failure`() = runTest {
+        server.enqueue(400)
+
+        val res = api.getAthlete()
+
+        assertThat(res.isSuccessful).isFalse()
+        verify { authInterceptor.intercept(any()) }
     }
 
     @Test
@@ -125,8 +168,8 @@ class StravaTest {
     @Test
     fun `Update profile`() = runTest {
         server.enqueue(code = 200, body = stravaDetailedAthlete)
-        val updateProfile = UpdateProfile(weight = 75.5f)
-        val res = api.updateProfile(updateProfile = updateProfile)
+        val updateAthlete = UpdateAthlete(weight = 75.5f)
+        val res = api.updateAthlete(updateAthlete = updateAthlete)
 
         assertThat(res.isSuccessful).isTrue()
         verify { authInterceptor.intercept(any()) }
@@ -135,8 +178,8 @@ class StravaTest {
     @Test
     fun `Update profile - failure`() = runTest {
         server.enqueue(400)
-        val updateProfile = UpdateProfile(weight = 75.5f)
-        val res = api.updateProfile(updateProfile = updateProfile)
+        val updateAthlete = UpdateAthlete(weight = 75.5f)
+        val res = api.updateAthlete(updateAthlete = updateAthlete)
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }

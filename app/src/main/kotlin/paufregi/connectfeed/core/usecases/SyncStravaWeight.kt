@@ -21,6 +21,6 @@ class SyncStravaWeight @Inject constructor(
 
         if (weight == null || !weight.timestamp.sameDay(today)) return Result.success(Unit)
 
-        return garminRepository.updateStravaProfile(weight.weight)
+        return garminRepository.updateStravaAthlete(weight.weight)
     }
 }

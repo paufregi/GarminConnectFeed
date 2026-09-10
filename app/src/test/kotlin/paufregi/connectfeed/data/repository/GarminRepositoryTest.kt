@@ -42,7 +42,7 @@ import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Gear as CoreGear
 import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity as StravaUpdateActivity
-import paufregi.connectfeed.data.api.strava.models.UpdateProfile as StravaUpdateProfile
+import paufregi.connectfeed.data.api.strava.models.UpdateAthlete as StravaUpdateAthlete
 
 class GarminRepositoryTest {
 
@@ -1047,27 +1047,27 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Update strava profile`() = runTest {
-        coEvery { strava.updateProfile(any()) } returns Response.success(Unit)
+    fun `Update strava athlete`() = runTest {
+        coEvery { strava.updateAthlete(any()) } returns Response.success(Unit)
 
-        val expectedRequest = StravaUpdateProfile(weight = 75.9f)
+        val expectedRequest = StravaUpdateAthlete(weight = 75.9f)
 
-        val res = repo.updateStravaProfile(weight = 75.9f)
+        val res = repo.updateStravaAthlete(weight = 75.9f)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { strava.updateProfile(expectedRequest) }
+        coVerify { strava.updateAthlete(expectedRequest) }
     }
 
     @Test
-    fun `Update strava profile - failure`() = runTest {
-        coEvery { strava.updateProfile(any(), ) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+    fun `Update strava athlete - failure`() = runTest {
+        coEvery { strava.updateAthlete(any(), ) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val expectedRequest = StravaUpdateProfile(weight = 75.9f)
+        val expectedRequest = StravaUpdateAthlete(weight = 75.9f)
 
-        val res = repo.updateStravaProfile(weight = 75.9f)
+        val res = repo.updateStravaAthlete(weight = 75.9f)
 
         assertThat(res.isSuccess).isFalse()
-        coVerify { strava.updateProfile(expectedRequest) }
+        coVerify { strava.updateAthlete(expectedRequest) }
     }
 
     @Test

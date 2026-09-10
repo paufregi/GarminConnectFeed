@@ -18,7 +18,7 @@ import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.Strava
-import paufregi.connectfeed.data.api.strava.models.UpdateProfile
+import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
@@ -145,11 +145,11 @@ class GarminRepository @Inject constructor(
             .onSuccess { stravaActivityCache.invalidate() }
     }
 
-    suspend fun updateStravaProfile(
+    suspend fun updateStravaAthlete(
         weight: Float
     ): Result<Unit> {
-        val request = UpdateProfile(weight = weight)
-        return strava.updateProfile(request).toResult()
+        val request = UpdateAthlete(weight = weight)
+        return strava.updateAthlete(request).toResult()
     }
 
     suspend fun uploadFile(file: File): Result<Unit> {

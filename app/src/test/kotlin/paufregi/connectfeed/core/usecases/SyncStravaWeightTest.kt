@@ -75,14 +75,14 @@ class SyncStravaWeightTest {
             )
         )
 
-        coEvery { repo.updateStravaProfile(any()) } returns Result.success(Unit)
+        coEvery { repo.updateStravaAthlete(any()) } returns Result.success(Unit)
 
         val res = useCase(weights, date)
 
         assertThat(res.isSuccess).isTrue()
 
         verify { isStravaLoggedIn.invoke() }
-        coVerify { repo.updateStravaProfile(any()) }
+        coVerify { repo.updateStravaAthlete(any()) }
     }
 
     @Test
@@ -145,7 +145,7 @@ class SyncStravaWeightTest {
             metabolicAge = 35,
         ))
 
-        coEvery { repo.updateStravaProfile(any()) } returns Result.success(Unit)
+        coEvery { repo.updateStravaAthlete(any()) } returns Result.success(Unit)
 
         val res = useCase(weights, date)
 
@@ -185,13 +185,13 @@ class SyncStravaWeightTest {
             )
         )
 
-        coEvery { repo.updateStravaProfile(any()) } returns Result.failure("error")
+        coEvery { repo.updateStravaAthlete(any()) } returns Result.failure("error")
 
         val res = useCase(weights, date)
 
         assertThat(res.isSuccess).isFalse()
 
-        coVerify { repo.updateStravaProfile(any()) }
+        coVerify { repo.updateStravaAthlete(any()) }
         verify { isStravaLoggedIn.invoke() }
     }
 }

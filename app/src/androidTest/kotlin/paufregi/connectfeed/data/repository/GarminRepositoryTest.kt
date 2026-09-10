@@ -300,10 +300,10 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Update strava profile`() = runTest {
+    fun `Update strava athlete`() = runTest {
         stravaStore.saveToken(stravaAuthToken)
 
-        val res = repo.updateStravaProfile(75.6f)
+        val res = repo.updateStravaAthlete(75.6f)
 
         assertThat(res.isSuccess).isTrue()
     }
