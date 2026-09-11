@@ -5,6 +5,7 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.data.database.entities.GearEntity
+import paufregi.connectfeed.data.database.entities.StravaGearEntity
 import paufregi.connectfeed.user
 
 class GearConverterTest {
@@ -24,6 +25,14 @@ class GearConverterTest {
         distance = 1,
     )
 
+    val stravaEntityGear = StravaGearEntity(
+        id = "ID_1",
+        athleteId = 99,
+        name = "gear",
+        type = GearType.Shoe,
+        distance = 1,
+    )
+
     @Test
     fun `Gear to entity`() {
         val result = gear.toEntity(user.id)
@@ -34,6 +43,20 @@ class GearConverterTest {
     @Test
     fun `Entity gear to gear`() {
         val result = entityGear.toCore()
+
+        assertThat(result).isEqualTo(gear)
+    }
+
+    @Test
+    fun `Gear to strava entity`() {
+        val result = gear.toStravaEntity(99)
+
+        assertThat(result).isEqualTo(stravaEntityGear)
+    }
+
+    @Test
+    fun `Strava entity gear to gear`() {
+        val result = stravaEntityGear.toCore()
 
         assertThat(result).isEqualTo(gear)
     }

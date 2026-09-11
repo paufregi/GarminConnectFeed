@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "2c5b8985f68243957ceb86587a47de99",
+    "identityHash": "6ac55d95554e4bc4d92e444d54b3c15b",
     "entities": [
       {
         "tableName": "profiles",
@@ -146,11 +146,52 @@
             "id"
           ]
         }
+      },
+      {
+        "tableName": "strava_gears",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `athleteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `distance` INTEGER, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "athleteId",
+            "columnName": "athleteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "distance",
+            "columnName": "distance",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2c5b8985f68243957ceb86587a47de99')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6ac55d95554e4bc4d92e444d54b3c15b')"
     ]
   }
 }

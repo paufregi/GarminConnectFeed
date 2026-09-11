@@ -35,6 +35,7 @@ import paufregi.connectfeed.data.api.strava.models.Shoe
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.GearEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
+import paufregi.connectfeed.data.database.entities.StravaGearEntity
 import paufregi.connectfeed.user
 import retrofit2.Response
 import java.io.File
@@ -372,6 +373,125 @@ class GarminRepositoryTest {
         repo.deleteGear(user, gear)
 
         coVerify { dao.deleteGear(gearEntity) }
+    }
+
+    @Test
+    fun `Get all strava gears`() = runTest {
+        val athleteId = 99L
+        val gears = listOf(
+            CoreGear(
+                id = "gear-1",
+                name = "gear 1",
+                type = GearType.Shoe,
+                distance = 1000
+            ),
+            CoreGear(
+                id = "gear-2",
+                name = "gear 2",
+                type = GearType.Bike,
+                distance = 2000
+            )
+        )
+        val entities = listOf(
+            StravaGearEntity(
+                id = "gear-1",
+                athleteId = athleteId,
+                name = "gear 1",
+                type = GearType.Shoe,
+                distance = 1000
+            ),
+            StravaGearEntity(
+                id = "gear-2",
+                athleteId = athleteId,
+                name = "gear 2",
+                type = GearType.Bike,
+                distance = 2000
+            )
+        )
+
+        coEvery { dao.getAllStravaGears(any()) } returns flowOf(entities)
+
+        val res = repo.getAllStravaGears(athleteId)
+
+        res.test {
+            assertThat(awaitItem()).isEqualTo(gears)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify { dao.getAllStravaGears(athleteId) }
+    }
+
+    @Test
+    fun `Get strava gear from db`() = runTest {
+        val athleteId = 99L
+        val gear = CoreGear(
+            id = "gear-1",
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+        val entity = StravaGearEntity(
+            id = "gear-1",
+            athleteId = athleteId,
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        coEvery { dao.getStravaGear(any()) } returns entity
+
+        val res = repo.getStravaGear(gear.id)
+
+        assertThat(res).isEqualTo(gear)
+        coVerify { dao.getStravaGear(gear.id) }
+    }
+
+    @Test
+    fun `Save strava gear`() = runTest {
+        val athleteId = 99L
+        val gear = CoreGear(
+            id = "gear-1",
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+        val entity = StravaGearEntity(
+            id = "gear-1",
+            athleteId = athleteId,
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        coEvery { dao.saveStravaGear(any()) } returns Unit
+
+        repo.saveStravaGear(athleteId, gear)
+
+        coVerify { dao.saveStravaGear(entity) }
+    }
+
+    @Test
+    fun `Delete strava gear`() = runTest {
+        val athleteId = 99L
+        val gear = CoreGear(
+            id = "gear-1",
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+        val entity = StravaGearEntity(
+            id = "gear-1",
+            athleteId = athleteId,
+            name = "gear",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        coEvery { dao.deleteStravaGear(any()) } returns Unit
+
+        repo.deleteStravaGear(athleteId, gear)
+
+        coVerify { dao.deleteStravaGear(entity) }
     }
 
     @Test

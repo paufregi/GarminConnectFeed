@@ -134,6 +134,30 @@ class GarminRepositoryTest {
     }
 
     @Test
+    fun `Store strava gears`() = runTest {
+        val athleteId = 99L
+        val gear = Gear(
+            id = "gear-1",
+            name = "shoe1",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        repo.saveStravaGear(athleteId, gear)
+        assertThat(repo.getStravaGear(gear.id)).isEqualTo(gear)
+
+        repo.deleteStravaGear(athleteId, gear)
+        assertThat(repo.getStravaGear(gear.id)).isNull()
+
+        repo.getAllStravaGears(athleteId).test {
+            assertThat(awaitItem()).isEmpty()
+            repo.saveStravaGear(athleteId, gear)
+            assertThat(awaitItem()).containsExactly(gear)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `Get activities`() = runTest {
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
@@ -255,16 +279,16 @@ class GarminRepositoryTest {
 
         val expected = listOf(
             Gear(
-                id = "shoe-1",
-                name = "Shoe 1",
+                id = "g12345678987655",
+                name = "Mizuno Neo Vista",
                 type = GearType.Shoe,
-                distance = 1234
+                distance = 4904
             ),
             Gear(
-                id = "bike-1",
-                name = "Bike 1",
+                id = "b12345678987655",
+                name = "Giant Contend",
                 type = GearType.Bike,
-                distance = 5678
+                distance = 0
             ),
         )
 

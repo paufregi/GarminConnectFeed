@@ -9,9 +9,10 @@ import paufregi.connectfeed.data.database.coverters.EventTypeConverter
 import paufregi.connectfeed.data.database.coverters.GearTypeConverter
 import paufregi.connectfeed.data.database.entities.GearEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
+import paufregi.connectfeed.data.database.entities.StravaGearEntity
 
 @Database(
-    entities = [ProfileEntity::class, GearEntity::class],
+    entities = [ProfileEntity::class, GearEntity::class, StravaGearEntity::class],
     version = 2,
     autoMigrations = [
         AutoMigration(from = 1, to = 2)

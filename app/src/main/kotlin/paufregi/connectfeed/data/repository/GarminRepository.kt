@@ -18,11 +18,12 @@ import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.Strava
-import paufregi.connectfeed.data.api.strava.models.toGearList
 import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
+import paufregi.connectfeed.data.api.strava.models.toGearList
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
+import paufregi.connectfeed.data.database.coverters.toStravaEntity
 import paufregi.connectfeed.data.utils.Cache
 import paufregi.connectfeed.data.utils.withCache
 import java.io.File
@@ -67,6 +68,18 @@ class GarminRepository @Inject constructor(
 
     suspend fun deleteGear(user: User, gear: Gear) =
         garminDao.deleteGear(gear.toEntity(user.id))
+
+    fun getAllStravaGears(athleteId: Long): Flow<List<Gear>> =
+        garminDao.getAllStravaGears(athleteId).map { it.map { it.toCore() } }
+
+    suspend fun getStravaGear(id: String): Gear? =
+        garminDao.getStravaGear(id)?.toCore()
+
+    suspend fun saveStravaGear(athleteId: Long, gear: Gear) =
+        garminDao.saveStravaGear(gear.toStravaEntity(athleteId))
+
+    suspend fun deleteStravaGear(athleteId: Long, gear: Gear) =
+        garminDao.deleteStravaGear(gear.toStravaEntity(athleteId))
 
     suspend fun getActivities(limit: Int, force: Boolean = false): Result<List<Activity>> =
         withCache(activitiesCache, force) {

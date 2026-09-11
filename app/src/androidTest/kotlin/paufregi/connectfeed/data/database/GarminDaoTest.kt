@@ -12,11 +12,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.data.database.entities.GearEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
+import paufregi.connectfeed.data.database.entities.StravaGearEntity
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -117,9 +118,44 @@ class GarminDaoTest {
         dao.deleteGear(gear)
         assertThat(dao.getGear(gear.id)).isNull()
 
-        dao.getAllGears(1).test {
+        dao.getAllGears(gear.userId).test {
             assertThat(awaitItem()).isEmpty()
             dao.saveGear(gear)
+            assertThat(awaitItem()).containsExactly(gear)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Save delete and retrieve strava gears`() = runTest {
+        val gear = StravaGearEntity(
+            id = "gear-1",
+            athleteId = 1,
+            name = "shoe1",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        val gear2 = StravaGearEntity(
+            id = "gear-1",
+            athleteId = 2,
+            name = "shoe1",
+            type = GearType.Shoe,
+            distance = 1000
+        )
+
+        dao.saveStravaGear(gear)
+        assertThat(dao.getStravaGear(gear.id)).isEqualTo(gear)
+
+        dao.saveStravaGear(gear)
+        assertThat(dao.getStravaGear(gear2.id)).isEqualTo(gear)
+
+        dao.deleteStravaGear(gear)
+        assertThat(dao.getStravaGear(gear.id)).isNull()
+
+        dao.getAllStravaGears(gear.athleteId).test {
+            assertThat(awaitItem()).isEmpty()
+            dao.saveStravaGear(gear)
             assertThat(awaitItem()).containsExactly(gear)
             cancelAndIgnoreRemainingEvents()
         }
