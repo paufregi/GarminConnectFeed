@@ -7,13 +7,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.MockWebServerRule
-import paufregi.connectfeed.data.api.garmin.models.CSRF
-import paufregi.connectfeed.data.api.garmin.models.Ticket
-import paufregi.connectfeed.htmlCSRF
-import paufregi.connectfeed.htmlTicket
+import paufregi.connectfeed.data.api.garmin.models.LoginRequest
+import paufregi.connectfeed.invalidLogin
+import paufregi.connectfeed.validLogin
 
 class GarminSSOTest {
-
 
     @JvmField @Rule val server = MockWebServerRule()
     private lateinit var api: GarminSSO
@@ -28,51 +26,56 @@ class GarminSSOTest {
     }
 
     @Test
-    fun `Get CSRF`() = runTest {
-        server.enqueue(code = 200, body = htmlCSRF)
+    fun `Login - success`() = runTest {
+        server.enqueue(code = 200, body = validLogin)
 
-        val res = api.getCSRF()
+        val request = LoginRequest(
+            username = "test@example.com",
+            password = "password123",
+        )
 
-        val request = server.takeRequest()
+        val res = api.login(request)
+        val resBody = res.body()
 
-        assertThat(request.method).isEqualTo("GET")
-        assertThat(request.url.encodedPath).isEqualTo("/sso/signin")
+        val recordedRequest = server.takeRequest()
+
+        assertThat(recordedRequest.method).isEqualTo("POST")
+        assertThat(recordedRequest.url.encodedPath).isEqualTo("/mobile/api/login")
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(CSRF("TEST_CSRF_VALUE"))
+        assertThat(resBody?.responseStatus?.type).isEqualTo("SUCCESSFUL")
+        assertThat(resBody?.serviceTicketId).isEqualTo("ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso")
     }
 
     @Test
-    fun `Get CSRF - failure`() = runTest {
-        server.enqueue(400)
+    fun `Login - invalid credentials`() = runTest {
+        server.enqueue(code = 200, body = invalidLogin)
 
-        val res = api.getCSRF()
+        val request = LoginRequest(username = "test@example.com", password = "wrongpassword")
 
-        assertThat(res.isSuccessful).isFalse()
-        assertThat(res.body()).isNull()
-    }
+        val res = api.login(request)
+        val resBody = res.body()
 
-    @Test
-    fun `Get Ticket`() = runTest {
-        server.enqueue(code = 200, body = htmlTicket)
-
-        val res = api.login(username = "user", password = "pass", csrf = CSRF("csrf"))
-
-        val request = server.takeRequest()
-
-        assertThat(request.method).isEqualTo("POST")
-        assertThat(request.url.encodedPath).isEqualTo("/sso/signin")
-        assertThat(request.body.toString()).isEqualTo("[text=username=user&password=pass&_csrf=csrf&embed=true]")
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(Ticket("TEST_TICKET_VALUE"))
+        assertThat(resBody?.responseStatus?.type).isEqualTo("INVALID_USERNAME_PASSWORD")
+        assertThat(resBody?.serviceTicketId).isNull()
     }
 
     @Test
-    fun `Get Ticket - failure`() = runTest {
-        server.enqueue(400)
+    fun `Login - failure`() = runTest {
+        server.enqueue(401)
 
-        val res = api.login(username = "user", password = "pass", csrf = CSRF("csrf"))
+        val request = LoginRequest(
+            username = "test@example.com",
+            password = "wrongpassword",
+        )
+
+        val res = api.login(request)
 
         assertThat(res.isSuccessful).isFalse()
         assertThat(res.body()).isNull()
     }
 }
+
+
+
+

@@ -1,36 +1,33 @@
 package paufregi.connectfeed.data.api.garmin.models
 
+import com.appstractive.jwt.jwt
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.today
-import kotlin.time.Duration.Companion.seconds
+import paufregi.connectfeed.tomorrow
 
 class AuthTokenTest {
 
-    private val token = createAuthToken(today)
+    val token = createAuthToken(tomorrow)
 
     @Test
-    fun `Valid access token`() {
-        val now = today - 30.seconds
-        assertThat(token.isExpired(now)).isFalse()
+    fun `Is not expired`() {
+        assertThat(token.isExpired(today)).isFalse()
     }
 
     @Test
-    fun `Expired access token`() {
-        val now = today + 30.seconds
-        assertThat(token.isExpired(now)).isTrue()
+    fun `Is expired`() {
+        assertThat(token.isExpired(tomorrow)).isTrue()
     }
 
     @Test
-    fun `Valid refresh token`() {
-        val now = today - 30.seconds
-        assertThat(token.isRefreshExpired(now)).isFalse()
-    }
+    fun `Is expired - no expiration`() {
+        val authToken = AuthToken(
+            accessToken = jwt { claims { } }.toString(),
+            refreshToken = "TOKEN"
+        )
 
-    @Test
-    fun `Expired refresh token`() {
-        val now = today + 40.seconds
-        assertThat(token.isRefreshExpired(now)).isTrue()
+        assertThat(authToken.isExpired(today)).isTrue()
     }
 }
