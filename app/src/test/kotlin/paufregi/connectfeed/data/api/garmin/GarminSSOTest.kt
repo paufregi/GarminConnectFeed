@@ -6,14 +6,14 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.data.api.garmin.models.LoginRequest
 import paufregi.connectfeed.invalidLogin
 import paufregi.connectfeed.validLogin
 
 class GarminSSOTest {
 
-    @JvmField @Rule val server = MockWebServerRule()
+    @JvmField @Rule val server = MockServer()
     private lateinit var api: GarminSSO
 
     @Before
