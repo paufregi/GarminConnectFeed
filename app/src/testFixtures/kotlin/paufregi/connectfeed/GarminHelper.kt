@@ -36,6 +36,23 @@ val validLogin = """
 	"authType": "CAS"
 """.trimIndent()
 
+val invalidLogin = """
+    {
+        "serviceURL": "", 
+        "serviceTicketId": "", 
+        "responseStatus": {
+            "type": "INVALID_USERNAME_PASSWORD", 
+            "message": "generalLoginInvalidUsernameOrPassword"
+        }, 
+        "responseReason": "", 
+        "customerMfaInfo": "", 
+        "consentTypeList": "", 
+        "captchaAlreadyPassed": "", 
+        "samlResponse": "", 
+        "authType": "CAS"
+    }
+""".trimIndent()
+
 val authTokenJson = """
     {
         "access_token": "${authToken.accessToken}",
