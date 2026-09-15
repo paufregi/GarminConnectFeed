@@ -10,7 +10,7 @@ import org.junit.rules.ExternalResource
 import java.io.IOException
 import javax.net.ssl.SSLSocketFactory
 
-class MockWebServerRule(
+class MockServer(
     val port: Int = 0,
     val sslSocketFactory: SSLSocketFactory? = null,
     val dispatcher: Dispatcher? = null
@@ -45,8 +45,11 @@ class MockWebServerRule(
     }
 
     companion object {
-        fun createSSLSocketFactory(): SSLSocketFactory =
-            requireNotNull(MockWebServerRule::class.java.classLoader?.getResourceAsStream("server.pem")) {
+        fun createSecure(port: Int, dispatcher: Dispatcher) =
+            MockServer(port, createSSLSocketFactory(), dispatcher)
+
+        private fun createSSLSocketFactory(): SSLSocketFactory =
+            requireNotNull(MockServer::class.java.classLoader?.getResourceAsStream("server.pem")) {
                 "Resource not found: server.pem"
             }.bufferedReader().use { reader ->
                 HandshakeCertificates.Builder()
