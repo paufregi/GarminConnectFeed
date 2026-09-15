@@ -17,7 +17,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.data.repository.AuthRepository
@@ -37,7 +37,7 @@ class AuthInterceptorTest {
     private val authRepo = mockk<AuthRepository>()
     private val clientId = "test-client-id"
 
-    @JvmField @Rule val server = MockWebServerRule()
+    @JvmField @Rule val server = MockServer()
 
     interface TestApi {
         @GET("/test")
