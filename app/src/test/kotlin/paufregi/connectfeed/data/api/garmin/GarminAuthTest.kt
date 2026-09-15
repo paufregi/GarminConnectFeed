@@ -9,19 +9,17 @@ import org.junit.Test
 import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.authTokenJson
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.refreshedAuthTokenJson
+import paufregi.connectfeed.refreshedToken
 
 class GarminAuthTest {
-    @JvmField @Rule val server = MockWebServerRule()
 
+    @JvmField @Rule val server = MockWebServerRule()
     private lateinit var api: GarminAuth
-    private val consumerKey = "CONSUMER_KEY"
-    private val consumerSecret = "CONSUMER_SECRET"
-    private val oauth = PreAuthToken("TOKEN", "SECRET")
 
     @Before
     fun setup() {
-        api = GarminAuth.client(consumerKey, consumerSecret, oauth, server.url("/").toString())
+        api = GarminAuth.client(server.url("/").toString())
     }
 
     @After
@@ -29,62 +27,67 @@ class GarminAuthTest {
     }
 
     @Test
-    fun `Get AuthToken`() = runTest {
+    fun `Exchange token`() = runTest {
         server.enqueue(code = 200, body = authTokenJson)
 
-        val res = api.exchange()
+        val clientId = "test-client-id"
+        val serviceTicket = "ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso"
+        val authorization = GarminAuth.buildBasicAuth(clientId)
+
+        val res = api.exchange(authorization, clientId, serviceTicket)
 
         val request = server.takeRequest()
 
         assertThat(request.method).isEqualTo("POST")
-        assertThat(request.url.toUrl().path).isEqualTo("/oauth-service/oauth/exchange/user/2.0")
-        assertThat(request.headers["authorization"]).contains("OAuth")
-        assertThat(request.headers["authorization"]).contains("""oauth_consumer_key="CONSUMER_KEY"""")
-        assertThat(request.headers["authorization"]).contains("""oauth_token="TOKEN"""")
-        assertThat(request.headers["authorization"]).contains("""oauth_signature_method="HMAC-SHA1"""")
-        assertThat(request.headers["authorization"]).contains("""oauth_signature""")
-        assertThat(request.headers["authorization"]).contains("""oauth_version="1.0"""")
+        assertThat(request.url.encodedPath).isEqualTo("/di-oauth2-service/oauth/token")
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(authToken)
     }
 
     @Test
-    fun `Get AuthToken - failure`() = runTest {
+    fun `Exchange token - failure`() = runTest {
         server.enqueue(400)
 
-        val res = api.exchange()
+        val clientId = "test-client-id"
+        val serviceTicket = "ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso"
+        val authorization = GarminAuth.buildBasicAuth(clientId)
+
+        val res = api.exchange(authorization, clientId, serviceTicket)
 
         assertThat(res.isSuccessful).isFalse()
         assertThat(res.body()).isNull()
     }
 
     @Test
-    fun `Refresh AuthToken`() = runTest {
-        server.enqueue(code = 200, body = authTokenJson)
+    fun `Refresh token`() = runTest {
+        server.enqueue(code = 200, body = refreshedAuthTokenJson)
 
-        val res = api.refresh("REFRESH_TOKEN")
+        val clientId = "test-client-id"
+        val refreshToken = authToken.refreshToken
+        val authorization = GarminAuth.buildBasicAuth(clientId)
+
+        val res = api.refresh(authorization, clientId, refreshToken)
 
         val request = server.takeRequest()
 
         assertThat(request.method).isEqualTo("POST")
-        assertThat(request.url.encodedPath ).isEqualTo("/oauth-service/oauth/exchange/user/2.0")
-        assertThat(request.headers["authorization"]).contains("OAuth")
-        assertThat(request.headers["authorization"]).contains("""oauth_consumer_key="CONSUMER_KEY"""")
-        assertThat(request.headers["authorization"]).contains("""oauth_token="TOKEN"""")
-        assertThat(request.headers["authorization"]).contains("""oauth_signature_method="HMAC-SHA1"""")
-        assertThat(request.headers["authorization"]).contains("""oauth_signature""")
-        assertThat(request.headers["authorization"]).contains("""oauth_version="1.0"""")
+        assertThat(request.url.encodedPath).isEqualTo("/di-oauth2-service/oauth/token")
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(authToken)
+        assertThat(res.body()).isEqualTo(refreshedToken)
     }
 
     @Test
-    fun `Refresh AuthToken - failure`() = runTest {
+    fun `Refresh token - failure`() = runTest {
         server.enqueue(400)
 
-        val res = api.refresh("REFRESH_TOKEN")
+        val clientId = "test-client-id"
+        val refreshToken = "invalid-refresh-token"
+        val authorization = GarminAuth.buildBasicAuth(clientId)
+
+        val res = api.refresh(authorization, clientId, refreshToken)
 
         assertThat(res.isSuccessful).isFalse()
         assertThat(res.body()).isNull()
     }
 }
+
