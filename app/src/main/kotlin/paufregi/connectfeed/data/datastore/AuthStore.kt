@@ -1,11 +1,11 @@
 package paufregi.connectfeed.data.datastore
 
-import paufregi.connectfeed.data.api.garmin.models.AuthToken as GarminAuthToken
-import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 import androidx.datastore.core.DataStore
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.map
 import paufregi.connectfeed.data.datastore.models.Auth
+import paufregi.connectfeed.data.api.garmin.models.AuthToken as GarminAuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
 class AuthStore @Inject constructor(private val store: DataStore<Auth>) {
 
@@ -24,6 +24,11 @@ class AuthStore @Inject constructor(private val store: DataStore<Auth>) {
         }
     }
 
+    suspend fun clearStravaToken() {
+        store.updateData {
+            it.copy(stravaToken = null)
+        }
+    }
 
     suspend fun clear() {
         store.updateData { Auth() }
