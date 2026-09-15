@@ -4,6 +4,8 @@ import mockwebserver3.Dispatcher
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
 import okhttp3.Headers.Companion.toHeaders
+import okhttp3.tls.HandshakeCertificates
+import okhttp3.tls.HeldCertificate
 import org.junit.rules.ExternalResource
 import java.io.IOException
 import javax.net.ssl.SSLSocketFactory
@@ -40,5 +42,17 @@ class MockWebServerRule(
 
     override fun after() {
         server.close()
+    }
+
+    companion object {
+        fun createSSLSocketFactory(): SSLSocketFactory =
+            requireNotNull(MockWebServerRule::class.java.classLoader?.getResourceAsStream("server.pem")) {
+                "Resource not found: server.pem"
+            }.bufferedReader().use { reader ->
+                HandshakeCertificates.Builder()
+                    .heldCertificate(HeldCertificate.decode(reader.readText()))
+                    .build()
+                    .sslSocketFactory()
+            }
     }
 }
