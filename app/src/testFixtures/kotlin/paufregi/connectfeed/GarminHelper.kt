@@ -4,177 +4,50 @@ import com.appstractive.jwt.jwt
 import mockwebserver3.Dispatcher
 import mockwebserver3.MockResponse
 import mockwebserver3.RecordedRequest
-import okhttp3.Headers
-import okhttp3.tls.HandshakeCertificates
-import okhttp3.tls.HeldCertificate
-import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.core.utils.truncatedToSecond
+import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
-import paufregi.connectfeed.data.api.github.models.Asset
-import paufregi.connectfeed.data.api.github.models.Release
-import java.net.URLDecoder
-import kotlin.time.Clock
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
-import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
-fun createAuthToken(issuedTime: Instant) = AuthToken(
-    accessToken = jwt { claims { issuedAt(issuedTime) } }.toString(),
-    refreshToken = "REFRESH_TOKEN",
-    expiresAt = issuedTime + 10.seconds,
-    refreshExpiresAt = issuedTime + 30.seconds
+fun createAuthToken(expiresAt: Instant, refreshToken: String = "REFRESH_TOKEN") = AuthToken(
+    accessToken = jwt {
+        claims {
+            expires(expiresAt)
+            claim("client_id", "connect")
+        }
+    }.toString(),
+    refreshToken = refreshToken,
 )
 
-fun createStravaToken(expiresAt: Instant) = StravaAuthToken(
-    accessToken = "ACCESS_TOKEN",
-    refreshToken = "REFRESH_TOKEN",
-    expiresAt = expiresAt,
-)
+val authToken = createAuthToken(today)
+val refreshedToken = createAuthToken(tomorrow, "NEW_REFRESH_TOKEN")
 
-val today: Instant = Clock.System.now().truncatedToSecond()
-val tomorrow: Instant = today + 1.days
-val yesterday: Instant = today - 1.days
-
-val user = User(id= 1, name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
-val preAuthToken = PreAuthToken("TOKEN", "SECRET")
-val authToken = createAuthToken(tomorrow)
-
-val stravaAuthToken = createStravaToken(today)
-val stravaRefreshedAuthToken = StravaAuthToken(
-    accessToken = "NEW_ACCESS_TOKEN",
-    refreshToken = "NEW_REFRESH_TOKEN",
-    expiresAt = tomorrow,
-)
-
-val preAuthTokenBody = "oauth_token=${preAuthToken.token}&oauth_token_secret=${preAuthToken.secret}"
-
-val githubRelease = Release(
-    tagName = "v2.2.2",
-    assets = listOf(
-        Asset(
-            contentType="application/vnd.android.package-archive",
-            downloadUrl = "https://github.com/paufregi/GarminConnectFeed/releases/download/v2.2.2/ConnectFeed-v2.2.2.apk"
-        )
-    )
-)
+val validLogin = """
+    "serviceURL": "https://mobile.integration.garmin.com/gcm/android", 
+	"serviceTicketId": "ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso", 
+	"responseStatus": {
+		"type": "SUCCESSFUL", 
+		"message": ""
+	}, 
+	"responseReason": "", 
+	"customerMfaInfo": "", 
+	"consentTypeList": "", 
+	"captchaAlreadyPassed": false, 
+	"samlResponse": "", 
+	"authType": "CAS"
+""".trimIndent()
 
 val authTokenJson = """
     {
-    "scope": "SCOPE",
-    "jti": "JTI",
-    "access_token": "${authToken.accessToken}",
-    "token_type": "Bearer",
-    "refresh_token": "${authToken.refreshToken}",
-    "expires_in": 10000,
-    "refresh_token_expires_in": 30000
+        "access_token": "${authToken.accessToken}",
+        "refresh_token": "${authToken.refreshToken}"
     }
     """.trimIndent()
 
-val htmlCSRF = """
-        <!DOCTYPE html>
-        <html lang="en" class="no-js">
-            <head>
-                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-                <meta name="viewport" content="width=device-width" />
-                <meta http-equiv="X-UA-Compatible" content="IE=edge;" />
-                <title>GARMIN Authentication Application</title>
-
-                <link rel="stylesheet" href=""/>
-            </head>
-            <body>
-
-                <!-- begin GAuth component -->
-                <div id="GAuth-component">
-                    <!-- begin login component-->
-                    <div id="login-component" class="blueForm-basic">
-                       <input type="hidden" id="contextPath" value="/sso" />
-                        <!-- begin login form -->
-                        <div id="login-state-default">
-                            <h2>Sign In</h2>
-
-                            <form method="post" id="login-form">
-
-                                <div class="form-alert">
-                                    <div id="username-error" style="display:none;"></div>
-                                    <div id="password-error" style="display:none;"></div>
-                                </div>
-                                <div class="textfield">
-                                    <label for="username">Email</label>
-                                        <!-- If the lockToEmailAddress parameter is specified then we want to mark the field as readonly,
-                                        preload the email address, and disable the other input so that null isn't sent to the server. We'll
-                                        also style the field to have a darker grey background and disable the mouse pointer
-                                         -->
-
-                                        <!-- If the lockToEmailAddress parameter is NOT specified then keep the existing functionality and disable the readonly input field
-                                         -->
-                                        <input class="login_email" name="username" id="username" value="" type="email" spellcheck="false" autocorrect="off" autocapitalize="off"/>
-
-                                </div>
-
-                                <div class="textfield">
-                                    <label for="password">Password</label>
-                                    <a id="loginforgotpassword" class="login-forgot-password" style="cursor:pointer">(Forgot?)</a>
-                                    <input type="password" name="password" id="password" spellcheck="false" autocorrect="off" autocapitalize="off" />
-                                     <strong id="capslock-warning" class="information" title="Caps lock is on." style="display: none;">Caps lock is on.</strong>
-                                </div>
-                                <input type="hidden" name="embed" value="true"/>
-                                <input type="hidden" name="_csrf" value="TEST_CSRF_VALUE" />
-                                <button type="submit" id="login-btn-signin" class="btn1" accesskey="l">Sign In</button>
-                                <!-- The existence of the "rememberme" parameter at all will remember the user! -->
-                            </form>
-                        </div>
-                        <!-- end login form -->
-
-                        <!-- begin Create Account message -->
-                        <div id="login-create-account">
-
-                        </div>
-                        <!-- end Create Account message -->
-
-                        <!-- begin Social Sign In component -->
-                        <div id="SSI-component">
-
-                        </div>
-                        <!-- end Social Sign In component -->
-                        <div class="clearfix"></div> <!-- Ensure that GAuth-component div's height is computed correctly. -->
-                    </div>
-                    <!-- end login component-->
-
-                </div>
-                <!-- end GAuth component -->
-        </html>
-    """.trimIndent()
-
-val htmlTicket = """
-        <!DOCTYPE html>
-        <html class="no-js">
-            <head>
-                <title>Success</title>
-                <meta charset="utf-8">
-                <meta http-equiv="X-UA-Compatible" content="IE=edge;" />
-                <meta name="description" content="">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-                <meta http-equiv="cleartype" content="on">
-                <script type="text/javascript">
-                    var redirectAfterAccountLoginUrl 	  = "https:\/\/sso.garmin.com\/sso\/embed";
-                    var redirectAfterAccountCreationUrl = "https:\/\/sso.garmin.com\/sso\/embed";
-                    var consumeServiceTicket         	  = "true";
-                    var service_url                  	  = "https:\/\/sso.garmin.com\/sso\/embed";
-                    var parent_url                   	  = "https:\/\/sso.garmin.com\/sso\/embed";
-                    var response_url                 	  = "https:\/\/sso.garmin.com\/sso\/embed?ticket=TEST_TICKET_VALUE";
-                    var logintoken                   	  = "";
-                    var socialLogin                   	  = "";
-                    var performMFACheck                 = "";
-                </script>
-            </head>
-            <body>
-                <div id="GAuth-component">
-                    <img src='/sso/images/ajax-loader.gif' class="loaderImage"/>
-                </div>
-            </body>m
-        </html>
+val refreshedAuthTokenJson = """
+    {
+        "access_token": "${refreshedToken.accessToken}",
+        "refresh_token": "${refreshedToken.refreshToken}"
+    }
     """.trimIndent()
 
 val userProfileJson = """
@@ -959,340 +832,14 @@ val gearsJson = """
     ]
 """.trimIndent()
 
-val stravaAuthTokenJson = """
-    {
-        "token_type": "Bearer",
-        "expires_at": ${today.toEpochMilliseconds()},
-        "expires_in": 21600,
-        "refresh_token": "${stravaAuthToken.refreshToken}",
-        "access_token": "${stravaAuthToken.accessToken}",
-        "athlete": {
-            "id" : 1,
-            "username" : "paufregi",
-            "firstname" : "Paul",
-            "lastname" : "Test",
-            "weight": 76.1
-        }
-    }
-    """.trimIndent()
-
-val stravaRefreshTokenJson = """
-    {
-        "token_type": "Bearer",
-        "expires_at": ${stravaRefreshedAuthToken.expiresAt.toEpochMilliseconds()},
-        "expires_in": 21600,
-        "refresh_token": "${stravaRefreshedAuthToken.refreshToken}",
-        "access_token": "${stravaRefreshedAuthToken.accessToken}",
-        "athlete": {
-            "id" : 1,
-            "username" : "paufregi",
-            "firstname" : "Paul",
-            "lastname" : "Test",
-            "weight": 76.1
-        }
-    }
-    """.trimIndent()
-
-val stravaDeauthorizationJson = """
-    {
-        "access_token": "REVOKED_ACCESS_TOKEN"
-    }
-    """.trimIndent()
-
-val stravaActivitiesJson = """
-    [ {
-      "resource_state" : 2,
-      "athlete" : {
-        "id" : 134815,
-        "resource_state" : 1
-      },
-      "name" : "Happy Friday",
-      "distance" : 7803.6,
-      "moving_time" : 4500,
-      "elapsed_time" : 4500,
-      "total_elevation_gain" : 0,
-      "type" : "Run",
-      "sport_type" : "Run",
-      "workout_type" : null,
-      "id" : 1,
-      "external_id" : "garmin_push_12345678987654321",
-      "upload_id" : 987654321234567891234,
-      "start_date" : "2018-05-02T12:15:09Z",
-      "start_date_local" : "2018-05-02T05:15:09Z",
-      "timezone" : "(GMT-08:00) America/Los_Angeles",
-      "utc_offset" : -25200,
-      "start_latlng" : null,
-      "end_latlng" : null,
-      "location_city" : null,
-      "location_state" : null,
-      "location_country" : "United States",
-      "achievement_count" : 0,
-      "kudos_count" : 3,
-      "comment_count" : 1,
-      "athlete_count" : 1,
-      "photo_count" : 0,
-      "map" : {
-        "id" : "a12345678987654321",
-        "summary_polyline" : null,
-        "resource_state" : 2
-      },
-      "trainer" : true,
-      "commute" : false,
-      "manual" : false,
-      "private" : false,
-      "flagged" : false,
-      "gear_id" : "b12345678987654321",
-      "from_accepted_tag" : false,
-      "average_speed" : 5.54,
-      "max_speed" : 11,
-      "average_cadence" : 67.1,
-      "average_watts" : 175.3,
-      "weighted_average_watts" : 210,
-      "kilojoules" : 788.7,
-      "device_watts" : true,
-      "has_heartrate" : true,
-      "average_heartrate" : 140.3,
-      "max_heartrate" : 178,
-      "max_watts" : 406,
-      "pr_count" : 0,
-      "total_photo_count" : 1,
-      "has_kudoed" : false,
-      "suffer_score" : 82
-    }, {
-      "resource_state" : 2,
-      "athlete" : {
-        "id" : 167560,
-        "resource_state" : 1
-      },
-      "name" : "Bondcliff",
-      "distance" : 23676.5,
-      "moving_time" : 5400,
-      "elapsed_time" : 5400,
-      "total_elevation_gain" : 0,
-      "type" : "Ride",
-      "sport_type" : "Ride",
-      "workout_type" : null,
-      "id" : 2,
-      "external_id" : "garmin_push_12345678987654321",
-      "upload_id" : 1234567819,
-      "start_date" : "2024-10-24T07:15:30Z",
-      "start_date_local" : "2024-10-24T20:15:30Z",
-      "timezone" : "(GMT-08:00) America/Los_Angeles",
-      "utc_offset" : -25200,
-      "start_latlng" : null,
-      "end_latlng" : null,
-      "location_city" : null,
-      "location_state" : null,
-      "location_country" : "United States",
-      "achievement_count" : 0,
-      "kudos_count" : 4,
-      "comment_count" : 0,
-      "athlete_count" : 1,
-      "photo_count" : 0,
-      "map" : {
-        "id" : "a12345689",
-        "summary_polyline" : null,
-        "resource_state" : 2
-      },
-      "trainer" : true,
-      "commute" : false,
-      "manual" : false,
-      "private" : false,
-      "flagged" : false,
-      "gear_id" : "b12345678912343",
-      "from_accepted_tag" : false,
-      "average_speed" : 4.385,
-      "max_speed" : 8.8,
-      "average_cadence" : 69.8,
-      "average_watts" : 200,
-      "weighted_average_watts" : 214,
-      "kilojoules" : 1080,
-      "device_watts" : true,
-      "has_heartrate" : true,
-      "average_heartrate" : 152.4,
-      "max_heartrate" : 183,
-      "max_watts" : 403,
-      "pr_count" : 0,
-      "total_photo_count" : 1,
-      "has_kudoed" : false,
-      "suffer_score" : 162
-    } ]
-""".trimIndent()
-
-val stravaAthlete = """
-    {
-      "id" : 1,
-      "username" : "paufregi",
-      "resource_state" : 3,
-      "firstname" : "Paul",
-      "lastname" : "Ellis",
-      "city" : "Auckland",
-      "state" : "NZ",
-      "country" : "NZ",
-      "sex" : "M",
-      "premium" : true,
-      "created_at" : "2017-11-14T02:30:05Z",
-      "updated_at" : "2018-02-06T19:32:20Z",
-      "badge_type_id" : 4,
-      "profile_medium" : "https://xxxxxx.cloudfront.net/pictures/athletes/123456789/123456789/2/medium.jpg",
-      "profile" : "https://xxxxx.cloudfront.net/pictures/athletes/123456789/123456789/2/large.jpg",
-      "friend" : null,
-      "follower" : null,
-      "follower_count" : 5,
-      "friend_count" : 5,
-      "mutual_friend_count" : 0,
-      "athlete_type" : 1,
-      "date_preference" : "%m/%d/%Y",
-      "measurement_preference" : "meters",
-      "clubs" : [ ],
-      "ftp" : null,
-      "weight" : 0,
-      "bikes" : [ {
-        "id" : "b12345678987655",
-        "primary" : true,
-        "name" : "Giant Contend",
-        "resource_state" : 2,
-        "distance" : 0
-      } ],
-      "shoes" : [ {
-        "id" : "g12345678987655",
-        "primary" : true,
-        "name" : "Mizuno Neo Vista",
-        "resource_state" : 2,
-        "distance" : 4904
-      } ]
-    }
-""".trimIndent()
-
-val stravaDetailedAthlete = """
-    {    
-      "id" : 1,
-      "username" : "paufregi"
-      "firstname" : "Paul",
-      "lastname" : "Test",
-      "weight": 76.1
-    }
-""".trimIndent()
-
-val githubLatestReleaseJson = """
-    {
-      "url": "https://api.github.com/repos/paufregi/GarminConnectFeed/releases/218432575",
-      "assets_url": "https://api.github.com/repos/paufregi/GarminConnectFeed/releases/218432575/assets",
-      "upload_url": "https://uploads.github.com/repos/paufregi/GarminConnectFeed/releases/218432575/assets{?name,label}",
-      "html_url": "https://github.com/paufregi/GarminConnectFeed/releases/tag/v2.2.2",
-      "id": 218432575,
-      "author": {
-        "login": "paufregi",
-        "id": 17803128,
-        "node_id": "MDQ6VXNlcjE3ODAzMTI4",
-        "avatar_url": "https://avatars.githubusercontent.com/u/17803128?v=4",
-        "gravatar_id": "",
-        "url": "https://api.github.com/users/paufregi",
-        "html_url": "https://github.com/paufregi",
-        "followers_url": "https://api.github.com/users/paufregi/followers",
-        "following_url": "https://api.github.com/users/paufregi/following{/other_user}",
-        "gists_url": "https://api.github.com/users/paufregi/gists{/gist_id}",
-        "starred_url": "https://api.github.com/users/paufregi/starred{/owner}{/repo}",
-        "subscriptions_url": "https://api.github.com/users/paufregi/subscriptions",
-        "organizations_url": "https://api.github.com/users/paufregi/orgs",
-        "repos_url": "https://api.github.com/users/paufregi/repos",
-        "events_url": "https://api.github.com/users/paufregi/events{/privacy}",
-        "received_events_url": "https://api.github.com/users/paufregi/received_events",
-        "type": "User",
-        "user_view_type": "public",
-        "site_admin": false
-      },
-      "node_id": "RE_kwDOK_u9UM4NBQQ_",
-      "tag_name": "v2.2.2",
-      "target_commitish": "main",
-      "name": "v2.2.2",
-      "draft": false,
-      "immutable": false,
-      "prerelease": false,
-      "created_at": "2025-05-14T01:45:14Z",
-      "updated_at": "2025-05-14T01:50:25Z",
-      "published_at": "2025-05-14T01:50:25Z",
-      "assets": [
-        {
-          "url": "https://api.github.com/repos/paufregi/GarminConnectFeed/releases/assets/254438203",
-          "id": 254438203,
-          "node_id": "RA_kwDOK_u9UM4PKms7",
-          "name": "ConnectFeed-v2.2.2.apk",
-          "label": null,
-          "uploader": {
-            "login": "paufregi",
-            "id": 17803128,
-            "node_id": "MDQ6VXNlcjE3ODAzMTI4",
-            "avatar_url": "https://avatars.githubusercontent.com/u/17803128?v=4",
-            "gravatar_id": "",
-            "url": "https://api.github.com/users/paufregi",
-            "html_url": "https://github.com/paufregi",
-            "followers_url": "https://api.github.com/users/paufregi/followers",
-            "following_url": "https://api.github.com/users/paufregi/following{/other_user}",
-            "gists_url": "https://api.github.com/users/paufregi/gists{/gist_id}",
-            "starred_url": "https://api.github.com/users/paufregi/starred{/owner}{/repo}",
-            "subscriptions_url": "https://api.github.com/users/paufregi/subscriptions",
-            "organizations_url": "https://api.github.com/users/paufregi/orgs",
-            "repos_url": "https://api.github.com/users/paufregi/repos",
-            "events_url": "https://api.github.com/users/paufregi/events{/privacy}",
-            "received_events_url": "https://api.github.com/users/paufregi/received_events",
-            "type": "User",
-            "user_view_type": "public",
-            "site_admin": false
-          },
-          "content_type": "application/vnd.android.package-archive",
-          "state": "uploaded",
-          "size": 7446538,
-          "digest": null,
-          "download_count": 3,
-          "created_at": "2025-05-14T01:49:05Z",
-          "updated_at": "2025-05-14T01:49:09Z",
-          "browser_download_url": "https://github.com/paufregi/GarminConnectFeed/releases/download/v2.2.2/ConnectFeed-v2.2.2.apk"
-        }
-      ],
-      "tarball_url": "https://api.github.com/repos/paufregi/GarminConnectFeed/tarball/v2.2.2",
-      "zipball_url": "https://api.github.com/repos/paufregi/GarminConnectFeed/zipball/v2.2.2",
-      "body": "### v2.2.2\r\n\r\nThis release enhances the Renpho reader by implementing robust error handling for incompatible file formats. \r\nUsers will now receive an informative error message instead of experiencing an unexpected crash."
-    }
-""".trimIndent()
-
 const val connectPort = 8081
 const val garminSSOPort = 8082
-const val stravaPort = 8083
-const val githubPort = 8084
-
-fun RecordedRequest.getFields(): Map<String, String> {
-    val body = body?.utf8() ?: ""
-    val contentType = headers["Content-Type"] ?: ""
-    if (body.isEmpty() || contentType != "application/x-www-form-urlencoded") return emptyMap()
-    val items = body.split("&")
-    return items.associate {
-        val (key, value) = it.split("=")
-        URLDecoder.decode(key, Charsets.UTF_8) to URLDecoder.decode(value, Charsets.UTF_8)
-    }
-}
-
-private fun loadServerCert(): String {
-    val inputStream = Thread.currentThread().contextClassLoader
-        ?.getResourceAsStream("server.pem")
-        ?: throw IllegalArgumentException("Resource not found: server.pem")
-    return inputStream.bufferedReader().use { it.readText() }
-}
-
-val sslSocketFactory = HandshakeCertificates.Builder()
-    .heldCertificate(HeldCertificate.decode(loadServerCert()))
-    .build().sslSocketFactory()
+const val garminAuthPort = 8083
 
 val connectDispatcher: Dispatcher = object : Dispatcher(){
     override fun dispatch(request: RecordedRequest): MockResponse {
         val path = request.url.encodedPath
         return when {
-            path.startsWith("/oauth-service/oauth/preauthorized") && request.method == "GET" ->
-                MockResponse(code = 200, body = preAuthTokenBody)
-
-            path == "/oauth-service/oauth/exchange/user/2.0" && request.method == "POST" ->
-                MockResponse(code = 200, body = authTokenJson)
-
             path == "/upload-service/upload" && request.method == "POST" ->
                 MockResponse(200)
 
@@ -1305,16 +852,16 @@ val connectDispatcher: Dispatcher = object : Dispatcher(){
             path == "/gear-service/gear/v2/list" && request.method == "GET" ->
                 MockResponse(code = 200, body = gearsJson)
 
-            (path.startsWith("/gear-service/activity/v2") && path.endsWith("/associated-gear") && request.method == "PUT") ->
+            path.startsWith("/gear-service/activity/v2") && path.endsWith("/associated-gear") && request.method == "PUT" ->
                 MockResponse(200)
 
-            (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
+            path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET" ->
                 MockResponse(code = 200, body = activitiesJson)
 
-            (path.startsWith("/activity-service/activity") && request.method == "PUT") ->
+            path.startsWith("/activity-service/activity") && request.method == "PUT" ->
                 MockResponse(200)
 
-            (path.startsWith("/workout-service/workout") && request.method == "GET") ->
+            path.startsWith("/workout-service/workout") && request.method == "GET" ->
                 MockResponse(code = 200, body = workoutJson)
 
             else -> MockResponse(404)
@@ -1326,57 +873,24 @@ val garminSSODispatcher: Dispatcher = object : Dispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
         val path = request.url.encodedPath
         return when {
-            path.startsWith("/sso/signin") && request.method == "GET" ->
-                MockResponse(code = 200, body = htmlCSRF)
-
-            path.startsWith("/sso/signin") && request.method == "POST" ->
-                MockResponse(code = 200, body = htmlTicket)
+            path.startsWith("/mobile/api/login") && request.method == "POST" ->
+                MockResponse(code = 200, body = validLogin)
 
             else -> MockResponse(404)
         }
     }
 }
 
-val stravaDispatcher: Dispatcher = object : Dispatcher() {
+val garminAuthDispatcher: Dispatcher = object : Dispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
         val path = request.url.encodedPath
         val fields = request.getFields()
-        return when {
-            path.startsWith("/oauth/mobile/authorize") ->
-                MockResponse(302, Headers.headersOf("Location", "paufregi.connectfeed://strava/auth?code=123456"))
+        return when (path) {
+            "/di-oauth2-service/oauth/token" if request.method == "POST" && fields["grant_type"] == GarminAuth.GRANT_TYPE_EXCHANGE ->
+                MockResponse(code = 200, body = authTokenJson)
 
-            path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "authorization_code" ->
-                MockResponse(code = 200, body = stravaAuthTokenJson)
-
-            path == "/api/v3/oauth/token" && request.method == "POST" && fields["grant_type"] == "refresh_token" ->
-                MockResponse(code = 200, body = stravaRefreshTokenJson)
-
-            path == "/oauth/deauthorize" && request.method == "POST" ->
-                MockResponse(code = 200, body = stravaDeauthorizationJson)
-
-            path == "/athlete" && request.method == "GET" ->
-                MockResponse(code = 200, body = stravaAthlete)
-
-            path.startsWith("/athlete/activities") && request.method == "GET" ->
-                MockResponse(code = 200, body = stravaActivitiesJson)
-
-            path.startsWith("/activities/") && request.method == "PUT" ->
-                MockResponse(200)
-
-            path == "/athlete" && request.method == "PUT" ->
-                MockResponse(code = 200, body = stravaDetailedAthlete)
-
-            else -> MockResponse(404)
-        }
-    }
-}
-
-val githubDispatcher: Dispatcher = object : Dispatcher() {
-    override fun dispatch(request: RecordedRequest): MockResponse {
-        val path = request.url.encodedPath
-        return when {
-            path == "/repos/paufregi/GarminConnectFeed/releases/latest" && request.method == "GET" ->
-                MockResponse(code = 200, body = githubLatestReleaseJson)
+            "/di-oauth2-service/oauth/token" if request.method == "POST" && fields["grant_type"] == GarminAuth.GRANT_TYPE_REFRESH ->
+                MockResponse(code = 200, body = refreshedAuthTokenJson)
 
             else -> MockResponse(404)
         }
