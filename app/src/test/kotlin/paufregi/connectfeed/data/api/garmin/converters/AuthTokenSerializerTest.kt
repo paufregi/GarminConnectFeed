@@ -20,8 +20,6 @@ class AuthTokenSerializerTest {
     private val authToken = AuthToken(
         accessToken = accessToken,
         refreshToken = "REFRESH_TOKEN",
-        expiresAt = issuedTime + 10.seconds,
-        refreshExpiresAt = issuedTime + 30.seconds
     )
 
     @Test
