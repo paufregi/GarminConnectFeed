@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.api.strava.utils
+package paufregi.connectfeed.data.api.strava.interceptors
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
@@ -17,11 +17,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.createStravaToken
-import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
-import paufregi.connectfeed.data.repository.StravaAuthRepository
+import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.tomorrow
 import paufregi.connectfeed.yesterday
 import retrofit2.Response
@@ -34,9 +33,11 @@ class StravaAuthInterceptorTest {
     private lateinit var auth: StravaAuthInterceptor
     private lateinit var api: TestApi
 
-    private val authRepo = mockk<StravaAuthRepository>()
+    private val authRepo = mockk<AuthRepository>()
+    private val clientId = "test-client-id"
+    private val clientSecret = "test-client-secret"
 
-    @JvmField @Rule val server = MockWebServerRule()
+    @JvmField @Rule val server = MockServer()
 
     interface TestApi {
         @GET("/test")
@@ -46,7 +47,7 @@ class StravaAuthInterceptorTest {
     @Before
     fun setup() {
 
-        auth = StravaAuthInterceptor(authRepo, "CLIENT_ID", "CLIENT_SECRET")
+        auth = StravaAuthInterceptor(authRepo, clientId, clientSecret)
         server.enqueue(200)
         api = Retrofit.Builder()
             .baseUrl(server.url("/"))
@@ -63,64 +64,63 @@ class StravaAuthInterceptorTest {
     }
 
     @Test
-    fun `Success - cached token`() = runTest {
+    fun `Success - valid token`() = runTest {
         val token = createStravaToken(tomorrow)
 
-        every { authRepo.getToken() } returns flowOf(token)
+        every { authRepo.getStravaToken() } returns flowOf(token)
 
         api.test()
 
         val req = server.takeRequest()
         assertThat(req.headers["Authorization"]).isEqualTo("Bearer ${token.accessToken}")
 
-        verify { authRepo.getToken() }
+        verify { authRepo.getStravaToken() }
     }
 
     @Test
-    fun `Success - expired token`() = runTest {
+    fun `Success - refresh expired token`() = runTest {
         val expiredToken = createStravaToken(yesterday)
-        val validToken = createStravaToken(yesterday)
+        val validToken = createStravaToken(tomorrow)
 
-        every { authRepo.getToken() } returns flowOf(expiredToken)
-        coEvery { authRepo.refresh(any(), any(), any()) } returns Result.success(validToken)
-        coEvery { authRepo.saveToken(any()) } returns Unit
+        every { authRepo.getStravaToken() } returns flowOf(expiredToken)
+        coEvery { authRepo.stravaRefreshToken(clientId, clientSecret, expiredToken.refreshToken) } returns Result.success(validToken)
+        coEvery { authRepo.saveStravaToken(validToken) } returns Unit
 
         api.test()
 
         val req = server.takeRequest()
         assertThat(req.headers["Authorization"]).isEqualTo("Bearer ${validToken.accessToken}")
 
-        verify { authRepo.getToken() }
+        verify { authRepo.getStravaToken() }
         coVerify {
-            authRepo.refresh("CLIENT_ID", "CLIENT_SECRET", expiredToken.refreshToken)
-            authRepo.saveToken(validToken)
+            authRepo.stravaRefreshToken(clientId, clientSecret, expiredToken.refreshToken)
+            authRepo.saveStravaToken(validToken)
         }
     }
 
     @Test
     fun `Failure - no token`() = runTest {
-        every { authRepo.getToken() } returns flowOf(null)
+        every { authRepo.getStravaToken() } returns flowOf(null)
 
         val res = api.test()
 
         assertThat(res.isSuccessful).isFalse()
 
-        verify { authRepo.getToken() }
+        verify { authRepo.getStravaToken() }
     }
 
     @Test
-    fun `Failure - refresh`() = runTest {
+    fun `Failure - refresh expired token`() = runTest {
         val expiredToken = createStravaToken(yesterday)
 
-        every { authRepo.getToken() } returns flowOf(expiredToken)
-        coEvery { authRepo.refresh(any(), any(), any()) } returns Result.failure("error")
+        every { authRepo.getStravaToken() } returns flowOf(expiredToken)
+        coEvery { authRepo.stravaRefreshToken(clientId, clientSecret, expiredToken.refreshToken) } returns Result.failure("error")
 
         val res = api.test()
 
         assertThat(res.isSuccessful).isFalse()
 
-
-        verify { authRepo.getToken() }
-        coVerify { authRepo.refresh("CLIENT_ID", "CLIENT_SECRET", expiredToken.refreshToken) }
+        verify { authRepo.getStravaToken() }
+        coVerify { authRepo.stravaRefreshToken(clientId, clientSecret, expiredToken.refreshToken) }
     }
 }

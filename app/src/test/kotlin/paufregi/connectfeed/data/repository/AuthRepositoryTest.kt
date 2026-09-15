@@ -8,7 +8,6 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
@@ -18,240 +17,245 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.data.api.garmin.GarminAuth
-import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
-import paufregi.connectfeed.data.api.garmin.models.CSRF
-import paufregi.connectfeed.data.api.garmin.models.Ticket
+import paufregi.connectfeed.data.api.garmin.models.LoginResponse
+import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.datastore.AuthStore
-import paufregi.connectfeed.preAuthToken
-import paufregi.connectfeed.user
+import paufregi.connectfeed.stravaAuthToken
 import retrofit2.Response
 
 class AuthRepositoryTest {
 
     private lateinit var repo: AuthRepository
     private val garminSSO = mockk<GarminSSO>()
-    private val authDatastore = mockk<AuthStore>()
-    private val garminPreAuth = mockk<GarminPreAuth>()
     private val garminAuth = mockk<GarminAuth>()
+    private val stravaAuth = mockk<StravaAuth>()
+    private val datastore = mockk<AuthStore>()
 
     @Before
     fun setup(){
-        repo = AuthRepository(
-            garminSSO,
-            authDatastore,
-            garminPreAuth,
-            { _ -> garminAuth}
-        )
+        repo = AuthRepository(garminSSO, garminAuth, stravaAuth, datastore)
     }
 
     @After
     fun tearDown(){
-        confirmVerified(garminSSO, authDatastore)
+        confirmVerified(garminSSO, garminAuth, stravaAuth, datastore)
         clearAllMocks()
     }
 
     @Test
-    fun `Get PreAuthToken`() = runTest {
-        every { authDatastore.getPreAuthToken() } returns flowOf(preAuthToken)
+    fun `Garmin login - success`() = runTest {
+        val responseStatus = LoginResponse.ResponseStatus("SUCCESSFUL")
+        val loginResponse = LoginResponse(responseStatus, "ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso")
+        val httpResponse = Response.success(loginResponse)
 
-        repo.getPreAuth().test {
-            assertThat(awaitItem()).isEqualTo(preAuthToken)
-            cancelAndIgnoreRemainingEvents()
-        }
+        coEvery { garminSSO.login(any()) } returns httpResponse
 
-        verify { authDatastore.getPreAuthToken() }
+        val res = repo.garminLogin("user@example.com", "password123")
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo("ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso")
+
+        coVerify { garminSSO.login(any()) }
     }
 
     @Test
-    fun `Save PreAuthToken`() = runTest {
-        coEvery { authDatastore.savePreAuthToken(any()) } returns Unit
+    fun `Garmin login - invalid credentials`() = runTest {
+        val responseStatus = LoginResponse.ResponseStatus("INVALID_USERNAME_PASSWORD")
+        val loginResponse = LoginResponse(responseStatus, null)
+        val httpResponse = Response.success(loginResponse)
 
-        repo.savePreAuth(preAuthToken)
+        coEvery { garminSSO.login(any()) } returns httpResponse
 
-        coVerify { authDatastore.savePreAuthToken(preAuthToken) }
+        val res = repo.garminLogin("user@example.com", "wrongpassword")
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).contains("Invalid username or password")
+
+        coVerify { garminSSO.login(any()) }
     }
 
     @Test
-    fun `Get AuthToken`() = runTest {
-        every { authDatastore.getAuthToken() } returns flowOf(authToken)
+    fun `Garmin login - captcha required`() = runTest {
+        val responseStatus = LoginResponse.ResponseStatus("CAPTCHA_REQUIRED")
+        val loginResponse = LoginResponse(responseStatus, null)
+        val httpResponse = Response.success(loginResponse)
 
-        repo.getAuthToken().test {
+        coEvery { garminSSO.login(any()) } returns httpResponse
+
+        val res = repo.garminLogin("user@example.com", "password123")
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).contains("CAPTCHA required")
+
+        coVerify { garminSSO.login(any()) }
+    }
+
+    @Test
+    fun `Garmin login - no service ticket`() = runTest {
+        val responseStatus = LoginResponse.ResponseStatus("SUCCESSFUL")
+        val loginResponse = LoginResponse(responseStatus, null)
+        val httpResponse = Response.success(loginResponse)
+
+        coEvery { garminSSO.login(any()) } returns httpResponse
+
+        val res = repo.garminLogin("user@example.com", "password123")
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).contains("no ticket found")
+
+        coVerify { garminSSO.login(any()) }
+    }
+
+    @Test
+    fun `Garmin exchange token - success`() = runTest {
+        coEvery { garminAuth.exchange(any(), any(), any()) } returns Response.success(authToken)
+
+        val res = repo.garminExchangeToken("ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso", "client-id")
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(authToken)
+
+        coVerify { garminAuth.exchange(any(), any(), any()) }
+    }
+
+    @Test
+    fun `Garmin exchange token - failure`() = runTest {
+        coEvery { garminAuth.exchange(any(), any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.garminExchangeToken("invalid-ticket", "client-id")
+
+        assertThat(res.isSuccess).isFalse()
+
+        coVerify { garminAuth.exchange(any(), any(), any()) }
+    }
+
+    @Test
+    fun `Garmin refresh token - success`() = runTest {
+        coEvery { garminAuth.refresh(any(), any(), any()) } returns Response.success(authToken)
+
+        val res = repo.garminRefreshToken(authToken.refreshToken, "client-id")
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(authToken)
+
+        coVerify { garminAuth.refresh(any(), any(), any()) }
+    }
+
+    @Test
+    fun `Garmin refresh token - failure`() = runTest {
+        coEvery { garminAuth.refresh(any(), any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.garminRefreshToken("invalid-refresh-token", "client-id")
+
+        assertThat(res.isSuccess).isFalse()
+
+        coVerify { garminAuth.refresh(any(), any(), any()) }
+    }
+
+    @Test
+    fun `Get Garmin token`() = runTest {
+        every { datastore.garminToken } returns flowOf(authToken)
+
+        repo.getGarminToken().test {
             assertThat(awaitItem()).isEqualTo(authToken)
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { authDatastore.getAuthToken() }
+        every { datastore.garminToken }
     }
 
     @Test
-    fun `Save AuthToken`() = runTest {
-        coEvery { authDatastore.saveAuthToken(any()) } returns Unit
+    fun `Save Garmin token`() = runTest {
+        coEvery { datastore.saveGarminToken(any()) } returns Unit
 
-        repo.saveAuthToken(authToken)
+        repo.saveGarminToken(authToken)
 
-        coVerify { authDatastore.saveAuthToken(authToken) }
+        coVerify { datastore.saveGarminToken(authToken) }
     }
 
     @Test
-    fun `Get user`() = runTest {
-        every { authDatastore.getUser() } returns flowOf(user)
+    fun `Strava exchange token - success`() = runTest {
+        coEvery { stravaAuth.exchange(any(), any(), any()) } returns Response.success(stravaAuthToken)
 
-        repo.getUser().test {
-            assertThat(awaitItem()).isEqualTo(user)
+        val res = repo.stravaExchangeToken("client-id", "client-secret", "auth-code")
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(stravaAuthToken)
+
+        coVerify { stravaAuth.exchange("client-id", "client-secret", "auth-code") }
+    }
+
+    @Test
+    fun `Strava exchange token - failure`() = runTest {
+        coEvery { stravaAuth.exchange(any(), any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.stravaExchangeToken("client-id", "client-secret", "invalid-code")
+
+        assertThat(res.isSuccess).isFalse()
+
+        coVerify { stravaAuth.exchange("client-id", "client-secret", "invalid-code") }
+    }
+
+    @Test
+    fun `Strava refresh token - success`() = runTest {
+        coEvery { stravaAuth.refresh(any(), any(), any()) } returns Response.success(stravaAuthToken)
+
+        val res = repo.stravaRefreshToken("client-id", "client-secret", "refresh-token")
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(stravaAuthToken)
+
+        coVerify { stravaAuth.refresh("client-id", "client-secret", "refresh-token") }
+    }
+
+    @Test
+    fun `Strava refresh token - failure`() = runTest {
+        coEvery { stravaAuth.refresh(any(), any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.stravaRefreshToken("client-id", "client-secret", "invalid-refresh-token")
+
+        assertThat(res.isSuccess).isFalse()
+
+        coVerify { stravaAuth.refresh("client-id", "client-secret", "invalid-refresh-token") }
+    }
+
+    @Test
+    fun `Get Strava token`() = runTest {
+        every { datastore.stravaToken } returns flowOf(stravaAuthToken)
+
+        repo.getStravaToken().test {
+            assertThat(awaitItem()).isEqualTo(stravaAuthToken)
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { authDatastore.getUser() }
+        every { datastore.stravaToken }
     }
 
     @Test
-    fun `Save user`() = runTest {
-        coEvery { authDatastore.saveUser(any()) } returns Unit
+    fun `Save Strava token`() = runTest {
+        coEvery { datastore.saveStravaToken(any()) } returns Unit
 
-        repo.saveUser(user)
+        repo.saveStravaToken(stravaAuthToken)
 
-        coVerify { authDatastore.saveUser(user) }
+        coVerify { datastore.saveStravaToken(stravaAuthToken) }
     }
 
     @Test
-    fun `Clear datastore`() = runTest {
-        coEvery { authDatastore.clear() } returns Unit
+    fun `Clear Strava token`() = runTest {
+        coEvery { datastore.clearStravaToken() } returns Unit
+
+        repo.clearStravaToken()
+
+        coVerify { datastore.clearStravaToken() }
+    }
+
+    @Test
+    fun `Clear all auth data`() = runTest {
+        coEvery { datastore.clear() } returns Unit
 
         repo.clear()
 
-        coVerify { authDatastore.clear() }
-    }
-
-    @Test
-    fun `Authorize success`() = runTest {
-        val csrf = CSRF("csrf")
-        val ticket = Ticket("ticket")
-
-        coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
-        coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
-        coEvery { garminPreAuth.preauthorize(any()) } returns Response.success(preAuthToken)
-
-        val res = repo.authorize("user", "pass")
-
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(preAuthToken)
-
-        coVerify{
-            garminSSO.getCSRF()
-            garminSSO.login("user", "pass", csrf)
-            garminPreAuth.preauthorize(ticket)
-        }
-    }
-
-    @Test
-    fun `Authorize failure`() = runTest {
-        val csrf = CSRF("csrf")
-        val ticket = Ticket("ticket")
-
-        coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
-        coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
-        coEvery { garminPreAuth.preauthorize(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val res = repo.authorize("user", "pass")
-
-        assertThat(res.isSuccess).isFalse()
-
-        coVerify{
-            garminSSO.getCSRF()
-            garminSSO.login("user", "pass", csrf)
-            garminPreAuth.preauthorize(ticket)
-        }
-    }
-
-    @Test
-    fun `Authorize failure - login page`() = runTest {
-        coEvery { garminSSO.getCSRF() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val res = repo.authorize("user", "pas")
-
-        assertThat(res.isSuccess).isFalse()
-
-        coVerify{
-            garminSSO.getCSRF()
-        }
-    }
-
-    @Test
-    fun `Authorize failure - login`() = runTest {
-        val csrf = CSRF("csrf")
-
-        coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
-        coEvery { garminSSO.login(any(), any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val res = repo.authorize("user", "pass")
-
-        assertThat(res.isSuccess).isFalse()
-
-        coVerify{
-            garminSSO.getCSRF()
-            garminSSO.login("user", "pass", csrf)
-        }
-    }
-
-    @Test
-    fun `Exchange success`() = runTest {
-        coEvery { garminAuth.exchange() } returns Response.success(authToken)
-        coEvery { authDatastore.saveAuthToken(any()) } returns Unit
-
-        val res = repo.exchange(preAuthToken)
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(authToken)
-
-        coVerify {
-            garminAuth.exchange()
-            authDatastore.saveAuthToken(authToken)
-        }
-        confirmVerified( garminSSO, authDatastore)
-    }
-
-    @Test
-    fun `Exchange failure`() = runTest {
-        coEvery { garminAuth.exchange() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val res = repo.exchange(preAuthToken)
-
-        assertThat(res.isSuccess).isFalse()
-
-        coVerify {
-            garminAuth.exchange()
-        }
-    }
-
-    @Test
-    fun `Refresh success`() = runTest {
-        coEvery { garminAuth.refresh(any()) } returns Response.success(authToken)
-        coEvery { authDatastore.saveAuthToken(any()) } returns Unit
-
-        val res = repo.refresh(preAuthToken, authToken.refreshToken)
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(authToken)
-
-        coVerify {
-            garminAuth.refresh(authToken.refreshToken)
-            authDatastore.saveAuthToken(authToken)
-        }
-        confirmVerified( garminSSO, authDatastore)
-    }
-
-    @Test
-    fun `Refresh failure`() = runTest {
-        coEvery { garminAuth.refresh(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val res = repo.refresh(preAuthToken, authToken.refreshToken)
-
-        assertThat(res.isSuccess).isFalse()
-
-        coVerify {
-            garminAuth.refresh(authToken.refreshToken)
-        }
+        coVerify { datastore.clear() }
     }
 }
