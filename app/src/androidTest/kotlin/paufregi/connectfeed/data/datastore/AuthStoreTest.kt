@@ -12,10 +12,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.data.api.garmin.models.AuthToken as GarminAuthToken
-import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 import javax.inject.Inject
 import kotlin.time.Instant
+import paufregi.connectfeed.data.api.garmin.models.AuthToken as GarminAuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
 @HiltAndroidTest
 @ExperimentalCoroutinesApi
@@ -73,14 +73,14 @@ class AuthStoreTest {
             assertThat(awaitItem()).isEqualTo(token1)
             dataStore.saveStravaToken(token2)
             assertThat(awaitItem()).isEqualTo(token2)
-            dataStore.clear()
+            dataStore.clearStravaToken()
             assertThat(awaitItem()).isNull()
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `Saving one token does not overwrite the other`() = runTest {
+    fun `Clear all`() = runTest {
         val garminToken = GarminAuthToken("GARMIN_ACCESS", "GARMIN_REFRESH")
         val stravaToken = StravaAuthToken(
             accessToken = "STRAVA_ACCESS",
@@ -90,8 +90,26 @@ class AuthStoreTest {
 
         dataStore.saveGarminToken(garminToken)
         dataStore.saveStravaToken(stravaToken)
+        dataStore.clear()
+
+        assertThat(dataStore.garminToken.first()).isNull()
+        assertThat(dataStore.stravaToken.first()).isNull()
+    }
+
+    @Test
+    fun `Clear strava only`() = runTest {
+        val garminToken = GarminAuthToken("GARMIN_ACCESS", "GARMIN_REFRESH")
+        val stravaToken = StravaAuthToken(
+            accessToken = "STRAVA_ACCESS",
+            refreshToken = "STRAVA_REFRESH",
+            expiresAt = Instant.parse("2025-01-03T01:00:00Z")
+        )
+
+        dataStore.saveGarminToken(garminToken)
+        dataStore.saveStravaToken(stravaToken)
+        dataStore.clearStravaToken()
 
         assertThat(dataStore.garminToken.first()).isEqualTo(garminToken)
-        assertThat(dataStore.stravaToken.first()).isEqualTo(stravaToken)
+        assertThat(dataStore.stravaToken.first()).isNull()
     }
 }
