@@ -9,12 +9,12 @@ import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.api.strava.models.AuthToken
 import paufregi.connectfeed.data.api.utils.authRequest
 import paufregi.connectfeed.data.api.utils.failedAuthResponse
-import paufregi.connectfeed.data.repository.StravaAuthRepository
+import paufregi.connectfeed.data.repository.AuthRepository
 import javax.inject.Inject
 import javax.inject.Named
 
 class StravaAuthInterceptor @Inject constructor(
-    private val stravaRepo: StravaAuthRepository,
+    private val repo: AuthRepository,
     @param:Named("StravaClientId") val clientId: String,
     @param:Named("StravaClientSecret") val clientSecret: String,
 ) : Interceptor {
@@ -27,13 +27,10 @@ class StravaAuthInterceptor @Inject constructor(
             )
         }
 
-    private suspend fun getOrRefreshToken(): Result<AuthToken> {
-        val token = stravaRepo.getToken().firstOrNull()
-
-        if (token == null) return Result.failure("No token found")
-        if (!token.isExpired()) return Result.success(token)
-
-        return stravaRepo.refresh(clientId, clientSecret, token.refreshToken)
-            .onSuccess { stravaRepo.saveToken(it) }
-    }
+    private suspend fun getOrRefreshToken(): Result<AuthToken> =
+        repo.getStravaToken().firstOrNull()?.let { token ->
+            if (!token.isExpired()) Result.success(token)
+            else repo.stravaRefreshToken(clientId, clientSecret, token.refreshToken)
+                .onSuccess { repo.saveStravaToken(it) }
+        } ?: Result.failure("No token found")
 }
