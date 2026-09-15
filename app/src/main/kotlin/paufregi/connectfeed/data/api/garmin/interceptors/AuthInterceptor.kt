@@ -11,34 +11,25 @@ import paufregi.connectfeed.data.api.utils.authRequest
 import paufregi.connectfeed.data.api.utils.failedAuthResponse
 import paufregi.connectfeed.data.repository.AuthRepository
 import javax.inject.Inject
+import javax.inject.Named
 
 class AuthInterceptor @Inject constructor(
-    private val authRepository: AuthRepository
+    private val repo: AuthRepository,
+    @param:Named("GarminClientId") val clientId: String,
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response  =
         runBlocking(Dispatchers.IO) {
-            obtainAuthToken().fold(
+            getOrRefreshToken().fold(
                 onSuccess = { chain.proceed(authRequest(chain.request(), it.accessToken)) },
                 onFailure = { failedAuthResponse(chain.request(), it.message ?: "Unknown error") }
             )
         }
 
-    private suspend fun obtainAuthToken(): Result<AuthToken> {
-        val token = authRepository.getAuthToken().firstOrNull()
-        if (token != null && !token.isExpired()) return Result.success(token)
-
-        val preAuth = authRepository.getPreAuth().firstOrNull()
-            ?: return Result.failure("No PreAuth token found")
-
-        if (token != null && !token.isRefreshExpired()) {
-            return authRepository.refresh(preAuth, token.refreshToken)
-                .recoverCatching { authRepository.exchange(preAuth).getOrThrow() }
-                .onSuccess { authRepository.saveAuthToken(it) }
-        }
-
-        return authRepository.exchange(preAuth)
-            .onSuccess { authRepository.saveAuthToken(it) }
-    }
-
+    private suspend fun getOrRefreshToken(): Result<AuthToken> =
+        repo.getGarminToken().firstOrNull()?.let { token ->
+            if (!token.isExpired()) Result.success(token)
+            else repo.garminRefreshToken(clientId, token.refreshToken)
+                .onSuccess { repo.saveGarminToken(it) }
+        } ?: Result.failure("No token found")
 }
