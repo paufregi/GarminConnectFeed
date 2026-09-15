@@ -13,7 +13,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.Activity
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity
@@ -23,7 +23,7 @@ import paufregi.connectfeed.stravaDetailedAthlete
 
 class StravaTest {
 
-    @JvmField @Rule val server = MockWebServerRule()
+    @JvmField @Rule val server = MockServer()
     private lateinit var api: Strava
     private val authInterceptor = mockk<StravaAuthInterceptor>()
 
