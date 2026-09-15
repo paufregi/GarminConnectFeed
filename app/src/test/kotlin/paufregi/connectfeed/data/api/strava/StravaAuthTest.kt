@@ -6,7 +6,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.stravaAuthToken
 import paufregi.connectfeed.stravaAuthTokenJson
 import paufregi.connectfeed.stravaDeauthorizationJson
@@ -15,7 +15,7 @@ import paufregi.connectfeed.stravaRefreshedAuthToken
 
 class StravaAuthTest {
 
-    @JvmField @Rule val server = MockWebServerRule()
+    @JvmField @Rule val server = MockServer()
     private lateinit var api: StravaAuth
 
     @Before
@@ -55,7 +55,7 @@ class StravaAuthTest {
     fun `Refresh token`() = runTest {
         server.enqueue(code = 200, body = stravaRefreshTokenJson)
 
-        val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "TOKEN")
+        val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
         val request = server.takeRequest()
 
@@ -69,7 +69,7 @@ class StravaAuthTest {
     fun `Refresh - failure`() = runTest {
         server.enqueue(400)
 
-        val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "TOKEN")
+        val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
         assertThat(res.isSuccessful).isFalse()
         assertThat(res.body()).isNull()
@@ -79,7 +79,7 @@ class StravaAuthTest {
     fun `Remove authorization`() = runTest {
         server.enqueue(code = 200, body = stravaDeauthorizationJson)
 
-        val res = api.deauthorization("TOKEN")
+        val res = api.deauthorize("TOKEN")
 
         val request = server.takeRequest()
 
@@ -92,7 +92,7 @@ class StravaAuthTest {
     fun `Remove authorization - failure`() = runTest {
         server.enqueue(400)
 
-        val res = api.deauthorization("TOKEN")
+        val res = api.deauthorize("TOKEN")
 
         assertThat(res.isSuccessful).isFalse()
         assertThat(res.body()).isNull()
