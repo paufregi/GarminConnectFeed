@@ -9,11 +9,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.githubDispatcher
 import paufregi.connectfeed.githubPort
 import paufregi.connectfeed.githubRelease
-import paufregi.connectfeed.sslSocketFactory
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -29,7 +28,7 @@ class GithubRepositoryTest {
     lateinit var repo: GithubRepository
 
 
-    @JvmField @Rule val githubServer = MockWebServerRule(githubPort, sslSocketFactory, githubDispatcher)
+    @JvmField @Rule val githubServer = MockServer.createSecure(githubPort, githubDispatcher)
 
     @Before
     fun setup() {
