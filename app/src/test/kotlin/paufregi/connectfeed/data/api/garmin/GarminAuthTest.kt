@@ -6,7 +6,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.authTokenJson
 import paufregi.connectfeed.refreshedAuthTokenJson
@@ -14,7 +14,7 @@ import paufregi.connectfeed.refreshedToken
 
 class GarminAuthTest {
 
-    @JvmField @Rule val server = MockWebServerRule()
+    @JvmField @Rule val server = MockServer()
     private lateinit var api: GarminAuth
 
     @Before
