@@ -25,13 +25,13 @@ fun Date.sameDay(other: Date): Boolean {
 inline fun <reified T> Response<T>.toResult(): Result<T> =
     when (this.isSuccessful) {
         true -> Result.success(this.body() ?: Unit as T)
-        false -> Result.failure(Exception(this.errorBody()?.string() ?: "Unknown error"))
+        false -> Result.failure(this.errorBody()?.string() ?: "Unknown error")
     }
 
 fun <T> Response<T>.toResult(emptyBody: T): Result<T> =
     when (this.isSuccessful) {
         true -> Result.success(this.body() ?: emptyBody)
-        false -> Result.failure(Exception(this.errorBody()?.string() ?: "Unknown error"))
+        false -> Result.failure(this.errorBody()?.string() ?: "Unknown error")
     }
 
 inline fun <T, R> Result<T>.andThen(block: (T) -> Result<R>): Result<R> =
@@ -49,7 +49,7 @@ fun <R, T> Result<T>.mapOrFailure(transform: (value: T) -> R?): Result<R> {
     val res = this.map(transform).getOrNull()
     return when {
         res != null -> Result.success(res)
-        this.isSuccess -> Result.failure(Exception("Transformation returned null"))
+        this.isSuccess -> Result.failure("Transformation returned null")
         else -> Result.failure(this.exceptionOrNull() ?: Exception("Unknown error"))
     }
 }
