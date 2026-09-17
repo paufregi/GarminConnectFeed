@@ -5,7 +5,9 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -13,7 +15,6 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.authToken
-import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.garminAuthDispatcher
 import paufregi.connectfeed.garminAuthPort
@@ -24,8 +25,7 @@ import paufregi.connectfeed.stravaAuthToken
 import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
 import paufregi.connectfeed.stravaRefreshedAuthToken
-import paufregi.connectfeed.today
-import paufregi.connectfeed.tomorrow
+import paufregi.connectfeed.user
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -54,20 +54,32 @@ class AuthRepositoryTest {
 
     @After
     fun tearDown() {
+        runBlocking(Dispatchers.IO) {
+            repo.clear()
+        }
         database.close()
     }
 
     @Test
-    fun `Store Garmin token`() = runTest {
-        val token1 = createAuthToken(today)
-        val token2 = createAuthToken(tomorrow)
+    fun `Store User`() = runTest {
+        repo.getUser().test {
+            assertThat(awaitItem()).isNull()
+            repo.saveUser(user)
+            assertThat(awaitItem()).isEqualTo(user)
+            repo.clear()
+            assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 
+    @Test
+    fun `Store Garmin token`() = runTest {
         repo.getGarminToken().test {
             assertThat(awaitItem()).isNull()
-            repo.saveGarminToken(token1)
-            assertThat(awaitItem()).isEqualTo(token1)
-            repo.saveGarminToken(token2)
-            assertThat(awaitItem()).isEqualTo(token2)
+            repo.saveGarminToken(authToken)
+            assertThat(awaitItem()).isEqualTo(authToken)
+            repo.saveGarminToken(refreshedToken)
+            assertThat(awaitItem()).isEqualTo(refreshedToken)
             repo.clear()
             assertThat(awaitItem()).isNull()
             cancelAndIgnoreRemainingEvents()
@@ -128,28 +140,34 @@ class AuthRepositoryTest {
 
     @Test
     fun `Clear strava auth data`() = runTest {
+        repo.saveUser(user)
         repo.saveGarminToken(authToken)
         repo.saveStravaToken(stravaAuthToken)
 
+        assertThat(repo.getUser().firstOrNull()).isEqualTo(user)
         assertThat(repo.getGarminToken().firstOrNull()).isEqualTo(authToken)
         assertThat(repo.getStravaToken().firstOrNull()).isEqualTo(stravaAuthToken)
 
         repo.clearStravaToken()
 
+        assertThat(repo.getUser().firstOrNull()).isEqualTo(user)
         assertThat(repo.getGarminToken().firstOrNull()).isEqualTo(authToken)
         assertThat(repo.getStravaToken().firstOrNull()).isNull()
     }
 
     @Test
     fun `Clear all auth data`() = runTest {
+        repo.saveUser(user)
         repo.saveGarminToken(authToken)
         repo.saveStravaToken(stravaAuthToken)
 
+        assertThat(repo.getUser().firstOrNull()).isEqualTo(user)
         assertThat(repo.getGarminToken().firstOrNull()).isEqualTo(authToken)
         assertThat(repo.getStravaToken().firstOrNull()).isEqualTo(stravaAuthToken)
 
         repo.clear()
 
+        assertThat(repo.getUser().firstOrNull()).isNull()
         assertThat(repo.getGarminToken().firstOrNull()).isNull()
         assertThat(repo.getStravaToken().firstOrNull()).isNull()
     }
