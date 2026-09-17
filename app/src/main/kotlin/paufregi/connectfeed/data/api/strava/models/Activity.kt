@@ -2,8 +2,8 @@ package paufregi.connectfeed.data.api.strava.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import paufregi.connectfeed.data.api.strava.serializer.SportTypeSerializer
-import paufregi.connectfeed.data.api.strava.serializer.TimestampSerializer
+import paufregi.connectfeed.data.api.strava.serializers.SportTypeSerializer
+import paufregi.connectfeed.data.api.strava.serializers.TimestampSerializer
 import kotlin.time.Instant
 
 @Serializable

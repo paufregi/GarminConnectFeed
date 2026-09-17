@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.database.coverters
+package paufregi.connectfeed.data.database.converters
 
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.data.database.entities.ProfileEntity

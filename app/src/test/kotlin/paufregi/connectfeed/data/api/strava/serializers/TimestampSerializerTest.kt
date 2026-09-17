@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.api.strava.serializer
+package paufregi.connectfeed.data.api.strava.serializers
 
 import com.google.common.truth.Truth
 import kotlinx.serialization.json.Json

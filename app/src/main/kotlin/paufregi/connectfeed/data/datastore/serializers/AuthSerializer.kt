@@ -1,10 +1,9 @@
-package paufregi.connectfeed.data.datastore.serializer
+package paufregi.connectfeed.data.datastore.serializers
 
 import androidx.datastore.core.Serializer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import paufregi.connectfeed.data.datastore.models.Auth
 import java.io.InputStream
 import java.io.OutputStream

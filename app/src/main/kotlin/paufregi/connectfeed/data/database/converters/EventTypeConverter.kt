@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.database.coverters
+package paufregi.connectfeed.data.database.converters
 
 import androidx.room.TypeConverter
 import paufregi.connectfeed.core.models.EventType

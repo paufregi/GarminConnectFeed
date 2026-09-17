@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.database.coverters
+package paufregi.connectfeed.data.database.converters
 
 import androidx.room.TypeConverter
 import paufregi.connectfeed.core.models.ActivityType
@@ -38,27 +38,6 @@ class ActivityTypeConverter {
         ActivityType.StandUpPaddling::class.simpleName -> ActivityType.StandUpPaddling
         ActivityType.Surfing::class.simpleName -> ActivityType.Surfing
         ActivityType.Windsurf::class.simpleName -> ActivityType.Windsurf
-        ActivityType.StravaRunning::class.simpleName -> ActivityType.StravaRunning
-        ActivityType.StravaTrailRun::class.simpleName -> ActivityType.StravaTrailRun
-        ActivityType.StravaRide::class.simpleName -> ActivityType.StravaRide
-        ActivityType.StravaMountainBikeRide::class.simpleName -> ActivityType.StravaMountainBikeRide
-        ActivityType.StravaGravelRide::class.simpleName -> ActivityType.StravaGravelRide
-        ActivityType.StravaEBikeRide::class.simpleName -> ActivityType.StravaEBikeRide
-        ActivityType.StravaEMountainBikeRide::class.simpleName -> ActivityType.StravaEMountainBikeRide
-        ActivityType.StravaVirtualRide::class.simpleName -> ActivityType.StravaVirtualRide
-        ActivityType.StravaHIIT::class.simpleName -> ActivityType.StravaHIIT
-        ActivityType.StravaWorkout::class.simpleName -> ActivityType.StravaWorkout
-        ActivityType.StravaWeightTraining::class.simpleName -> ActivityType.StravaWeightTraining
-        ActivityType.StravaYoga::class.simpleName -> ActivityType.StravaYoga
-        ActivityType.StravaSwim::class.simpleName -> ActivityType.StravaSwim
-        ActivityType.StravaWalk::class.simpleName -> ActivityType.StravaWalk
-        ActivityType.StravaHike::class.simpleName -> ActivityType.StravaHike
-        ActivityType.StravaSnowboard::class.simpleName -> ActivityType.StravaSnowboard
-        ActivityType.StravaKayaking::class.simpleName -> ActivityType.StravaKayaking
-        ActivityType.StravaStandUpPaddling::class.simpleName -> ActivityType.StravaStandUpPaddling
-        ActivityType.StravaSurfing::class.simpleName -> ActivityType.StravaSurfing
-        ActivityType.StravaWindsurf::class.simpleName -> ActivityType.StravaWindsurf
-        ActivityType.StravaFootball::class.simpleName -> ActivityType.StravaFootball
         else -> ActivityType.Unknown
     }
 
