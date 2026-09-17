@@ -37,20 +37,20 @@ class GetCoursesTest {
             Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
             Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType.Cycling),
         )
-        coEvery { repo.getCourses(any()) } returns Result.success(courses)
-        val res = useCase(true)
+        coEvery { repo.getCourses() } returns Result.success(courses)
+        val res = useCase()
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(courses)
-        coVerify { repo.getCourses(true) }
+        coVerify { repo.getCourses() }
     }
 
     @Test
     fun `Get courses - failure`() = runTest {
-        coEvery { repo.getCourses(any()) } returns Result.failure("Failed")
+        coEvery { repo.getCourses() } returns Result.failure("Failed")
         val res = useCase()
 
         assertThat(res.isSuccess).isFalse()
-        coVerify { repo.getCourses(false) }
+        coVerify { repo.getCourses() }
     }
 }
