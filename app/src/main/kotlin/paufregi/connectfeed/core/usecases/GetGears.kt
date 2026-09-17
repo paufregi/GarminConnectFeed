@@ -5,17 +5,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flowOf
 import paufregi.connectfeed.core.models.Gear
+import paufregi.connectfeed.data.repository.AppRepository
 import paufregi.connectfeed.data.repository.AuthRepository
-import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 class GetGears @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val garminRepository: GarminRepository
+    private val authRepo: AuthRepository,
+    private val repo: AppRepository
 ) {
     operator fun invoke(): Flow<List<Gear>> =
-        authRepository.getUser().flatMapMerge { user ->
-            user?.let { garminRepository.getAllGears(it) } ?: flowOf(emptyList())
+        authRepo.getUser().flatMapMerge { user ->
+            user?.let { repo.getAllGears(it) } ?: flowOf(emptyList())
         }
 }
