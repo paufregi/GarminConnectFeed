@@ -23,6 +23,17 @@ object Formatter {
     fun workout(workout: String?) =
         workout?.let { "Workout: ${it.lowercase().vo2max()}" }
 
+    fun trainingEffect(trainingEffect: String?) = when (trainingEffect) {
+        "SPEED" -> "sprint"
+        "ANAEROBIC_CAPACITY" -> "anaerobic capacity"
+        "VO2MAX" -> "VO2max".vo2max()
+        "LACTATE_THRESHOLD" -> "threshold"
+        "TEMPO" -> "tempo"
+        "AEROBIC_BASE" -> "base"
+        "RECOVERY" -> "recovery"
+        else -> null
+    }
+
     fun description(
         description: String?,
         trainingEffect: String?,
@@ -31,7 +42,7 @@ object Formatter {
     ): String? {
         val details = buildList {
             workout?.let { add(workout(it)) }
-            trainingEffect?.let { if (trainingEffectFlag) add("Benefit: $it") }
+            trainingEffect?.let { if (trainingEffectFlag) add("Benefit: ${trainingEffect(it)}") }
         }
 
         if (details.isEmpty()) return description
