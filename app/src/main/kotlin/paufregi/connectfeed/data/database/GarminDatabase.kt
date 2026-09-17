@@ -4,9 +4,9 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import paufregi.connectfeed.data.database.coverters.ActivityTypeConverter
-import paufregi.connectfeed.data.database.coverters.EventTypeConverter
-import paufregi.connectfeed.data.database.coverters.GearTypeConverter
+import paufregi.connectfeed.data.database.converters.ActivityTypeConverter
+import paufregi.connectfeed.data.database.converters.EventTypeConverter
+import paufregi.connectfeed.data.database.converters.GearTypeConverter
 import paufregi.connectfeed.data.database.entities.GearEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 

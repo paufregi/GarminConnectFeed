@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.api.strava.serializer
+package paufregi.connectfeed.data.api.strava.serializers
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
