@@ -12,17 +12,17 @@ class AuthTokenTest {
     val token = createAuthToken(tomorrow)
 
     @Test
-    fun `Is not expired`() {
+    fun `Valid token`() {
         assertThat(token.isExpired(today)).isFalse()
     }
 
     @Test
-    fun `Is expired`() {
+    fun `Expired token`() {
         assertThat(token.isExpired(tomorrow)).isTrue()
     }
 
     @Test
-    fun `Is expired - no expiration`() {
+    fun `Expired token - null`() {
         val authToken = AuthToken(
             accessToken = jwt { claims { } }.toString(),
             refreshToken = "TOKEN"
