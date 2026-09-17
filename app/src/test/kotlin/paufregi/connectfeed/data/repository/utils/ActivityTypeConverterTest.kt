@@ -1,9 +1,8 @@
-package paufregi.connectfeed.data.repository.utils.converters
+package paufregi.connectfeed.data.repository.utils
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.data.repository.utils.ActivityTypeConverter
 import paufregi.connectfeed.data.api.garmin.models.ActivityType as GarminActivityType
 
 class ActivityTypeConverterTest {
