@@ -1,12 +1,12 @@
 package paufregi.connectfeed.data.api.garmin.models
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import paufregi.connectfeed.data.api.garmin.serializers.ActivityTypeSerializer
+import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 
-@Serializable
+@Serializable(with = ActivityTypeSerializer::class)
 data class ActivityType(
-    @SerialName("typeId")
     val id: Long,
-    @SerialName("typeKey")
-    val key: String
+    val key: String,
+    val type: CoreActivityType
 )
