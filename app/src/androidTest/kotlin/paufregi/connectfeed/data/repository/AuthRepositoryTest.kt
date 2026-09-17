@@ -108,7 +108,7 @@ class AuthRepositoryTest {
 
     @Test
     fun `Garmin exchange token`() = runTest {
-        val res = repo.garminExchangeToken("TICKET", "CLIENT_ID")
+        val res = repo.exchangeGarminToken("TICKET", "CLIENT_ID")
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(authToken)
@@ -116,7 +116,7 @@ class AuthRepositoryTest {
 
     @Test
     fun `Garmin refresh token`() = runTest {
-        val res = repo.garminRefreshToken(authToken.refreshToken, "CLIENT_ID")
+        val res = repo.refreshGarminToken(authToken.refreshToken, "CLIENT_ID")
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(refreshedToken)
@@ -124,7 +124,7 @@ class AuthRepositoryTest {
 
     @Test
     fun `Strava exchange token`() = runTest {
-        val res = repo.stravaExchangeToken("CLIENT_ID", "CLIENT_SECRET", "CODE")
+        val res = repo.exchangeStravaToken("CLIENT_ID", "CLIENT_SECRET", "CODE")
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(stravaAuthToken)
@@ -132,7 +132,7 @@ class AuthRepositoryTest {
 
     @Test
     fun `Strava refresh token`() = runTest {
-        val res = repo.stravaRefreshToken("CLIENT_ID", "CLIENT_SECRET", stravaAuthToken.refreshToken)
+        val res = repo.refreshStravaToken("CLIENT_ID", "CLIENT_SECRET", stravaAuthToken.refreshToken)
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(stravaRefreshedAuthToken)

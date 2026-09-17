@@ -30,7 +30,7 @@ class AuthInterceptor @Inject constructor(
     private suspend fun getOrRefreshToken(): Result<AuthToken> =
         repo.getStravaToken().firstOrNull()?.let { token ->
             if (!token.isExpired()) Result.success(token)
-            else repo.stravaRefreshToken(clientId, clientSecret, token.refreshToken)
+            else repo.refreshStravaToken(clientId, clientSecret, token.refreshToken)
                 .onSuccess { repo.saveStravaToken(it) }
         } ?: Result.failure("No token found")
 }
