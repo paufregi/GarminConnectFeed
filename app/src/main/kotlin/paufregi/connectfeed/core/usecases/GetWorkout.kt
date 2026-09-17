@@ -4,6 +4,6 @@ import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
-class GetWorkout @Inject constructor(private val garminRepository: GarminRepository) {
-    suspend operator fun invoke(id: Long): Result<Workout> = garminRepository.getWorkout(id)
+class GetWorkout @Inject constructor(private val repo: GarminRepository) {
+    suspend operator fun invoke(id: Long): Result<Workout> = repo.getWorkout(id)
 }
