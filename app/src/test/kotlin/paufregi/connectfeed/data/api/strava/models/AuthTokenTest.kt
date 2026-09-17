@@ -11,13 +11,13 @@ class AuthTokenTest {
     private val token = createStravaToken(today)
 
     @Test
-    fun `Valid access token`() {
+    fun `Valid token`() {
         val now = today - 10.seconds
         assertThat(token.isExpired(now)).isFalse()
     }
 
     @Test
-    fun `Expired access token`() {
+    fun `Expired token`() {
         val now = today + 10.seconds
         assertThat(token.isExpired(now)).isTrue()
     }
