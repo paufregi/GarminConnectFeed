@@ -1,9 +1,8 @@
-package paufregi.connectfeed.data.repository.utils.converters
+package paufregi.connectfeed.data.repository.utils
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import paufregi.connectfeed.core.models.GearType
-import paufregi.connectfeed.data.repository.utils.GearTypeConverter
 
 class GearTypeConverterTest {
 
