@@ -2,6 +2,8 @@ package paufregi.connectfeed.data.api.garmin.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.data.api.garmin.serializers.EventTypeSerializer
 import paufregi.connectfeed.data.api.utils.serializers.InstantSerializer
 import kotlin.time.Instant
 
@@ -14,6 +16,7 @@ data class Activity(
     @SerialName("activityType")
     val type: ActivityType,
     @SerialName("eventType")
+    @Serializable(with = EventTypeSerializer::class)
     val eventType: EventType,
     @SerialName("distance")
     val distance: Double,
