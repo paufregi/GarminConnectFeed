@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.datastore.serializer
+package paufregi.connectfeed.data.datastore.serializers
 
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking

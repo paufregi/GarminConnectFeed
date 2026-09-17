@@ -6,8 +6,8 @@ import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.database.GarminDao
-import paufregi.connectfeed.data.database.coverters.toCore
-import paufregi.connectfeed.data.database.coverters.toEntity
+import paufregi.connectfeed.data.database.converters.toCore
+import paufregi.connectfeed.data.database.converters.toEntity
 import javax.inject.Inject
 
 class AppRepository @Inject constructor(

@@ -1,9 +1,9 @@
 package paufregi.connectfeed.di
 
 import android.content.Context
-import androidx.datastore.tink.AeadSerializer
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.tink.AeadSerializer
 import com.google.crypto.tink.Aead
 import dagger.Module
 import dagger.Provides
@@ -14,7 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import paufregi.connectfeed.data.datastore.models.Auth
-import paufregi.connectfeed.data.datastore.serializer.AuthSerializer
+import paufregi.connectfeed.data.datastore.serializers.AuthSerializer
 import paufregi.connectfeed.data.utils.SecurityManager
 import java.io.File
 import javax.inject.Singleton

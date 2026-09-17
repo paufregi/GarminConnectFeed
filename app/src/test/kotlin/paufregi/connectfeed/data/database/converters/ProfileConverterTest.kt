@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.database.coverters
+package paufregi.connectfeed.data.database.converters
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
