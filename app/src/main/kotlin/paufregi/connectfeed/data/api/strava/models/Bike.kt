@@ -9,6 +9,4 @@ data class Bike(
     val id: String,
     @SerialName("name")
     val name: String? = null,
-    @SerialName("distance")
-    val distance: Long = 0,
 )
