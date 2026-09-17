@@ -1,6 +1,6 @@
-package paufregi.connectfeed.data.api.utils.serializers
+package paufregi.connectfeed.data.api.strava.serializer
 
-import com.google.common.truth.Truth.assertThat
+import com.google.common.truth.Truth
 import kotlinx.serialization.json.Json
 import org.junit.Test
 import kotlin.time.Instant
@@ -15,15 +15,13 @@ class TimestampSerializerTest {
     fun `Serialize Instant to JSON`() {
         val result = json.encodeToString(TimestampSerializer, instant)
 
-        assertThat(result).isEqualTo(dataString)
+        Truth.assertThat(result).isEqualTo(dataString)
     }
 
     @Test
     fun `Deserialize JSON string to Instant`() {
         val result = json.decodeFromString(TimestampSerializer, dataString)
 
-        assertThat(result).isEqualTo(instant)
+        Truth.assertThat(result).isEqualTo(instant)
     }
 }
-
-
