@@ -2,7 +2,7 @@ package paufregi.connectfeed.data.api.strava.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import paufregi.connectfeed.data.api.strava.converters.InstantSerializer
+import paufregi.connectfeed.data.api.utils.serializers.InstantSerializer
 import kotlin.time.Clock
 import kotlin.time.Instant
 
