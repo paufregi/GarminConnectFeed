@@ -2,10 +2,12 @@ package paufregi.connectfeed.data.api.strava.models
 
 import paufregi.connectfeed.core.models.ActivityType
 
-sealed class SportType(val key: String, val type: ActivityType? = null){
+sealed class SportType(val key: String, val type: ActivityType){
+    // Run
     data object Run: SportType("Run", ActivityType.Running) // Run
     data object TrailRun: SportType("TrailRun", ActivityType.Running) // TrailRun
 
+    // Cycling
     data object Ride: SportType("Ride", ActivityType.Cycling) // Ride
     data object MountainBikeRide: SportType("MountainBikeRide", ActivityType.Cycling) // MountainBikeRide
     data object GravelRide: SportType("GravelRide", ActivityType.Cycling) // GravelRide
