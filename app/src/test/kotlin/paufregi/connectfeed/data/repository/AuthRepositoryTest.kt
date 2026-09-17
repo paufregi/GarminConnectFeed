@@ -111,7 +111,7 @@ class AuthRepositoryTest {
     fun `Garmin exchange token - success`() = runTest {
         coEvery { garminAuth.exchange(any(), any(), any()) } returns Response.success(authToken)
 
-        val res = repo.garminExchangeToken("ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso", "client-id")
+        val res = repo.exchangeGarminToken("ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso", "client-id")
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(authToken)
@@ -123,7 +123,7 @@ class AuthRepositoryTest {
     fun `Garmin exchange token - failure`() = runTest {
         coEvery { garminAuth.exchange(any(), any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.garminExchangeToken("invalid-ticket", "client-id")
+        val res = repo.exchangeGarminToken("invalid-ticket", "client-id")
 
         assertThat(res.isSuccess).isFalse()
 
@@ -134,7 +134,7 @@ class AuthRepositoryTest {
     fun `Garmin refresh token - success`() = runTest {
         coEvery { garminAuth.refresh(any(), any(), any()) } returns Response.success(authToken)
 
-        val res = repo.garminRefreshToken(authToken.refreshToken, "client-id")
+        val res = repo.refreshGarminToken(authToken.refreshToken, "client-id")
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(authToken)
@@ -146,7 +146,7 @@ class AuthRepositoryTest {
     fun `Garmin refresh token - failure`() = runTest {
         coEvery { garminAuth.refresh(any(), any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.garminRefreshToken("invalid-refresh-token", "client-id")
+        val res = repo.refreshGarminToken("invalid-refresh-token", "client-id")
 
         assertThat(res.isSuccess).isFalse()
 
@@ -178,7 +178,7 @@ class AuthRepositoryTest {
     fun `Strava exchange token - success`() = runTest {
         coEvery { stravaAuth.exchange(any(), any(), any()) } returns Response.success(stravaAuthToken)
 
-        val res = repo.stravaExchangeToken("client-id", "client-secret", "auth-code")
+        val res = repo.exchangeStravaToken("client-id", "client-secret", "auth-code")
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(stravaAuthToken)
@@ -190,7 +190,7 @@ class AuthRepositoryTest {
     fun `Strava exchange token - failure`() = runTest {
         coEvery { stravaAuth.exchange(any(), any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.stravaExchangeToken("client-id", "client-secret", "invalid-code")
+        val res = repo.exchangeStravaToken("client-id", "client-secret", "invalid-code")
 
         assertThat(res.isSuccess).isFalse()
 
@@ -201,7 +201,7 @@ class AuthRepositoryTest {
     fun `Strava refresh token - success`() = runTest {
         coEvery { stravaAuth.refresh(any(), any(), any()) } returns Response.success(stravaAuthToken)
 
-        val res = repo.stravaRefreshToken("client-id", "client-secret", "refresh-token")
+        val res = repo.refreshStravaToken("client-id", "client-secret", "refresh-token")
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(stravaAuthToken)
@@ -213,7 +213,7 @@ class AuthRepositoryTest {
     fun `Strava refresh token - failure`() = runTest {
         coEvery { stravaAuth.refresh(any(), any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.stravaRefreshToken("client-id", "client-secret", "invalid-refresh-token")
+        val res = repo.refreshStravaToken("client-id", "client-secret", "invalid-refresh-token")
 
         assertThat(res.isSuccess).isFalse()
 

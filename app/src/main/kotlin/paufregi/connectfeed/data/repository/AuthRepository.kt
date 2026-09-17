@@ -1,6 +1,5 @@
 package paufregi.connectfeed.data.repository
 
-import kotlinx.coroutines.flow.firstOrNull
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.utils.andThen
 import paufregi.connectfeed.core.utils.failure
@@ -39,14 +38,14 @@ class AuthRepository @Inject constructor(
                 }
             }
 
-    suspend fun garminExchangeToken(
+    suspend fun exchangeGarminToken(
         ticket: String,
         clientId: String
     ): Result<GarminAuthToken> =
         garminAuth.exchange(GarminAuth.buildBasicAuth(clientId), clientId, ticket)
             .toResult()
 
-    suspend fun garminRefreshToken(
+    suspend fun refreshGarminToken(
         refreshToken: String,
         clientId: String
     ): Result<GarminAuthToken> =
@@ -61,10 +60,10 @@ class AuthRepository @Inject constructor(
 
 
     // STRAVA
-    suspend fun stravaExchangeToken(clientId: String, clientSecret: String, code: String) =
+    suspend fun exchangeStravaToken(clientId: String, clientSecret: String, code: String) =
         stravaAuth.exchange(clientId, clientSecret, code).toResult()
 
-    suspend fun stravaRefreshToken(clientId: String, clientSecret: String, refreshToken: String) =
+    suspend fun refreshStravaToken(clientId: String, clientSecret: String, refreshToken: String) =
         stravaAuth.refresh(clientId, clientSecret, refreshToken).toResult()
 
     fun getStravaToken() = authStore.stravaToken
@@ -72,9 +71,6 @@ class AuthRepository @Inject constructor(
     suspend fun saveStravaToken(token: StravaAuthToken) = authStore.saveStravaToken(token)
 
     suspend fun clearStravaToken() = authStore.clearStravaToken()
-
-    suspend fun isStravaLogged() = authStore.stravaToken.firstOrNull()?.let { true } ?: false
-
 
     // CLEAN UP
     suspend fun clear() = authStore.clear()

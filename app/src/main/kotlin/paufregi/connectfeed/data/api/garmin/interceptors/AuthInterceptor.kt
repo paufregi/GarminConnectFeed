@@ -29,7 +29,7 @@ class AuthInterceptor @Inject constructor(
     private suspend fun getOrRefreshToken(): Result<AuthToken> =
         repo.getGarminToken().firstOrNull()?.let { token ->
             if (!token.isExpired()) Result.success(token)
-            else repo.garminRefreshToken(clientId, token.refreshToken)
+            else repo.refreshGarminToken(clientId, token.refreshToken)
                 .onSuccess { repo.saveGarminToken(it) }
         } ?: Result.failure("No token found")
 }
