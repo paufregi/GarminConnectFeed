@@ -2,16 +2,16 @@ package paufregi.connectfeed.core.usecases
 
 import kotlinx.coroutines.flow.firstOrNull
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.data.repository.AppRepository
 import paufregi.connectfeed.data.repository.AuthRepository
-import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
 class DeleteProfile @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val garminRepository: GarminRepository
+    private val authRepo: AuthRepository,
+    private val repo: AppRepository
 ) {
     suspend operator fun invoke(profile: Profile) =
-        authRepository.getUser().firstOrNull()?.let {
-            garminRepository.deleteProfile(it, profile)
+        authRepo.getUser().firstOrNull()?.let {
+            repo.deleteProfile(it, profile)
         }
 }
