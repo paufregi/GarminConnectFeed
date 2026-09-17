@@ -37,7 +37,7 @@ object SportTypeSerializer : KSerializer<SportType> {
             "StandUpPaddling" -> SportType.StandUpPaddling
             "Surfing" -> SportType.Surfing
             "Windsurf" -> SportType.Windsurf
-            "Soccer" -> SportType.Football
+            "Soccer" -> SportType.Soccer
             else -> SportType.Unknown
         }
 }
