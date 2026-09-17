@@ -4,6 +4,7 @@ import com.appstractive.jwt.jwt
 import mockwebserver3.Dispatcher
 import mockwebserver3.MockResponse
 import mockwebserver3.RecordedRequest
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.models.AuthToken
 import kotlin.time.Instant
@@ -18,6 +19,7 @@ fun createAuthToken(expiresAt: Instant, refreshToken: String = "REFRESH_TOKEN") 
     refreshToken = refreshToken,
 )
 
+val user = User(1, "Paul", "https://profile.image.com/medium.jpg")
 val authToken = createAuthToken(today)
 val refreshedToken = createAuthToken(tomorrow, "NEW_REFRESH_TOKEN")
 
