@@ -12,6 +12,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.core.models.User
 import javax.inject.Inject
 import kotlin.time.Instant
 import paufregi.connectfeed.data.api.garmin.models.AuthToken as GarminAuthToken
@@ -35,6 +36,23 @@ class AuthStoreTest {
     @After
     fun tearDown(): Unit = runBlocking {
         dataStore.clear()
+    }
+
+    @Test
+    fun `Save retrieve and clear User`() = runTest {
+        val user1 = User(1, "Paul", "url_1")
+        val user2 = User(2, "Francis", "url_2")
+
+        dataStore.garminToken.test {
+            assertThat(awaitItem()).isNull()
+            dataStore.saveUser(user1)
+            assertThat(awaitItem()).isEqualTo(user1)
+            dataStore.saveUser(user2)
+            assertThat(awaitItem()).isEqualTo(user2)
+            dataStore.clear()
+            assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -81,6 +99,7 @@ class AuthStoreTest {
 
     @Test
     fun `Clear all`() = runTest {
+        val user = User(1, "Paul", "url")
         val garminToken = GarminAuthToken("GARMIN_ACCESS", "GARMIN_REFRESH")
         val stravaToken = StravaAuthToken(
             accessToken = "STRAVA_ACCESS",
@@ -88,16 +107,19 @@ class AuthStoreTest {
             expiresAt = Instant.parse("2025-01-03T01:00:00Z")
         )
 
+        dataStore.saveUser(user)
         dataStore.saveGarminToken(garminToken)
         dataStore.saveStravaToken(stravaToken)
         dataStore.clear()
 
+        assertThat(dataStore.user.first()).isNull()
         assertThat(dataStore.garminToken.first()).isNull()
         assertThat(dataStore.stravaToken.first()).isNull()
     }
 
     @Test
     fun `Clear strava only`() = runTest {
+        val user = User(1, "Paul", "url")
         val garminToken = GarminAuthToken("GARMIN_ACCESS", "GARMIN_REFRESH")
         val stravaToken = StravaAuthToken(
             accessToken = "STRAVA_ACCESS",
@@ -105,10 +127,12 @@ class AuthStoreTest {
             expiresAt = Instant.parse("2025-01-03T01:00:00Z")
         )
 
+        dataStore.saveUser(user)
         dataStore.saveGarminToken(garminToken)
         dataStore.saveStravaToken(stravaToken)
         dataStore.clearStravaToken()
 
+        assertThat(dataStore.user.first()).isEqualTo(user)
         assertThat(dataStore.garminToken.first()).isEqualTo(garminToken)
         assertThat(dataStore.stravaToken.first()).isNull()
     }

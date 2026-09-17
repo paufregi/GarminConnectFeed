@@ -1,5 +1,7 @@
 package paufregi.connectfeed.data.repository
 
+import kotlinx.coroutines.flow.firstOrNull
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.utils.andThen
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.core.utils.toResult
@@ -51,8 +53,10 @@ class AuthRepository @Inject constructor(
         garminAuth.refresh(GarminAuth.buildBasicAuth(clientId), clientId, refreshToken)
             .toResult()
 
+    fun getUser() = authStore.user
     fun getGarminToken() = authStore.garminToken
 
+    suspend fun saveUser(user: User) = authStore.saveUser(user)
     suspend fun saveGarminToken(token: GarminAuthToken) = authStore.saveGarminToken(token)
 
 
@@ -68,6 +72,9 @@ class AuthRepository @Inject constructor(
     suspend fun saveStravaToken(token: StravaAuthToken) = authStore.saveStravaToken(token)
 
     suspend fun clearStravaToken() = authStore.clearStravaToken()
+
+    suspend fun isStravaLogged() = authStore.stravaToken.firstOrNull()?.let { true } ?: false
+
 
     // CLEAN UP
     suspend fun clear() = authStore.clear()
