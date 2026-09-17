@@ -12,7 +12,7 @@ data class UpdateActivity(
     @SerialName("description")
     val description: String?,
     @SerialName("eventTypeDTO")
-    val eventType: EventType,
+    val eventType: EventType?,
     @SerialName("metadataDTO")
     val metadata: Metadata?,
     @SerialName("summaryDTO")
