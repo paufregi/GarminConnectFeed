@@ -4,16 +4,19 @@ import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.junit.Test
-import paufregi.connectfeed.data.api.garmin.models.AuthToken as GarminAuthToken
-import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.datastore.models.Auth
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.time.Instant
+import paufregi.connectfeed.data.api.garmin.models.AuthToken as GarminAuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
 
 class AuthSerializerTest {
 
     private val json = Json { encodeDefaults = true }
+
+    private val user = User(1, "Paul", "https://example.com/avatar.jpg")
 
     private val garminToken = GarminAuthToken(
         accessToken = "GARMIN_ACCESS",
@@ -25,6 +28,7 @@ class AuthSerializerTest {
         expiresAt = Instant.parse("2025-01-01T00:00:00Z")
     )
     private val auth = Auth(
+        user = user,
         garminToken = garminToken,
         stravaToken = stravaToken
     )
