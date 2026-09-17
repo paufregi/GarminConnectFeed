@@ -14,13 +14,13 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
+import paufregi.connectfeed.data.repository.AppRepository
 import paufregi.connectfeed.data.repository.AuthRepository
-import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.user
 
 class GetGearsTest {
     private val auth = mockk<AuthRepository>()
-    private val repo = mockk<GarminRepository>()
+    private val repo = mockk<AppRepository>()
     private lateinit var useCase: GetGears
 
     @Before
