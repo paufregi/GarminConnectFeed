@@ -28,9 +28,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.GET
 
-class StravaAuthInterceptorTest {
+class AuthInterceptorTest {
 
-    private lateinit var auth: StravaAuthInterceptor
+    private lateinit var auth: AuthInterceptor
     private lateinit var api: TestApi
 
     private val authRepo = mockk<AuthRepository>()
@@ -47,7 +47,7 @@ class StravaAuthInterceptorTest {
     @Before
     fun setup() {
 
-        auth = StravaAuthInterceptor(authRepo, clientId, clientSecret)
+        auth = AuthInterceptor(authRepo, clientId, clientSecret)
         server.enqueue(200)
         api = Retrofit.Builder()
             .baseUrl(server.url("/"))

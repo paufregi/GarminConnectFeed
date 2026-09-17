@@ -11,4 +11,6 @@ data class UpdateActivity(
     val description: String?,
     @SerialName("commute")
     val commute: Boolean?,
+    @SerialName("gear_id")
+    val gearId: String?
 )

@@ -13,7 +13,7 @@ import paufregi.connectfeed.data.repository.AuthRepository
 import javax.inject.Inject
 import javax.inject.Named
 
-class StravaAuthInterceptor @Inject constructor(
+class AuthInterceptor @Inject constructor(
     private val repo: AuthRepository,
     @param:Named("StravaClientId") val clientId: String,
     @param:Named("StravaClientSecret") val clientSecret: String,
