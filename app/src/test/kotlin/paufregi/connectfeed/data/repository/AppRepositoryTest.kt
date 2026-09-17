@@ -23,14 +23,14 @@ import paufregi.connectfeed.data.database.entities.GearEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.user
 
-class LocalRepositoryTest {
+class AppRepositoryTest {
 
-    private lateinit var repo: LocalRepository
+    private lateinit var repo: AppRepository
     private val dao = mockk<GarminDao>()
 
     @Before
     fun setup(){
-        repo = LocalRepository(dao)
+        repo = AppRepository(dao)
     }
 
     @After
