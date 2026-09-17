@@ -10,7 +10,7 @@ import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
 import javax.inject.Inject
 
-class LocalRepository @Inject constructor(
+class AppRepository @Inject constructor(
     private val garminDao: GarminDao,
 ) {
     fun getAllProfiles(user: User): Flow<List<Profile>> =
