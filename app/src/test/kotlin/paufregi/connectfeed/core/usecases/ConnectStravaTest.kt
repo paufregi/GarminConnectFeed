@@ -12,16 +12,16 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.createStravaToken
-import paufregi.connectfeed.data.repository.StravaAuthRepository
+import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.tomorrow
 
-class StravaCodeExchangeTest{
-    private val repo = mockk<StravaAuthRepository>()
-    private lateinit var useCase: StravaCodeExchange
+class ConnectStravaTest{
+    private val repo = mockk<AuthRepository>()
+    private lateinit var useCase: ConnectStrava
 
     @Before
     fun setup(){
-        useCase = StravaCodeExchange(repo, "CLIENT_ID", "CLIENT_SECRET")
+        useCase = ConnectStrava(repo, "CLIENT_ID", "CLIENT_SECRET")
     }
 
     @After
@@ -31,25 +31,25 @@ class StravaCodeExchangeTest{
     }
 
     @Test
-    fun `Exchange code`() = runTest {
+    fun `Connect Strava`() = runTest {
         val token = createStravaToken(tomorrow)
 
-        coEvery { repo.exchange(any(), any(), any()) } returns Result.success(token)
-        coEvery { repo.saveToken(any()) } returns Unit
+        coEvery { repo.exchangeStravaToken (any(), any(), any()) } returns Result.success(token)
+        coEvery { repo.saveStravaToken(any()) } returns Unit
 
         val result = useCase("code")
 
         assertThat(result.isSuccess).isTrue()
 
         coVerify {
-            repo.exchange("CLIENT_ID", "CLIENT_SECRET", "code")
-            repo.saveToken(token)
+            repo.exchangeStravaToken("CLIENT_ID", "CLIENT_SECRET", "code")
+            repo.saveStravaToken(token)
         }
     }
 
     @Test
     fun `Exchange code - failure`() = runTest {
-        coEvery { repo.exchange(any(), any(), any()) } returns Result.failure("error")
+        coEvery { repo.exchangeStravaToken(any(), any(), any()) } returns Result.failure("error")
 
         val result = useCase("code")
 
@@ -58,10 +58,9 @@ class StravaCodeExchangeTest{
 
 
         coVerify {
-            repo.exchange("CLIENT_ID", "CLIENT_SECRET", "code")
+            repo.exchangeStravaToken("CLIENT_ID", "CLIENT_SECRET", "code")
         }
-        coVerify { repo.exchange("CLIENT_ID", "CLIENT_SECRET", "code") }
+        coVerify { repo.exchangeStravaToken("CLIENT_ID", "CLIENT_SECRET", "code") }
 
     }
-
 }
