@@ -34,6 +34,6 @@ sealed class SportType(val key: String, val type: ActivityType? = null){
     data object Windsurf: SportType("Windsurf", ActivityType.Other) // Windsurf
 
     // Other
-    data object Football: SportType("Soccer", ActivityType.Other) // Soccer
+    data object Soccer: SportType("Soccer", ActivityType.Other) // Soccer
     data object Unknown : SportType("Unknown", ActivityType.Other)
 }
