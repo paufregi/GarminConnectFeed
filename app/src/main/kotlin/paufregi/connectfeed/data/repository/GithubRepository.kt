@@ -10,12 +10,13 @@ import javax.inject.Inject
 class GithubRepository@Inject constructor(private val github: Github) {
 suspend fun getLatestRelease() =
     github.getLatestRelease().toResult().mapOrFailure { r ->
-        val version = Version.parse(r.tagName)
-        val url = r.assets.find {
-            it.contentType == "application/vnd.android.package-archive" &&
-                it.downloadUrl.endsWith(".apk")
-        }?.downloadUrl
-
-        if (version != null && url != null) return@mapOrFailure Release(version, url)
+        Version.parse(r.tagName)?.let{ v ->
+            r.assets.find {
+                it.contentType == "application/vnd.android.package-archive" &&
+                        it.downloadUrl.endsWith(".apk")
+            }?.downloadUrl?.let { url ->
+                Release(v, url)
+            }
+        }
     }
 }
