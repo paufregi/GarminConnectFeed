@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.update
 import retrofit2.Response
 import java.util.Calendar
 import java.util.Date
-import java.util.concurrent.Semaphore
 import kotlin.time.Instant
 
 private val VO2MAX_REGEX = Regex("vo[2₂]\\s*max", RegexOption.IGNORE_CASE)
@@ -42,7 +41,7 @@ fun <T> Result.Companion.failure(cause: String): Result<T> = failure(Exception(c
 fun <T> Result<T>.mapFailure(transform: (exception: Throwable) -> Throwable): Result<T> =
     when (val exception = exceptionOrNull()) {
         null -> this
-        else -> Result.failure<T>(transform(exception))
+        else -> Result.failure(transform(exception))
     }
 
 fun <R, T> Result<T>.mapOrFailure(transform: (value: T) -> R?): Result<R> {
@@ -61,14 +60,6 @@ inline fun <T, R> T.runCatchingResult(block: T.() -> Result<R>): Result<R> {
     )
 }
 
-inline fun <T> Semaphore.withPermit(action: () -> T): T {
-    acquire()
-    return try {
-        action()
-    } finally {
-        release()
-    }
-}
 
 inline fun <T> MutableStateFlow<T>.updateIf(predicate: (T) -> Boolean, function: (T) -> T) {
     update { current -> if (predicate(current)) function(current) else current }
