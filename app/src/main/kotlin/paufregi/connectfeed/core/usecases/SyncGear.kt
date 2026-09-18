@@ -1,32 +1,49 @@
 package paufregi.connectfeed.core.usecases
 
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.firstOrNull
-import paufregi.connectfeed.data.repository.AuthRepository
+import paufregi.connectfeed.core.models.Gear
+import paufregi.connectfeed.core.models.GearType
+import paufregi.connectfeed.core.utils.runCatchingResult
+import paufregi.connectfeed.data.api.strava.models.Athlete
 import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.StravaRepository
 import javax.inject.Inject
 
 class SyncGear @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val garminRepository: GarminRepository
+    private val isStravaConnected: IsStravaConnected,
+    private val garminRepo: GarminRepository,
+    private val stravaRepo: StravaRepository,
 ) {
-    suspend operator fun invoke(): Result<Unit> {
-        val user = authRepository.getUser().firstOrNull()
-            ?: return Result.failure(Exception("User must be logged in"))
-
-        val gears = garminRepository.getGears().getOrElse {
-            return Result.failure(it)
+    suspend operator fun invoke(): Result<Unit> = coroutineScope {
+        val garminDeferred = async { garminRepo.getGears() }
+        val stravaDeferred = async {
+            isStravaConnected().firstOrNull()?.let {
+                stravaRepo.getAthlete()
+            } ?: Result.success(Athlete(0))
         }
 
-        val currentGears = garminRepository.getAllGears(user).first()
-        val apiGearIds = gears.map { it.id }.toSet()
+        val garminResult = runCatchingResult { garminDeferred.await() }
+        val stravaActivities = runCatchingResult { stravaDeferred.await() }.getOrDefault(Athlete(0))
 
-        currentGears
-            .filterNot { it.id in apiGearIds }
-            .forEach { garminRepository.deleteGear(user, it) }
+        garminResult.map { garminGears ->
+            garminGears.map { garminGear ->
+                val matchedStravaId = when(garminGear.type) {
+                    GearType.Bike -> stravaActivities.bikes.find { it.name == garminGear.name || it.name == "${garminGear.model} ${garminGear.model}" }?.id
+                    GearType.Shoe -> stravaActivities.shoes.find { it.name == garminGear.name || it.name == "${garminGear.model} ${garminGear.model}" }?.id
+                    GearType.Unknown -> null
+                }
 
-        gears.forEach { garminRepository.saveGear(user, it) }
+                Gear(
+                    id = garminGear.id,
+                    name = garminGear.name ?: "${garminGear.model} ${garminGear.model}" ,
+                    type = garminGear.type,
+                    stravaId = matchedStravaId,
+                )
+            }
+        }
 
-        return Result.success(Unit)
+        Result.success(Unit)
     }
 }
