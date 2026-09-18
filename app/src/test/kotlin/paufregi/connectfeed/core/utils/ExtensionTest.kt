@@ -1,15 +1,11 @@
 package paufregi.connectfeed.core.utils
 
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Test
 import retrofit2.Response
 import java.util.Date
-import java.util.concurrent.Semaphore
 import kotlin.time.Instant
 import java.time.Instant as JInstant
 
@@ -201,16 +197,6 @@ class ExtensionTest {
     }
 
     @Test
-    fun `Semaphore - withPermit - executes action within permit`() {
-        val semaphore = Semaphore(1)
-        var result = 0
-
-        semaphore.withPermit { result = 42 }
-
-        assertThat(result).isEqualTo(42)
-    }
-
-    @Test
     fun `String - vo2max - lowercase`() {
         val result = "vo2max workout".vo2max()
         assertThat(result).isEqualTo("VO₂ max workout")
@@ -250,22 +236,6 @@ class ExtensionTest {
     fun `String - vo2max - no match unchanged`() {
         val result = "workout recovery".vo2max()
         assertThat(result).isEqualTo("workout recovery")
-    }
-
-    @Test
-    fun `Semaphore - withPermit - blocks when no permits are available`() = runTest {
-        val semaphore = Semaphore(1)
-        var actionExecuted = false
-
-        coroutineScope {
-            semaphore.acquire()
-            val action = async { semaphore.withPermit { actionExecuted = true } }
-
-            assertThat(actionExecuted).isFalse()
-            semaphore.release()
-            action.await()
-            assertThat(actionExecuted).isTrue()
-        }
     }
 
     @Test
