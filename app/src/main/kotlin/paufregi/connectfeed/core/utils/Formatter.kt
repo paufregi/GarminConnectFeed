@@ -20,33 +20,30 @@ object Formatter {
     fun distance(distance: Int): String =
         "%,d".format(Locale.getDefault(), distance / 1000)
 
-    fun workout(workout: String?) =
+    fun garminDescription(workout: String?) =
         workout?.let { "Workout: ${it.lowercase().vo2max()}" }
 
-    fun trainingEffect(trainingEffect: String?) = when (trainingEffect) {
-        "SPEED" -> "sprint"
-        "ANAEROBIC_CAPACITY" -> "anaerobic capacity"
-        "VO2MAX" -> "VO2max".vo2max()
-        "LACTATE_THRESHOLD" -> "threshold"
-        "TEMPO" -> "tempo"
-        "AEROBIC_BASE" -> "base"
-        "RECOVERY" -> "recovery"
-        else -> null
-    }
-
-    fun description(
+    fun stravaDescription(
         description: String?,
         trainingEffect: String?,
-        trainingEffectFlag: Boolean,
-        workout: String? = null,
-    ): String? {
-        val details = buildList {
-            workout?.let { add(workout(it)) }
-            trainingEffect?.let { if (trainingEffectFlag) add("Benefit: ${trainingEffect(it)}") }
-        }
+        workout: String?,
+    ): String =
+        buildList {
+            description?.let {
+                add(it)
+                if (workout != null || trainingEffect != null) add("")
+            }
 
-        if (details.isEmpty()) return description
-        if (description.isNullOrEmpty()) return details.joinToString("\n")
-        return "$description\n\n${details.joinToString("\n")}"
-    }
+            workout?.let { add("Workout: ${it.lowercase().vo2max()}") }
+            trainingEffect?.let {
+                val label = when (it) {
+                    "SPEED" -> "sprint"
+                    "ANAEROBIC_CAPACITY" -> "anaerobic capacity"
+                    "LACTATE_THRESHOLD" -> "threshold"
+                    "AEROBIC_BASE" -> "base"
+                    else -> it
+                }
+                add("Benefit: ${label.lowercase().vo2max()}")
+            }
+        }.joinToString("\n")
 }
