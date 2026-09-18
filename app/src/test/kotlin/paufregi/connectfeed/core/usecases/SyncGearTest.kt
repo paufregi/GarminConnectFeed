@@ -13,127 +13,128 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.connectfeed.athlete
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
-import paufregi.connectfeed.data.repository.AuthRepository
+import paufregi.connectfeed.core.utils.failure
+import paufregi.connectfeed.data.api.strava.models.Athlete
+import paufregi.connectfeed.data.api.strava.models.Bike
+import paufregi.connectfeed.data.api.strava.models.Shoe
 import paufregi.connectfeed.data.repository.GarminRepository
-import paufregi.connectfeed.user
+import paufregi.connectfeed.data.repository.StravaRepository
+import paufregi.connectfeed.data.api.garmin.models.Gear as GarminGear
 
 class SyncGearTest {
 
-    private val auth = mockk<AuthRepository>()
-    private val repo = mockk<GarminRepository>()
+    private val isStravaConnected = mockk<IsStravaConnected>()
+    private val garminRepo = mockk<GarminRepository>()
+    private val stravaRepo = mockk<StravaRepository>()
     private lateinit var useCase: SyncGear
+
+    private val garminGears = listOf(
+        GarminGear("id-1", null, null, "bike-1", GearType.Bike, 10000.0),
+        GarminGear("id-2", "brand", "shoe", null, GearType.Shoe, 123.0),
+        GarminGear("id-3", null, null, "other shoe", GearType.Shoe, 456.0)
+    )
+
+    private val stravaAthlete = Athlete(
+        id = 1,
+        bikes = listOf(
+            Bike("strava-id-1", "bike-1")
+        ),
+        shoes = listOf(
+            Shoe("strava-id-2", "brand shoe"),
+        )
+    )
 
     @Before
     fun setup() {
-        useCase = SyncGear(auth, repo)
+        useCase = SyncGear(isStravaConnected, garminRepo, stravaRepo)
     }
 
     @After
     fun tearDown() {
-        confirmVerified(auth, repo)
+        confirmVerified(isStravaConnected, garminRepo, stravaRepo)
         clearAllMocks()
     }
 
     @Test
     fun `Sync gears`() = runTest {
-        val apiGears = listOf(
-            Gear(
-                id = "gear-1",
-                name = "gear 1",
-                type = GearType.Shoe,
-                distance = 1000
-            ),
-            Gear(
-                id = "gear-2",
-                name = "gear 2",
-                type = GearType.Bike,
-                distance = 2000
-            )
-        )
-        val dbGears = listOf(
-            Gear(
-                id = "gear-1",
-                name = "gear 1 old",
-                type = GearType.Unknown,
-                distance = null
-            ),
-            Gear(
-                id = "gear-3",
-                name = "gear 3",
-                type = GearType.Shoe,
-                distance = 3000
-            )
+        val expected = listOf(
+            Gear("id-1", "bike-1", GearType.Bike, 1000),
+            Gear("id-2", "brand shoe", GearType.Shoe, 123),
+            Gear("id-3",  "other shoe", GearType.Shoe, 456)
         )
 
-        every { auth.getUser() } returns flowOf(user)
-        coEvery { repo.getGears() } returns Result.success(apiGears)
-        every { repo.getAllGears(user) } returns flowOf(dbGears)
-        coEvery { repo.saveGear(any(), any()) } returns Unit
-        coEvery { repo.deleteGear(any(), any()) } returns Unit
+        every { isStravaConnected() } returns flowOf(false)
+        coEvery { garminRepo.getGears() } returns Result.success(garminGears)
 
         val res = useCase()
 
         assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
 
-        verify { auth.getUser() }
-        coVerify { repo.getGears() }
-        verify { repo.getAllGears(user) }
-        coVerify {
-            repo.deleteGear(user, dbGears[1])
-            repo.saveGear(user, apiGears[0])
-            repo.saveGear(user, apiGears[1])
-        }
+        verify { isStravaConnected() }
+        coVerify { garminRepo.getGears() }
     }
 
     @Test
-    fun `Sync gears - empty api`() = runTest {
-        val dbGears = listOf(
-            Gear(id = "gear-1", name = "gear 1", type = GearType.Shoe, distance = 1000),
-            Gear(id = "gear-2", name = "gear 2", type = GearType.Bike, distance = 2000)
+    fun `Sync gears with strava`() = runTest {
+        val expected = listOf(
+            Gear("id-1", "bike-1", GearType.Bike, 1000, "strava-id-1"),
+            Gear("id-2", "brand shoe", GearType.Shoe, 123, "strava-id-2"),
+            Gear("id-3",  "other shoe", GearType.Shoe, 456)
         )
 
-        every { auth.getUser() } returns flowOf(user)
-        coEvery { repo.getGears() } returns Result.success(emptyList())
-        every { repo.getAllGears(user) } returns flowOf(dbGears)
-        coEvery { repo.saveGear(any(), any()) } returns Unit
-        coEvery { repo.deleteGear(any(), any()) } returns Unit
+        every { isStravaConnected() } returns flowOf(false)
+        coEvery { garminRepo.getGears() } returns Result.success(garminGears)
+        coEvery { stravaRepo.getAthlete() } returns Result.success(stravaAthlete)
 
         val res = useCase()
 
         assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
 
-        verify { auth.getUser() }
-        coVerify { repo.getGears() }
-        coVerify(exactly = 2) { repo.deleteGear(user, any()) }
-        coVerify(exactly = 0) { repo.saveGear(any(), any()) }
-        verify { repo.getAllGears(user) }
+        verify { isStravaConnected() }
+        coVerify { garminRepo.getGears() }
+        coVerify { stravaRepo.getAthlete() }
     }
 
     @Test
-    fun `Sync gears - no user`() = runTest {
-        every { auth.getUser() } returns flowOf(null)
+    fun `Sync gears - garmin failure`() = runTest {
+        every { isStravaConnected() } returns flowOf(true)
+        coEvery { garminRepo.getGears() } returns Result.failure("Failed to load Garmin")
+        coEvery { stravaRepo.getAthlete() } returns Result.success(athlete)
 
         val res = useCase()
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("User must be logged in")
+        assertThat(res.getOrNull()).isEqualTo(emptyList<Gear>())
 
-        verify { auth.getUser() }
+        verify { isStravaConnected() }
+        coVerify { garminRepo.getGears() }
+        coVerify { stravaRepo.getAthlete() }
     }
 
     @Test
-    fun `Sync gears - api failure`() = runTest {
-        every { auth.getUser() } returns flowOf(user)
-        coEvery { repo.getGears() } returns Result.failure(Exception("error"))
+    fun `Sync gears - strava failure`() = runTest {
+        val expected = listOf(
+            Gear("id-1", "bike-1", GearType.Bike, 1000),
+            Gear("id-2", "brand shoe", GearType.Shoe, 123),
+            Gear("id-3",  "other shoe", GearType.Shoe, 456)
+        )
+
+        every { isStravaConnected() } returns flowOf(false)
+        coEvery { garminRepo.getGears() } returns Result.success(garminGears)
+        coEvery { stravaRepo.getAthlete() } returns Result.failure("Failed to load Strava")
 
         val res = useCase()
 
-        assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("error")
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(expected)
 
-        verify { auth.getUser() }
-        coVerify { repo.getGears() }
+        verify { isStravaConnected() }
+        coVerify { garminRepo.getGears() }
+        coVerify { stravaRepo.getAthlete() }
     }
 }
