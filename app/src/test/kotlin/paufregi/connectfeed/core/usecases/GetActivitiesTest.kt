@@ -34,6 +34,45 @@ class GetActivitiesTest{
     private val garminRunningType = GarminActivityType(1, "running", ActivityType.Running)
     private val garminRoadBikingType = GarminActivityType(10, "road_biking", ActivityType.RoadBiking)
 
+    private val garminActivities = listOf(
+        GarminActivity(
+            id = 1,
+            name = "Morning Run",
+            type = garminRunningType,
+            eventType = EventType.Training,
+            distance = 10_234.0,
+            trainingEffectLabel = "Base",
+            beginTimestamp = Instant.parse("2024-06-01T08:00:00Z"),
+            workoutId = 101,
+        ),
+        GarminActivity(
+            id = 2,
+            name = "Evening Ride",
+            type = garminRoadBikingType,
+            eventType = EventType.Recreation,
+            distance = 24_120.0,
+            trainingEffectLabel = null,
+            beginTimestamp = Instant.parse("2024-06-01T18:30:00Z"),
+            workoutId = null,
+        ),
+    )
+    private val stravaActivities = listOf(
+        StravaActivity(
+            id = 11,
+            name = "Lunch Ride on Strava",
+            sportType = SportType.Ride,
+            distance = 41_020.0,
+            startDate = Instant.parse("2024-06-02T12:00:30Z"),
+        ),
+        StravaActivity(
+            id = 12,
+            name = "Morning Run",
+            sportType = SportType.Run,
+            distance = 8_000.0,
+            startDate = Instant.parse("2024-06-02T08:00:00Z"),
+        ),
+    )
+
     @Before
     fun setup(){
         useCase = GetActivities(isStravaConnected, garminRepo, stravaRepo)
@@ -47,28 +86,6 @@ class GetActivitiesTest{
 
     @Test
     fun `Get activities`() = runTest {
-        val garminActivities = listOf(
-            GarminActivity(
-                id = 1,
-                name = "Morning Run",
-                type = garminRunningType,
-                eventType = EventType.Training,
-                distance = 10_234.0,
-                trainingEffectLabel = "Base",
-                beginTimestamp = Instant.parse("2024-06-01T08:00:00Z"),
-                workoutId = 101,
-            ),
-            GarminActivity(
-                id = 2,
-                name = "Evening Ride",
-                type = garminRoadBikingType,
-                eventType = EventType.Recreation,
-                distance = 24_120.0,
-                trainingEffectLabel = null,
-                beginTimestamp = Instant.parse("2024-06-01T18:30:00Z"),
-                workoutId = null,
-            ),
-        )
         val expected = listOf(
             Activity(
                 id = 1,
@@ -107,44 +124,6 @@ class GetActivitiesTest{
 
     @Test
     fun `Get activities with strava`() = runTest {
-        val garminActivities = listOf(
-            GarminActivity(
-                id = 1,
-                name = "Morning Run",
-                type = garminRunningType,
-                eventType = EventType.Training,
-                distance = 10_234.0,
-                trainingEffectLabel = "Base",
-                beginTimestamp = Instant.parse("2024-06-01T08:00:00Z"),
-                workoutId = 101,
-            ),
-            GarminActivity(
-                id = 2,
-                name = "Evening Ride",
-                type = garminRoadBikingType,
-                eventType = EventType.Recreation,
-                distance = 24_120.0,
-                trainingEffectLabel = null,
-                beginTimestamp = Instant.parse("2024-06-01T18:30:00Z"),
-                workoutId = null,
-            ),
-        )
-        val stravaActivities = listOf(
-            StravaActivity(
-                id = 11,
-                name = "Lunch Ride on Strava",
-                sportType = SportType.Ride,
-                distance = 41_020.0,
-                startDate = Instant.parse("2024-06-02T12:00:30Z"),
-            ),
-            StravaActivity(
-                id = 12,
-                name = "Morning Run",
-                sportType = SportType.Run,
-                distance = 8_000.0,
-                startDate = Instant.parse("2024-06-02T08:00:00Z"),
-            ),
-        )
         val expected = listOf(
             Activity(
                 id = 1,
@@ -204,28 +183,6 @@ class GetActivitiesTest{
 
     @Test
     fun `Get activities - strava failure`() = runTest {
-        val garminActivities = listOf(
-            GarminActivity(
-                id = 1,
-                name = "Morning Run",
-                type = garminRunningType,
-                eventType = EventType.Training,
-                distance = 10_234.0,
-                trainingEffectLabel = "Base",
-                beginTimestamp = Instant.parse("2024-06-01T08:00:00Z"),
-                workoutId = 101,
-            ),
-            GarminActivity(
-                id = 2,
-                name = "Evening Ride",
-                type = garminRoadBikingType,
-                eventType = EventType.Recreation,
-                distance = 24_120.0,
-                trainingEffectLabel = null,
-                beginTimestamp = Instant.parse("2024-06-01T18:30:00Z"),
-                workoutId = null,
-            ),
-        )
         val expected = listOf(
             Activity(
                 id = 1,
