@@ -67,7 +67,7 @@ class UpdateActivityTest{
 
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val res = useCase(activityNoStrava, name, null, eventType, course, water, feel, effort, workout, gear, null, false)
+        val res = useCase(activityNoStrava, name, null, eventType, course, water, feel, effort, workout, gear, trainingEffect, false)
 
         assertThat(res.isSuccess).isTrue()
         coVerify { garminRepo.updateActivity(activityNoStrava, name, garminDescription, eventType, course, water, feel, effort, gear) }
@@ -108,7 +108,7 @@ class UpdateActivityTest{
 
     @Test
     fun `Update activity - no workout`() = runTest {
-        val stravaDescription = "descriptionWorkout: VO₂ max\n\nBenefit: VO₂ max"
+        val stravaDescription = "description\n\nBenefit: VO₂ max"
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
