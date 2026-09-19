@@ -12,9 +12,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.data.database.entities.GearEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import javax.inject.Inject
@@ -57,6 +57,7 @@ class GarminDaoTest {
             water = 100,
             rename = true,
             customWater = true,
+             gear = true,
             feelAndEffort = true,
             trainingEffect = true
         )
@@ -70,6 +71,7 @@ class GarminDaoTest {
             water = 200,
             rename = true,
             customWater = true,
+            gear = true,
             feelAndEffort = true,
             trainingEffect = true
         )
@@ -98,14 +100,16 @@ class GarminDaoTest {
             userId = 1,
             name = "gear1",
             type = GearType.Shoe,
-            distance = 1000
+            distance = 1000,
+            stravaId = "strava-gear-1"
         )
         val gear2 = GearEntity(
             id = "gear-2",
             userId = 2,
             name = "gear2",
             type = GearType.Bike,
-            distance = 2000
+            distance = 2000,
+            stravaId = "strava-gear-2"
         )
 
         dao.saveGear(gear)
