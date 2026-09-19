@@ -10,9 +10,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.MockServer
+import paufregi.connectfeed.core.models.Release
+import paufregi.connectfeed.core.models.Version
 import paufregi.connectfeed.githubDispatcher
 import paufregi.connectfeed.githubPort
-import paufregi.connectfeed.githubRelease
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -26,7 +27,6 @@ class GithubRepositoryTest {
 
     @Inject
     lateinit var repo: GithubRepository
-
 
     @JvmField @Rule val githubServer = MockServer.createSecure(githubPort, githubDispatcher)
 
@@ -43,7 +43,13 @@ class GithubRepositoryTest {
     fun `Get latest release`() = runTest {
         val res = repo.getLatestRelease()
 
+        val expected = Release(
+            version = Version(2, 2, 2),
+            downloadUrl = "https://github.com/paufregi/GarminConnectFeed/releases/download/v2.2.2/ConnectFeed-v2.2.2.apk"
+        )
+
+
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(githubRelease.toCore())
+        assertThat(res.getOrNull()).isEqualTo(expected)
     }
 }
