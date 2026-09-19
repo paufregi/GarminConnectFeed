@@ -36,9 +36,9 @@ subprojects {
             substitute(module("org.apache.commons:commons-lang3:3.16.0"))
                 .using(module("org.apache.commons:commons-lang3:3.18.0"))
             substitute(module("org.bouncycastle:bcprov-jdk18on:1.80.2"))
-                .using(module("org.bouncycastle:bcprov-jdk18on:1.84"))
+                .using(module("org.bouncycastle:bcprov-jdk18on:1.85"))
             substitute(module("org.bouncycastle:bcpkix-jdk18on:1.80.2"))
-                .using(module("org.bouncycastle:bcpkix-jdk18on:1.84"))
+                .using(module("org.bouncycastle:bcpkix-jdk18on:1.85"))
         }
     }
 }
@@ -55,9 +55,9 @@ buildscript {
             substitute(module("org.apache.commons:commons-lang3:3.16.0"))
                 .using(module("org.apache.commons:commons-lang3:3.18.0"))
             substitute(module("org.bouncycastle:bcprov-jdk18on:1.80.2"))
-                .using(module("org.bouncycastle:bcprov-jdk18on:1.84"))
+                .using(module("org.bouncycastle:bcprov-jdk18on:1.85"))
             substitute(module("org.bouncycastle:bcpkix-jdk18on:1.80.2"))
-                .using(module("org.bouncycastle:bcpkix-jdk18on:1.84"))
+                .using(module("org.bouncycastle:bcpkix-jdk18on:1.85"))
         }
     }
 }
