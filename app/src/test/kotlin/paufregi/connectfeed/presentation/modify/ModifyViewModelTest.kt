@@ -116,14 +116,12 @@ class ModifyViewModelTest {
         verify {
             getProfiles()
             getGears()
-            getEventTypes()
         }
         confirmVerified(
             getActivities,
             getStravaActivities,
             getProfiles,
             getGears,
-            getEventTypes,
             getCourses,
             getWorkout,
             updateActivity,

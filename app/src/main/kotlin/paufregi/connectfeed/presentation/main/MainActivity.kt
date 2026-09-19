@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
                             composable<Route.Login> { LoginScreen() }
                         }
                         navigation<Route.App>(startDestination = Route.Home) {
-                            navigation<Route.Home>(startDestination = Route.Modify) {
+                            navigation<Route.Home>(startDestination = Route.QuickEdit) {
                                 composable<Route.Modify> { ModifyScreen(nav = nav) }
                                 composable<Route.Edit> { EditScreen(nav = nav) }
                                 composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }

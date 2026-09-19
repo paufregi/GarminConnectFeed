@@ -21,7 +21,7 @@ object Formatter {
     }
 
     fun dateTime(date: kotlin.time.Instant, zoneId: ZoneId = ZoneId.systemDefault()): String =
-        activityDateTime(zoneId).format(java.time.Instant.ofEpochSecond(date.epochSeconds, date.nanosecondsOfSecond.toLong()))
+        activityDateTime(zoneId).format(java.time.Instant.ofEpochMilli(date.toEpochMilliseconds()))
 
     fun distance(distance: Double): String =
         "%,.2f".format(Locale.getDefault(), distance / 1000)
