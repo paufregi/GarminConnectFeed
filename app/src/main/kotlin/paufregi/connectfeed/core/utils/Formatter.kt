@@ -14,6 +14,15 @@ object Formatter {
 
     val dateTimeForImport = { locale: Locale -> SimpleDateFormat("yyyy.MM.dd HH:mm:ss", locale) }
 
+    val activityDateTime = { zoneId: ZoneId ->
+        DateTimeFormatter
+            .ofPattern("yyyy-MM-dd HH:mm")
+            .withZone(zoneId)
+    }
+
+    fun dateTime(date: kotlin.time.Instant, zoneId: ZoneId = ZoneId.systemDefault()): String =
+        activityDateTime(zoneId).format(java.time.Instant.ofEpochSecond(date.epochSeconds, date.nanosecondsOfSecond.toLong()))
+
     fun distance(distance: Double): String =
         "%,.2f".format(Locale.getDefault(), distance / 1000)
 

@@ -19,6 +19,7 @@ import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.edit.EditScreen
 import paufregi.connectfeed.presentation.gears.GearsScreen
 import paufregi.connectfeed.presentation.login.LoginScreen
+import paufregi.connectfeed.presentation.modify.ModifyScreen
 import paufregi.connectfeed.presentation.profile.ProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
@@ -53,9 +54,10 @@ class MainActivity : ComponentActivity() {
                             composable<Route.Login> { LoginScreen() }
                         }
                         navigation<Route.App>(startDestination = Route.Home) {
-                            navigation<Route.Home>(startDestination = Route.QuickEdit) {
-                                composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }
+                            navigation<Route.Home>(startDestination = Route.Modify) {
+                                composable<Route.Modify> { ModifyScreen(nav = nav) }
                                 composable<Route.Edit> { EditScreen(nav = nav) }
+                                composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }
                             }
                             navigation<Route.Profiles>(startDestination = Route.ProfileList) {
                                 composable<Route.ProfileList> { ProfilesScreen(nav = nav) }

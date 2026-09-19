@@ -32,6 +32,9 @@ sealed interface Route {
     data object Edit : Route
 
     @Serializable
+    data object Modify : Route
+
+    @Serializable
     data object Profiles : Route
 
     @Serializable
@@ -66,12 +69,14 @@ object Navigation {
 
 data class HomeNavigation(val barIndex: Int, val menuIndex: Int) {
     companion object {
-        val EDIT = HomeNavigation(0, HOME)
-        val QUICK_EDIT = HomeNavigation(1, HOME)
+        val MODIFY = HomeNavigation(0, HOME)
+        val EDIT = HomeNavigation(1, HOME)
+        val QUICK_EDIT = HomeNavigation(2, HOME)
 
         val items = listOf(
+            NavigationItem(HOME,"Modify", Icons.Default.EditNote, Route.Modify),
             NavigationItem(HOME,"Edit", Icons.Default.Edit, Route.Edit),
-            NavigationItem(HOME,"Quick Edit", Icons.Default.EditNote, Route.QuickEdit),
+            NavigationItem(HOME,"Quick Edit", Icons.Default.Tune, Route.QuickEdit),
         )
     }
 }
