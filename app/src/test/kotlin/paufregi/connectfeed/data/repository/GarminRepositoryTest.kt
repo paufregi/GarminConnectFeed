@@ -27,7 +27,7 @@ import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
 import retrofit2.Response
 import java.io.File
-import kotlin.time.Instant
+import java.time.LocalDateTime
 import paufregi.connectfeed.data.api.garmin.models.Activity as GarminActivity
 import paufregi.connectfeed.data.api.garmin.models.ActivityType as GarminActivityType
 import paufregi.connectfeed.data.api.garmin.models.Course as GarminCourse
@@ -56,7 +56,7 @@ class GarminRepositoryTest {
         distance = 17803.00,
         type = ActivityType.Cycling,
         eventType = EventType.Training,
-        date = Instant.parse("2022-05-02T12:15:09Z"),
+        date = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
         stravaId = 10L
     )
     val gear = Gear(
@@ -102,7 +102,7 @@ class GarminRepositoryTest {
                 trainingEffectLabel = "recovery",
                 type = GarminActivityType(id = 1, key = "running", type = ActivityType.Running),
                 eventType = EventType.Training,
-                beginTimestamp = Instant.parse("2022-05-02T12:15:09Z"),
+                startDateTime = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
                 workoutId = 1
             ),
             GarminActivity(
@@ -112,7 +112,7 @@ class GarminRepositoryTest {
                 trainingEffectLabel = "recovery",
                 type = GarminActivityType(id = 10, key = "road_biking", type = ActivityType.RoadBiking),
                 eventType = EventType.Training,
-                beginTimestamp = Instant.parse("2022-05-02T12:15:09Z"),
+                startDateTime = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
                 workoutId = 2
             )
         )
@@ -386,7 +386,7 @@ class GarminRepositoryTest {
             distance = 17803.00,
             type = ActivityType.Cycling,
             eventType = EventType.Training,
-            date = Instant.parse("2022-05-02T12:15:09Z"),
+            date = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
             stravaId = null
         )
 

@@ -1,6 +1,6 @@
 package paufregi.connectfeed.core.models
 
-import kotlin.time.Instant
+import java.time.LocalDateTime
 
 data class Activity(
     val id: Long,
@@ -9,7 +9,7 @@ data class Activity(
     val eventType: EventType,
     val distance: Double? = null,
     val trainingEffect: String? = null,
-    val date: Instant,
+    val date: LocalDateTime,
     val workoutId: Long? = null,
     val stravaId: Long? = null,
 )
