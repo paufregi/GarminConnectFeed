@@ -1,6 +1,7 @@
 package paufregi.connectfeed.core.utils
 
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -13,6 +14,20 @@ object Formatter {
     }
 
     val dateTimeForImport = { locale: Locale -> SimpleDateFormat("yyyy.MM.dd HH:mm:ss", locale) }
+
+    fun localDateTime(
+        datetime: LocalDateTime,
+        today: LocalDateTime = LocalDateTime.now(),
+    ): String {
+        val yesterday = today.minusDays(1)
+        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+        return when {
+            datetime.toLocalDate() == today.toLocalDate() -> "Today ${datetime.format(timeFormatter)}"
+            datetime.toLocalDate() == yesterday.toLocalDate() -> "Yesterday ${datetime.format(timeFormatter)}"
+            else -> datetime.format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm"))
+        }
+    }
 
     fun distance(distance: Double): String =
         "%,.2f".format(Locale.getDefault(), distance / 1000)
