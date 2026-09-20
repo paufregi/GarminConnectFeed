@@ -15,7 +15,7 @@ import paufregi.connectfeed.core.models.Version
 import paufregi.connectfeed.core.usecases.DisconnectStrava
 import paufregi.connectfeed.core.usecases.GetLatestRelease
 import paufregi.connectfeed.core.usecases.GetUser
-import paufregi.connectfeed.core.usecases.IsStravaLoggedIn
+import paufregi.connectfeed.core.usecases.IsStravaConnected
 import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
 import paufregi.connectfeed.presentation.ui.models.ProcessState
@@ -25,8 +25,8 @@ import javax.inject.Named
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    getUser: GetUser,
-    isStravaLoggedIn: IsStravaLoggedIn,
+    val getUser: GetUser,
+    val isStravaConnected: IsStravaConnected,
     val getLatestRelease: GetLatestRelease,
     val refreshUser: RefreshUser,
     val signOut: SignOut,
@@ -41,7 +41,7 @@ class SettingsViewModel @Inject constructor(
     val state = combine(
         _state,
         getUser(),
-        isStravaLoggedIn(),
+        isStravaConnected(),
     ) { state, user, strava -> state.copy(user = user, hasStrava = strava) }
         .onStart { load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), SettingsState())
