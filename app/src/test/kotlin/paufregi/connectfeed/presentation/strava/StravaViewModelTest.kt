@@ -13,7 +13,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.core.usecases.StravaCodeExchange
+import paufregi.connectfeed.core.usecases.ConnectStrava
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
@@ -21,7 +21,7 @@ import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 @ExperimentalCoroutinesApi
 class StravaViewModelTest {
 
-    private val stravaCodeExchange = mockk<StravaCodeExchange>()
+    private val enableStrava = mockk<ConnectStrava>()
 
     private lateinit var viewModel: StravaViewModel
 
@@ -30,12 +30,12 @@ class StravaViewModelTest {
 
     @Before
     fun setup(){
-        viewModel = StravaViewModel(stravaCodeExchange)
+        viewModel = StravaViewModel(enableStrava)
     }
 
     @After
     fun tearDown(){
-        confirmVerified(stravaCodeExchange)
+        confirmVerified(enableStrava)
         clearAllMocks()
     }
 
@@ -50,7 +50,7 @@ class StravaViewModelTest {
 
     @Test
     fun `Exchange token`() = runTest {
-        coEvery { stravaCodeExchange(any()) } returns Result.success(Unit)
+        coEvery { enableStrava(any()) } returns Result.success(Unit)
 
         viewModel.state.test {
             viewModel.exchangeToken("code")
@@ -60,12 +60,12 @@ class StravaViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { stravaCodeExchange("code") }
+        coVerify { enableStrava("code") }
     }
 
     @Test
     fun `Exchange token - failure`() = runTest {
-        coEvery { stravaCodeExchange(any()) } returns Result.failure("error")
+        coEvery { enableStrava(any()) } returns Result.failure("error")
 
         viewModel.state.test {
             viewModel.exchangeToken("code")
@@ -75,6 +75,6 @@ class StravaViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { stravaCodeExchange("code") }
+        coVerify { enableStrava("code") }
     }
 }
