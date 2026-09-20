@@ -10,7 +10,7 @@ class SecurityManagerTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
     @Test
-    fun `getAead returns an Aead that can encrypt and decrypt data`() {
+    fun `Encrypt and decrypt data`() {
         val keyName = "test_security_manager_key"
         val plaintext = "sensitive payload".toByteArray(Charsets.UTF_8)
 
