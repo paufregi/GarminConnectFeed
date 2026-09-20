@@ -4,8 +4,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.data.api.garmin.serializers.EventTypeSerializer
-import paufregi.connectfeed.data.api.utils.serializers.InstantSerializer
-import kotlin.time.Instant
+import paufregi.connectfeed.data.api.garmin.serializers.LocalDateTimeSerializer
+import java.time.LocalDateTime
 
 @Serializable
 data class Activity(
@@ -22,9 +22,9 @@ data class Activity(
     val distance: Double,
     @SerialName("trainingEffectLabel")
     val trainingEffectLabel: String?,
-    @SerialName("beginTimestamp")
-    @Serializable(with = InstantSerializer::class)
-    val beginTimestamp: Instant,
+    @SerialName("startTimeLocal")
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val startDateTime: LocalDateTime,
     @SerialName("workoutId")
     val workoutId: Long?,
 )

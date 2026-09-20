@@ -7,8 +7,8 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.utils.runCatchingResult
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaRepository
+import java.time.Duration
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.minutes
 
 class GetActivities @Inject constructor(
     private val isStravaConnected: IsStravaConnected,
@@ -31,7 +31,7 @@ class GetActivities @Inject constructor(
         garminResult.map { garminActivities ->
             garminActivities.map { garminActivity ->
                 val matchedStravaId = stravaActivities.find {
-                    (it.startDate - garminActivity.beginTimestamp) <= 1.minutes &&
+                    Duration.between(it.startDateTime, garminActivity.startDateTime).abs() <= Duration.ofMinutes(1) &&
                             it.sportType.type.compatible(garminActivity.type.type)
                 }?.id
 
@@ -42,7 +42,7 @@ class GetActivities @Inject constructor(
                     eventType = garminActivity.eventType,
                     distance = garminActivity.distance,
                     trainingEffect = garminActivity.trainingEffectLabel,
-                    date = garminActivity.beginTimestamp,
+                    date = garminActivity.startDateTime,
                     workoutId = garminActivity.workoutId,
                     stravaId = matchedStravaId,
                 )

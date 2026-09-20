@@ -19,12 +19,13 @@ import paufregi.connectfeed.data.api.strava.models.Activity
 import paufregi.connectfeed.data.api.strava.models.Athlete
 import paufregi.connectfeed.data.api.strava.models.Bike
 import paufregi.connectfeed.data.api.strava.models.Shoe
+import paufregi.connectfeed.data.api.strava.models.SportType
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
 import paufregi.connectfeed.stravaActivitiesJson
 import paufregi.connectfeed.stravaAthlete
 import paufregi.connectfeed.stravaDetailedAthlete
-import kotlin.time.Instant
+import java.time.LocalDateTime
 
 class StravaTest {
 
@@ -62,14 +63,12 @@ class StravaTest {
                 Bike(
                     id = "b12345678987655",
                     name = "Giant Contend",
-                    distance = 0,
                 )
             ),
             shoes = listOf(
                 Shoe(
                     id = "g12345678987655",
                     name = "Mizuno Neo Vista",
-                    distance = 4904,
                 )
             )
         )
@@ -120,15 +119,15 @@ class StravaTest {
                 id = 1,
                 name = "Happy Friday",
                 distance = 7803.6,
-                sportType = "Run",
-                startDate = Instant.parse("2018-05-02T12:15:09Z")
+                sportType = SportType.Run,
+                startDateTime = LocalDateTime.of(2018, 5, 2, 5, 15, 9)
             ),
             Activity(
                 id = 2,
                 name = "Bondcliff",
                 distance = 23676.5,
-                sportType = "Ride",
-                startDate = Instant.parse("2024-10-24T07:15:30Z")
+                sportType = SportType.Ride,
+                startDateTime = LocalDateTime.of(2024, 10, 24, 20, 15, 30)
             )
         )
 

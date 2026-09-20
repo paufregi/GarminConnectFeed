@@ -17,12 +17,13 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.activitiesJson
+import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.coursesJson
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.Activity
 import paufregi.connectfeed.data.api.garmin.models.ActivityType
 import paufregi.connectfeed.data.api.garmin.models.Course
-import paufregi.connectfeed.data.api.garmin.models.EventType
 import paufregi.connectfeed.data.api.garmin.models.Gear
 import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
@@ -33,6 +34,8 @@ import paufregi.connectfeed.gearsJson
 import paufregi.connectfeed.userProfileJson
 import paufregi.connectfeed.workoutJson
 import java.io.File
+import java.time.LocalDateTime
+import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 
 class GarminConnectTest {
 
@@ -119,19 +122,19 @@ class GarminConnectTest {
                 name = "Activity 1",
                 distance = 17803.69921875,
                 trainingEffectLabel = "RECOVERY",
-                type = ActivityType(id = 10, key = "road_biking"),
-                eventType = EventType(id = 5, key = "transportation"),
-                beginTimestamp = 1729754100000,
-                workoutId = 1
+                type = ActivityType(id = 10, key = "road_biking", type = CoreActivityType.RoadBiking),
+                eventType = EventType.Transportation,
+                startDateTime = LocalDateTime.of(2024, 10, 24, 7, 15, 0),
+                workoutId = 1,
             ),
             Activity(
                 id = 2,
                 name = "Activity 2",
                 distance = 17759.779296875,
                 trainingEffectLabel = "RECOVERY",
-                type = ActivityType(id = 10, key = "road_biking"),
-                eventType = EventType(id = 5, key = "transportation"),
-                beginTimestamp = 1729705968000,
+                type = ActivityType(id = 10, key = "road_biking", type = CoreActivityType.RoadBiking),
+                eventType = EventType.Transportation,
+                startDateTime = LocalDateTime.of(2024, 10, 24, 7, 15, 0),
                 workoutId = 2
             )
         )
@@ -169,7 +172,7 @@ class GarminConnectTest {
             id = 1,
             name = "newName",
             description = "newDescription",
-            eventType = EventType(id = 1, key = "key"),
+            eventType = EventType.Training,
             metadata = Metadata(courseId = 1),
             summary = Summary(500, null, null),
         )
@@ -186,7 +189,7 @@ class GarminConnectTest {
             id = 1,
             name = "newName",
             description = "newDescription",
-            eventType = EventType(id = 1, key = "key"),
+            eventType = EventType.Training,
             metadata = Metadata(courseId = 1),
             summary = Summary(500, null, null),
         )
@@ -203,8 +206,8 @@ class GarminConnectTest {
         val res = api.getCourses()
 
         val expected = listOf(
-            Course(id = 1, name = "Course 1", distance = 10234.81, type = ActivityType(id = 1, key = "running")),
-            Course(id = 2, name = "Course 2", distance = 15007.59, type = ActivityType(id = 10, key = "road_biking"))
+            Course(id = 1, name = "Course 1", distance = 10234.81, type = ActivityType(id = 1, key = "running", type = CoreActivityType.Running)),
+            Course(id = 2, name = "Course 2", distance = 15007.59, type = ActivityType(id = 10, key = "road_biking", type = CoreActivityType.RoadBiking))
         )
 
         assertThat(res.isSuccessful).isTrue()
@@ -266,7 +269,7 @@ class GarminConnectTest {
                 brand = "Mizuno",
                 model = "Neo Vista",
                 name = null,
-                type = "SHOES",
+                type = GearType.Shoe,
                 distance = 51955.4501953125
             ),
             Gear(
@@ -274,7 +277,7 @@ class GarminConnectTest {
                 brand = "Giant",
                 model = "Contend AR",
                 name = "Nova",
-                type = "BIKE",
+                type = GearType.Bike,
                 distance = 17226955.28363037
             ),
         )
