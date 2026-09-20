@@ -3,6 +3,7 @@ package paufregi.connectfeed.core.utils
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
@@ -10,6 +11,34 @@ import java.util.Locale
 class FormatterTest {
 
     val zoneId: ZoneId = ZoneId.of("Pacific/Auckland")
+
+    @Test
+    fun `Formatter local date time - today`() {
+        val today = LocalDateTime.of(2024, 1, 15, 9, 30)
+        val result = Formatter.localDateTime(today, today)
+
+        assertThat(result).isEqualTo("Today 09:30")
+    }
+
+    @Test
+    fun `Formatter local date time - yesterday`() {
+        val today = LocalDateTime.of(2024, 1, 15, 9, 30)
+        val yesterday = LocalDateTime.of(2024, 1, 14, 18, 45)
+
+        val result = Formatter.localDateTime(yesterday, today)
+
+        assertThat(result).isEqualTo("Yesterday 18:45")
+    }
+
+    @Test
+    fun `Formatter local date time - older date`() {
+        val today = LocalDateTime.of(2024, 1, 15, 9, 30)
+        val older = LocalDateTime.of(2024, 1, 10, 18, 45)
+
+        val result = Formatter.localDateTime(older, today)
+
+        assertThat(result).isEqualTo("10 Jan 2024 18:45")
+    }
 
     @Test
     fun `Formatter date time for filename`() {
