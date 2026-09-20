@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.connectfeed.core.usecases.StravaCodeExchange
+import paufregi.connectfeed.core.usecases.ConnectStrava
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
 @HiltViewModel
 class StravaViewModel @Inject constructor(
-    val stravaCodeExchange: StravaCodeExchange
+    val enableStrava: ConnectStrava
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<StravaState>(StravaState())
@@ -22,7 +22,7 @@ class StravaViewModel @Inject constructor(
 
     fun exchangeToken(code: String) = viewModelScope.launch {
         _state.update { StravaState(ProcessState.Processing) }
-        stravaCodeExchange(code)
+        enableStrava(code)
             .onSuccess { _state.update { StravaState(ProcessState.Success("Strava linked")) } }
             .onFailure { _state.update { StravaState(ProcessState.Failure("Link failed")) } }
     }
