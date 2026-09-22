@@ -11,7 +11,7 @@ import javax.inject.Named
 class SignIn @Inject constructor(
     private val authRepo: AuthRepository,
     private val repo: GarminRepository,
-    @param:Named("garminClientId") val garminClientId: String
+    @param:Named("GarminClientId") val garminClientId: String
 ) {
     suspend operator fun invoke(username: String, password: String): Result<User> {
         if (username.isBlank() || password.isBlank()) return Result.failure("Validation error")
