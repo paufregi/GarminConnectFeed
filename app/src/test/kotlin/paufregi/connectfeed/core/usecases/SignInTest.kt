@@ -113,6 +113,7 @@ class SignInTest{
 
     @Test
     fun `Failure - get user profile`() = runTest {
+        coEvery { authRepo.garminLogin(any(), any()) } returns Result.success(ticket)
         coEvery { authRepo.exchangeGarminToken(any(), any()) } returns Result.success(authToken)
         coEvery { authRepo.saveGarminToken(any()) } returns Unit
         coEvery { repo.getUserProfile() } returns Result.failure("Couldn't fetch user")
