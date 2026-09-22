@@ -20,7 +20,7 @@ import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.api.strava.models.SportType
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaRepository
-import kotlin.time.Instant
+import java.time.LocalDateTime
 import paufregi.connectfeed.data.api.garmin.models.Activity as GarminActivity
 import paufregi.connectfeed.data.api.garmin.models.ActivityType as GarminActivityType
 import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
@@ -31,28 +31,25 @@ class GetActivitiesTest{
     private val stravaRepo = mockk<StravaRepository>()
     private lateinit var useCase: GetActivities
 
-    private val garminRunningType = GarminActivityType(1, "running", ActivityType.Running)
-    private val garminRoadBikingType = GarminActivityType(10, "road_biking", ActivityType.RoadBiking)
-
     private val garminActivities = listOf(
         GarminActivity(
             id = 1,
             name = "Morning Run",
-            type = garminRunningType,
+            type = GarminActivityType(1, "running", ActivityType.Running),
             eventType = EventType.Training,
             distance = 10_234.0,
             trainingEffectLabel = "Base",
-            beginTimestamp = Instant.parse("2024-06-01T08:00:00Z"),
+            startDateTime = LocalDateTime.of(2024, 6, 1, 8, 0, 0),
             workoutId = 101,
         ),
         GarminActivity(
             id = 2,
             name = "Evening Ride",
-            type = garminRoadBikingType,
+            type = GarminActivityType(10, "road_biking", ActivityType.RoadBiking),
             eventType = EventType.Recreation,
             distance = 24_120.0,
             trainingEffectLabel = null,
-            beginTimestamp = Instant.parse("2024-06-01T18:30:00Z"),
+            startDateTime = LocalDateTime.of(2024, 6, 1, 18, 30, 0),
             workoutId = null,
         ),
     )
@@ -62,14 +59,14 @@ class GetActivitiesTest{
             name = "Lunch Ride on Strava",
             sportType = SportType.Ride,
             distance = 41_020.0,
-            startDate = Instant.parse("2024-06-02T12:00:30Z"),
+            startDateTime = LocalDateTime.of(2024, 6, 2, 12, 0, 30),
         ),
         StravaActivity(
             id = 12,
             name = "Morning Run",
             sportType = SportType.Run,
-            distance = 8_000.0,
-            startDate = Instant.parse("2024-06-02T08:00:00Z"),
+            distance = 10_234.0,
+            startDateTime = LocalDateTime.of(2024, 6, 1, 8, 0, 1),
         ),
     )
 
@@ -94,7 +91,7 @@ class GetActivitiesTest{
                 eventType = EventType.Training,
                 distance = 10_234.0,
                 trainingEffect = "Base",
-                date = Instant.parse("2024-06-01T08:00:00Z"),
+                date = LocalDateTime.of(2024, 6, 1, 8, 0, 0),
                 workoutId = 101,
                 stravaId = null,
             ),
@@ -105,7 +102,7 @@ class GetActivitiesTest{
                 eventType = EventType.Recreation,
                 distance = 24_120.0,
                 trainingEffect = null,
-                date = Instant.parse("2024-06-01T18:30:00Z"),
+                date = LocalDateTime.of(2024, 6, 1, 18, 30, 0),
                 workoutId = null,
                 stravaId = null,
             ),
@@ -132,9 +129,9 @@ class GetActivitiesTest{
                 eventType = EventType.Training,
                 distance = 10_234.0,
                 trainingEffect = "Base",
-                date = Instant.parse("2024-06-01T08:00:00Z"),
+                date = LocalDateTime.of(2024, 6, 1, 8, 0, 0),
                 workoutId = 101,
-                stravaId = 11,
+                stravaId = 12,
             ),
             Activity(
                 id = 2,
@@ -143,7 +140,7 @@ class GetActivitiesTest{
                 eventType = EventType.Recreation,
                 distance = 24_120.0,
                 trainingEffect = null,
-                date = Instant.parse("2024-06-01T18:30:00Z"),
+                date = LocalDateTime.of(2024, 6, 1, 18, 30, 0),
                 workoutId = null,
                 stravaId = null,
             ),
@@ -191,7 +188,7 @@ class GetActivitiesTest{
                 eventType = EventType.Training,
                 distance = 10_234.0,
                 trainingEffect = "Base",
-                date = Instant.parse("2024-06-01T08:00:00Z"),
+                date = LocalDateTime.of(2024, 6, 1, 8, 0, 0),
                 workoutId = 101,
                 stravaId = null,
             ),
@@ -202,7 +199,7 @@ class GetActivitiesTest{
                 eventType = EventType.Recreation,
                 distance = 24_120.0,
                 trainingEffect = null,
-                date = Instant.parse("2024-06-01T18:30:00Z"),
+                date = LocalDateTime.of(2024, 6, 1, 18, 30, 0),
                 workoutId = null,
                 stravaId = null,
             ),

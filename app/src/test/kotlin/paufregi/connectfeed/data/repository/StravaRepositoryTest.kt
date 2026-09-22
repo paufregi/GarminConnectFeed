@@ -23,7 +23,7 @@ import paufregi.connectfeed.data.api.strava.models.SportType
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
 import retrofit2.Response
-import kotlin.time.Instant
+import java.time.LocalDateTime
 import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
 
 class StravaRepositoryTest {
@@ -37,7 +37,7 @@ class StravaRepositoryTest {
         distance = 17803.00,
         type = ActivityType.Cycling,
         eventType = EventType.Training,
-        date = Instant.parse("2022-05-02T12:15:09Z"),
+        date = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
         stravaId = 10L
     )
     val gear = Gear(id = "gear-1", name = "gear 1", type = GearType.Bike, distance = 1000, stravaId = "strava-gear-id")
@@ -81,14 +81,14 @@ class StravaRepositoryTest {
                 name = "activity_1",
                 distance = 10234.00,
                 sportType = SportType.Run,
-                startDate = Instant.parse("2018-05-02T12:15:09Z")
+                startDateTime = LocalDateTime.of(2018, 5, 2, 12, 15, 9)
             ),
             StravaActivity(
                 id = 2,
                 name = "activity_2",
                 distance = 17759.00,
                 sportType = SportType.Ride,
-                startDate = Instant.parse("2018-04-30T12:35:51Z")
+                startDateTime = LocalDateTime.of(2018, 4, 30, 12, 35, 51)
             )
         )
         coEvery { strava.getActivities(perPage = any()) } returns Response.success(activities)
