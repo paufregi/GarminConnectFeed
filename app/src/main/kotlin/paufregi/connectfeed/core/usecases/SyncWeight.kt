@@ -36,10 +36,11 @@ class SyncWeight @Inject constructor(
         }
 
         val stravaDeferred = async {
-            isStravaConnected().firstOrNull()?.let {
+            if (isStravaConnected().firstOrNull() == true) {
                 weights.find { it.timestamp.sameDay(today) }
                     ?.let { stravaRepo.updateAthlete(it.weight) }
-            } ?: Result.success(Unit)
+                    ?: Result.success(Unit)
+            } else Result.success(Unit)  
         }
 
         val garminResult = runCatchingResult { garminDeferred.await() }

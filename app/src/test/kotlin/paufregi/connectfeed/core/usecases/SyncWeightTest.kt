@@ -23,7 +23,6 @@ import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaRepository
-import java.time.Instant
 import java.util.Date
 
 
@@ -61,8 +60,11 @@ class SyncWeightTest {
         unmockkObject(FitWriter::class)
     }
 
+    val today = Date()
+    val yesterday = Date(today.time - 24 * 60 * 60 * 1000)
+
     val weights = listOf(Weight(
-        timestamp = Date.from(Instant.parse("2024-01-02T00:00:00.000Z")),
+        timestamp = today,
         weight = 76.15f,
         bmi = 23.8f,
         fat = 23.2f,
@@ -74,7 +76,7 @@ class SyncWeightTest {
         metabolicAge = 35,
     ),
         Weight(
-            timestamp = Date.from(Instant.parse("2024-01-01T00:00:00.000Z")),
+            timestamp = yesterday,
             weight = 75.15f,
             bmi = 23.8f,
             fat = 23.2f,
@@ -92,7 +94,7 @@ class SyncWeightTest {
         every { isStravaConnected() } returns flowOf(false)
         coEvery { garminRepo.uploadFile(any()) } returns Result.success(Unit)
 
-        val res = useCase(weights, weights[0].timestamp)
+        val res = useCase(weights, today)
 
         assertThat(res.isSuccess).isTrue()
 
@@ -105,14 +107,12 @@ class SyncWeightTest {
         coEvery { garminRepo.uploadFile(any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateAthlete(any()) } returns Result.success(Unit)
 
-        val res = useCase(weights)
+        val res = useCase(weights, today)
 
         assertThat(res.isSuccess).isTrue()
 
-        coVerify {
-            garminRepo.uploadFile(any())
-            stravaRepo.updateAthlete(weights[0].weight)
-        }
+        coVerify { garminRepo.uploadFile(any()) }
+        coVerify { stravaRepo.updateAthlete(weights[0].weight) }
     }
 
     @Test
@@ -121,24 +121,23 @@ class SyncWeightTest {
         coEvery { garminRepo.uploadFile(any()) } returns Result.failure("error")
         coEvery { stravaRepo.updateAthlete(any()) } returns Result.success(Unit)
 
-        val res = useCase(weights)
+        val res = useCase(weights, today)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin")
 
-        coVerify {
-            garminRepo.uploadFile(any())
-            stravaRepo.updateAthlete(weights[0].weight)
-        }
+
+        coVerify { garminRepo.uploadFile(any()) }
+        coVerify { stravaRepo.updateAthlete(weights[0].weight) }
     }
 
     @Test
     fun `Sync weight - strava failed`() = runTest {
-        coEvery { garminRepo.uploadFile(any()) } returns Result.success(Unit)
         every { isStravaConnected() } returns flowOf(true)
+        coEvery { garminRepo.uploadFile(any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateAthlete(any()) } returns Result.failure("error")
 
-        val res = useCase(weights)
+        val res = useCase(weights, today)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Strava")
@@ -155,7 +154,7 @@ class SyncWeightTest {
         coEvery { garminRepo.uploadFile(any()) } returns Result.failure("error")
         coEvery { stravaRepo.updateAthlete(any()) } returns Result.failure("error")
 
-        val res = useCase(weights)
+        val res = useCase(weights, today)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin & Strava")
