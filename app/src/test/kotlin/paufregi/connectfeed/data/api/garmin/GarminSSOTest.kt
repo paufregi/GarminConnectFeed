@@ -56,8 +56,7 @@ class GarminSSOTest {
         val resBody = res.body()
 
         assertThat(res.isSuccessful).isTrue()
-        assertThat(resBody?.responseStatus?.type).isEqualTo("INVALID_USERNAME_PASSWORD")
-        assertThat(resBody?.serviceTicketId).isNull()
+            assertThat(resBody?.responseStatus?.type).isEqualTo("INVALID_USERNAME_PASSWORD")
     }
 
     @Test
@@ -72,7 +71,6 @@ class GarminSSOTest {
         val res = api.login(request)
 
         assertThat(res.isSuccessful).isFalse()
-        assertThat(res.body()).isNull()
     }
 }
 

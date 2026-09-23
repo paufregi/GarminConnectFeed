@@ -16,5 +16,5 @@ data class AuthToken(
     val refreshToken: String,
 ) {
     fun isExpired(now: Instant = Clock.System.now()): Boolean =
-        JWT.from(accessToken).expiresAt?.let { now > it } ?: true
+        JWT.from(accessToken).expiresAt?.let { it < now } ?: true
 }

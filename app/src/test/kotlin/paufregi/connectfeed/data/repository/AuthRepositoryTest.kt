@@ -8,6 +8,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
@@ -162,7 +163,7 @@ class AuthRepositoryTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        every { datastore.garminToken }
+        verify { datastore.garminToken }
     }
 
     @Test
@@ -229,7 +230,7 @@ class AuthRepositoryTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        every { datastore.stravaToken }
+        verify { datastore.stravaToken }
     }
 
     @Test

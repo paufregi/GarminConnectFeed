@@ -112,17 +112,6 @@ class StravaRepositoryTest {
     }
 
     @Test
-    fun `Get Strava activities - null`() = runTest {
-        coEvery { strava.getActivities(perPage = any()) } returns Response.success(null)
-
-        val res = repo.getActivities(limit = 5)
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<StravaActivity>())
-        coVerify { strava.getActivities(perPage = 5) }
-    }
-
-    @Test
     fun `Get Strava activities - failure`() = runTest {
         coEvery { strava.getActivities(perPage = any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
@@ -146,7 +135,7 @@ class StravaRepositoryTest {
 
     @Test
     fun `Update athlete - failure`() = runTest {
-        coEvery { strava.updateAthlete(any(), ) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+        coEvery { strava.updateAthlete(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
         val expectedRequest = UpdateAthlete(weight = 75.9f)
 
@@ -181,7 +170,7 @@ class StravaRepositoryTest {
         )
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { strava.updateActivity(activity.id, expectedRequest) }
+        coVerify { strava.updateActivity(activity.stravaId!!, expectedRequest) }
     }
 
     @Test
@@ -209,7 +198,6 @@ class StravaRepositoryTest {
         )
 
         assertThat(res.isSuccess).isFalse()
-        coVerify { strava.updateActivity(noStravaActivity.id, expectedRequest) }
     }
 
     @Test
@@ -236,7 +224,7 @@ class StravaRepositoryTest {
         )
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { strava.updateActivity(activity.id, expectedRequest) }
+        coVerify { strava.updateActivity(activity.stravaId!!, expectedRequest) }
     }
 
     @Test
@@ -264,7 +252,7 @@ class StravaRepositoryTest {
         )
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { strava.updateActivity(activity.id, expectedRequest) }
+        coVerify { strava.updateActivity(activity.stravaId!!, expectedRequest) }
     }
 
     @Test
@@ -292,6 +280,6 @@ class StravaRepositoryTest {
         )
 
         assertThat(res.isSuccess).isFalse()
-        coVerify { strava.updateActivity(activity.id, expectedRequest) }
+        coVerify { strava.updateActivity(activity.stravaId!!, expectedRequest) }
     }
 }

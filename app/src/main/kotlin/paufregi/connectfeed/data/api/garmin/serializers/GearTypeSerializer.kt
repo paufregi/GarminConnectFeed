@@ -13,11 +13,15 @@ object GearTypeSerializer : KSerializer<GearType> {
         PrimitiveSerialDescriptor("GearType", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: GearType) =
-        encoder.encodeString(value.name.uppercase())
+        encoder.encodeString(when (value) {
+            GearType.Shoe -> "SHOES"
+            GearType.Bike -> "BIKE"
+            else -> "UNKNOWN"
+        })
 
     override fun deserialize(decoder: Decoder): GearType =
         when (decoder.decodeString()) {
-            "SHOE" -> GearType.Shoe
+            "SHOES" -> GearType.Shoe
             "BIKE" -> GearType.Bike
             else -> GearType.Unknown
         }

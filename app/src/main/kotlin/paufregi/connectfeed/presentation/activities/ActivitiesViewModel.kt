@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.profiles
+package paufregi.connectfeed.presentation.activities
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,9 +11,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 @ExperimentalCoroutinesApi
-class ProfilesViewModel @Inject constructor(
+class ActivitiesViewModel @Inject constructor(
 ) : ViewModel() {
-    private val _state = MutableStateFlow(ProfilesState())
-    val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), ProfilesState())
+    private val _state = MutableStateFlow(ActivitiesState())
+    val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), ActivitiesState())
 }
 

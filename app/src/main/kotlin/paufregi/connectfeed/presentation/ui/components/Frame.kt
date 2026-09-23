@@ -1,0 +1,34 @@
+package paufregi.connectfeed.presentation.ui.components
+
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+
+@Composable
+@ExperimentalMaterial3Api
+fun Frame(
+    showMenu: Boolean = true,
+    content: @Composable (PaddingValues) -> Unit
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Connect Feed") },
+                actions = {
+                    if (showMenu) {
+                        Button(
+                            icon = Icons.Filled.Menu,
+                            onClick = { },
+                        )
+                    }
+                }
+            )
+        },
+        content = content
+    )
+}

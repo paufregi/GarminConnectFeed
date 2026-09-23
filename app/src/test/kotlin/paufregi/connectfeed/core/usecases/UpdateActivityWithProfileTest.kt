@@ -21,7 +21,7 @@ import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaRepository
-import kotlin.time.Instant
+import java.time.LocalDateTime
 
 class UpdateActivityWithProfileTest{
     private val garminRepo = mockk<GarminRepository>()
@@ -35,7 +35,7 @@ class UpdateActivityWithProfileTest{
         eventType = EventType.Training,
         distance = 10234.00,
         trainingEffect = "recovery",
-        date = Instant.parse("2024-06-01T08:00:00Z"),
+        date = LocalDateTime.of(2024, 6, 1, 8, 0, 0),
         workoutId = 1L,
         stravaId = 2L
     )

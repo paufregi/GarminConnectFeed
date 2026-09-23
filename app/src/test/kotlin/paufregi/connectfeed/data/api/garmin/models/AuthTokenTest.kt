@@ -6,14 +6,15 @@ import org.junit.Test
 import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.today
 import paufregi.connectfeed.tomorrow
+import paufregi.connectfeed.yesterday
 
 class AuthTokenTest {
 
-    val token = createAuthToken(tomorrow)
+    val token = createAuthToken(today)
 
     @Test
     fun `Valid token`() {
-        assertThat(token.isExpired(today)).isFalse()
+        assertThat(token.isExpired(yesterday)).isFalse()
     }
 
     @Test

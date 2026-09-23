@@ -108,6 +108,20 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideGarminAuth(
+        @Named("GarminAuthUrl") url: String
+    ): GarminAuth = GarminAuth.client(url)
+
+    @Provides
+    @Singleton
+    fun provideGarminConnect(
+        authInterceptor: GarminAuthInterceptor,
+        @Named("GarminConnectUrl") url: String
+    ): GarminConnect = GarminConnect.client(authInterceptor, url)
+
+
+    @Provides
+    @Singleton
     fun provideStravaAuth(
         @Named("StravaAuthUrl") url: String
     ): StravaAuth = StravaAuth.client(url)
@@ -116,7 +130,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideStrava(
-        authInterceptor: paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor,
+        authInterceptor: StravaAuthInterceptor,
         @Named("StravaUrl") url: String,
     ): Strava = Strava.client(authInterceptor, url)
 

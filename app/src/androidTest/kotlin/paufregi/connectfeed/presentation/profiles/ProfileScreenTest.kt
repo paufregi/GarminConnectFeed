@@ -17,7 +17,7 @@ import paufregi.connectfeed.core.models.Profile
 @ExperimentalMaterial3Api
 @OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
-class ProfilesScreenTest {
+class ProfileScreenTest {
 
     @Test
     fun `Default values`() = runAndroidComposeUiTest<ComponentActivity> {

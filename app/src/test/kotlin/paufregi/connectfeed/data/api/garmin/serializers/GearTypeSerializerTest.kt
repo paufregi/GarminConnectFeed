@@ -20,7 +20,7 @@ class GearTypeSerializerTest {
     fun `Serialize GearType Shoe to JSON`() {
         val res = json.encodeToString(GearTypeSerializer, GearType.Shoe)
 
-        assertThat(res).isEqualTo("\"SHOE\"")
+        assertThat(res).isEqualTo("\"SHOES\"")
     }
 
     @Test
@@ -39,7 +39,7 @@ class GearTypeSerializerTest {
 
     @Test
     fun `Deserialize JSON to GearType Shoe`() {
-        val res = json.decodeFromString(GearTypeSerializer, "\"SHOE\"")
+        val res = json.decodeFromString(GearTypeSerializer, "\"SHOES\"")
 
         assertThat(res).isEqualTo(GearType.Shoe)
     }

@@ -24,18 +24,20 @@ val authToken = createAuthToken(today)
 val refreshedToken = createAuthToken(tomorrow, "NEW_REFRESH_TOKEN")
 
 val validLogin = """
-    "serviceURL": "https://mobile.integration.garmin.com/gcm/android", 
-	"serviceTicketId": "ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso", 
-	"responseStatus": {
-		"type": "SUCCESSFUL", 
-		"message": ""
-	}, 
-	"responseReason": "", 
-	"customerMfaInfo": "", 
-	"consentTypeList": "", 
-	"captchaAlreadyPassed": false, 
-	"samlResponse": "", 
-	"authType": "CAS"
+    {
+        "serviceURL": "https://mobile.integration.garmin.com/gcm/android", 
+        "serviceTicketId": "ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso", 
+        "responseStatus": {
+            "type": "SUCCESSFUL", 
+            "message": ""
+        }, 
+        "responseReason": "", 
+        "customerMfaInfo": "", 
+        "consentTypeList": "", 
+        "captchaAlreadyPassed": false, 
+        "samlResponse": "", 
+        "authType": "CAS"
+    }
 """.trimIndent()
 
 val invalidLogin = """

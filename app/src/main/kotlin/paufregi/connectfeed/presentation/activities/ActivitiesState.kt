@@ -1,8 +1,8 @@
-package paufregi.connectfeed.presentation.profiles
+package paufregi.connectfeed.presentation.activities
 
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
-data class ProfilesState(
+data class ActivitiesState(
     val process: ProcessState = ProcessState.Idle,
 )
 
