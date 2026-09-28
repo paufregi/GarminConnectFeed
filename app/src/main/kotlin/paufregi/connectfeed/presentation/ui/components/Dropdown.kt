@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -24,15 +23,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.utils.Formatter
-import paufregi.connectfeed.presentation.ui.icons.strava.Logo
-import paufregi.connectfeed.presentation.ui.icons.strava.Strava
 import paufregi.connectfeed.presentation.ui.utils.iconFor
 
 data class DropdownItem(
@@ -41,16 +37,6 @@ data class DropdownItem(
     val supportingText: String? = null,
     val supportingIcon: ImageVector? = null,
     val onClick: () -> Unit = {}
-)
-
-@SuppressLint("DefaultLocale")
-@ExperimentalMaterial3Api
-fun Activity.toDropdownItem(onClick: () -> Unit = {}, stravaActivity: Activity? = null) = DropdownItem(
-    text = name,
-    icon = iconFor(this.type),
-    supportingText = distance?.takeIf { it > 0 }?.let { Formatter.distance(it) },
-    supportingIcon = stravaActivity?.let { Icons.Strava.Logo },
-    onClick = onClick
 )
 
 @ExperimentalMaterial3Api

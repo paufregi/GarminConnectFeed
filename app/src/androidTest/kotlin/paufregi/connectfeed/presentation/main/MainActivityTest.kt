@@ -43,6 +43,7 @@ import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.githubDispatcher
 import paufregi.connectfeed.githubPort
 import paufregi.connectfeed.preAuthToken
+import paufregi.connectfeed.presentation.app.AppActivity
 import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaAuthToken
 import paufregi.connectfeed.stravaDispatcher
@@ -78,12 +79,12 @@ class MainActivityTest {
     @JvmField @Rule val github = MockWebServerRule(githubPort, sslSocketFactory, githubDispatcher)
 
     @Before
-    fun setup() = runAndroidComposeUiTest<MainActivity> {
+    fun setup() = runAndroidComposeUiTest<AppActivity> {
         hiltRule.inject()
     }
 
     @After
-    fun tearDown() = runAndroidComposeUiTest<MainActivity> {
+    fun tearDown() = runAndroidComposeUiTest<AppActivity> {
         database.close()
         withContext(Dispatchers.IO){
             authStore.dataStore.edit { it.clear() }
@@ -93,7 +94,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Sign in`() = runAndroidComposeUiTest<MainActivity> {
+    fun `Sign in`() = runAndroidComposeUiTest<AppActivity> {
         onNodeWithTag("login_screen").assertIsDisplayed()
 
         onNodeWithText("Username").performTextInput("user")
@@ -103,7 +104,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Sign out`() = runAndroidComposeUiTest<MainActivity> {
+    fun `Sign out`() = runAndroidComposeUiTest<AppActivity> {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
@@ -119,7 +120,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Connect Strava`() = runAndroidComposeUiTest<MainActivity> {
+    fun `Connect Strava`() = runAndroidComposeUiTest<AppActivity> {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
@@ -134,7 +135,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Disconnect Strava`() = runAndroidComposeUiTest<MainActivity> {
+    fun `Disconnect Strava`() = runAndroidComposeUiTest<AppActivity> {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
@@ -153,7 +154,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Refresh user`() = runAndroidComposeUiTest<MainActivity> {
+    fun `Refresh user`() = runAndroidComposeUiTest<AppActivity> {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
@@ -168,7 +169,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Create profile`() = runAndroidComposeUiTest<MainActivity> {
+    fun `Create profile`() = runAndroidComposeUiTest<AppActivity> {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
@@ -195,7 +196,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Update profile`() = runAndroidComposeUiTest<MainActivity> {
+    fun `Update profile`() = runAndroidComposeUiTest<AppActivity> {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
@@ -225,13 +226,13 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Delete profile`() = runAndroidComposeUiTest<MainActivity> {
+    fun `Delete profile`() = runAndroidComposeUiTest<AppActivity> {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         dao.saveProfile(ProfileEntity(id = 10, userId = user.id, name = "Profile 1", type = ActivityType.Running, eventType = EventType.Race))
 
-        ActivityScenario.launch(MainActivity::class.java)
+        ActivityScenario.launch(AppActivity::class.java)
         awaitIdle()
         waitUntil(conditionDescription = "quick_edit_screen") { onNodeWithTag("quick_edit_screen").isDisplayed() }
         onNodeWithTag("menu").performClick()
@@ -246,13 +247,13 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Quick edit activity`() = runAndroidComposeUiTest<MainActivity> {
+    fun `Quick edit activity`() = runAndroidComposeUiTest<AppActivity> {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", type = ActivityType.Cycling, eventType = EventType.Race))
 
-        ActivityScenario.launch(MainActivity::class.java)
+        ActivityScenario.launch(AppActivity::class.java)
         awaitIdle()
         waitUntil(conditionDescription = "quick_edit_screen") { onNodeWithTag("quick_edit_screen").isDisplayed() }
         onNodeWithText("Activity").performClick()
@@ -265,14 +266,14 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Quick edit - with Strava`() = runAndroidComposeUiTest<MainActivity> {
+    fun `Quick edit - with Strava`() = runAndroidComposeUiTest<AppActivity> {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         stravaStore.saveToken(stravaAuthToken)
         dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", type = ActivityType.Cycling, eventType = EventType.Race))
 
-        ActivityScenario.launch(MainActivity::class.java)
+        ActivityScenario.launch(AppActivity::class.java)
         awaitIdle()
         waitUntil(conditionDescription = "quick_edit_screen") { onNodeWithTag("quick_edit_screen").isDisplayed() }
         onNodeWithText("Activity").performClick()
@@ -285,12 +286,12 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Edit activity`() = runAndroidComposeUiTest<MainActivity> {
+    fun `Edit activity`() = runAndroidComposeUiTest<AppActivity> {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
-        ActivityScenario.launch(MainActivity::class.java)
+        ActivityScenario.launch(AppActivity::class.java)
         awaitIdle()
         waitUntil(conditionDescription = "quick_edit_screen") { onNodeWithTag("quick_edit_screen").isDisplayed() }
         onNodeWithText("Edit").performClick()
@@ -309,13 +310,13 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Edit - with Strava`() = runAndroidComposeUiTest<MainActivity> {
+    fun `Edit - with Strava`() = runAndroidComposeUiTest<AppActivity> {
         authStore.saveUser(user)
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
         stravaStore.saveToken(stravaAuthToken)
 
-        ActivityScenario.launch(MainActivity::class.java)
+        ActivityScenario.launch(AppActivity::class.java)
         awaitIdle()
         waitUntil(conditionDescription = "quick_edit_screen") { onNodeWithTag("quick_edit_screen").isDisplayed() }
         onNodeWithText("Edit").performClick()

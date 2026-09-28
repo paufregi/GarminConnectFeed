@@ -16,7 +16,7 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.usecases.SignIn
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
@@ -45,7 +45,7 @@ class LoginViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcState.Idle)
             assertThat(state.username).isEmpty()
             assertThat(state.password).isEmpty()
             assertThat(state.user).isNull()
@@ -62,7 +62,7 @@ class LoginViewModelTest {
             viewModel.onAction(LoginAction.SetUsername("user"))
             skipItems(1)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcState.Idle)
             assertThat(state.username).isEqualTo("user")
             assertThat(state.password).isEmpty()
             assertThat(state.user).isNull()
@@ -79,7 +79,7 @@ class LoginViewModelTest {
             viewModel.onAction(LoginAction.SetPassword("pass"))
             skipItems(1)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcState.Idle)
             assertThat(state.username).isEmpty()
             assertThat(state.password).isEqualTo("pass")
             assertThat(state.user).isNull()
@@ -96,7 +96,7 @@ class LoginViewModelTest {
             viewModel.onAction(LoginAction.ShowPassword(true))
             skipItems(1)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcState.Idle)
             assertThat(state.username).isEmpty()
             assertThat(state.password).isEmpty()
             assertThat(state.user).isNull()
@@ -116,7 +116,7 @@ class LoginViewModelTest {
             viewModel.onAction(LoginAction.Reset)
             skipItems(4)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcState.Idle)
             assertThat(state.username).isEmpty()
             assertThat(state.password).isEmpty()
             assertThat(state.user).isNull()
@@ -138,7 +138,7 @@ class LoginViewModelTest {
             viewModel.onAction(LoginAction.SignIn)
             skipItems(3)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Success())
+            assertThat(state.process).isEqualTo(ProcState.Success())
             assertThat(state.username).isEqualTo("user")
             assertThat(state.password).isEqualTo("pass")
             assertThat(state.user).isEqualTo(user)
@@ -161,7 +161,7 @@ class LoginViewModelTest {
             viewModel.onAction(LoginAction.SignIn)
             skipItems(3)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Failure("error"))
+            assertThat(state.process).isEqualTo(ProcState.Failure("error"))
             assertThat(state.username).isEqualTo("user")
             assertThat(state.password).isEqualTo("pass")
             assertThat(state.user).isNull()

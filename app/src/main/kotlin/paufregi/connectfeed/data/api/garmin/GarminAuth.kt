@@ -22,9 +22,9 @@ interface GarminAuth {
         @Header("Authorization") authorization: String,
         @Field("client_id") clientId: String,
         @Field("service_ticket") serviceTicket: String,
-        @HeaderMap headerMap: Map<String, String> = nativeHeader,
         @Field("grant_type") grantType: String = GRANT_TYPE_EXCHANGE,
         @Field("service_url") serviceUrl: String = SERVICE_URL,
+        @HeaderMap headerMap: Map<String, String> = nativeHeader,
     ): Response<AuthToken>
 
     @FormUrlEncoded
@@ -33,8 +33,9 @@ interface GarminAuth {
         @Header("Authorization") authorization: String,
         @Field("client_id") clientId: String,
         @Field("refresh_token") refreshToken: String,
-        @HeaderMap headerMap: Map<String, String> = nativeHeader,
         @Field("grant_type") grantType: String = GRANT_TYPE_REFRESH,
+        @Field("service_url") serviceUrl: String = SERVICE_URL,
+        @HeaderMap headerMap: Map<String, String> = nativeHeader,
     ): Response<AuthToken>
 
     companion object {
@@ -42,18 +43,10 @@ interface GarminAuth {
 
         const val GRANT_TYPE_EXCHANGE = "https://connectapi.garmin.com/di-oauth2-service/oauth/grant/service_ticket"
         const val GRANT_TYPE_REFRESH = "refresh_token"
-        const val SERVICE_URL = "https://mobile.integration.garmin.com/gcm/android"
+        const val SERVICE_URL = "https://sso.garmin.com/sso/embed"
 
         private val nativeHeader =  mapOf(
-            "User-Agent" to "GCM-Android-5.23",
-            "X-Garmin-User-Agent" to "com.garmin.android.apps.connectmobile/5.23; ; Google/sdk_gphone64_arm64/google; Android/33; Dalvik/2.1.0",
-            "X-Garmin-Paired-App-Version" to "10861",
-            "X-Garmin-Client-Platform" to "Android",
-            "X-App-Ver" to "10861",
-            "X-Lang" to "en",
-            "X-GCExperience" to "GC5",
-            "Accept-Language" to "en-US,en;q=0.9",
-            "Accept" to "application/json",
+            "Accept" to "application/json,text/html;q=0.9,*/*;q=0.8",
             "Content-Type" to "application/x-www-form-urlencoded",
             "Cache-Control" to "no-cache",
         )

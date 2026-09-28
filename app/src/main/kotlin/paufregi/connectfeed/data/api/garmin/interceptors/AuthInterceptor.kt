@@ -1,5 +1,6 @@
 package paufregi.connectfeed.data.api.garmin.interceptors
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
@@ -11,25 +12,37 @@ import paufregi.connectfeed.data.api.utils.authRequest
 import paufregi.connectfeed.data.api.utils.failedAuthResponse
 import paufregi.connectfeed.data.repository.AuthRepository
 import javax.inject.Inject
-import javax.inject.Named
 
 class AuthInterceptor @Inject constructor(
     private val repo: AuthRepository,
-    @param:Named("GarminClientId") val clientId: String,
+    private val clientId: String,
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response  =
         runBlocking(Dispatchers.IO) {
             getOrRefreshToken().fold(
-                onSuccess = { chain.proceed(authRequest(chain.request(), it.accessToken)) },
-                onFailure = { failedAuthResponse(chain.request(), it.message ?: "Unknown error") }
+                onSuccess = {
+                    Log.i("AuthInterceptor", "Using token: ${it.accessToken}")
+                    chain.proceed(authRequest(chain.request(), it.accessToken)) },
+                onFailure = {
+                    Log.e("AuthInterceptor", "Failed to get token: ${it.message}")
+                    failedAuthResponse(chain.request(), it.message ?: "Unknown error") }
             )
         }
 
     private suspend fun getOrRefreshToken(): Result<AuthToken> =
         repo.getGarminToken().firstOrNull()?.let { token ->
-            if (!token.isExpired()) Result.success(token)
-            else repo.refreshGarminToken(clientId, token.refreshToken)
-                .onSuccess { repo.saveGarminToken(it) }
+            Log.i("AuthInterceptor", "Checking token: ${token.accessToken}")
+            Log.i("AuthInterceptor", "Token is expired: ${token.isExpired()}")
+            if (!token.isExpired()) {
+                Log.i("AuthInterceptor", "Token is valid")
+                Result.success(token)
+            }
+            else {
+                Log.i("AuthInterceptor", "Token is expired")
+                repo.refreshGarminToken(token.refreshToken, clientId)
+                    .onSuccess { repo.saveGarminToken(it) }
+                    .onFailure { Log.e("AuthInterceptor", "Failed to refresh token: ${it.message} - ${it.cause}") }
+            }
         } ?: Result.failure("No token found")
 }

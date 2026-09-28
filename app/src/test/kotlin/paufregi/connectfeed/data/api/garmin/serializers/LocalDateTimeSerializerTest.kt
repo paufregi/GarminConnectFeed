@@ -3,7 +3,6 @@ package paufregi.connectfeed.data.api.garmin.serializers
 import com.google.common.truth.Truth
 import kotlinx.serialization.json.Json
 import org.junit.Test
-import paufregi.connectfeed.data.api.strava.serializers.LocalDateTimeSerializer
 import java.time.LocalDateTime
 
 class LocalDateTimeSerializerTest {

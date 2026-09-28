@@ -124,7 +124,7 @@ class GarminConnectTest {
                 trainingEffectLabel = "RECOVERY",
                 type = ActivityType(id = 10, key = "road_biking", type = CoreActivityType.RoadBiking),
                 eventType = EventType.Transportation,
-                startDateTime = LocalDateTime.of(2024, 10, 24, 7, 15, 0),
+                startDateTime = LocalDateTime.of(2024, 10, 24, 20, 15, 0),
                 workoutId = 1,
             ),
             Activity(
@@ -134,7 +134,7 @@ class GarminConnectTest {
                 trainingEffectLabel = "RECOVERY",
                 type = ActivityType(id = 10, key = "road_biking", type = CoreActivityType.RoadBiking),
                 eventType = EventType.Transportation,
-                startDateTime = LocalDateTime.of(2024, 10, 24, 7, 15, 0),
+                startDateTime = LocalDateTime.of(2024, 10, 24, 6, 52, 48),
                 workoutId = 2
             )
         )

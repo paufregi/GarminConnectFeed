@@ -27,7 +27,7 @@ import paufregi.connectfeed.core.usecases.IsStravaConnected
 import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 import paufregi.connectfeed.system.Downloader
 
@@ -82,7 +82,7 @@ class SettingsViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcState.Idle)
             assertThat(state.user).isEqualTo(user)
             assertThat(state.hasStrava).isTrue()
             assertThat(state.currentVersion).isEqualTo(Version.parse(currentVersion))
@@ -101,7 +101,7 @@ class SettingsViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcState.Idle)
             assertThat(state.user).isEqualTo(user)
             assertThat(state.hasStrava).isFalse()
             assertThat(state.currentVersion).isEqualTo(Version.parse(currentVersion))
@@ -125,7 +125,7 @@ class SettingsViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcState.Idle)
             assertThat(state.user).isEqualTo(user)
             assertThat(state.hasStrava).isFalse()
             assertThat(state.currentVersion).isEqualTo(Version.parse(currentVersion))
@@ -148,7 +148,7 @@ class SettingsViewModelTest {
             viewModel.onAction(SettingsAction.RefreshUser)
             skipItems(1)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Success("User data refreshed"))
+            assertThat(state.process).isEqualTo(ProcState.Success("User data refreshed"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -170,7 +170,7 @@ class SettingsViewModelTest {
             skipItems(1)
             viewModel.onAction(SettingsAction.RefreshUser)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Failure("error"))
+            assertThat(state.process).isEqualTo(ProcState.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -192,7 +192,7 @@ class SettingsViewModelTest {
         viewModel.state.test {
             viewModel.onAction(SettingsAction.SignOut)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcState.Idle)
             assertThat(state.user).isEqualTo(user)
             cancelAndIgnoreRemainingEvents()
         }
@@ -215,7 +215,7 @@ class SettingsViewModelTest {
         viewModel.state.test {
             viewModel.onAction(SettingsAction.StravaDisconnect)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcState.Idle)
             cancelAndIgnoreRemainingEvents()
         }
 

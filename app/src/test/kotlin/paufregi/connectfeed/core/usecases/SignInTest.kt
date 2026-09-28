@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.core.utils.failure
+import paufregi.connectfeed.data.api.garmin.models.Ticket
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.user
@@ -22,7 +23,7 @@ class SignInTest{
     private lateinit var useCase: SignIn
 
     private val clientId = "clientId"
-    private val ticket = "ST-XYZ"
+    private val ticket = Ticket("ST-XYZ")
     private val username = "user"
     private val password = "pass"
 

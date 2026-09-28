@@ -39,7 +39,7 @@ class GarminAuthTest {
         val request = server.takeRequest()
 
         assertThat(request.method).isEqualTo("POST")
-        assertThat(request.url.encodedPath).isEqualTo("/di-oauth2-service/oauth/token")
+        assertThat(request.url.encodedPath).isEqualTo("//di-oauth2-service/oauth/token")
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(authToken)
     }

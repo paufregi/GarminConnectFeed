@@ -12,7 +12,8 @@ import androidx.compose.runtime.Composable
 @Composable
 @ExperimentalMaterial3Api
 fun SimpleScaffold(
-    content: @Composable (PaddingValues) -> Unit
+    content: @Composable (PaddingValues) -> Unit,
+    modifier: Any
 ) {
     Scaffold(
         topBar = {

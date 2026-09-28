@@ -17,8 +17,7 @@ import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.api.strava.models.Athlete
-import paufregi.connectfeed.data.api.strava.models.Bike
-import paufregi.connectfeed.data.api.strava.models.Shoe
+import paufregi.connectfeed.data.api.strava.models.SummaryGear
 import paufregi.connectfeed.data.repository.AppRepository
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
@@ -43,8 +42,8 @@ class SyncGearTest {
 
     private val stravaAthlete = Athlete(
         id = 1,
-        bikes = listOf(Bike("strava-id-1", "bike-1")),
-        shoes = listOf(Shoe("strava-id-2", "brand shoe"))
+        bikes = listOf(SummaryGear("strava-id-1", "bike-1")),
+        shoes = listOf(SummaryGear("strava-id-2", "brand shoe"))
     )
 
     private val dbGears = listOf(

@@ -17,9 +17,8 @@ import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.Activity
 import paufregi.connectfeed.data.api.strava.models.Athlete
-import paufregi.connectfeed.data.api.strava.models.Bike
-import paufregi.connectfeed.data.api.strava.models.Shoe
 import paufregi.connectfeed.data.api.strava.models.SportType
+import paufregi.connectfeed.data.api.strava.models.SummaryGear
 import paufregi.connectfeed.data.api.strava.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
 import paufregi.connectfeed.stravaActivitiesJson
@@ -60,13 +59,13 @@ class StravaTest {
         val expected = Athlete(
             id = 1,
             bikes = listOf(
-                Bike(
+                SummaryGear(
                     id = "b12345678987655",
                     name = "Giant Contend",
                 )
             ),
             shoes = listOf(
-                Shoe(
+                SummaryGear(
                     id = "g12345678987655",
                     name = "Mizuno Neo Vista",
                 )

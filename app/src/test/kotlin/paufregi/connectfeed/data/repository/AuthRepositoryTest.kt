@@ -8,6 +8,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
@@ -18,7 +19,8 @@ import org.junit.Test
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
-import paufregi.connectfeed.data.api.garmin.models.LoginResponse
+import paufregi.connectfeed.data.api.garmin.models.CSRF
+import paufregi.connectfeed.data.api.garmin.models.Ticket
 import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.stravaAuthToken
@@ -44,74 +46,62 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun `Garmin login - success`() = runTest {
-        val responseStatus = LoginResponse.ResponseStatus("SUCCESSFUL")
-        val loginResponse = LoginResponse(responseStatus, "ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso")
-        val httpResponse = Response.success(loginResponse)
+    fun `Garmin login - all good`() = runTest {
+        val csrf = CSRF("csrf")
+        val ticket = Ticket("ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso")
 
-        coEvery { garminSSO.login(any()) } returns httpResponse
+        coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
+        coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
 
         val res = repo.garminLogin("user@example.com", "password123")
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo("ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso")
+        assertThat(res.getOrNull()).isEqualTo(ticket)
 
-        coVerify { garminSSO.login(any()) }
+        coVerify(exactly = 1) { garminSSO.getCSRF() }
+        coVerify(exactly = 1) { garminSSO.login("user@example.com", "password123", csrf) }
     }
 
     @Test
-    fun `Garmin login - invalid credentials`() = runTest {
-        val responseStatus = LoginResponse.ResponseStatus("INVALID_USERNAME_PASSWORD")
-        val loginResponse = LoginResponse(responseStatus, null)
-        val httpResponse = Response.success(loginResponse)
-
-        coEvery { garminSSO.login(any()) } returns httpResponse
-
-        val res = repo.garminLogin("user@example.com", "wrongpassword")
-
-        assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).contains("Invalid username or password")
-
-        coVerify { garminSSO.login(any()) }
-    }
-
-    @Test
-    fun `Garmin login - captcha required`() = runTest {
-        val responseStatus = LoginResponse.ResponseStatus("CAPTCHA_REQUIRED")
-        val loginResponse = LoginResponse(responseStatus, null)
-        val httpResponse = Response.success(loginResponse)
-
-        coEvery { garminSSO.login(any()) } returns httpResponse
+    fun `Garmin login - failed to get CSRF`() = runTest {
+        coEvery { garminSSO.getCSRF() } returns Response.error(
+            500,
+            "failed to get CSRF".toResponseBody("text/plain; charset=UTF-8".toMediaType())
+        )
 
         val res = repo.garminLogin("user@example.com", "password123")
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).contains("CAPTCHA required")
+        assertThat(res.exceptionOrNull()?.message).contains("failed to get CSRF")
 
-        coVerify { garminSSO.login(any()) }
+        coVerify(exactly = 1) { garminSSO.getCSRF() }
+        coVerify(exactly = 0) { garminSSO.login(any(), any(), any()) }
     }
 
     @Test
-    fun `Garmin login - no service ticket`() = runTest {
-        val responseStatus = LoginResponse.ResponseStatus("SUCCESSFUL")
-        val loginResponse = LoginResponse(responseStatus, null)
-        val httpResponse = Response.success(loginResponse)
+    fun `Garmin login - failed to login`() = runTest {
+        val csrf = CSRF("csrf")
 
-        coEvery { garminSSO.login(any()) } returns httpResponse
+        coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
+        coEvery { garminSSO.login(any(), any(), any()) } returns Response.error(
+            401,
+            "failed to login".toResponseBody("text/plain; charset=UTF-8".toMediaType())
+        )
 
         val res = repo.garminLogin("user@example.com", "password123")
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).contains("no ticket found")
+        assertThat(res.exceptionOrNull()?.message).contains("failed to login")
 
-        coVerify { garminSSO.login(any()) }
+        coVerify(exactly = 1) { garminSSO.getCSRF() }
+        coVerify(exactly = 1) { garminSSO.login("user@example.com", "password123", csrf) }
     }
 
     @Test
     fun `Garmin exchange token - success`() = runTest {
         coEvery { garminAuth.exchange(any(), any(), any()) } returns Response.success(authToken)
 
-        val res = repo.exchangeGarminToken("ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso", "client-id")
+        val res = repo.exchangeGarminToken(Ticket("ST-0123456-XXXXXXXXXXXXXXXXXXXX-sso"), "client-id")
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(authToken)
@@ -123,7 +113,7 @@ class AuthRepositoryTest {
     fun `Garmin exchange token - failure`() = runTest {
         coEvery { garminAuth.exchange(any(), any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.exchangeGarminToken("invalid-ticket", "client-id")
+        val res = repo.exchangeGarminToken(Ticket("invalid-ticket"), "client-id")
 
         assertThat(res.isSuccess).isFalse()
 
@@ -162,7 +152,7 @@ class AuthRepositoryTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        every { datastore.garminToken }
+        verify { datastore.garminToken }
     }
 
     @Test
@@ -229,7 +219,7 @@ class AuthRepositoryTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        every { datastore.stravaToken }
+        verify { datastore.stravaToken }
     }
 
     @Test

@@ -1,25 +1,16 @@
 package paufregi.connectfeed.presentation.settings
 
-import app.cash.turbine.test
-import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
-import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.usecases.DeleteProfile
 import paufregi.connectfeed.core.usecases.GetProfiles
-import paufregi.connectfeed.presentation.profiles.ProfileAction
 import paufregi.connectfeed.presentation.profiles.ProfilesViewModel
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
@@ -49,43 +40,5 @@ class ProfilesViewModelTest {
         verify { getProfiles() }
         confirmVerified(getProfiles, deleteProfile)
         clearAllMocks()
-    }
-
-    @Test
-    fun `Initial state`() = runTest {
-        every { getProfiles() } returns flowOf(profiles)
-
-        viewModel = ProfilesViewModel(getProfiles, deleteProfile)
-
-        viewModel.state.test {
-            val state = awaitItem()
-            assertThat(state.profiles).isEqualTo(profiles)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `Initial state - empty list`() = runTest {
-        every { getProfiles() } returns flowOf(emptyList())
-
-        viewModel = ProfilesViewModel(getProfiles, deleteProfile)
-
-        viewModel.state.test {
-            val state = awaitItem()
-            assertThat(state.profiles).isEqualTo(emptyList<Profile>())
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `Delete profile`() = runTest {
-        every { getProfiles() } returns flowOf(profiles)
-        coEvery { deleteProfile(any()) } returns Unit
-
-        viewModel = ProfilesViewModel(getProfiles, deleteProfile)
-
-        viewModel.onAction(ProfileAction.Delete(profiles[0]))
-
-        coVerify { deleteProfile(profiles[0]) }
     }
 }

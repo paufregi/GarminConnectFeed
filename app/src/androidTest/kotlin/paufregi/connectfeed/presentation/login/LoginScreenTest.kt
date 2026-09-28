@@ -14,7 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 import org.junit.runner.RunWith
-import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
@@ -55,7 +55,7 @@ class LoginScreenTest {
     @Test
     fun `Loading spinning` () = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            LoginContent(state = LoginState(process = ProcessState.Processing))
+            LoginContent(state = LoginState(process = ProcState.Processing))
         }
         onNodeWithTag("loading").assertIsDisplayed()
     }
@@ -63,7 +63,7 @@ class LoginScreenTest {
     @Test
     fun `Sign in - failure` () = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            LoginContent(state = LoginState(process = ProcessState.Failure("error")))
+            LoginContent(state = LoginState(process = ProcState.Failure("error")))
         }
         onNodeWithText("error").assertIsDisplayed()
     }

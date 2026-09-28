@@ -20,7 +20,7 @@ import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.usecases.GetGears
 import paufregi.connectfeed.core.usecases.SyncGear
-import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
@@ -58,7 +58,7 @@ class GearsViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.gears).isEqualTo(gears)
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcState.Idle)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -72,7 +72,7 @@ class GearsViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.gears).isEqualTo(emptyList<Gear>())
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcState.Idle)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -85,9 +85,9 @@ class GearsViewModelTest {
         viewModel = GearsViewModel(getGears, syncGear)
 
         viewModel.state.test {
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
+            assertThat(awaitItem().process).isEqualTo(ProcState.Idle)
             viewModel.onAction(GearsAction.Sync)
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Success("Gears synced"))
+            assertThat(awaitItem().process).isEqualTo(ProcState.Success("Gears synced"))
             cancelAndIgnoreRemainingEvents()
         }
         coVerify { syncGear() }
@@ -101,9 +101,9 @@ class GearsViewModelTest {
         viewModel = GearsViewModel(getGears, syncGear)
 
         viewModel.state.test {
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
+            assertThat(awaitItem().process).isEqualTo(ProcState.Idle)
             viewModel.onAction(GearsAction.Sync)
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Success("Gears synced"))
+            assertThat(awaitItem().process).isEqualTo(ProcState.Success("Gears synced"))
             cancelAndIgnoreRemainingEvents()
         }
         coVerify { syncGear() }
@@ -117,9 +117,9 @@ class GearsViewModelTest {
         viewModel = GearsViewModel(getGears, syncGear)
 
         viewModel.state.test {
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
+            assertThat(awaitItem().process).isEqualTo(ProcState.Idle)
             viewModel.onAction(GearsAction.Sync)
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Failure("error"))
+            assertThat(awaitItem().process).isEqualTo(ProcState.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
         coVerify { syncGear() }
@@ -133,11 +133,11 @@ class GearsViewModelTest {
         viewModel = GearsViewModel(getGears, syncGear)
 
         viewModel.state.test {
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
+            assertThat(awaitItem().process).isEqualTo(ProcState.Idle)
             viewModel.onAction(GearsAction.Sync)
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Success("Gears synced"))
+            assertThat(awaitItem().process).isEqualTo(ProcState.Success("Gears synced"))
             viewModel.onAction(GearsAction.Reset)
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
+            assertThat(awaitItem().process).isEqualTo(ProcState.Idle)
             cancelAndIgnoreRemainingEvents()
         }
         coVerify { syncGear() }

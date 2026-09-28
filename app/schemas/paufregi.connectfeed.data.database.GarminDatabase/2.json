@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "2c5b8985f68243957ceb86587a47de99",
+    "identityHash": "6077939a5de7546b4121faffb06c89b1",
     "entities": [
       {
         "tableName": "profiles",
@@ -108,7 +108,7 @@
       },
       {
         "tableName": "gears",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `userId` INTEGER NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `distance` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `userId` INTEGER NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `distance` INTEGER, `stravaId` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -138,6 +138,11 @@
             "fieldPath": "distance",
             "columnName": "distance",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "stravaId",
+            "columnName": "stravaId",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -150,7 +155,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2c5b8985f68243957ceb86587a47de99')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6077939a5de7546b4121faffb06c89b1')"
     ]
   }
 }

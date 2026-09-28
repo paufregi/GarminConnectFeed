@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 class LocalDateTimeSerializerTest {
 
     val json = Json { encodeDefaults = true }
-    val dataString = "\"2024-10-24T20:15:30Z\""
+    val dataString = "\"2024-10-24T20:15:30\""
     val date: LocalDateTime = LocalDateTime.of(2024, 10, 24, 20, 15, 30)
 
     @Test

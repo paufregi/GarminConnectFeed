@@ -20,7 +20,9 @@ class AuthSerializerTest {
 
     private val garminToken = GarminAuthToken(
         accessToken = "GARMIN_ACCESS",
-        refreshToken = "GARMIN_REFRESH"
+        refreshToken = "GARMIN_REFRESH",
+        expiresIn = 30,
+        refreshTokenExpiresIn = 60
     )
     private val stravaToken = StravaAuthToken(
         accessToken = "STRAVA_ACCESS",
