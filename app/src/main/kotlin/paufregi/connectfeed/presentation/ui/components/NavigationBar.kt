@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import paufregi.connectfeed.presentation.ui.components.frame.NavigationItem
 import androidx.compose.material3.NavigationBar as MaterialNavigationBar
 import androidx.compose.material3.NavigationBarItem as MaterialNavigationBarItem
 

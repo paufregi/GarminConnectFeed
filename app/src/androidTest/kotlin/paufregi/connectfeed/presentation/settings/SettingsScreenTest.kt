@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Release
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.models.Version
-import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
@@ -76,7 +76,7 @@ class SettingsScreenTest {
     @Test
     fun `Loading spinner`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SettingsContent(state = SettingsState(process = ProcessState.Processing))
+            SettingsContent(state = SettingsState(process = ProcState.Processing))
         }
         onNodeWithTag("loading").assertIsDisplayed()
     }
@@ -84,7 +84,7 @@ class SettingsScreenTest {
     @Test
     fun `Success process`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SettingsContent(state = SettingsState(process = ProcessState.Success("message")))
+            SettingsContent(state = SettingsState(process = ProcState.Success("message")))
         }
         onNodeWithText("message").assertIsDisplayed()
         onNodeWithText("Ok").assertIsDisplayed()
@@ -93,7 +93,7 @@ class SettingsScreenTest {
     @Test
     fun `Failed process`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SettingsContent(state = SettingsState(process = ProcessState.Failure("error")))
+            SettingsContent(state = SettingsState(process = ProcState.Failure("error")))
         }
         onNodeWithText("error").assertIsDisplayed()
         onNodeWithText("Ok").assertIsDisplayed()

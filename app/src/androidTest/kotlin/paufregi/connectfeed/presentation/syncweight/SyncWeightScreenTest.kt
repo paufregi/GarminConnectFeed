@@ -11,7 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 import org.junit.runner.RunWith
-import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
@@ -22,7 +22,7 @@ class SyncWeightScreenTest {
     @Test
     fun `Status idle`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SyncWeightScreen(state = SyncWeightState(ProcessState.Idle))
+            SyncWeightScreen(state = SyncWeightState(ProcState.Idle))
         }
         onNodeWithText("Don't know what to do").assertIsDisplayed()
     }
@@ -30,7 +30,7 @@ class SyncWeightScreenTest {
     @Test
     fun `Status uploading`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SyncWeightScreen(state = SyncWeightState(ProcessState.Processing))
+            SyncWeightScreen(state = SyncWeightState(ProcState.Processing))
         }
         onNodeWithTag("loading").assertIsDisplayed()
     }
@@ -38,7 +38,7 @@ class SyncWeightScreenTest {
     @Test
     fun `Status success`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SyncWeightScreen(state = SyncWeightState(ProcessState.Success("Sync succeeded")))
+            SyncWeightScreen(state = SyncWeightState(ProcState.Success("Sync succeeded")))
         }
         onNodeWithText("Sync succeeded").assertIsDisplayed()
     }
@@ -46,7 +46,7 @@ class SyncWeightScreenTest {
     @Test
     fun `Status failure`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SyncWeightScreen(state = SyncWeightState(ProcessState.Failure("Sync failed")))
+            SyncWeightScreen(state = SyncWeightState(ProcState.Failure("Sync failed")))
         }
         onNodeWithText("Sync failed").assertIsDisplayed()
     }

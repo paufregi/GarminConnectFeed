@@ -8,7 +8,7 @@ data class Athlete(
     @SerialName("id")
     val id: Long,
     @SerialName("bikes")
-    val bikes: List<Bike> = emptyList(),
+    val bikes: List<SummaryGear> = emptyList(),
     @SerialName("shoes")
-    val shoes: List<Shoe> = emptyList(),
+    val shoes: List<SummaryGear> = emptyList(),
 )

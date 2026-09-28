@@ -6,21 +6,26 @@ import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.usecases.ConnectStrava
+import paufregi.connectfeed.core.usecases.GetUser
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
+import paufregi.connectfeed.user
 
 @ExperimentalCoroutinesApi
 class StravaViewModelTest {
 
+    private val getUser = mockk<GetUser>()
     private val enableStrava = mockk<ConnectStrava>()
 
     private lateinit var viewModel: StravaViewModel
@@ -30,7 +35,8 @@ class StravaViewModelTest {
 
     @Before
     fun setup(){
-        viewModel = StravaViewModel(enableStrava)
+        every { getUser() } returns flowOf(user)
+        viewModel = StravaViewModel(getUser, enableStrava)
     }
 
     @After
@@ -43,7 +49,7 @@ class StravaViewModelTest {
     fun `Initial state`() = runTest {
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isNull()
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -56,7 +62,7 @@ class StravaViewModelTest {
             viewModel.exchangeToken("code")
             skipItems(1)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Success("Strava linked"))
+            assertThat(state.process).isEqualTo(ProcState.Success("Strava linked"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -71,7 +77,7 @@ class StravaViewModelTest {
             viewModel.exchangeToken("code")
             skipItems(1)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Failure("Link failed"))
+            assertThat(state.process).isEqualTo(ProcState.Failure("Link failed"))
             cancelAndIgnoreRemainingEvents()
         }
 

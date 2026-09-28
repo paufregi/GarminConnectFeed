@@ -1,12 +1,12 @@
 package paufregi.connectfeed.data.repository
 
+import android.util.Log
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.utils.andThen
-import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
-import paufregi.connectfeed.data.api.garmin.models.LoginRequest
+import paufregi.connectfeed.data.api.garmin.models.Ticket
 import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.datastore.AuthStore
 import javax.inject.Inject
@@ -23,26 +23,15 @@ class AuthRepository @Inject constructor(
     suspend fun garminLogin(
         username: String,
         password: String
-    ): Result<String> =
-        garminSSO.login(LoginRequest(username, password))
-            .toResult()
-            .andThen { response ->
-                when (response.responseStatus.type) {
-                    "SUCCESSFUL" -> {
-                        response.serviceTicketId?.let { Result.success(it) }
-                            ?: Result.failure("Login failed - no ticket found")
-                    }
-                    "INVALID_USERNAME_PASSWORD" -> Result.failure("Invalid username or password")
-                    "CAPTCHA_REQUIRED" -> Result.failure("CAPTCHA required - can't continue login")
-                    else -> Result.failure("Login failed")
-                }
-            }
+    ): Result<Ticket> =
+        garminSSO.getCSRF().toResult()
+            .andThen { garminSSO.login(username, password, it).toResult() }
 
     suspend fun exchangeGarminToken(
-        ticket: String,
+        ticket: Ticket,
         clientId: String
     ): Result<GarminAuthToken> =
-        garminAuth.exchange(GarminAuth.buildBasicAuth(clientId), clientId, ticket)
+        garminAuth.exchange(GarminAuth.buildBasicAuth(clientId), clientId, ticket.value)
             .toResult()
 
     suspend fun refreshGarminToken(
@@ -50,7 +39,9 @@ class AuthRepository @Inject constructor(
         clientId: String
     ): Result<GarminAuthToken> =
         garminAuth.refresh(GarminAuth.buildBasicAuth(clientId), clientId, refreshToken)
-            .toResult()
+            .toResult().onFailure {
+                Log.e("AuthRepository", "Failed to refresh Garmin token: ${it.cause}")
+            }
 
     fun getUser() = authStore.user
     fun getGarminToken() = authStore.garminToken

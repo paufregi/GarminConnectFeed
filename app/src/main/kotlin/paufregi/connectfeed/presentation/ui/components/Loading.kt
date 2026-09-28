@@ -15,14 +15,14 @@ import androidx.compose.ui.platform.testTag
 @Composable
 @ExperimentalMaterial3Api
 fun Loading(
-    paddingContent: PaddingValues = PaddingValues()
+    padding: PaddingValues = PaddingValues()
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingContent)
+            .padding(padding)
     ) {
         CircularProgressIndicator(
             modifier = Modifier.testTag("loading")

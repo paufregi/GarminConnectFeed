@@ -32,14 +32,29 @@ to Garmin Connect, and lets users edit Garmin/Strava activities via custom profi
 
 ```
 app/src/main/kotlin/paufregi/connectfeed/
-  presentation/<feature>/   # Screen, ViewModel, State, Action per feature
-  core/usecases/            # Business logic only — no Android/Compose imports
-  core/models/              # Domain models (ActivityType, Profile, …)
-  data/repository/          # Mediate between use cases ↔ APIs/DB
-  data/api/                 # Retrofit interfaces (garmin/, strava/, github/)
-  data/database/            # Room DB, DAO, entities, migrations
-  data/datastore/           # DataStore (AuthStore, StravaStore)
+  ConnectFeed.kt            # Application entrypoint; runs startup cleanup
+  presentation/
+    main/                   # MainActivity, MainViewModel, app-level NavHost
+    activities/             # Feature screens (Screen, ViewModel, State, Action)
+    gears/
+    login/
+    profiles/
+    settings/
+    strava/
+    syncweight/
+    ui/                     # Shared Compose components, icons, theme, models, utils
+  core/
+    usecases/               # Business logic only — no Android/Compose imports
+    models/                 # Domain models (ActivityType, Profile, …)
+    utils/                  # Shared helpers used by domain/use-case code
+  data/
+    repository/             # Mediate between use cases ↔ APIs/DB
+    api/                    # Retrofit interfaces (garmin/, strava/, github/)
+    database/               # Room DB, DAO, entities, migrations
+    datastore/              # DataStore (AuthStore, StravaStore)
+    utils/                  # App-level helpers (security/update support)
   di/                       # Hilt modules
+  system/                   # Startup/update helpers (CleanUp, Downloader, Installer)
 ```
 
 **Layer rule** (never skip): `presentation` → `core/usecases` → `data/repository` → `data/api|database|datastore`
@@ -48,20 +63,20 @@ app/src/main/kotlin/paufregi/connectfeed/
 
 ## Mandatory Validation After Any Change
 
-Run in order. Fix all failures before considering the task done.
+Run in the same order as CI. Fix all failures before considering the task done.
 
 ```shell
-# 1. Compile + unit tests (always run)
-./gradlew test
-
-# 2. Full build including release shrinking
+# 1. Full build including release shrinking
 ./gradlew assemble
 
-# 3. Lint
-./gradlew lint
+# 2. Compile + unit tests (always run)
+./gradlew test
 
-# 4. Instrumented UI/integration tests (run when touching UI, Room, or Hilt wiring)
+# 3. Instrumented UI/integration tests (run when touching UI, Room, or Hilt wiring)
 ./gradlew pixel10Check
+
+# 4. Lint
+./gradlew lint
 ```
 
 Tests live in `app/src/test/` (unit) and `app/src/androidTest/` (instrumented).
@@ -100,15 +115,16 @@ Tests live in `app/src/test/` (unit) and `app/src/androidTest/` (instrumented).
 ### Add a new Profile Field
 1. Add the field to `ProfileEntity` in `data/database/`.
 2. Write a Room migration and update the schema JSON in `app/schemas/`.
-3. Update profile UI + ViewModel (`presentation/profile/`, `presentation/profiles/`).
-4. Update quick-edit UI + ViewModel (`presentation/quickedit/`).
+3. Update profile UI + ViewModel in `presentation/profiles/`.
+4. Update any gear or activity screens that surface profile-derived values (for example `presentation/gears/`).
 
 ### Add a new Screen
-1. Create `presentation/<feature>/` with `Screen.kt`, `ViewModel.kt`, `State.kt`, `Action.kt`.
-2. Add a `Route` object in `Navigation.kt`.
-3. Register the composable in the `NavHost` inside `Navigation.kt`.
+1. Create `presentation/<feature>/` with `Screen.kt`, `ViewModel.kt`, `State.kt`, `Action.kt` (and `StatePreview.kt` if you add previews).
+2. Add a `Route` object in `presentation/Navigation.kt`.
+3. Register the composable in the `NavHost` inside `presentation/main/MainActivity.kt`.
 4. Wire the ViewModel with `@HiltViewModel`; add new use cases to the appropriate `di/` module.
-5. Add a `@HiltAndroidTest` smoke test in `app/src/androidTest/`.
+5. If the screen belongs in the drawer, update `Navigation.topItems` / `Navigation.bottomItems` in `presentation/Navigation.kt`.
+6. Add a `@HiltAndroidTest` smoke test in `app/src/androidTest/`.
 
 ### Add a new API Endpoint
 - **Garmin**: add to the Retrofit interface in `data/api/garmin/`; all requests must go through the OAuth 1.0a signed pipeline.

@@ -28,7 +28,7 @@ import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
 import paufregi.connectfeed.presentation.ui.icons.garmin.Logo
 import paufregi.connectfeed.presentation.ui.icons.strava.Logo
 import paufregi.connectfeed.presentation.ui.icons.strava.Strava
-import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcState
 
 sealed class StatusInfoType(
     val icon: ImageVector,
@@ -86,12 +86,11 @@ fun StatusInfo(
 @ExperimentalMaterial3Api
 fun successInfo(
     action: () -> Unit,
-) = @Composable { state: ProcessState.Success, paddingValues: PaddingValues ->
+) = @Composable { message: String? ->
     StatusInfo(
         type = StatusInfoType.Success,
-        text = state.message ?: "All done",
+        text = message ?: "All done",
         actionButton = { Button(text = "Ok", onClick = action) },
-        paddingValues = paddingValues
     )
 }
 
@@ -100,7 +99,7 @@ fun successActivityUpdate(
     action: () -> Unit,
     garmin: () -> Unit,
     strava: (() -> Unit)? = null,
-) = @Composable { state: ProcessState.Success, paddingValues: PaddingValues ->
+) = @Composable { state: ProcState.Success, paddingValues: PaddingValues ->
     StatusInfo(
         type = StatusInfoType.Success,
         text = state.message ?: "All done",
@@ -114,14 +113,35 @@ fun successActivityUpdate(
 @ExperimentalMaterial3Api
 fun failureInfo(
     action: () -> Unit,
-) = @Composable { state: ProcessState.Failure, paddingValues: PaddingValues ->
+) = @Composable { reason: String ->
     StatusInfo(
         type = StatusInfoType.Failure,
-        text = state.reason,
+        text = reason,
         actionButton = { Button(text = "Ok", onClick = action) },
-        paddingValues = paddingValues
     )
 }
+
+@Composable
+@ExperimentalMaterial3Api
+fun SuccessInfo(
+    message: String,
+    action: () -> Unit,
+) = StatusInfo(
+    type = StatusInfoType.Success,
+    text = message,
+    actionButton = { Button(text = "Ok", onClick = action) },
+)
+
+@Composable
+@ExperimentalMaterial3Api
+fun FailureInfo(
+    reason: String,
+    action: () -> Unit,
+) = StatusInfo(
+    type = StatusInfoType.Failure,
+    text = reason,
+    actionButton = { Button(text = "Ok", onClick = action) },
+)
 
 @ExperimentalMaterial3Api
 fun unknownInfo(

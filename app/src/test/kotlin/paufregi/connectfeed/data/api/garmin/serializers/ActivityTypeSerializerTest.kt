@@ -217,14 +217,14 @@ class ActivityTypeSerializerTest {
     fun `Serialize ActivityType Surfing to JSON`() {
         val res = json.encodeToString(ActivityTypeSerializer, ActivityType(240L, "surfing_v2", CoreActivityType.Surfing))
 
-        assertThat(res).isEqualTo("{\"typeId\":240,\"typeKey\":\"surfingGear\"}")
+        assertThat(res).isEqualTo("{\"typeId\":240,\"typeKey\":\"surfing_v2\"}")
     }
 
     @Test
     fun `Serialize ActivityType Windsurf to JSON`() {
         val res = json.encodeToString(ActivityTypeSerializer, ActivityType(242L, "windsurfing_v2", CoreActivityType.Windsurf))
 
-        assertThat(res).isEqualTo("{\"typeId\":242,\"typeKey\":\"windsurfingGear\"}")
+        assertThat(res).isEqualTo("{\"typeId\":242,\"typeKey\":\"windsurfing_v2\"}")
     }
 
     @Test

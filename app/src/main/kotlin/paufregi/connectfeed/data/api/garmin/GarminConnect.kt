@@ -64,6 +64,13 @@ interface GarminConnect {
     companion object {
         const val BASE_URL = "https://connectapi.garmin.com"
 
+        val headers = mapOf(
+            "User-Agent" to "GCM-Android-5.23",
+            "X-Garmin-User-Agent" to "com.garmin.android.apps.connectmobile/5.23; ; Google/sdk_gphone64_arm64/google; Android/33; Dalvik/2.1.0",
+            "X-Garmin-Paired-App-Version" to "10861"
+        )
+
+
         fun client(authInterceptor: AuthInterceptor, url: String): GarminConnect {
             val client = OkHttpClient.Builder().addInterceptor(authInterceptor)
 

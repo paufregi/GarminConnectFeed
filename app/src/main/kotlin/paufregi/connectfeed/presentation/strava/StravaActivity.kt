@@ -7,8 +7,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.getValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import paufregi.connectfeed.presentation.ui.components.FailureInfo
+import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.presentation.ui.components.SuccessInfo
+import paufregi.connectfeed.presentation.ui.components.frame.Frame
+import paufregi.connectfeed.presentation.ui.models.ProcState
 import paufregi.connectfeed.presentation.ui.theme.Theme
 
 @AndroidEntryPoint
@@ -17,22 +23,25 @@ class StravaActivity : ComponentActivity() {
     private val viewModel: StravaViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val code = intent.data?.getQueryParameter("code")
-
-        code?.let { viewModel.exchangeToken(it) }
+        intent.data?.getQueryParameter("code")?.let {
+            viewModel.exchangeToken(it)
+        }
 
         setContent {
             val state by viewModel.state.collectAsStateWithLifecycle()
             Theme {
-                StravaScreen(
-                    state = state,
-                    onComplete = { finish() }
-                )
+                Frame(enableMenu = false) {
+                    when(val s = state) {
+                        is ProcState.Success -> SuccessInfo(s.message ?: "") { finish() }
+                        is ProcState.Failure -> FailureInfo(s.reason) { finish() }
+                        is ProcState.Running -> Loading()
+                    }
+                }
             }
         }
     }
-
 }
