@@ -21,7 +21,7 @@ interface GarminDao {
     fun getAllProfiles(userId: Long): Flow<List<ProfileEntity>>
 
     @Query("SELECT * FROM profiles WHERE ID = :id")
-    suspend fun getProfile(id: Long): ProfileEntity?
+    fun getProfile(id: Long): ProfileEntity?
 
     @Upsert
     suspend fun saveGear(gear: GearEntity)
@@ -33,5 +33,5 @@ interface GarminDao {
     fun getAllGears(userId: Long): Flow<List<GearEntity>>
 
     @Query("SELECT * FROM gears WHERE ID = :id")
-    suspend fun getGear(id: String): GearEntity?
+    fun getGear(id: String): GearEntity?
 }

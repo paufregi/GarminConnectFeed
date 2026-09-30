@@ -47,13 +47,10 @@ import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
 import paufregi.connectfeed.presentation.ui.components.Loading
 import paufregi.connectfeed.presentation.ui.components.TextIcon
-import paufregi.connectfeed.presentation.ui.components.failureInfo
-import paufregi.connectfeed.presentation.ui.components.successInfo
 import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
 import paufregi.connectfeed.presentation.ui.icons.garmin.Logo
 import paufregi.connectfeed.presentation.ui.icons.strava.Logo
 import paufregi.connectfeed.presentation.ui.icons.strava.Strava
-import paufregi.connectfeed.presentation.ui.models.ProcState
 
 @Composable
 @ExperimentalMaterial3Api
@@ -63,11 +60,9 @@ internal fun SettingsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when (state.process) {
-        is ProcState.Running -> Loading()
-        is ProcState.Success -> successInfo { viewModel.onAction(SettingsAction.Reset) }
-        is ProcState.Failure -> failureInfo { viewModel.onAction(SettingsAction.Reset) }
-        null -> SettingsContent(state, viewModel::onAction, viewModel.stravaAuthUri, padding)
+    when (state.loading) {
+        true -> Loading()
+        false -> SettingsContent(state, viewModel::onAction, viewModel.stravaAuthUri, padding)
     }
 }
 

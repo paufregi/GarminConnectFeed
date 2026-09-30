@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation
+package paufregi.connectfeed.presentation.app
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -16,7 +16,19 @@ sealed interface Route: NavKey {
     data object Activities : Route
 
     @Serializable
+    data class ActivityEdit(val id: Long, val stravaId: Long) : Route
+
+    @Serializable
+    data class ActivityQuickEdit(val id: Long, val stravaId: Long) : Route
+
+    @Serializable
     data object Profiles : Route
+
+    @Serializable
+    data object ProfileList : Route
+
+    @Serializable
+    data class ProfileEdit(val id: Long? = null) : Route
 
     @Serializable
     data object Gears : Route
@@ -37,3 +49,5 @@ object Navigation {
         ),
     )
 }
+
+

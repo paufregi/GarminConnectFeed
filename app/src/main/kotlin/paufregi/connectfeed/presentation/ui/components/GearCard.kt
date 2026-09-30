@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.ui.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,12 +30,10 @@ import paufregi.connectfeed.presentation.ui.utils.iconFor
 fun GearCard(
     gear: Gear,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
             .padding(8.dp),
         colors = CardDefaults.cardColors(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

@@ -2,9 +2,9 @@ package paufregi.connectfeed.presentation.app.gears
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -21,16 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.presentation.ui.components.GearCard
 import paufregi.connectfeed.presentation.ui.components.Loading
-import paufregi.connectfeed.presentation.ui.components.failureInfo
-import paufregi.connectfeed.presentation.ui.components.successInfo
-import paufregi.connectfeed.presentation.ui.models.ProcState
+import paufregi.connectfeed.presentation.ui.utils.add
 
 @Composable
 @ExperimentalMaterial3Api
@@ -39,13 +36,10 @@ internal fun GearsScreen(
     padding: PaddingValues = PaddingValues(),
     viewModel: GearsViewModel = hiltViewModel()
 ) {
-    val viewModel = hiltViewModel<GearsViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when (val p = state.process) {
-        is ProcState.Running -> Loading()
-        is ProcState.Success -> successInfo { viewModel.onAction(GearsAction.Reset) }(p.message ?: "Sync completed")
-        is ProcState.Failure -> failureInfo { viewModel.onAction(GearsAction.Reset) }(p.reason)
+    when (state.loading) {
+        true -> Loading()
         else -> GearsContent(state, padding, viewModel::onAction)
     }
 }
@@ -66,18 +60,17 @@ internal fun GearsContent(
             ) { Icon(Icons.Default.Sync, "Sync gears") }
         },
         modifier = Modifier.fillMaxSize().testTag("gears_content")
-    ) { padding ->
+    ) { innerPadding ->
+        val consumedInsets = padding.add(innerPadding)
+        val contentPadding = padding.add(innerPadding).add(horizontal = 20.dp)
+
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
+            verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = contentPadding,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    top = padding.calculateTopPadding(),
-                    bottom = padding.calculateBottomPadding(),
-                    start = padding.calculateLeftPadding(LayoutDirection.Ltr) + 20.dp,
-                    end = padding.calculateRightPadding(LayoutDirection.Ltr) + 20.dp,
-                )
+                .consumeWindowInsets(consumedInsets)
         ) {
             if (state.gears.isEmpty()) {
                 item { Text("No gears", modifier = Modifier.testTag("no_gears")) }
@@ -90,6 +83,5 @@ internal fun GearsContent(
                 }
             }
         }
-
     }
 }

@@ -15,7 +15,7 @@ import paufregi.connectfeed.presentation.profiles.ProfilesViewModel
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
-class ProfilesViewModelTest {
+class ProfileListViewModelTest {
 
     private val getProfiles = mockk<GetProfiles>()
     private val deleteProfile = mockk<DeleteProfile>()

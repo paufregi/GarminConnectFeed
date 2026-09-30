@@ -22,11 +22,15 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,7 +44,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
-import paufregi.connectfeed.presentation.Route
+import paufregi.connectfeed.presentation.app.Route
 import paufregi.connectfeed.presentation.ui.components.Button
 
 data class NavigationItem(
@@ -69,6 +73,14 @@ fun Frame(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.messages.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -76,7 +88,7 @@ fun Frame(
                 modifier = Modifier.fillMaxWidth(0.75f)
             ) {
                 Spacer(modifier = Modifier.height(24.dp))
-                Text("Connected Feed")
+                Text("Connected Feed", modifier = Modifier.padding(start = 4.dp))
                 Spacer(modifier = Modifier.height(32.dp))
                 menuSpec?.topItems?.fastForEachIndexed { _, item ->
                     val isSelected = currentRoute == item.route
@@ -142,6 +154,7 @@ fun Frame(
                     }
                 )
             },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             content = { padding -> content(padding)}
         )
     }

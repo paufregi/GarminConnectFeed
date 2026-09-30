@@ -22,6 +22,9 @@ import paufregi.connectfeed.data.api.garmin.models.Gear as GarminGear
 class GarminRepository @Inject constructor(
     private val garmin: GarminConnect,
 ) {
+
+    val activities: MutableMap<Long, GarminActivity> = mutableMapOf()
+
     suspend fun getUserProfile() =
         garmin.getUserProfile().toResult().map {
             User(
@@ -31,7 +34,12 @@ class GarminRepository @Inject constructor(
             ) }
 
     suspend fun getActivities(limit: Int): Result<List<GarminActivity>> =
-        garmin.getActivities(limit).toResult(emptyList())
+        garmin.getActivities(limit).toResult(emptyList()).onSuccess {
+            activities.clear()
+            activities.putAll(it.associateBy { a -> a.id })
+        }
+
+    fun getActivity(id: Long): GarminActivity? = activities[id]
 
     suspend fun getGears(): Result<List<GarminGear>> =
         garmin.getGears().toResult(emptyList())

@@ -38,7 +38,6 @@ import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor as Stra
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     @Provides
     @Singleton
     fun provideDataStore(

@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetGears
 import paufregi.connectfeed.core.usecases.SyncGear
-import paufregi.connectfeed.presentation.ui.models.ProcState
+import paufregi.connectfeed.core.utils.finally
+import paufregi.connectfeed.presentation.ui.utils.SnackbarManager
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class GearsViewModel @Inject constructor(
     getGears: GetGears,
     val syncGear: SyncGear,
+    val snackbarManager: SnackbarManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(GearsState())
 
@@ -28,16 +30,17 @@ class GearsViewModel @Inject constructor(
 
     fun onAction(action: GearsAction) {
         when (action) {
-            GearsAction.Reset -> _state.update { it.copy(process = null) }
+            GearsAction.Reset -> _state.update { it.copy(loading = false) }
             GearsAction.Sync -> sync()
         }
     }
 
     private fun sync() = viewModelScope.launch {
-        _state.update { it.copy(process = ProcState.Running) }
+        _state.update { it.copy(loading = true) }
         syncGear()
-            .onSuccess { _state.update { it.copy(process = ProcState.Success("Gears synced")) } }
-            .onFailure { err -> _state.update { it.copy(process = ProcState.Failure(err.message ?: "Error")) } }
+            .onSuccess { snackbarManager.showMessage("Gears synced") }
+            .onFailure { err -> snackbarManager.showMessage(err.message ?: "Sync failed") }
+            .finally { _state.update { it.copy(loading = false) } }
     }
 }
 
