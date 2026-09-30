@@ -6,13 +6,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import paufregi.connectfeed.core.usecases.GetUser
+import paufregi.connectfeed.presentation.ui.utils.SnackbarManager
 import javax.inject.Inject
 
 @HiltViewModel
 class FrameViewModel @Inject constructor(
-    getUser: GetUser
+    getUser: GetUser,
+    snackbarManager: SnackbarManager,
 ) : ViewModel() {
 
     val user = getUser()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+
+    val messages = snackbarManager.messages
 }

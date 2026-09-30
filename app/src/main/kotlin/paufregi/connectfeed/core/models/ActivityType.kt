@@ -1,5 +1,8 @@
 package paufregi.connectfeed.core.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
 
     data object Any : ActivityType("Any")

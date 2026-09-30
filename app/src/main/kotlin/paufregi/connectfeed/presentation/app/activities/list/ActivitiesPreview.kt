@@ -1,8 +1,8 @@
-package paufregi.connectfeed.presentation.app.activities
+package paufregi.connectfeed.presentation.app.activities.list
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
-class ActivitiesStatePreview : PreviewParameterProvider<ActivitiesState> {
+class ActivitiesPreview : PreviewParameterProvider<ActivitiesState> {
     override val values = sequenceOf(
         ActivitiesState(),
     )

@@ -40,7 +40,7 @@ class GetActivities @Inject constructor(
                     name = garminActivity.name,
                     type = garminActivity.type.type,
                     eventType = garminActivity.eventType,
-                    distance = garminActivity.distance,
+                    distance = garminActivity.distance.takeIf { it > 0 },
                     trainingEffect = garminActivity.trainingEffectLabel,
                     date = garminActivity.startDateTime,
                     workoutId = garminActivity.workoutId,

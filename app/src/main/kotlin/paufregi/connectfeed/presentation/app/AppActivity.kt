@@ -10,18 +10,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import paufregi.connectfeed.presentation.Navigation
-import paufregi.connectfeed.presentation.Route
-import paufregi.connectfeed.presentation.app.activities.ActivitiesScreen
+import paufregi.connectfeed.presentation.app.activities.list.ActivitiesScreen
 import paufregi.connectfeed.presentation.app.gears.GearsScreen
 import paufregi.connectfeed.presentation.app.login.LoginScreen
-import paufregi.connectfeed.presentation.app.profiles.ProfilesScreen
+import paufregi.connectfeed.presentation.app.profiles.Profiles
 import paufregi.connectfeed.presentation.app.settings.SettingsScreen
 import paufregi.connectfeed.presentation.ui.components.frame.Frame
 import paufregi.connectfeed.presentation.ui.models.AuthState
@@ -56,9 +56,13 @@ class AppActivity : ComponentActivity() {
                                 NavDisplay(
                                     backStack = backStack,
                                     onBack = { backStack.removeLastOrNull() },
+                                    entryDecorators = listOf(
+                                        rememberSaveableStateHolderNavEntryDecorator(),
+                                        rememberViewModelStoreNavEntryDecorator(),
+                                    ),
                                     entryProvider = entryProvider {
                                         entry<Route.Activities> { ActivitiesScreen(padding) }
-                                        entry<Route.Profiles> { ProfilesScreen(padding) }
+                                        entry<Route.Profiles> { Profiles( padding) }
                                         entry<Route.Gears> { GearsScreen(padding) }
                                         entry<Route.Settings> { SettingsScreen(padding) }
                                     }

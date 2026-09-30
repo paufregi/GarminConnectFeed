@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.SentimentVerySatisfied
 import androidx.compose.material.icons.outlined.WaterDrop
@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
@@ -35,13 +36,14 @@ fun ProfileCard(
     profile: Profile,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
+    onDelete: () -> Unit = {}
 ) {
     @Composable
     fun iconTint(enabled: Boolean) =
         if (enabled)
-            MaterialTheme.colorScheme.primary
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
         else
-            MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.25f)
 
     Card(
         modifier = modifier
@@ -51,32 +53,22 @@ fun ProfileCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(16.dp)
+                .padding(10.dp)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = iconFor(profile.type),
                 contentDescription = profile.type.toString(),
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(28.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.padding(1.dp)
             ) {
-                Text(
-                    text = profile.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.size(8.dp))
-
+                Text(text = profile.name)
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -84,39 +76,41 @@ fun ProfileCard(
                     Icon(
                         imageVector = Icons.Outlined.Map,
                         contentDescription = "Course",
-                        modifier = modifier.size(20.dp),
-                        tint = iconTint(profile.course != null)
+                        tint = iconTint(profile.course != null),
+                        modifier = Modifier.size(12.dp)
                     )
-
                     Icon(
                         imageVector = Icons.Outlined.WaterDrop,
                         contentDescription = "Water",
-                        modifier = modifier.size(20.dp),
-                        tint = iconTint(profile.water != null)
+                        tint = iconTint(profile.water != null),
+                        modifier = Modifier.size(12.dp)
                     )
-
                     Icon(
                         imageVector = Icons.Connect.Shoe,
                         contentDescription = "Shoe",
-                        modifier = modifier.size(20.dp),
-                        tint = iconTint(profile.gear)
+                        tint = iconTint(profile.gear),
+                        modifier = Modifier.size(12.dp)
                     )
-
                     Icon(
                         imageVector = Icons.Outlined.SentimentVerySatisfied,
                         contentDescription = "Feel & Effort",
-                        modifier = modifier.size(20.dp),
-                        tint = iconTint(profile.feelAndEffort)
+                        tint = iconTint(profile.feelAndEffort),
+                        modifier = Modifier.size(12.dp)
                     )
-
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.TrendingUp,
                         contentDescription = "Training Effect",
-                        modifier = modifier.size(20.dp),
-                        tint = iconTint(profile.trainingEffect)
+                        tint = iconTint(profile.trainingEffect),
+                        modifier = Modifier.size(12.dp)
                     )
                 }
             }
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                icon = Icons.Default.Delete,
+                onClick = onDelete,
+                modifier = Modifier.size(20.dp).testTag("delete_profile_${profile.id}")
+            )
         }
     }
 }

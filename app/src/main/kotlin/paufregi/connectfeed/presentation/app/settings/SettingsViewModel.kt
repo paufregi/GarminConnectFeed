@@ -18,7 +18,8 @@ import paufregi.connectfeed.core.usecases.GetUser
 import paufregi.connectfeed.core.usecases.IsStravaConnected
 import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
-import paufregi.connectfeed.presentation.ui.models.ProcState
+import paufregi.connectfeed.core.utils.finally
+import paufregi.connectfeed.presentation.ui.utils.SnackbarManager
 import paufregi.connectfeed.system.Downloader
 import javax.inject.Inject
 import javax.inject.Named
@@ -31,9 +32,10 @@ class SettingsViewModel @Inject constructor(
     val refreshUser: RefreshUser,
     val signOut: SignOut,
     val disconnectStrava: DisconnectStrava,
+    val snackbarManager: SnackbarManager,
     @param:Named("currentVersion") val version: String,
     @param:Named("downloader") val downloader: Downloader,
-    @param:Named("StravaAuthUri") val stravaAuthUri: Uri
+    @param:Named("StravaAuthUri") val stravaAuthUri: Uri,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SettingsState(currentVersion = Version.parse(version)))
 
@@ -58,27 +60,28 @@ class SettingsViewModel @Inject constructor(
         is SettingsAction.SignOut -> signOutAction()
         is SettingsAction.StravaDisconnect -> signOutStravaAction()
         is SettingsAction.Update -> updateAction()
-        is SettingsAction.Reset -> _state.update { it.copy(process = null) }
+        is SettingsAction.Reset -> _state.update { it.copy(loading = false) }
     }
 
     private fun refreshUserAction() = viewModelScope.launch {
-        _state.update { it.copy(process = ProcState.Running) }
+        _state.update { it.copy(loading = true) }
         refreshUser()
-            .onSuccess { _state.update { it.copy(process = ProcState.Success("User data refreshed")) } }
-            .onFailure { err -> _state.update { it.copy(process = ProcState.Failure(err.message ?: "Error")) } }
+            .onSuccess { snackbarManager.showMessage("User data refreshed") }
+            .onFailure { snackbarManager.showMessage("Failed to refresh user data: ${it.message}") }
+            .finally { _state.update { it.copy(loading = false) } }
     }
 
     private fun signOutAction() = viewModelScope.launch {
-        _state.update { it.copy(process = ProcState.Running) }
+        _state.update { it.copy(loading = true) }
         disconnectStrava()
         signOut()
-        _state.update { it.copy(process = null) }
+        _state.update { it.copy(loading = false) }
     }
 
     private fun signOutStravaAction() = viewModelScope.launch {
-        _state.update { it.copy(process = ProcState.Running) }
+        _state.update { it.copy(loading = true) }
         disconnectStrava()
-        _state.update { it.copy(process = null) }
+        _state.update { it.copy(loading = false) }
     }
 
     private fun updateAction() = viewModelScope.launch {

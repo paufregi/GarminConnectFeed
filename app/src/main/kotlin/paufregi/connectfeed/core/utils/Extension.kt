@@ -36,6 +36,9 @@ fun <T> Response<T>.toResult(emptyBody: T): Result<T> =
 inline fun <T, R> Result<T>.andThen(block: (T) -> Result<R>): Result<R> =
     fold(onSuccess = block, onFailure = { Result.failure(it) })
 
+inline fun <T> Result<T>.finally(block: () -> Unit): Result<T> =
+    this.onSuccess { block() }.onFailure { block() }.map { it }
+
 fun <T> Result.Companion.failure(cause: String): Result<T> = failure(Exception(cause))
 
 fun <T> Result<T>.mapFailure(transform: (exception: Throwable) -> Throwable): Result<T> =
