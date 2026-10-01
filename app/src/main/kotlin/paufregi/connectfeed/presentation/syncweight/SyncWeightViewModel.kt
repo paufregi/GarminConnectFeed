@@ -20,7 +20,7 @@ class SyncWeightViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow<ProcState>(ProcState.Running)
 
-    val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), ProcState.Running)
+    val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
     fun updateWeight(inputStream: InputStream?) = viewModelScope.launch {
         _state.update { ProcState.Running }

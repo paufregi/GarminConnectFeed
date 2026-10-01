@@ -52,13 +52,13 @@ internal fun ProfileScreen(
         }
     )
 
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
     LaunchedEffect(viewModel) {
         viewModel.effects.collect { effect ->
             if (effect is ProfileEffect.NavigateBack) onDone()
         }
     }
+
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     ProfileForm(state, viewModel::onAction, padding)
 }

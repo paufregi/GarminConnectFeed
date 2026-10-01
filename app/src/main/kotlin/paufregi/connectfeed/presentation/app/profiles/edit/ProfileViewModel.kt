@@ -24,8 +24,8 @@ import paufregi.connectfeed.core.usecases.SaveProfile
 import paufregi.connectfeed.core.utils.finally
 import paufregi.connectfeed.presentation.ui.utils.SnackbarManager
 
-@HiltViewModel(assistedFactory = ProfileViewModel.Factory::class)
 @ExperimentalCoroutinesApi
+@HiltViewModel(assistedFactory = ProfileViewModel.Factory::class)
 class ProfileViewModel @AssistedInject constructor(
     getActivityTypes: GetActivityTypesForProfile,
     getEventTypes: GetEventTypes,
@@ -64,31 +64,29 @@ class ProfileViewModel @AssistedInject constructor(
             .finally { _state.update { it.copy(loading = false) } }
     }
 
-    fun onAction(action: ProfileAction) {
-        when (action) {
-            is ProfileAction.SetName -> _state.update { it.copy(profile = it.profile.copy(name = action.value)) }
-            is ProfileAction.SetType -> _state.update { state ->
-                val course = state.profile.course?.takeIf { action.value.allowCourse && action.value.compatible(it.type) }
-                state.copy(
-                    profile = state.profile.copy(
-                        type = action.value,
-                        course = course,
-                    )
+    fun onAction(action: ProfileAction) = when (action) {
+        is ProfileAction.SetName -> _state.update { it.copy(profile = it.profile.copy(name = action.value)) }
+        is ProfileAction.SetType -> _state.update { state ->
+            val course = state.profile.course?.takeIf { action.value.allowCourse && action.value.compatible(it.type) }
+            state.copy(
+                profile = state.profile.copy(
+                    type = action.value,
+                    course = course,
                 )
-            }
-            is ProfileAction.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = action.value)) }
-            is ProfileAction.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = action.value)) }
-            is ProfileAction.SetWater -> _state.update {
-                it.copy(profile = it.profile.copy(water = action.value.filter(Char::isDigit).toIntOrNull()))
-            }
-            is ProfileAction.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = action.value)) }
-            is ProfileAction.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = action.value)) }
-            is ProfileAction.SetGear -> _state.update { it.copy(profile = it.profile.copy(gear = action.value)) }
-            is ProfileAction.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = action.value)) }
-            is ProfileAction.SetTrainingEffect -> _state.update { it.copy(profile = it.profile.copy(trainingEffect = action.value)) }
-            ProfileAction.Cancel -> navigateBack()
-            ProfileAction.Save -> save()
+            )
         }
+        is ProfileAction.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = action.value)) }
+        is ProfileAction.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = action.value)) }
+        is ProfileAction.SetWater -> _state.update {
+            it.copy(profile = it.profile.copy(water = action.value.filter(Char::isDigit).toIntOrNull()))
+        }
+        is ProfileAction.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = action.value)) }
+        is ProfileAction.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = action.value)) }
+        is ProfileAction.SetGear -> _state.update { it.copy(profile = it.profile.copy(gear = action.value)) }
+        is ProfileAction.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = action.value)) }
+        is ProfileAction.SetTrainingEffect -> _state.update { it.copy(profile = it.profile.copy(trainingEffect = action.value)) }
+        is ProfileAction.Save -> save()
+        is ProfileAction.Cancel -> navigateBack()
     }
 
     private fun save() = viewModelScope.launch {

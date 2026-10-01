@@ -35,6 +35,11 @@ interface GarminConnect {
         @Query("start") start: Int = 0,
     ): Response<List<Activity>>
 
+    @GET("/activity-service/activity/{id}")
+    suspend fun getActivity(
+        @Path("id") id: Long
+    ): Response<Activity>
+
     @GET("/course-service/course")
     suspend fun getCourses(): Response<List<Course>>
 

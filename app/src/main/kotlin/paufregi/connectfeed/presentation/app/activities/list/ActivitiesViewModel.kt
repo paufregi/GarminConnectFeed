@@ -12,13 +12,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.utils.finally
-import paufregi.connectfeed.presentation.activities.ActivitiesAction
 import paufregi.connectfeed.presentation.ui.utils.SnackbarManager
 import javax.inject.Inject
 
 @HiltViewModel
 @ExperimentalCoroutinesApi
-class ActivityListViewModel @Inject constructor(
+class ActivitiesViewModel @Inject constructor(
     val getActivities: GetActivities,
     val notificationManager: SnackbarManager,
 ) : ViewModel() {

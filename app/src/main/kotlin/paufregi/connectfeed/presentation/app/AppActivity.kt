@@ -18,6 +18,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import paufregi.connectfeed.presentation.app.activities.Activities
 import paufregi.connectfeed.presentation.app.activities.list.ActivitiesScreen
 import paufregi.connectfeed.presentation.app.gears.GearsScreen
 import paufregi.connectfeed.presentation.app.login.LoginScreen
@@ -61,7 +62,7 @@ class AppActivity : ComponentActivity() {
                                         rememberViewModelStoreNavEntryDecorator(),
                                     ),
                                     entryProvider = entryProvider {
-                                        entry<Route.Activities> { ActivitiesScreen(padding) }
+                                        entry<Route.Activities> { Activities(padding) }
                                         entry<Route.Profiles> { Profiles( padding) }
                                         entry<Route.Gears> { GearsScreen(padding) }
                                         entry<Route.Settings> { SettingsScreen(padding) }
