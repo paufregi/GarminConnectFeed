@@ -79,6 +79,10 @@ fun ActivityCard(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
                     )
 
+                    Row {
+                        activity.trainingEffect
+                    }
+
                     activity.distance?.let {
                         Text(
                             text = "${Formatter.distance(it)} km",

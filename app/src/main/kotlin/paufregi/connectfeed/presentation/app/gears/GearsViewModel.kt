@@ -26,7 +26,7 @@ class GearsViewModel @Inject constructor(
     private val _state = MutableStateFlow(GearsState())
 
     val state = combine(_state, getGears()) { state, gears -> state.copy(gears = gears)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), GearsState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
     fun onAction(action: GearsAction) {
         when (action) {

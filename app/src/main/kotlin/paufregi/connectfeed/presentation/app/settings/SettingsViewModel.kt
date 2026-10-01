@@ -45,7 +45,7 @@ class SettingsViewModel @Inject constructor(
         isStravaConnected(),
     ) { state, user, strava -> state.copy(user = user, hasStrava = strava) }
         .onStart { load() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), SettingsState())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
     private fun load() = viewModelScope.launch {
         _state.update { it.copy(updating = true) }

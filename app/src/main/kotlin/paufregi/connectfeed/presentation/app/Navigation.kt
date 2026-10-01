@@ -16,6 +16,8 @@ sealed interface Route: NavKey {
     data object Activities : Route
 
     @Serializable
+    data object ActivityList : Route
+    @Serializable
     data class ActivityEdit(val id: Long, val stravaId: Long) : Route
 
     @Serializable

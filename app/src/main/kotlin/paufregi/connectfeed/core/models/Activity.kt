@@ -12,4 +12,8 @@ data class Activity(
     val date: LocalDateTime,
     val workoutId: Long? = null,
     val stravaId: Long? = null,
-)
+) {
+    companion object{
+        val EMPTY = Activity(0, "NOPE", ActivityType.Any, EventType.Uncategorized, date = LocalDateTime.MIN)
+    }
+}

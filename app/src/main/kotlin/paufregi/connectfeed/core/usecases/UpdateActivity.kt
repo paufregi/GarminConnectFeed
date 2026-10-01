@@ -29,8 +29,7 @@ class UpdateActivity @Inject constructor(
         effort: Float?,
         workout: Workout?,
         gear: Gear?,
-        trainingEffect: String?,
-        trainingEffectFlag: Boolean,
+        trainingEffect: Boolean,
     ): Result<Unit> = coroutineScope {
         if (name == null || (course != null && !activity.type.allowCourse))
             return@coroutineScope Result.failure("Validation error")
@@ -56,7 +55,7 @@ class UpdateActivity @Inject constructor(
                     name = name,
                     description = Formatter.stravaDescription(
                         description = description,
-                        trainingEffect = trainingEffect.takeIf { trainingEffectFlag },
+                        trainingEffect = activity.trainingEffect.takeIf { trainingEffect },
                         workout = workout?.name,
                     ),
                     commute = eventType?.commute,

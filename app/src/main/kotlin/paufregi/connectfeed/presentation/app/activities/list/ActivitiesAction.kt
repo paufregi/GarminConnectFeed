@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.activities
+package paufregi.connectfeed.presentation.app.activities.list
 
 sealed interface ActivitiesAction {
 }

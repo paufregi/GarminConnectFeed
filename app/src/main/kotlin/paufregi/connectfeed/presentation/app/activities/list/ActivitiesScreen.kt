@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import paufregi.connectfeed.presentation.activities.ActivitiesAction
 import paufregi.connectfeed.presentation.ui.components.ActivityCard
 import paufregi.connectfeed.presentation.ui.components.Loading
 import paufregi.connectfeed.presentation.ui.utils.add
@@ -30,8 +29,9 @@ import paufregi.connectfeed.presentation.ui.utils.add
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 internal fun ActivitiesScreen(
+    onOpen: (Long, Long) -> Unit = { _,_ -> },
     padding: PaddingValues = PaddingValues(),
-    viewModel: ActivityListViewModel = hiltViewModel()
+    viewModel: ActivitiesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -69,7 +69,7 @@ internal fun ActivityList(
                 items(state.activities, key = { it.id }) { activity ->
                     ActivityCard(
                         activity = activity,
-                        modifier = Modifier.fillMaxWidth().testTag("profile_${activity.id}"),
+                        modifier = Modifier.fillMaxWidth().testTag("activity_${activity.id}"),
                         onClick = { },
                     )
                 }

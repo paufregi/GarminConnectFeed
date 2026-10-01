@@ -67,7 +67,7 @@ class UpdateActivityTest{
 
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val res = useCase(activityNoStrava, name, null, eventType, course, water, feel, effort, workout, gear, trainingEffect, false)
+        val res = useCase(activityNoStrava, name, null, eventType, course, water, feel, effort, workout, gear, false)
 
         assertThat(res.isSuccess).isTrue()
         coVerify { garminRepo.updateActivity(activityNoStrava, name, garminDescription, eventType, course, water, feel, effort, gear) }
@@ -81,7 +81,7 @@ class UpdateActivityTest{
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, trainingEffect, true)
+        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
@@ -97,7 +97,7 @@ class UpdateActivityTest{
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val res = useCase(activity, name, null, eventType, course, water, feel, effort, workout, gear, trainingEffect, true)
+        val res = useCase(activity, name, null, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
@@ -112,7 +112,7 @@ class UpdateActivityTest{
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val res = useCase(activity, name, description, eventType, course, water, feel, effort, null, gear, trainingEffect, true)
+        val res = useCase(activity, name, description, eventType, course, water, feel, effort, null, gear, true)
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
@@ -129,7 +129,7 @@ class UpdateActivityTest{
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, null, true)
+        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
@@ -146,7 +146,7 @@ class UpdateActivityTest{
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, trainingEffect, false)
+        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, false)
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
@@ -157,7 +157,7 @@ class UpdateActivityTest{
 
     @Test
     fun `Invalid - no name`() = runTest {
-        val res = useCase(activity, null, description, eventType, course, water, feel, effort, workout, gear, trainingEffect, true)
+        val res = useCase(activity, null, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -167,7 +167,7 @@ class UpdateActivityTest{
     fun `Invalid - course not allowed`() = runTest {
         val invalidActivity = activity.copy(type = ActivityType.Swimming)
 
-        val res = useCase(invalidActivity, name, description, eventType, course, water, feel, effort, workout, gear, trainingEffect, true)
+        val res = useCase(invalidActivity, name, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
@@ -181,7 +181,7 @@ class UpdateActivityTest{
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, trainingEffect, true)
+        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin activity")
@@ -199,7 +199,7 @@ class UpdateActivityTest{
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.failure("error")
 
-        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, trainingEffect, true)
+        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Strava activity")
@@ -217,7 +217,7 @@ class UpdateActivityTest{
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.failure("error")
 
-        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, trainingEffect, true)
+        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin & Strava activities")
