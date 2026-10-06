@@ -11,7 +11,6 @@ import androidx.compose.runtime.key
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -19,13 +18,11 @@ import androidx.navigation3.ui.NavDisplay
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.presentation.app.activities.Activities
-import paufregi.connectfeed.presentation.app.activities.list.ActivitiesScreen
-import paufregi.connectfeed.presentation.app.gears.GearsScreen
+import paufregi.connectfeed.presentation.app.gears.Gears
 import paufregi.connectfeed.presentation.app.login.LoginScreen
 import paufregi.connectfeed.presentation.app.profiles.Profiles
 import paufregi.connectfeed.presentation.app.settings.SettingsScreen
-import paufregi.connectfeed.presentation.ui.components.frame.Frame
-import paufregi.connectfeed.presentation.ui.models.AuthState
+import paufregi.connectfeed.presentation.ui.components.notification.Notification
 import paufregi.connectfeed.presentation.ui.theme.Theme
 
 @AndroidEntryPoint
@@ -41,19 +38,16 @@ class AppActivity : ComponentActivity() {
 
         setContent {
             val state by viewModel.state.collectAsStateWithLifecycle()
-            splashScreen.setKeepOnScreenCondition { state == AuthState.Loading }
+            splashScreen.setKeepOnScreenCondition { state is AppState.Loading }
 
-            val backStack = rememberNavBackStack(Route.Activities as NavKey)
+            val backStack = rememberNavBackStack(AppRoute.Activities)
+            val navigate: (AppRoute) -> Unit = { backStack.add(it) }
 
             Theme {
-                when(state) {
-                    is AuthState.Authenticated -> {
-                        key(AuthState.Authenticated) {
-                            Frame(
-                                menuSpec = Navigation.menu,
-                                currentRoute = backStack.lastOrNull() as? Route,
-                                navigate = { route -> backStack.add(route) }
-                            ) { padding ->
+                Notification {
+                    when(val s = state) {
+                        is AppState.Authenticated -> {
+                            key(state) {
                                 NavDisplay(
                                     backStack = backStack,
                                     onBack = { backStack.removeLastOrNull() },
@@ -62,21 +56,22 @@ class AppActivity : ComponentActivity() {
                                         rememberViewModelStoreNavEntryDecorator(),
                                     ),
                                     entryProvider = entryProvider {
-                                        entry<Route.Activities> { Activities(padding) }
-                                        entry<Route.Profiles> { Profiles( padding) }
-                                        entry<Route.Gears> { GearsScreen(padding) }
-                                        entry<Route.Settings> { SettingsScreen(padding) }
+                                        entry<AppRoute.Activities> { Activities(s.user, navigate) }
+                                        entry<AppRoute.Profiles> { Profiles(s.user, navigate) }
+                                        entry<AppRoute.Gears> { Gears(s.user, navigate) }
+                                        entry<AppRoute.Settings> { SettingsScreen(s.user, navigate) }
                                     }
                                 )
                             }
                         }
-                    }
-                    is AuthState.NotAuthenticated -> {
-                        key(AuthState.NotAuthenticated) {
-                            LoginScreen()
+                        is AppState.NotAuthenticated -> {
+                            key(AppState.NotAuthenticated) {
+                                LoginScreen()
+                            }
                         }
+                        is AppState.Loading -> {}
                     }
-                    is AuthState.Loading -> {}
+
                 }
             }
         }

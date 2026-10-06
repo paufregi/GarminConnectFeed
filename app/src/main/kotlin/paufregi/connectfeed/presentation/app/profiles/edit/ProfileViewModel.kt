@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -22,7 +23,7 @@ import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
 import paufregi.connectfeed.core.usecases.SaveProfile
 import paufregi.connectfeed.core.utils.finally
-import paufregi.connectfeed.presentation.ui.utils.SnackbarManager
+import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 
 @ExperimentalCoroutinesApi
 @HiltViewModel(assistedFactory = ProfileViewModel.Factory::class)
@@ -32,13 +33,13 @@ class ProfileViewModel @AssistedInject constructor(
     getProfile: GetProfile,
     val getCourses: GetCourses,
     val saveProfile: SaveProfile,
-    val notificationManager: SnackbarManager,
+    val notification: NotificationManager,
     @Assisted private val id: Long?,
 ) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun create(id: Long? = null): ProfileViewModel
+        fun create(id: Long?): ProfileViewModel
     }
 
     private val _effects = Channel<ProfileEffect>(Channel.BUFFERED)
@@ -46,13 +47,12 @@ class ProfileViewModel @AssistedInject constructor(
 
     private val _state = MutableStateFlow(
         ProfileState(
-            profile = id?.let { getProfile(it) } ?: Profile(),
             activityTypes = getActivityTypes(),
             eventTypes = getEventTypes()
         )
     )
 
-    val state = _state
+    val state = combine(_state, getProfile(id)) { state, profile -> state.copy(profile = profile ?: Profile()) }
         .onStart { load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
@@ -93,10 +93,10 @@ class ProfileViewModel @AssistedInject constructor(
         _state.update { it.copy(loading = true) }
         saveProfile(state.value.profile)
             .onSuccess {
-                notificationManager.showMessage("Profile saved")
+                notification.show("Profile saved")
                 navigateBack()
             }
-            .onFailure { notificationManager.showMessage(it.message ?: "Error") }
+            .onFailure { notification.show(it.message ?: "Error") }
             .finally { _state.update { it.copy(loading = false) } }
     }
 

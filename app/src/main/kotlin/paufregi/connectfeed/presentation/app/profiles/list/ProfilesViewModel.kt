@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.usecases.DeleteProfile
 import paufregi.connectfeed.core.usecases.GetProfiles
-import paufregi.connectfeed.presentation.ui.utils.SnackbarManager
+import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class ProfilesViewModel @Inject constructor(
     getProfiles: GetProfiles,
     val deleteProfile: DeleteProfile,
-    val notificationManager: SnackbarManager,
+    val notification: NotificationManager,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfilesState())
@@ -36,7 +36,7 @@ class ProfilesViewModel @Inject constructor(
 
     private fun deleteAction(profile: Profile) = viewModelScope.launch {
         deleteProfile(profile)
-        notificationManager.showMessage("Profile deleted")
+        notification.show("Profile deleted")
     }
 }
 

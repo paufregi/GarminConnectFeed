@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,33 +38,38 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.presentation.app.AppRoute
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
-import paufregi.connectfeed.presentation.ui.components.Loading
 import paufregi.connectfeed.presentation.ui.components.TextIcon
+import paufregi.connectfeed.presentation.ui.components.screens.MenuScreen
 import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
 import paufregi.connectfeed.presentation.ui.icons.garmin.Logo
 import paufregi.connectfeed.presentation.ui.icons.strava.Logo
 import paufregi.connectfeed.presentation.ui.icons.strava.Strava
+import paufregi.connectfeed.presentation.ui.utils.add
 
 @Composable
 @ExperimentalMaterial3Api
 internal fun SettingsScreen(
-    padding: PaddingValues = PaddingValues(),
+    user: User,
+    navigate: (AppRoute) -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when (state.loading) {
-        true -> Loading()
-        false -> SettingsContent(state, viewModel::onAction, viewModel.stravaAuthUri, padding)
-    }
+    MenuScreen(
+        user = user,
+        isLoading = state.loading,
+        currentRoute = AppRoute.Settings,
+        navigate = navigate,
+    ) { SettingsContent(state, viewModel::onAction, viewModel.stravaAuthUri, it) }
 }
 
 @Preview
@@ -106,12 +112,8 @@ internal fun SettingsContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .testTag("settings_content")
-            .padding(
-                top = padding.calculateTopPadding(),
-                bottom = padding.calculateBottomPadding(),
-                start = padding.calculateLeftPadding(LayoutDirection.Ltr) + 20.dp,
-                end = padding.calculateRightPadding(LayoutDirection.Ltr) + 20.dp,
-            ),
+            .consumeWindowInsets(padding)
+            .padding(padding.add(horizontal = 20.dp))
     ) {
         AsyncImage(
             model = state.user?.profileImageUrl,

@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.ui.components
+package paufregi.connectfeed.presentation.ui.components.cards
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
 import paufregi.connectfeed.presentation.ui.icons.garmin.Shoe
 import paufregi.connectfeed.presentation.ui.utils.iconFor

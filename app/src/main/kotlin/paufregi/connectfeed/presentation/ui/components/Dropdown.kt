@@ -1,8 +1,6 @@
 package paufregi.connectfeed.presentation.ui.components
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DropdownMenuItem
@@ -19,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,7 +32,6 @@ data class DropdownItem(
     val text: String,
     val icon: ImageVector? = null,
     val supportingText: String? = null,
-    val supportingIcon: ImageVector? = null,
     val onClick: () -> Unit = {}
 )
 
@@ -49,6 +45,7 @@ fun ActivityType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 @ExperimentalMaterial3Api
 fun EventType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
+    icon = iconFor(this),
     onClick = onClick
 )
 
@@ -100,15 +97,7 @@ fun Dropdown(
             label = label,
             value = selected?.text ?: "",
             supportingText = {
-                if (selected?.supportingText != null || selected?.supportingIcon != null) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = selected.supportingText ?: "", fontSize = 11.sp)
-                        selected.supportingIcon?.let { Icon(it, it.name, tint = Color.Unspecified, modifier = Modifier.size(16.dp)) }
-                    }
-                }
+                selected?.supportingText?.let { Text(text = it, fontSize = 11.sp) }
             },
             leadingIcon = { selected?.icon?.let { Icon(it, it.name, Modifier.size(24.dp)) } },
             onValueChange = {},

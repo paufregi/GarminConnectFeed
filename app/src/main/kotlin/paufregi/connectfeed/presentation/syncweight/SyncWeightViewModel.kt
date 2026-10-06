@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import paufregi.connectfeed.core.usecases.GetUser
 import paufregi.connectfeed.core.usecases.SyncWeight
 import paufregi.connectfeed.core.utils.RenphoReader
 import paufregi.connectfeed.presentation.ui.models.ProcState
@@ -16,11 +17,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SyncWeightViewModel @Inject constructor(
+    val getUser: GetUser,
     val syncWeight: SyncWeight,
 ) : ViewModel() {
     private val _state = MutableStateFlow<ProcState>(ProcState.Running)
 
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
+    val user = getUser().stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), null)
+
 
     fun updateWeight(inputStream: InputStream?) = viewModelScope.launch {
         _state.update { ProcState.Running }

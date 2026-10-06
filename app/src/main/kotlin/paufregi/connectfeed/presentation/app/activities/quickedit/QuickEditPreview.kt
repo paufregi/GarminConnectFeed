@@ -1,11 +1,11 @@
-package paufregi.connectfeed.presentation.app.activities.edit
+package paufregi.connectfeed.presentation.app.activities.quickedit
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import paufregi.connectfeed.core.models.Activity
 
-class ActivityPreview : PreviewParameterProvider<ActivityState> {
+class QuickEditPreview : PreviewParameterProvider<QuickEditState> {
     override val values = sequenceOf(
-        ActivityState(
+        QuickEditState(
             activity = Activity.EMPTY,
         ),
     )

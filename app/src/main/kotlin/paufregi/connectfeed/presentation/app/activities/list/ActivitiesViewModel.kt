@@ -12,14 +12,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetActivities
 import paufregi.connectfeed.core.utils.finally
-import paufregi.connectfeed.presentation.ui.utils.SnackbarManager
+import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 import javax.inject.Inject
 
 @HiltViewModel
 @ExperimentalCoroutinesApi
 class ActivitiesViewModel @Inject constructor(
     val getActivities: GetActivities,
-    val notificationManager: SnackbarManager,
+    val notification: NotificationManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(ActivitiesState())
 
@@ -32,7 +32,7 @@ class ActivitiesViewModel @Inject constructor(
 
         getActivities()
             .onSuccess { activities -> _state.update { it.copy(activities = activities) } }
-            .onFailure { notificationManager.showMessage("Failed to load activities: ${it.message}") }
+            .onFailure { notification.show("Failed to load activities: ${it.message}") }
             .finally { _state.update { it.copy(loading = false) } }
     }
 
