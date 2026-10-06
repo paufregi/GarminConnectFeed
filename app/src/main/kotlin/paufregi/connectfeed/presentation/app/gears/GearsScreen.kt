@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,23 +24,34 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import paufregi.connectfeed.presentation.ui.components.GearCard
-import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.presentation.app.AppRoute
+import paufregi.connectfeed.presentation.ui.components.cards.GearCard
+import paufregi.connectfeed.presentation.ui.components.screens.MenuScreen
 import paufregi.connectfeed.presentation.ui.utils.add
 
 @Composable
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-internal fun GearsScreen(
-    padding: PaddingValues = PaddingValues(),
+internal fun Gears(
+    user: User,
+    navigate: (AppRoute) -> Unit = {},
     viewModel: GearsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when (state.loading) {
-        true -> Loading()
-        else -> GearsContent(state, padding, viewModel::onAction)
-    }
+    MenuScreen(
+        user = user,
+        isLoading = state.loading,
+        currentRoute = AppRoute.Gears,
+        navigate = navigate,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { viewModel.sync() },
+                modifier = Modifier.testTag("sync_gears")
+            ) { Icon(Icons.Default.Sync, "Sync gears") }
+        }
+    ) { GearsContent(state, it) }
 }
 
 @Preview
@@ -50,37 +60,24 @@ internal fun GearsScreen(
 internal fun GearsContent(
     @PreviewParameter(GearsStatePreview::class) state: GearsState,
     padding: PaddingValues = PaddingValues(),
-    onAction: (GearsAction) -> Unit = {},
 ) {
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onAction(GearsAction.Sync) },
-                modifier = Modifier.testTag("sync_gears")
-            ) { Icon(Icons.Default.Sync, "Sync gears") }
-        },
-        modifier = Modifier.fillMaxSize().testTag("gears_content")
-    ) { innerPadding ->
-        val consumedInsets = padding.add(innerPadding)
-        val contentPadding = padding.add(innerPadding).add(horizontal = 20.dp)
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = contentPadding,
-            modifier = Modifier
-                .fillMaxSize()
-                .consumeWindowInsets(consumedInsets)
-        ) {
-            if (state.gears.isEmpty()) {
-                item { Text("No gears", modifier = Modifier.testTag("no_gears")) }
-            } else {
-                items(state.gears, key = { it.id }) { gear ->
-                    GearCard(
-                        gear = gear,
-                        modifier = Modifier.fillMaxWidth().testTag("gear_${gear.id}")
-                    )
-                }
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = padding.add(horizontal = 20.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .consumeWindowInsets(padding)
+            .testTag("gears_list")
+    ) {
+        if (state.gears.isEmpty()) {
+            item { Text("No gears", modifier = Modifier.testTag("no_gears")) }
+        } else {
+            items(state.gears, key = { it.id }) { gear ->
+                GearCard(
+                    gear = gear,
+                    modifier = Modifier.fillMaxWidth().testTag("gear_${gear.id}")
+                )
             }
         }
     }

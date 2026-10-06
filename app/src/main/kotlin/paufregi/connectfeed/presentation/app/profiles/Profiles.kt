@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.app.profiles
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -9,7 +8,9 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import paufregi.connectfeed.presentation.app.Route
+import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.presentation.app.AppRoute
+import paufregi.connectfeed.presentation.app.ProfilesRoute
 import paufregi.connectfeed.presentation.app.profiles.edit.ProfileScreen
 import paufregi.connectfeed.presentation.app.profiles.list.ProfilesScreen
 
@@ -17,9 +18,10 @@ import paufregi.connectfeed.presentation.app.profiles.list.ProfilesScreen
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 fun Profiles(
-    padding: PaddingValues = PaddingValues(),
+    user: User,
+    navigate: (AppRoute) -> Unit
 ) {
-    val profileStack = rememberNavBackStack(Route.ProfileList)
+    val profileStack = rememberNavBackStack(ProfilesRoute.List)
 
     NavDisplay(
         backStack = profileStack,
@@ -29,15 +31,15 @@ fun Profiles(
             rememberViewModelStoreNavEntryDecorator(),
         ),
         entryProvider = entryProvider {
-            entry<Route.ProfileList> { ProfilesScreen(
-                onOpen = { id -> profileStack.add(Route.ProfileEdit(id)) },
-                onCreate = { profileStack.add(Route.ProfileEdit()) },
-                padding = padding,
+            entry<ProfilesRoute.List> { ProfilesScreen(
+                user = user,
+                navigate = navigate,
+                onOpen = { id -> profileStack.add(ProfilesRoute.Edit(id)) },
+                onCreate = { profileStack.add(ProfilesRoute.Edit()) },
             ) }
-            entry<Route.ProfileEdit> { route -> ProfileScreen(
+            entry<ProfilesRoute.Edit> { route -> ProfileScreen(
                 id = route.id,
                 onDone = { profileStack.removeLastOrNull() },
-                padding = padding,
             ) }
         }
     )

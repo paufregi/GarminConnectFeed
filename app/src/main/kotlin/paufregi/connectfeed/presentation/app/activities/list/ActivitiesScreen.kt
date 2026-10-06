@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,24 +20,29 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import paufregi.connectfeed.presentation.ui.components.ActivityCard
-import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.presentation.app.AppRoute
+import paufregi.connectfeed.presentation.ui.components.cards.ActivityCard
+import paufregi.connectfeed.presentation.ui.components.screens.MenuScreen
 import paufregi.connectfeed.presentation.ui.utils.add
 
 @Composable
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 internal fun ActivitiesScreen(
-    onOpen: (Long, Long) -> Unit = { _,_ -> },
-    padding: PaddingValues = PaddingValues(),
+    user: User,
+    navigate: (AppRoute) -> Unit = {},
+    onOpen: (Long, Long?) -> Unit = { _,_ -> },
     viewModel: ActivitiesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when (state.loading) {
-        true -> Loading()
-        false -> ActivityList(state, viewModel::onAction, padding)
-    }
+    MenuScreen(
+        user = user,
+        isLoading = state.loading,
+        currentRoute = AppRoute.Activities,
+        navigate = navigate,
+    ) { ActivityList(state, onOpen, viewModel::onAction, it) }
 }
 
 @Preview
@@ -46,35 +50,29 @@ internal fun ActivitiesScreen(
 @ExperimentalMaterial3Api
 internal fun ActivityList(
     @PreviewParameter(ActivitiesPreview::class) state: ActivitiesState,
+    onOpen: (Long, Long?) -> Unit = { _,_ -> },
     onAction: (ActivitiesAction) -> Unit = {},
     padding: PaddingValues = PaddingValues(),
 ) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize().testTag("activity_list_content")
-    ) { innerPadding ->
-        val consumedInsets = padding.add(innerPadding)
-        val contentPadding = padding.add(innerPadding).add(horizontal = 20.dp)
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = contentPadding,
-            modifier = Modifier
-                .fillMaxSize()
-                .consumeWindowInsets(consumedInsets)
-        ) {
-            if (state.activities.isEmpty()) {
-                item { Text("No activities", modifier = Modifier.testTag("no_activities")) }
-            } else {
-                items(state.activities, key = { it.id }) { activity ->
-                    ActivityCard(
-                        activity = activity,
-                        modifier = Modifier.fillMaxWidth().testTag("activity_${activity.id}"),
-                        onClick = { },
-                    )
-                }
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = padding.add(horizontal = 20.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .consumeWindowInsets(padding)
+            .testTag("activity_list")
+    ) {
+        if (state.activities.isEmpty()) {
+            item { Text("No activities", modifier = Modifier.testTag("no_activities")) }
+        } else {
+            items(state.activities, key = { it.id }) { activity ->
+                ActivityCard(
+                    activity = activity,
+                    modifier = Modifier.fillMaxWidth().testTag("activity_${activity.id}"),
+                    onClick = { onOpen(activity.id, activity.stravaId) },
+                )
             }
         }
     }
 }
-

@@ -16,8 +16,8 @@ class AppRepository @Inject constructor(
     fun getAllProfiles(user: User): Flow<List<Profile>> =
         garminDao.getAllProfiles(user.id).map { profiles -> profiles.map { it.toCore() } }
 
-    fun getProfile(id: Long): Profile? =
-        garminDao.getProfile(id)?.toCore()
+    fun getProfile(id: Long): Flow<Profile?> =
+        garminDao.getProfile(id).map { profile -> profile?.toCore() }
 
     suspend fun saveProfile(user: User, profile: Profile) =
         garminDao.saveProfile(profile.toEntity(user.id))
@@ -27,10 +27,7 @@ class AppRepository @Inject constructor(
 
     fun getAllGears(user: User): Flow<List<Gear>> =
         garminDao.getAllGears(user.id).map { gears -> gears.map { it.toCore() } }
-
-    suspend fun getGear(id: String): Gear? =
-        garminDao.getGear(id)?.toCore()
-
+    
     suspend fun saveGear(user: User, gear: Gear) =
         garminDao.saveGear(gear.toEntity(user.id))
 

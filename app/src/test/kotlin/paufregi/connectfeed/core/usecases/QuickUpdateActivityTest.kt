@@ -23,10 +23,10 @@ import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaRepository
 import java.time.LocalDateTime
 
-class UpdateActivityWithProfileTest{
+class QuickUpdateActivityTest{
     private val garminRepo = mockk<GarminRepository>()
     private val stravaRepo = mockk<StravaRepository>()
-    private lateinit var useCase: UpdateActivityWithProfile
+    private lateinit var useCase: QuickUpdateActivity
 
     val activity = Activity(
         id = 1,
@@ -60,7 +60,7 @@ class UpdateActivityWithProfileTest{
 
     @Before
     fun setup(){
-        useCase = UpdateActivityWithProfile(garminRepo, stravaRepo)
+        useCase = QuickUpdateActivity(garminRepo, stravaRepo)
     }
 
     @After

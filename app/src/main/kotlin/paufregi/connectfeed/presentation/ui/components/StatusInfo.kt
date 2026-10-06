@@ -24,11 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
-import paufregi.connectfeed.presentation.ui.icons.garmin.Logo
-import paufregi.connectfeed.presentation.ui.icons.strava.Logo
-import paufregi.connectfeed.presentation.ui.icons.strava.Strava
-import paufregi.connectfeed.presentation.ui.models.ProcState
 
 sealed class StatusInfoType(
     val icon: ImageVector,
@@ -83,44 +78,6 @@ fun StatusInfo(
     }
 }
 
-@ExperimentalMaterial3Api
-fun successInfo(
-    action: () -> Unit,
-) = @Composable { message: String? ->
-    StatusInfo(
-        type = StatusInfoType.Success,
-        text = message ?: "All done",
-        actionButton = { Button(text = "Ok", onClick = action) },
-    )
-}
-
-@ExperimentalMaterial3Api
-fun successActivityUpdate(
-    action: () -> Unit,
-    garmin: () -> Unit,
-    strava: (() -> Unit)? = null,
-) = @Composable { state: ProcState.Success, paddingValues: PaddingValues ->
-    StatusInfo(
-        type = StatusInfoType.Success,
-        text = state.message ?: "All done",
-        actionButton = { Button(text = "Ok", onClick = action) },
-        garminButton = { Button(text = "Garmin", icon = Icons.Connect.Logo, onClick = garmin) },
-        stravaButton = strava?.let { { Button(text = "Strava", icon = Icons.Strava.Logo, onClick = it) } },
-        paddingValues = paddingValues
-    )
-}
-
-@ExperimentalMaterial3Api
-fun failureInfo(
-    action: () -> Unit,
-) = @Composable { reason: String ->
-    StatusInfo(
-        type = StatusInfoType.Failure,
-        text = reason,
-        actionButton = { Button(text = "Ok", onClick = action) },
-    )
-}
-
 @Composable
 @ExperimentalMaterial3Api
 fun SuccessInfo(
@@ -142,15 +99,3 @@ fun FailureInfo(
     text = reason,
     actionButton = { Button(text = "Ok", onClick = action) },
 )
-
-@ExperimentalMaterial3Api
-fun unknownInfo(
-    action: () -> Unit,
-) = @Composable { paddingValues: PaddingValues ->
-    StatusInfo(
-        type = StatusInfoType.Unknown,
-        text = "Don't know what to do",
-        actionButton = { Button(text = "Ok", onClick = action) },
-        paddingValues = paddingValues
-    )
-}

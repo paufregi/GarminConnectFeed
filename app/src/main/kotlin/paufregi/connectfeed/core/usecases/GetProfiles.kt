@@ -13,7 +13,7 @@ class GetProfiles @Inject constructor(
     private val authRepo: AuthRepository,
     private val repo: AppRepository
 ) {
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @ExperimentalCoroutinesApi
     operator fun invoke(): Flow<List<Profile>> =
         authRepo.getUser().flatMapMerge { user ->
             user?.let { repo.getAllProfiles(it) } ?: flowOf(emptyList())

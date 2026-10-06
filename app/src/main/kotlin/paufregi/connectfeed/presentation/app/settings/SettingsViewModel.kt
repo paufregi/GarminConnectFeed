@@ -19,7 +19,7 @@ import paufregi.connectfeed.core.usecases.IsStravaConnected
 import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
 import paufregi.connectfeed.core.utils.finally
-import paufregi.connectfeed.presentation.ui.utils.SnackbarManager
+import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 import paufregi.connectfeed.system.Downloader
 import javax.inject.Inject
 import javax.inject.Named
@@ -32,7 +32,7 @@ class SettingsViewModel @Inject constructor(
     val refreshUser: RefreshUser,
     val signOut: SignOut,
     val disconnectStrava: DisconnectStrava,
-    val snackbarManager: SnackbarManager,
+    val notification: NotificationManager,
     @param:Named("currentVersion") val version: String,
     @param:Named("downloader") val downloader: Downloader,
     @param:Named("StravaAuthUri") val stravaAuthUri: Uri,
@@ -66,8 +66,8 @@ class SettingsViewModel @Inject constructor(
     private fun refreshUserAction() = viewModelScope.launch {
         _state.update { it.copy(loading = true) }
         refreshUser()
-            .onSuccess { snackbarManager.showMessage("User data refreshed") }
-            .onFailure { snackbarManager.showMessage("Failed to refresh user data: ${it.message}") }
+            .onSuccess { notification.show("User data refreshed") }
+            .onFailure { notification.show("Failed to refresh user data: ${it.message}") }
             .finally { _state.update { it.copy(loading = false) } }
     }
 

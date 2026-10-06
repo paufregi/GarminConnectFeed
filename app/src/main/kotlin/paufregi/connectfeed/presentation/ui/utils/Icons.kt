@@ -1,8 +1,18 @@
 package paufregi.connectfeed.presentation.ui.utils
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.filled.Commute
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.SentimentVerySatisfied
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.WhereToVote
 import androidx.compose.ui.graphics.vector.ImageVector
 import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.presentation.ui.icons.garmin.Activity
 import paufregi.connectfeed.presentation.ui.icons.garmin.Bike
@@ -89,4 +99,17 @@ fun iconFor(type: GearType): ImageVector =
         GearType.Bike -> Icons.Connect.Bike
         GearType.Shoe -> Icons.Connect.Shoe
         GearType.Unknown -> Icons.Connect.Activity
+    }
+
+fun iconFor(type: EventType): ImageVector =
+    when (type) {
+        EventType.Fitness -> Icons.Default.Favorite
+        EventType.Geocaching -> Icons.Default.WhereToVote
+        EventType.Race -> Icons.Default.EmojiEvents
+        EventType.Recreation -> Icons.Default.SentimentVerySatisfied
+        EventType.SpecialEvent -> Icons.Default.Star
+        EventType.Touring -> Icons.Default.Explore
+        EventType.Training -> Icons.Default.FitnessCenter
+        EventType.Transportation -> Icons.Default.Commute
+        EventType.Uncategorized -> Icons.AutoMirrored.Filled.HelpOutline
     }

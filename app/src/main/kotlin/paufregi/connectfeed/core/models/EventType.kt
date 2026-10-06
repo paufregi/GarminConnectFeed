@@ -1,8 +1,5 @@
 package paufregi.connectfeed.core.models
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 sealed class EventType(val id: Long, val key: String, val name: String, val order: Int) {
     data object Race: EventType(1, "race", "Race", 5)
     data object Recreation: EventType(2, "recreation", "Recreation", 4)

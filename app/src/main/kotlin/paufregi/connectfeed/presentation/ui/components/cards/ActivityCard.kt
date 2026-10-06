@@ -1,5 +1,6 @@
-package paufregi.connectfeed.presentation.ui.components
+package paufregi.connectfeed.presentation.ui.components.cards
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import paufregi.connectfeed.core.models.Gear
+import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.presentation.ui.icons.strava.Logo
 import paufregi.connectfeed.presentation.ui.icons.strava.Strava
@@ -27,13 +28,14 @@ import paufregi.connectfeed.presentation.ui.utils.iconFor
 
 @Composable
 @ExperimentalMaterial3Api
-fun GearCard(
-    gear: Gear,
+fun ActivityCard(
+    activity: Activity,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
+            .clickable(onClick = onClick)
             .padding(8.dp),
         colors = CardDefaults.cardColors(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -42,36 +44,52 @@ fun GearCard(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
+                .padding(10.dp)
+                .fillMaxWidth(),
         ) {
             Icon(
-                imageVector = iconFor(gear.type),
-                contentDescription = gear.type.toString(),
+                imageVector = iconFor(activity.type),
+                contentDescription = activity.type.toString(),
                 modifier = Modifier.size(28.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
             Column(
                 modifier = Modifier.padding(1.dp)
             ) {
-                Row{
-                    Text(text = gear.name)
+                Row {
+                    Text(text = activity.name)
                     Spacer(modifier = Modifier.weight(1f))
-                    gear.stravaId?.let {
+                    activity.stravaId?.let {
                         Icon(
                             imageVector = Icons.Strava.Logo,
-                            contentDescription = gear.stravaId,
+                            contentDescription = activity.stravaId.toString(),
                             tint = Color.Unspecified,
                             modifier = Modifier.size(20.dp),
                         )
                     }
                 }
-                gear.distance?.let {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = "${Formatter.distance(it)} km",
+                        text = Formatter.localDateTime(activity.date),
+                        modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
                     )
+
+                    Row {
+                        activity.trainingEffect
+                    }
+
+                    activity.distance?.let {
+                        Text(
+                            text = "${Formatter.distance(it)} km",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+                        )
+                    }
                 }
             }
         }

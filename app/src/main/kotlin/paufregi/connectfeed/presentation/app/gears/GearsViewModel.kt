@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.GetGears
 import paufregi.connectfeed.core.usecases.SyncGear
 import paufregi.connectfeed.core.utils.finally
-import paufregi.connectfeed.presentation.ui.utils.SnackbarManager
+import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,25 +21,18 @@ import javax.inject.Inject
 class GearsViewModel @Inject constructor(
     getGears: GetGears,
     val syncGear: SyncGear,
-    val snackbarManager: SnackbarManager,
+    val notification: NotificationManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(GearsState())
 
     val state = combine(_state, getGears()) { state, gears -> state.copy(gears = gears)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
-    fun onAction(action: GearsAction) {
-        when (action) {
-            GearsAction.Reset -> _state.update { it.copy(loading = false) }
-            GearsAction.Sync -> sync()
-        }
-    }
-
-    private fun sync() = viewModelScope.launch {
+    fun sync() = viewModelScope.launch {
         _state.update { it.copy(loading = true) }
         syncGear()
-            .onSuccess { snackbarManager.showMessage("Gears synced") }
-            .onFailure { err -> snackbarManager.showMessage(err.message ?: "Sync failed") }
+            .onSuccess { notification.show("Gears synced") }
+            .onFailure { err -> notification.show(err.message ?: "Sync failed") }
             .finally { _state.update { it.copy(loading = false) } }
     }
 }

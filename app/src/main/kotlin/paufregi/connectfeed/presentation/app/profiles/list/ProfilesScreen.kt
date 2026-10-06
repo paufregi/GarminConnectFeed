@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,20 +24,35 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import paufregi.connectfeed.presentation.ui.components.ProfileCard
+import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.presentation.app.AppRoute
+import paufregi.connectfeed.presentation.ui.components.cards.ProfileCard
+import paufregi.connectfeed.presentation.ui.components.screens.MenuScreen
 import paufregi.connectfeed.presentation.ui.utils.add
 
 @Composable
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 internal fun ProfilesScreen(
+    user: User,
+    navigate: (AppRoute) -> Unit = {},
     onOpen: (Long) -> Unit,
     onCreate: () -> Unit,
-    padding: PaddingValues = PaddingValues(),
     viewModel: ProfilesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    ProfileList(state, viewModel::onAction, onOpen, onCreate, padding)
+
+    MenuScreen(
+        user = user,
+        currentRoute = AppRoute.Profiles,
+        navigate = navigate,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onCreate() },
+                modifier = Modifier.testTag("create_profile")
+            ) { Icon(Icons.Default.Add, "Create profile") }
+        },
+    ) { ProfileList(state, onOpen, viewModel::onAction,it) }
 }
 
 
@@ -47,42 +61,29 @@ internal fun ProfilesScreen(
 @ExperimentalMaterial3Api
 internal fun ProfileList(
     @PreviewParameter(ProfilesStatePreview ::class) state: ProfilesState,
-    onAction: (ProfilesAction) -> Unit = {},
     onOpen: (Long) -> Unit = {},
-    onCreate: () -> Unit = {},
+    onAction: (ProfilesAction) -> Unit = {},
     padding: PaddingValues = PaddingValues(),
 ) {
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onCreate() },
-                modifier = Modifier.testTag("create_profile")
-            ) { Icon(Icons.Default.Add, "Create profile") }
-        },
-        modifier = Modifier.fillMaxSize().testTag("profile_list_content")
-    ) { innerPadding ->
-        val consumedInsets = padding.add(innerPadding)
-        val contentPadding = padding.add(innerPadding).add(horizontal = 20.dp)
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = contentPadding,
-            modifier = Modifier
-                .fillMaxSize()
-                .consumeWindowInsets(consumedInsets)
-        ) {
-            if (state.profiles.isEmpty()) {
-                item { Text("No profiles", modifier = Modifier.testTag("no_profiles")) }
-            } else {
-                items(state.profiles, key = { it.id }) { profile ->
-                    ProfileCard(
-                        profile = profile,
-                        modifier = Modifier.fillMaxWidth().testTag("profile_${profile.id}"),
-                        onClick = { onOpen(profile.id) },
-                        onDelete = { onAction(ProfilesAction.Delete(profile)) }
-                    )
-                }
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = padding.add(horizontal = 20.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .consumeWindowInsets(padding)
+            .testTag("profile_list_content")
+    ) {
+        if (state.profiles.isEmpty()) {
+            item { Text("No profiles", modifier = Modifier.testTag("no_profiles")) }
+        } else {
+            items(state.profiles, key = { it.id }) { profile ->
+                ProfileCard(
+                    profile = profile,
+                    modifier = Modifier.fillMaxWidth().testTag("profile_${profile.id}"),
+                    onClick = { onOpen(profile.id) },
+                    onDelete = { onAction(ProfilesAction.Delete(profile)) }
+                )
             }
         }
     }

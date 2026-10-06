@@ -5,8 +5,9 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Gear
 
-data class ActivityState(
-    val loading: Boolean = false,
+data class EditState(
+    val loading: Boolean = true,
+    val result: Result<Unit>? = null,
 
     val activity: Activity,
     val eventTypes: List<EventType> = emptyList(),
@@ -22,5 +23,11 @@ data class ActivityState(
     val effort: Float? = null,
     val feel: Float? = null,
     val trainingEffect: Boolean = false,
-)
+) {
+    val availableCourses: List<Course>
+        get() = courses.filter { it.type.compatible(activity.type) }
+
+    val availableGears: List<Gear>
+        get() = gears.filter { it.type.compatible(activity.type) }
+}
 

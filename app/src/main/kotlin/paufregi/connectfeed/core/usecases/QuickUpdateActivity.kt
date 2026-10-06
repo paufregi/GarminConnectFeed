@@ -13,7 +13,7 @@ import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaRepository
 import javax.inject.Inject
 
-class UpdateActivityWithProfile @Inject constructor(
+class QuickUpdateActivity @Inject constructor(
     private val garminRepo: GarminRepository,
     private val stravaRepo: StravaRepository,
 ) {
@@ -26,7 +26,6 @@ class UpdateActivityWithProfile @Inject constructor(
         effort: Float?,
         workout: Workout?,
         gear: Gear?,
-        trainingEffect: String?,
     ): Result<Unit> = coroutineScope {
         if (profile == null)
             return@coroutineScope Result.failure("Validation error")
@@ -52,7 +51,7 @@ class UpdateActivityWithProfile @Inject constructor(
                     name = profile.name.takeIf { profile.rename },
                     description = Formatter.stravaDescription(
                         description = description,
-                        trainingEffect = trainingEffect.takeIf { profile.trainingEffect },
+                        trainingEffect = activity.trainingEffect.takeIf { profile.trainingEffect },
                         workout = workout?.name,
                     ),
                     commute = profile.eventType?.commute,

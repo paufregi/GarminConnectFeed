@@ -13,7 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import paufregi.connectfeed.presentation.ui.components.FailureInfo
 import paufregi.connectfeed.presentation.ui.components.Loading
 import paufregi.connectfeed.presentation.ui.components.SuccessInfo
-import paufregi.connectfeed.presentation.ui.components.frame.Frame
+import paufregi.connectfeed.presentation.ui.components.screens.ExternalScreen
 import paufregi.connectfeed.presentation.ui.models.ProcState
 import paufregi.connectfeed.presentation.ui.theme.Theme
 
@@ -23,7 +23,7 @@ class StravaActivity : ComponentActivity() {
     private val viewModel: StravaViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashScreen = installSplashScreen()
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
@@ -33,8 +33,9 @@ class StravaActivity : ComponentActivity() {
 
         setContent {
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val user by viewModel.user.collectAsStateWithLifecycle()
             Theme {
-                Frame(enableMenu = false) {
+                ExternalScreen(user = user) {
                     when(val s = state) {
                         is ProcState.Success -> SuccessInfo(s.message ?: "") { finish() }
                         is ProcState.Failure -> FailureInfo(s.reason) { finish() }

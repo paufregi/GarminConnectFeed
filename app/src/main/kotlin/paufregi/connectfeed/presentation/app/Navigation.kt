@@ -4,50 +4,65 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
-import paufregi.connectfeed.presentation.ui.components.frame.MenuSpec
-import paufregi.connectfeed.presentation.ui.components.frame.NavigationItem
 import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
 import paufregi.connectfeed.presentation.ui.icons.garmin.Shoe
 
-sealed interface Route: NavKey {
+sealed interface AppRoute: NavKey {
     @Serializable
-    data object Activities : Route
+    data object Activities : AppRoute
 
     @Serializable
-    data object ActivityList : Route
-    @Serializable
-    data class ActivityEdit(val id: Long, val stravaId: Long) : Route
+    data object Profiles : AppRoute
 
     @Serializable
-    data class ActivityQuickEdit(val id: Long, val stravaId: Long) : Route
+    data object Gears : AppRoute
 
     @Serializable
-    data object Profiles : Route
-
-    @Serializable
-    data object ProfileList : Route
-
-    @Serializable
-    data class ProfileEdit(val id: Long? = null) : Route
-
-    @Serializable
-    data object Gears : Route
-
-    @Serializable
-    data object Settings : Route
+    data object Settings : AppRoute
 }
+
+sealed interface ActivitiesRoute: NavKey {
+    @Serializable
+    data object List : ActivitiesRoute
+
+    @Serializable
+    data class Edit(val id: Long, val stravaId: Long?) : ActivitiesRoute
+
+    @Serializable
+    data class QuickEdit(val id: Long, val stravaId: Long?) : ActivitiesRoute
+}
+
+sealed interface ProfilesRoute: NavKey {
+    @Serializable
+    data object List : ProfilesRoute
+
+    @Serializable
+    data class Edit(val id: Long? = null) : ProfilesRoute
+}
+
+data class NavigationItem(
+    val label: String,
+    val icon: ImageVector,
+    val route: AppRoute,
+)
+
+data class MenuSpec(
+    val topItems: List<NavigationItem>,
+    val bottomItems: List<NavigationItem>,
+)
 
 object Navigation {
     val menu = MenuSpec(
         topItems = listOf(
-            NavigationItem("Activities", Icons.Filled.Home, Route.Activities),
-            NavigationItem("Profiles", Icons.Filled.Tune, Route.Profiles),
-            NavigationItem("Gears", Icons.Connect.Shoe, Route.Gears),
+            NavigationItem("Activities", Icons.Filled.Home, AppRoute.Activities),
+            NavigationItem("Profiles", Icons.Filled.Tune, AppRoute.Profiles),
+            NavigationItem("Gears", Icons.Connect.Shoe, AppRoute.Gears),
         ),
         bottomItems = listOf(
-            NavigationItem("Settings", Icons.Filled.Settings, Route.Settings),
+            NavigationItem("Settings", Icons.Filled.Settings, AppRoute.Settings),
         ),
     )
 }

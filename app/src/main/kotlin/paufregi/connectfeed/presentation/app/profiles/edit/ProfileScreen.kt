@@ -3,7 +3,6 @@ package paufregi.connectfeed.presentation.app.profiles.edit
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -35,6 +33,7 @@ import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Dropdown
 import paufregi.connectfeed.presentation.ui.components.DropdownItem
 import paufregi.connectfeed.presentation.ui.components.Toggle
+import paufregi.connectfeed.presentation.ui.components.screens.BackScreen
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 import paufregi.connectfeed.presentation.ui.utils.add
 
@@ -44,13 +43,9 @@ import paufregi.connectfeed.presentation.ui.utils.add
 internal fun ProfileScreen(
     id: Long?,
     onDone: () -> Unit,
-    padding: PaddingValues = PaddingValues(),
 ) {
     val viewModel = hiltViewModel<ProfileViewModel, ProfileViewModel.Factory>(
-        creationCallback = { factory ->
-            factory.create(id)
-        }
-    )
+        creationCallback = { it.create(id) })
 
     LaunchedEffect(viewModel) {
         viewModel.effects.collect { effect ->
@@ -59,8 +54,32 @@ internal fun ProfileScreen(
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
-    ProfileForm(state, viewModel::onAction, padding)
+    BackScreen(
+        title = id?.let { "Edit profile" } ?: "Create profile",
+        isLoading = state.loading,
+        navigateBack = onDone,
+        bottomBarContent = {
+            Button(
+                text = "Save profile",
+                modifier = Modifier.fillMaxWidth().testTag("save"),
+                enabled = state.canSave,
+                onClick = {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                    viewModel.onAction(ProfileAction.Save)
+                }
+            )
+        }
+    ) { padding ->
+        ProfileForm(
+                state = state,
+                onAction = viewModel::onAction,
+                padding = padding
+        )
+    }
 }
 
 @Preview
@@ -71,125 +90,92 @@ internal fun ProfileForm(
     onAction: (ProfileAction) -> Unit = {},
     padding: PaddingValues = PaddingValues(),
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize().testTag("profile_form_content"),
-    ) { innerPadding ->
-        val consumedInsets = padding.add(innerPadding)
-        val contentPadding = padding.add(innerPadding).add(horizontal = 20.dp)
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .consumeWindowInsets(consumedInsets)
-                .padding(contentPadding)
-        ) {
-            TextField(
-                label = { Text("Name") },
-                value = state.profile.name,
-                onValueChange = { onAction(ProfileAction.SetName(it)) },
-                isError = state.profile.name.isBlank(),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("profile_name")
-            )
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .consumeWindowInsets(padding)
+            .padding(padding.add(horizontal = 20.dp))
+            .testTag("profile_form_content")
+    ) {
+        TextField(
+            label = { Text("Name") },
+            value = state.profile.name,
+            onValueChange = { onAction(ProfileAction.SetName(it)) },
+            isError = state.profile.name.isBlank(),
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag("profile_name")
+        )
+        Dropdown(
+            label = { Text("Type") },
+            selected = state.profile.type.toDropdownItem { },
+            modifier = Modifier.fillMaxWidth().testTag("profile_type"),
+            items = state.activityTypes.map { type ->
+                type.toDropdownItem { onAction(ProfileAction.SetType(type)) }
+            }
+        )
+        Dropdown(
+            label = { Text("Event type") },
+            selected = state.profile.eventType?.toDropdownItem { } ?: DropdownItem("None"),
+            modifier = Modifier.fillMaxWidth().testTag("profile_event_type"),
+            items = buildList {
+                add(DropdownItem("None") { onAction(ProfileAction.SetEventType(null)) })
+                addAll(state.eventTypes.map { type ->
+                    type.toDropdownItem { onAction(ProfileAction.SetEventType(type)) }
+                })
+            },
+            isError = state.profile.type != ActivityType.Any && state.profile.eventType == null
+        )
+        if (state.profile.type.allowCourse) {
             Dropdown(
-                label = { Text("Type") },
-                selected = state.profile.type.toDropdownItem { },
-                modifier = Modifier.fillMaxWidth().testTag("profile_type"),
-                items = state.activityTypes.map { type ->
-                    type.toDropdownItem { onAction(ProfileAction.SetType(type)) }
+                label = { Text("Course") },
+                selected = state.profile.course?.toDropdownItem { } ?: DropdownItem("None"),
+                modifier = Modifier.fillMaxWidth().testTag("profile_course"),
+                items = buildList {
+                    add(DropdownItem("None") { onAction(ProfileAction.SetCourse(null)) })
+                    addAll(state.availableCourses.map { course ->
+                        course.toDropdownItem { onAction(ProfileAction.SetCourse(course)) }
+                    })
                 }
             )
-            Dropdown(
-                label = { Text("Event type") },
-                selected = state.profile.eventType?.toDropdownItem { } ?: DropdownItem("None"),
-                modifier = Modifier.fillMaxWidth().testTag("profile_event_type"),
-                items = buildList {
-                    add(DropdownItem("None") { onAction(ProfileAction.SetEventType(null)) })
-                    addAll(state.eventTypes.map { type ->
-                        type.toDropdownItem { onAction(ProfileAction.SetEventType(type)) }
-                    })
-                },
-                isError = state.profile.type != ActivityType.Any && state.profile.eventType == null
-            )
-            if (state.profile.type.allowCourse) {
-                Dropdown(
-                    label = { Text("Course") },
-                    selected = state.profile.course?.toDropdownItem { } ?: DropdownItem("None"),
-                    modifier = Modifier.fillMaxWidth().testTag("profile_course"),
-                    items = buildList {
-                        add(DropdownItem("None") { onAction(ProfileAction.SetCourse(null)) })
-                        addAll(state.availableCourses.map { course ->
-                            course.toDropdownItem { onAction(ProfileAction.SetCourse(course)) }
-                        })
-                    }
-                )
-            }
-            TextField(
-                label = { Text("Water") },
-                value = state.profile.water?.toString() ?: "",
-                onValueChange = { onAction(ProfileAction.SetWater(it)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth().testTag("profile_water")
-            )
-            Toggle(
-                label = "Rename activity",
-                checked = state.profile.rename,
-                onChange = { onAction(ProfileAction.SetRename(it)) },
-                modifier = Modifier.testTag("rename_toggle"),
-            )
-            Toggle(
-                label = "Customizable water",
-                checked = state.profile.customWater,
-                onChange = { onAction(ProfileAction.SetCustomWater(it)) },
-                modifier = Modifier.testTag("custom_water_toggle"),
-            )
-            Toggle(
-                label = "Set gear",
-                checked = state.profile.gear,
-                onChange = { onAction(ProfileAction.SetGear(it)) },
-                modifier = Modifier.testTag("gear_toggle"),
-            )
-            Toggle(
-                label = "Feel & Effort",
-                checked = state.profile.feelAndEffort,
-                onChange = { onAction(ProfileAction.SetFeelAndEffort(it)) },
-                modifier = Modifier.testTag("feel_and_effort_toggle"),
-            )
-            Toggle(
-                label = "Training effect",
-                checked = state.profile.trainingEffect,
-                onChange = { onAction(ProfileAction.SetTrainingEffect(it)) },
-                modifier = Modifier.testTag("training_effect_toggle"),
-            )
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-                    .testTag("profile_form_actions")
-            ) {
-                Button(
-                    text = "Cancel",
-                    modifier = Modifier.testTag("cancel_profile"),
-                    onClick = { onAction(ProfileAction.Cancel) }
-                )
-                Button(
-                    text = "Save",
-                    modifier = Modifier.testTag("save_profile"),
-                    enabled = state.canSave,
-                    onClick = {
-                        keyboardController?.hide()
-                        focusManager.clearFocus()
-                        onAction(ProfileAction.Save)
-                    }
-                )
-            }
         }
+        TextField(
+            label = { Text("Water") },
+            value = state.profile.water?.toString() ?: "",
+            onValueChange = { onAction(ProfileAction.SetWater(it)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth().testTag("profile_water")
+        )
+        Toggle(
+            label = "Rename activity",
+            checked = state.profile.rename,
+            onChange = { onAction(ProfileAction.SetRename(it)) },
+            modifier = Modifier.testTag("rename_toggle"),
+        )
+        Toggle(
+            label = "Customizable water",
+            checked = state.profile.customWater,
+            onChange = { onAction(ProfileAction.SetCustomWater(it)) },
+            modifier = Modifier.testTag("custom_water_toggle"),
+        )
+        Toggle(
+            label = "Set gear",
+            checked = state.profile.gear,
+            onChange = { onAction(ProfileAction.SetGear(it)) },
+            modifier = Modifier.testTag("gear_toggle"),
+        )
+        Toggle(
+            label = "Feel & Effort",
+            checked = state.profile.feelAndEffort,
+            onChange = { onAction(ProfileAction.SetFeelAndEffort(it)) },
+            modifier = Modifier.testTag("feel_and_effort_toggle"),
+        )
+        Toggle(
+            label = "Training effect",
+            checked = state.profile.trainingEffect,
+            onChange = { onAction(ProfileAction.SetTrainingEffect(it)) },
+            modifier = Modifier.testTag("training_effect_toggle"),
+        )
     }
 }
