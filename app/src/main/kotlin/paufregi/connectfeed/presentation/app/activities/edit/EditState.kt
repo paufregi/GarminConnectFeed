@@ -5,9 +5,14 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Gear
 
+sealed interface Status {
+    data object Loading : Status
+    data object Success: Status
+    data class Failure(val reason: String) : Status
+}
+
 data class EditState(
-    val loading: Boolean = true,
-    val result: Result<Unit>? = null,
+    val status: Status? = Status.Loading,
 
     val activity: Activity,
     val eventTypes: List<EventType> = emptyList(),

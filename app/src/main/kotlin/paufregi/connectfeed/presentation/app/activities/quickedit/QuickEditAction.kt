@@ -2,6 +2,7 @@ package paufregi.connectfeed.presentation.app.activities.quickedit
 
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.presentation.app.activities.edit.EditAction
 
 sealed interface QuickEditAction {
     data class SetProfile(val profile: Profile) : QuickEditAction
@@ -10,6 +11,7 @@ sealed interface QuickEditAction {
     data class SetWater(val water: Int?) : QuickEditAction
     data class SetEffort(val effort: Float?) : QuickEditAction
     data class SetFeel(val feel: Float?) : QuickEditAction
+    data object ResetStatus: QuickEditAction
     data object Save : QuickEditAction
 }
 

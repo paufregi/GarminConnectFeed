@@ -67,11 +67,11 @@ class EditViewModel @AssistedInject constructor(
     }
 
     private fun load() = viewModelScope.launch{
-        _state.update { it.copy(loading = true) }
+        _state.update { it.copy(status = Status.Loading) }
         getCourses()
             .onSuccess { courses -> _state.update { it.copy(courses = courses) } }
             .onFailure { notification.show("Failed to load courses: ${it.message}") }
-            .finally { _state.update { it.copy(loading = false) } }
+            .finally { _state.update { it.copy(status = null) } }
     }
 
     fun onAction(action: EditAction) = when (action) {
@@ -84,13 +84,14 @@ class EditViewModel @AssistedInject constructor(
         is EditAction.SetEffort -> _state.update { it.copy(effort = action.effort?.takeIf { e -> e > 0 }) }
         is EditAction.SetFeel -> _state.update { it.copy(feel = action.feel) }
         is EditAction.SetTrainingEffect -> _state.update { it.copy(trainingEffect = action.trainingEffect) }
+        is EditAction.ResetStatus -> _state.update { it.copy(status = null) }
         is EditAction.Save -> save()
     }
 
     private fun save() = viewModelScope.launch {
         if (state.value.activity == Activity.EMPTY) return@launch
 
-        _state.update { it.copy(loading = true) }
+        _state.update { it.copy(status = Status.Loading) }
 
         val workout = state.value.activity.workoutId?.let { getWorkout(it) }?.getOrNull()
 
@@ -107,12 +108,8 @@ class EditViewModel @AssistedInject constructor(
             gear = state.value.gear,
             trainingEffect = state.value.trainingEffect,
         )
-        .onSuccess {
-            notification.show("Activity updated")
-            navigateBack()
-        }
-        .onFailure { notification.show(it.message ?: "Error") }
-        .finally { _state.update { it.copy(loading = false) } }
+        .onSuccess { _state.update { it.copy(status = Status.Success) } }
+        .onFailure { r -> _state.update { it.copy(status = Status.Failure(r.message ?: "Something went wrong: unknown error")) } }
     }
 
     private fun navigateBack() = viewModelScope.launch {

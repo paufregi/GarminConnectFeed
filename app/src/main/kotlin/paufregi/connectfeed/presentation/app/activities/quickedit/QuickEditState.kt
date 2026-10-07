@@ -4,8 +4,13 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 
+sealed interface Status {
+    data object Loading : Status
+    data object Success: Status
+    data class Failure(val reason: String) : Status
+}
 data class QuickEditState(
-    val loading: Boolean = false,
+    val status: Status? = null,
 
     val activity: Activity,
     val profiles: List<Profile> = emptyList(),

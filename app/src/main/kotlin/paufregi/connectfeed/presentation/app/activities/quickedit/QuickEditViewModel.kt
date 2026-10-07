@@ -67,13 +67,14 @@ class QuickEditViewModel @AssistedInject constructor(
         is QuickEditAction.SetWater -> _state.update { it.copy(water = action.water) }
         is QuickEditAction.SetEffort -> _state.update { it.copy(effort = action.effort?.takeIf { e -> e > 0 }) }
         is QuickEditAction.SetFeel -> _state.update { it.copy(feel = action.feel) }
+        is QuickEditAction.ResetStatus -> _state.update { it.copy(status = null) }
         is QuickEditAction.Save -> save()
     }
 
     private fun save() = viewModelScope.launch {
         if (state.value.activity == Activity.EMPTY) return@launch
 
-        _state.update { it.copy(loading = true) }
+        _state.update { it.copy(status = Status.Loading) }
 
         val workout = state.value.activity.workoutId?.let { getWorkout(it) }?.getOrNull()
 
@@ -87,12 +88,8 @@ class QuickEditViewModel @AssistedInject constructor(
             workout = workout,
             gear = state.value.gear,
         )
-        .onSuccess {
-            notification.show("Activity updated")
-            navigateBack()
-        }
-        .onFailure { notification.show(it.message ?: "Error") }
-        .finally { _state.update { it.copy(loading = false) } }
+        .onSuccess { _state.update { it.copy(status = Status.Success) } }
+        .onFailure { r -> _state.update { it.copy(status = Status.Failure(r.message ?: "Something went wrong: unknown error")) } }
     }
 
     private fun navigateBack() = viewModelScope.launch {
