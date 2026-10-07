@@ -6,7 +6,7 @@ import paufregi.connectfeed.core.models.GearType
 
 class GearsStatePreview : PreviewParameterProvider<GearsState> {
     override val values = sequenceOf(
-        GearsState(gears = emptyList()),
+        GearsState(),
         GearsState(
             gears = listOf(
                 Gear(

@@ -5,17 +5,13 @@ import android.content.Intent
 import androidx.core.net.toUri
 import paufregi.connectfeed.core.models.Activity
 
-fun launchStrava(context: Context, activity: Activity?) {
-    activity?.let {
-        val stravaIntent = Intent(Intent.ACTION_VIEW, "https://www.strava.com/activities/${it.id}/edit".toUri())
-        context.startActivity(stravaIntent)
-    }
+fun launchGarmin(context: Context, id: Long) {
+    val appIntent = Intent(Intent.ACTION_VIEW, "garminconnect://activity/$id".toUri())
+    val webIntent = Intent(Intent.ACTION_VIEW, "https://connect.garmin.com/modern/activity/$id".toUri())
+    runCatching { context.startActivity(appIntent) }.recoverCatching { context.startActivity(webIntent) }
 }
 
-fun launchGarmin(context: Context, activity: Activity?) {
-    activity?.let {
-        val appIntent = Intent(Intent.ACTION_VIEW, "garminconnect://activity/${it.id}".toUri())
-        val webIntent = Intent(Intent.ACTION_VIEW, "https://connect.garmin.com/modern/activity/${it.id}".toUri())
-        runCatching { context.startActivity(appIntent) }.recoverCatching { context.startActivity(webIntent) }
-    }
+fun launchStrava(context: Context, id: Long) {
+    val stravaIntent = Intent(Intent.ACTION_VIEW, "https://www.strava.com/activities/$id/edit".toUri())
+    context.startActivity(stravaIntent)
 }

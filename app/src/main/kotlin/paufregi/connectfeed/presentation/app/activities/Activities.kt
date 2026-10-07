@@ -56,8 +56,8 @@ fun Activities(
                 QuickEditScreen(
                     id = route.id,
                     stravaId = route.stravaId,
-                    onBack = { backStack.removeLastOrNull() },
-                    toEdit = {
+                    navBack = { backStack.removeLastOrNull() },
+                    navEdit = {
                         backStack.removeLastOrNull()
                         backStack.add(ActivitiesRoute.Edit(route.id, route.stravaId))
                     }
