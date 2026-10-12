@@ -39,7 +39,7 @@ fun Profiles(
             ) }
             entry<ProfilesRoute.Edit> { route -> ProfileScreen(
                 id = route.id,
-                onDone = { profileStack.removeLastOrNull() },
+                navBack = { profileStack.removeLastOrNull() },
             ) }
         }
     )

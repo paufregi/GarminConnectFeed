@@ -1,14 +1,10 @@
 package paufregi.connectfeed.presentation.app
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
-import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
-import paufregi.connectfeed.presentation.ui.icons.garmin.Shoe
+import paufregi.connectfeed.presentation.ui.icons.app.App
 
 sealed interface AppRoute: NavKey {
     @Serializable
@@ -57,12 +53,12 @@ data class MenuSpec(
 object Navigation {
     val menu = MenuSpec(
         topItems = listOf(
-            NavigationItem("Activities", Icons.Filled.Home, AppRoute.Activities),
-            NavigationItem("Profiles", Icons.Filled.Tune, AppRoute.Profiles),
-            NavigationItem("Gears", Icons.Connect.Shoe, AppRoute.Gears),
+            NavigationItem("Activities", Icons.App.Activities, AppRoute.Activities),
+            NavigationItem("Profiles", Icons.App.Profiles, AppRoute.Profiles),
+            NavigationItem("Gears", Icons.App.Gears, AppRoute.Gears),
         ),
         bottomItems = listOf(
-            NavigationItem("Settings", Icons.Filled.Settings, AppRoute.Settings),
+            NavigationItem("Settings", Icons.App.Settings, AppRoute.Settings),
         ),
     )
 }

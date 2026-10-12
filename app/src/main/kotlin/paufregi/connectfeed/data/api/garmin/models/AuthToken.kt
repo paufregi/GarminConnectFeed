@@ -1,6 +1,5 @@
 package paufregi.connectfeed.data.api.garmin.models
 
-import android.util.Log
 import com.appstractive.jwt.JWT
 import com.appstractive.jwt.from
 import com.appstractive.jwt.issuedAt
@@ -24,12 +23,8 @@ data class AuthToken(
     val issuedAt: Instant
         get() = JWT.from(accessToken).issuedAt ?: Clock.System.now()
 
-    fun isExpired(now: Instant = Clock.System.now()): Boolean {
-        Log.i("AuthToken", "Checking if token is expired: issuedAt=$issuedAt, expiresIn=$expiresIn, now=$now")
-        Log.i("AuthToken", "Token expires at: ${issuedAt + expiresIn.seconds}")
-        Log.i("AuthToken", "Token is expired: ${issuedAt + expiresIn.seconds <= now}")
-        return issuedAt + expiresIn.seconds <= now
-    }
+    fun isExpired(now: Instant = Clock.System.now()): Boolean =
+        issuedAt + expiresIn.seconds <= now
 
 
     fun isRefreshTokenExpired(now: Instant = Clock.System.now()): Boolean =

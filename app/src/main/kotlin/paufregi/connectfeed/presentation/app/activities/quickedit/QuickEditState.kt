@@ -28,5 +28,8 @@ data class QuickEditState(
 
     val availableGears: List<Gear>
         get() = gears.filter { it.type.compatible(activity.type) }
+
+    val canSave: Boolean
+        get() = profile != null
 }
 

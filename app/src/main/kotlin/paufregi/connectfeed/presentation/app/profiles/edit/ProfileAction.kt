@@ -15,7 +15,6 @@ sealed interface ProfileAction {
     data class SetGear(val value: Boolean) : ProfileAction
     data class SetFeelAndEffort(val value: Boolean) : ProfileAction
     data class SetTrainingEffect(val value: Boolean) : ProfileAction
-    data object Cancel : ProfileAction
     data object Save : ProfileAction
 }
 

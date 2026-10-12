@@ -1,6 +1,5 @@
 package paufregi.connectfeed.core.usecases
 
-import android.util.Log
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.firstOrNull
@@ -26,11 +25,7 @@ class SyncGear @Inject constructor(
         val user = authRepo.getUser().firstOrNull()
             ?: return@coroutineScope Result.failure(Exception("User must be logged in"))
 
-        val garminDeferred = async {
-            garminRepo.getGears()
-                .onSuccess { Log.i("SyncGear", "Got Garmin gears: ${it.size}") }
-                .onFailure { Log.i("SyncGear", "Failed to get Garmin gears: ${it.message}") }
-        }
+        val garminDeferred = async { garminRepo.getGears() }
         val stravaDeferred = async {
             isStravaConnected().firstOrNull()?.let {
                 stravaRepo.getAthlete()

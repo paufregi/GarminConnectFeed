@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import paufregi.connectfeed.presentation.ui.components.Button
-import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.presentation.ui.components.loading.Loading
 
 @Composable
 @ExperimentalMaterial3Api

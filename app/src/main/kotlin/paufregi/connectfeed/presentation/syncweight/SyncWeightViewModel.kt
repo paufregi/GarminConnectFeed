@@ -29,24 +29,24 @@ class SyncWeightViewModel @Inject constructor(
     fun updateWeight(inputStream: InputStream?) = viewModelScope.launch {
         _state.update { ProcState.Running }
         if (inputStream == null) {
-            _state.update { ProcState.Failure("Nothing to sync") }
+            _state.update { ProcState.Failure("nothing to sync") }
             return@launch
         }
 
         val weights = inputStream.use { stream ->
             RenphoReader.read(stream)
         }.onFailure {
-            _state.update { ProcState.Failure("Failed to read file") }
+            _state.update { ProcState.Failure("failed to read file") }
             return@launch
         }.getOrElse { emptyList() }
 
         if (weights.isEmpty()) {
-            _state.update { ProcState.Failure("Nothing to sync") }
+            _state.update { ProcState.Failure("nothing to sync") }
             return@launch
         }
 
         syncWeight(weights)
             .onSuccess { _state.update { ProcState.Success("Sync succeeded") }}
-            .onFailure { e -> _state.update { ProcState.Failure(e.message ?: "Sync failed") } }
+            .onFailure { e -> _state.update { ProcState.Failure(e.message ?: "Unknown error") } }
     }
 }

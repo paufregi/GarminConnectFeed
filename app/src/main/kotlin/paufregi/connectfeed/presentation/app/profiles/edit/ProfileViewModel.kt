@@ -10,7 +10,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -30,7 +29,7 @@ import paufregi.connectfeed.presentation.ui.components.notification.Notification
 class ProfileViewModel @AssistedInject constructor(
     getActivityTypes: GetActivityTypesForProfile,
     getEventTypes: GetEventTypes,
-    getProfile: GetProfile,
+    val getProfile: GetProfile,
     val getCourses: GetCourses,
     val saveProfile: SaveProfile,
     val notification: NotificationManager,
@@ -52,12 +51,15 @@ class ProfileViewModel @AssistedInject constructor(
         )
     )
 
-    val state = combine(_state, getProfile(id)) { state, profile -> state.copy(profile = profile ?: Profile()) }
+    val state = _state
         .onStart { load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
     private fun load() = viewModelScope.launch {
-        _state.update { it.copy(loading = true) }
+        _state.update { it.copy(
+            loading = true,
+            profile = getProfile(id) ?: Profile()
+        ) }
 
         getCourses()
             .onSuccess { courses -> _state.update { it.copy(courses = courses) } }
@@ -66,31 +68,26 @@ class ProfileViewModel @AssistedInject constructor(
 
     fun onAction(action: ProfileAction) = when (action) {
         is ProfileAction.SetName -> _state.update { it.copy(profile = it.profile.copy(name = action.value)) }
-        is ProfileAction.SetType -> _state.update { state ->
-            val course = state.profile.course?.takeIf { action.value.allowCourse && action.value.compatible(it.type) }
-            state.copy(
-                profile = state.profile.copy(
-                    type = action.value,
-                    course = course,
-                )
+        is ProfileAction.SetType -> _state.update { it.copy(
+            profile = it.profile.copy(
+                type = action.value,
+                course = it.profile.course?.takeIf { c -> action.value.compatible(c.type) }
             )
-        }
+        ) }
         is ProfileAction.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = action.value)) }
         is ProfileAction.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = action.value)) }
-        is ProfileAction.SetWater -> _state.update {
-            it.copy(profile = it.profile.copy(water = action.value.filter(Char::isDigit).toIntOrNull()))
-        }
+        is ProfileAction.SetWater -> _state.update { it.copy(
+            profile = it.profile.copy(water = action.value.filter(Char::isDigit).toIntOrNull())
+        ) }
         is ProfileAction.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = action.value)) }
         is ProfileAction.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = action.value)) }
         is ProfileAction.SetGear -> _state.update { it.copy(profile = it.profile.copy(gear = action.value)) }
         is ProfileAction.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = action.value)) }
         is ProfileAction.SetTrainingEffect -> _state.update { it.copy(profile = it.profile.copy(trainingEffect = action.value)) }
         is ProfileAction.Save -> save()
-        is ProfileAction.Cancel -> navigateBack()
     }
 
     private fun save() = viewModelScope.launch {
-        _state.update { it.copy(loading = true) }
         saveProfile(state.value.profile)
             .onSuccess {
                 notification.show("Profile saved")

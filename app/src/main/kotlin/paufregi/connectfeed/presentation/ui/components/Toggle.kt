@@ -41,9 +41,8 @@ fun Toggle(
                         modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
                 }
-            } else {
+            } else
                 null
-            }
         )
     }
 }

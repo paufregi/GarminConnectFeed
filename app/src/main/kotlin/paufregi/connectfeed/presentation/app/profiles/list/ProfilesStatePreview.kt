@@ -7,9 +7,10 @@ import paufregi.connectfeed.core.models.Profile
 
 class ProfilesStatePreview : PreviewParameterProvider<ProfilesState> {
     override val values = sequenceOf(
-        ProfilesState(),
+        ProfilesState(isLoading = false),
         ProfilesState(
-            listOf(
+            isLoading = false,
+            profiles = listOf(
                 Profile(id = 1, name = "Road bike", type = ActivityType.Cycling, eventType = EventType.Training, gear = true),
                 Profile(id = 2, name = "Long run", type = ActivityType.Running, eventType = EventType.Race, water = 500),
             )

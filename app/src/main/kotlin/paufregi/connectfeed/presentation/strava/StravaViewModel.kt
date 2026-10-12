@@ -29,6 +29,6 @@ class StravaViewModel @Inject constructor(
 
         enableStrava(code)
             .onSuccess { _state.update { ProcState.Success("Strava linked") } }
-            .onFailure { _state.update { ProcState.Failure("Link failed") } }
+            .onFailure { e -> _state.update { ProcState.Failure(e.message ?: "unknown error") } }
     }
 }

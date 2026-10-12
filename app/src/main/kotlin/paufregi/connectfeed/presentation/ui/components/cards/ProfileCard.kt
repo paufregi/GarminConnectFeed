@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import paufregi.connectfeed.core.models.Profile
@@ -37,7 +38,8 @@ fun ProfileCard(
     profile: Profile,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    onDelete: () -> Unit = {}
+    onDelete: () -> Unit,
+    deleteIcon: ImageVector = Icons.Default.Delete
 ) {
     @Composable
     fun iconTint(enabled: Boolean) =
@@ -108,8 +110,9 @@ fun ProfileCard(
             }
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                icon = Icons.Default.Delete,
+                icon = deleteIcon,
                 onClick = onDelete,
+                tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier.size(20.dp).testTag("delete_profile_${profile.id}")
             )
         }

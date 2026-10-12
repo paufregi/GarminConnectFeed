@@ -21,25 +21,15 @@ class AuthInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response  =
         runBlocking(Dispatchers.IO) {
             getOrRefreshToken().fold(
-                onSuccess = {
-                    Log.i("AuthInterceptor", "Using token: ${it.accessToken}")
-                    chain.proceed(authRequest(chain.request(), it.accessToken)) },
-                onFailure = {
-                    Log.e("AuthInterceptor", "Failed to get token: ${it.message}")
-                    failedAuthResponse(chain.request(), it.message ?: "Unknown error") }
+                onSuccess = { chain.proceed(authRequest(chain.request(), it.accessToken)) },
+                onFailure = { failedAuthResponse(chain.request(), it.message ?: "Unknown error") }
             )
         }
 
     private suspend fun getOrRefreshToken(): Result<AuthToken> =
         repo.getGarminToken().firstOrNull()?.let { token ->
-            Log.i("AuthInterceptor", "Checking token: ${token.accessToken}")
-            Log.i("AuthInterceptor", "Token is expired: ${token.isExpired()}")
-            if (!token.isExpired()) {
-                Log.i("AuthInterceptor", "Token is valid")
-                Result.success(token)
-            }
+            if (!token.isExpired()) { Result.success(token) }
             else {
-                Log.i("AuthInterceptor", "Token is expired")
                 repo.refreshGarminToken(token.refreshToken, clientId)
                     .onSuccess { repo.saveGarminToken(it) }
                     .onFailure { Log.e("AuthInterceptor", "Failed to refresh token: ${it.message} - ${it.cause}") }

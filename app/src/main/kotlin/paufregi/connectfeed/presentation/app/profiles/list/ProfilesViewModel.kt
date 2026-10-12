@@ -25,7 +25,7 @@ class ProfilesViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(ProfilesState())
 
-    val state = combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles) }
+    val state = combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles, isLoading = false) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
     fun onAction(action: ProfilesAction) {

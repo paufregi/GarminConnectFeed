@@ -10,12 +10,14 @@ import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
-import paufregi.connectfeed.presentation.ui.components.FailureInfo
-import paufregi.connectfeed.presentation.ui.components.Loading
-import paufregi.connectfeed.presentation.ui.components.SuccessInfo
+import paufregi.connectfeed.presentation.ui.components.loading.ActivityLoading
 import paufregi.connectfeed.presentation.ui.components.screens.ExternalScreen
+import paufregi.connectfeed.presentation.ui.components.status.ActivityFailure
+import paufregi.connectfeed.presentation.ui.components.status.ActivitySuccess
 import paufregi.connectfeed.presentation.ui.models.ProcState
 import paufregi.connectfeed.presentation.ui.theme.Theme
+
+private const val TITLE = "Connect Strava"
 
 @AndroidEntryPoint
 @ExperimentalMaterial3Api
@@ -37,9 +39,9 @@ class StravaActivity : ComponentActivity() {
             Theme {
                 ExternalScreen(user = user) {
                     when(val s = state) {
-                        is ProcState.Success -> SuccessInfo(s.message ?: "") { finish() }
-                        is ProcState.Failure -> FailureInfo(s.reason) { finish() }
-                        is ProcState.Running -> Loading()
+                        is ProcState.Success -> ActivitySuccess(TITLE, user, "Strava linked!") { finish() }
+                        is ProcState.Failure -> ActivityFailure(TITLE, user,"Link failed!", s.reason) { finish() }
+                        is ProcState.Running -> ActivityLoading(TITLE, user)
                     }
                 }
             }

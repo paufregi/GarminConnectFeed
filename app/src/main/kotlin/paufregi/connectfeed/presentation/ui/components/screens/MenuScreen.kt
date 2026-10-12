@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.ui.components.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,7 +34,7 @@ import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.presentation.app.AppRoute
 import paufregi.connectfeed.presentation.app.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
-import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.presentation.ui.components.loading.Loading
 
 @Composable
 @ExperimentalMaterial3Api
@@ -65,10 +64,7 @@ fun MenuScreen(
                         selected = isSelected,
                         onClick = {
                             scope.launch { drawerState.close() }
-                            if (!isSelected) {
-                                Log.i("MenuScreen", "onClick: ${item.route}")
-                                navigate(item.route)
-                            }
+                            if (!isSelected) { navigate(item.route) }
                         },
                         icon = { Icon(item.icon, item.label) },
                     )
@@ -84,10 +80,7 @@ fun MenuScreen(
                             selected = isSelected,
                             onClick = {
                                 scope.launch { drawerState.close() }
-                                if (!isSelected) {
-                                    Log.i("MenuScreen", "onClick: ${item.route}")
-                                    navigate(item.route)
-                                }
+                                if (!isSelected) { navigate(item.route) }
                             },
                             icon = { Icon(item.icon, item.label) },
                         )

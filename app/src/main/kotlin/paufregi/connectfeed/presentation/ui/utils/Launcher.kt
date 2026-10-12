@@ -3,7 +3,6 @@ package paufregi.connectfeed.presentation.ui.utils
 import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
-import paufregi.connectfeed.core.models.Activity
 
 fun launchGarmin(context: Context, id: Long) {
     val appIntent = Intent(Intent.ACTION_VIEW, "garminconnect://activity/$id".toUri())

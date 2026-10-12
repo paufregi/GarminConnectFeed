@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.app.login
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,19 +8,20 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import paufregi.connectfeed.core.usecases.SaveUser
 import paufregi.connectfeed.core.usecases.SignIn
-import paufregi.connectfeed.presentation.ui.models.ProcState
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val signIn: SignIn,
+    private val saveUser: SaveUser,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
 
     val state = _state
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(500L), LoginState())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(500L), _state.value)
 
     fun onAction(action: LoginAction) {
         when (action) {
@@ -30,18 +30,18 @@ class LoginViewModel @Inject constructor(
             is LoginAction.ShowPassword -> _state.update { it.copy(showPassword = action.showPassword) }
             is LoginAction.Reset -> _state.update { LoginState() }
             is LoginAction.SignIn -> signInAction()
+            is LoginAction.SaveUser -> saveUserAction()
         }
     }
 
     private fun signInAction() = viewModelScope.launch {
-        _state.update { it.copy(process = ProcState.Running) }
-        state.value.let { s ->
-            signIn(s.username, s.password)
-                .onSuccess { user -> _state.update { it.copy(process = ProcState.Success("Welcome!"), user = user) } }
-                .onFailure { err ->
-                    Log.i("LoginViewModel", "signInAction: ${err.message}")
-                    _state.update { it.copy(process = ProcState.Failure(err.message ?: "Error")) }
-                }
-        }
+        _state.update { it.copy(status = Status.Loading) }
+        signIn(state.value.username, state.value.password)
+            .onSuccess { user -> _state.update { it.copy(status = Status.Success, user = user) } }
+            .onFailure { r -> _state.update { it.copy(status = Status.Failure(r.message ?: "Something went wrong: unknown error")) } }
+    }
+
+    private fun saveUserAction() = viewModelScope.launch {
+        state.value.user?.let { saveUser(it) }
     }
 }

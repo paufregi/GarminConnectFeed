@@ -12,6 +12,9 @@ data class ProfileState(
     val eventTypes: List<EventType> = emptyList(),
     val courses: List<Course> = emptyList(),
 ) {
+    val isNew: Boolean
+        get() = profile.id == 0L
+
     val availableCourses: List<Course>
         get() = courses.filter { it.type.compatible(profile.type) }
 

@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -46,10 +45,7 @@ fun NavigationDrawer(
                         selected = isSelected,
                         onClick = {
                             scope.launch { drawerState.close() }
-                            if (!isSelected) {
-                                Log.i("MenuScreen", "onClick: ${item.route}")
-                                navigate(item.route)
-                            }
+                            if (!isSelected) { navigate(item.route) }
                         },
                         icon = { Icon(item.icon, item.label) },
                     )
@@ -65,10 +61,7 @@ fun NavigationDrawer(
                             selected = isSelected,
                             onClick = {
                                 scope.launch { drawerState.close() }
-                                if (!isSelected) {
-                                    Log.i("MenuScreen", "onClick: ${item.route}")
-                                    navigate(item.route)
-                                }
+                                if (!isSelected) { navigate(item.route) }
                             },
                             icon = { Icon(item.icon, item.label) },
                         )

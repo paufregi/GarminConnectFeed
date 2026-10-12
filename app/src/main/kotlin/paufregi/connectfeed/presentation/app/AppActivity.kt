@@ -59,7 +59,7 @@ class AppActivity : ComponentActivity() {
                                         entry<AppRoute.Activities> { Activities(s.user, navigate) }
                                         entry<AppRoute.Profiles> { Profiles(s.user, navigate) }
                                         entry<AppRoute.Gears> { Gears(s.user, navigate) }
-                                        entry<AppRoute.Settings> { SettingsScreen(s.user, navigate) }
+                                        entry<AppRoute.Settings> { SettingsScreen(navigate) }
                                     }
                                 )
                             }
