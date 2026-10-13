@@ -52,7 +52,7 @@ class SyncWeightViewModelTest {
 
     @After
     fun tearDown(){
-        confirmVerified(getUser, syncWeight, RenphoReader)
+        confirmVerified(syncWeight, RenphoReader)
         clearAllMocks()
         unmockkObject(RenphoReader)
     }
@@ -82,9 +82,9 @@ class SyncWeightViewModelTest {
         coEvery { syncWeight(any(), any()) } returns Result.success(Unit)
 
         viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(ProcState.Running)
             viewModel.updateWeight(inputStream)
-            skipItems(1)
-            assertThat(awaitItem().process).isEqualTo(ProcState.Success("Sync succeeded"))
+            assertThat(awaitItem()).isEqualTo(ProcState.Success("Sync succeeded"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -95,10 +95,10 @@ class SyncWeightViewModelTest {
     @Test
     fun `Sync weight - failure no input stream`() = runTest {
         viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(ProcState.Running)
             viewModel.updateWeight(null)
-            skipItems(1)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcState.Failure("Nothing to sync"))
+            assertThat(state).isEqualTo(ProcState.Failure("nothing to sync"))
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -110,9 +110,9 @@ class SyncWeightViewModelTest {
         every { RenphoReader.read(any()) } returns Result.success(emptyList())
 
         viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(ProcState.Running)
             viewModel.updateWeight(inputStream)
-            skipItems(1)
-            assertThat(awaitItem().process).isEqualTo(ProcState.Failure("Nothing to sync"))
+            assertThat(awaitItem()).isEqualTo(ProcState.Failure("nothing to sync"))
             cancelAndIgnoreRemainingEvents()
         }
         verify { RenphoReader.read(inputStream) }
@@ -124,9 +124,9 @@ class SyncWeightViewModelTest {
         coEvery { syncWeight(any(), any()) } returns Result.failure("error")
 
         viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(ProcState.Running)
             viewModel.updateWeight(inputStream)
-            skipItems(1)
-            assertThat(awaitItem().process).isEqualTo(ProcState.Failure("error"))
+            assertThat(awaitItem()).isEqualTo(ProcState.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
         coVerify { syncWeight(weights, any()) }

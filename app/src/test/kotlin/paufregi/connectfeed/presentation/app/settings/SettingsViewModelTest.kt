@@ -1,6 +1,7 @@
-package paufregi.connectfeed.presentation.settings
+package paufregi.connectfeed.presentation.app.settings
 
 import android.net.Uri
+import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
@@ -27,7 +28,7 @@ import paufregi.connectfeed.core.usecases.IsStravaConnected
 import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.presentation.ui.models.ProcState
+import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 import paufregi.connectfeed.system.Downloader
 
@@ -39,6 +40,7 @@ class SettingsViewModelTest {
     private val signOut = mockk<SignOut>()
     private val isStravaConnected = mockk<IsStravaConnected>()
     private val disconnectStrava = mockk<DisconnectStrava>()
+    private val notification = mockk<NotificationManager>(relaxed = true)
     private val stravaUri = mockk<Uri>()
     private val getLatestRelease = mockk<GetLatestRelease>()
     private val downloader = mockk<Downloader>()
@@ -53,23 +55,27 @@ class SettingsViewModelTest {
     private lateinit var viewModel: SettingsViewModel
 
     fun createViewModel() =
-        SettingsViewModel(getUser, isStravaConnected, getLatestRelease, refreshUser, signOut, disconnectStrava, currentVersion, downloader, stravaUri)
+        SettingsViewModel(getUser, isStravaConnected, getLatestRelease, refreshUser, signOut, disconnectStrava, notification, currentVersion, downloader, stravaUri)
+
+    private suspend fun ReceiveTurbine<SettingsState>.awaitStateWhere(predicate: (SettingsState) -> Boolean): SettingsState {
+        repeat(10) {
+            val state = awaitItem()
+            if (predicate(state)) return state
+        }
+        error("Expected state was not emitted")
+    }
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     @Before
     fun setup(){
-        coEvery { getUser() } returns flowOf(user)
+        every { getUser() } returns flowOf(user)
     }
 
     @After
     fun tearDown(){
-        verify {
-            getUser()
-            isStravaConnected()
-        }
-        confirmVerified(getUser, refreshUser, signOut, isStravaConnected, disconnectStrava, stravaUri, getLatestRelease, downloader)
+        confirmVerified(refreshUser, signOut, disconnectStrava, notification, stravaUri, getLatestRelease, downloader)
         clearAllMocks()
     }
 
@@ -81,8 +87,11 @@ class SettingsViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcState.Idle)
+            val state = awaitStateWhere {
+                !it.loading && !it.updating && it.user == user && it.hasStrava == true && it.latestRelease == release
+            }
+            assertThat(state.loading).isFalse()
+            assertThat(state.updating).isFalse()
             assertThat(state.user).isEqualTo(user)
             assertThat(state.hasStrava).isTrue()
             assertThat(state.currentVersion).isEqualTo(Version.parse(currentVersion))
@@ -100,8 +109,11 @@ class SettingsViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcState.Idle)
+            val state = awaitStateWhere {
+                !it.loading && !it.updating && it.user == user && it.hasStrava == false && it.latestRelease == release
+            }
+            assertThat(state.loading).isFalse()
+            assertThat(state.updating).isFalse()
             assertThat(state.user).isEqualTo(user)
             assertThat(state.hasStrava).isFalse()
             assertThat(state.currentVersion).isEqualTo(Version.parse(currentVersion))
@@ -109,10 +121,6 @@ class SettingsViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify {
-            getUser()
-            isStravaConnected()
-        }
         coVerify { getLatestRelease() }
     }
 
@@ -124,8 +132,11 @@ class SettingsViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcState.Idle)
+            val state = awaitStateWhere {
+                !it.loading && !it.updating && it.user == user && it.hasStrava == false && it.latestRelease == null
+            }
+            assertThat(state.loading).isFalse()
+            assertThat(state.updating).isFalse()
             assertThat(state.user).isEqualTo(user)
             assertThat(state.hasStrava).isFalse()
             assertThat(state.currentVersion).isEqualTo(Version.parse(currentVersion))
@@ -145,10 +156,12 @@ class SettingsViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
+            awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
             viewModel.onAction(SettingsAction.RefreshUser)
-            skipItems(1)
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcState.Success("User data refreshed"))
+
+            assertThat(awaitStateWhere { it.loading }.loading).isTrue()
+            val state = awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
+            assertThat(state.loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -156,6 +169,7 @@ class SettingsViewModelTest {
             refreshUser()
             getLatestRelease()
         }
+        verify { notification.show("User data refreshed") }
     }
 
     @Test
@@ -167,10 +181,12 @@ class SettingsViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            skipItems(1)
+            awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
             viewModel.onAction(SettingsAction.RefreshUser)
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcState.Failure("error"))
+
+            assertThat(awaitStateWhere { it.loading }.loading).isTrue()
+            val state = awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
+            assertThat(state.loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -178,6 +194,7 @@ class SettingsViewModelTest {
             refreshUser()
             getLatestRelease()
         }
+        verify { notification.show("Failed to refresh user data: error") }
     }
 
     @Test
@@ -190,9 +207,12 @@ class SettingsViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
+            awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
             viewModel.onAction(SettingsAction.SignOut)
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcState.Idle)
+
+            assertThat(awaitStateWhere { it.loading }.loading).isTrue()
+            val state = awaitStateWhere { !it.loading && !it.updating && it.user == user }
+            assertThat(state.loading).isFalse()
             assertThat(state.user).isEqualTo(user)
             cancelAndIgnoreRemainingEvents()
         }
@@ -213,9 +233,12 @@ class SettingsViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
+            awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
             viewModel.onAction(SettingsAction.StravaDisconnect)
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcState.Idle)
+
+            assertThat(awaitStateWhere { it.loading }.loading).isTrue()
+            val state = awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
+            assertThat(state.loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -227,22 +250,22 @@ class SettingsViewModelTest {
 
     @Test
     fun `Update action`() = runTest {
-        coEvery { disconnectStrava() } returns Unit
         every { isStravaConnected() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
-        coEvery { downloader.downloadApk(any()) } returns Result.success(Unit)
+        every { downloader.downloadApk(any()) } returns Result.success(Unit)
 
         viewModel = createViewModel()
 
         viewModel.state.test {
+            awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
             viewModel.onAction(SettingsAction.Update)
+
+            val state = awaitStateWhere { it.updating }
+            assertThat(state.updating).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
-        viewModel.onAction(SettingsAction.Update)
 
-        coVerify {
-            downloader.downloadApk(release)
-            getLatestRelease()
-        }
+        coVerify { getLatestRelease() }
+        verify { downloader.downloadApk(release) }
     }
 }

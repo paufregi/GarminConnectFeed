@@ -49,7 +49,7 @@ class StravaViewModelTest {
     fun `Initial state`() = runTest {
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.process).isNull()
+            assertThat(state).isEqualTo(ProcState.Running)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -62,7 +62,7 @@ class StravaViewModelTest {
             viewModel.exchangeToken("code")
             skipItems(1)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcState.Success("Strava linked"))
+            assertThat(state).isEqualTo(ProcState.Success("Strava linked"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -77,7 +77,7 @@ class StravaViewModelTest {
             viewModel.exchangeToken("code")
             skipItems(1)
             val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcState.Failure("Link failed"))
+            assertThat(state).isEqualTo(ProcState.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
 

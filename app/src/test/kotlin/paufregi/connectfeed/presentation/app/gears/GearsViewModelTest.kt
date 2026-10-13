@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.gears
+package paufregi.connectfeed.presentation.app.gears
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
@@ -20,7 +20,7 @@ import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.usecases.GetGears
 import paufregi.connectfeed.core.usecases.SyncGear
-import paufregi.connectfeed.presentation.ui.models.ProcState
+import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
@@ -28,6 +28,7 @@ class GearsViewModelTest {
 
     private val getGears = mockk<GetGears>()
     private val syncGear = mockk<SyncGear>()
+    private val notification = mockk<NotificationManager>(relaxed = true)
 
     private lateinit var viewModel: GearsViewModel
 
@@ -44,8 +45,7 @@ class GearsViewModelTest {
 
     @After
     fun tearDown() {
-        verify { getGears() }
-        confirmVerified(getGears, syncGear)
+        confirmVerified(syncGear, notification)
         clearAllMocks()
     }
 
@@ -53,12 +53,16 @@ class GearsViewModelTest {
     fun `Initial state`() = runTest {
         every { getGears() } returns flowOf(gears)
 
-        viewModel = GearsViewModel(getGears, syncGear)
+        viewModel = GearsViewModel(getGears, syncGear, notification)
 
         viewModel.state.test {
+            val initial = awaitItem()
+            assertThat(initial.gears).isEqualTo(emptyList<Gear>())
+            assertThat(initial.loading).isFalse()
+
             val state = awaitItem()
             assertThat(state.gears).isEqualTo(gears)
-            assertThat(state.process).isEqualTo(ProcState.Idle)
+            assertThat(state.loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -67,12 +71,12 @@ class GearsViewModelTest {
     fun `Initial state - empty list`() = runTest {
         every { getGears() } returns flowOf(emptyList())
 
-        viewModel = GearsViewModel(getGears, syncGear)
+        viewModel = GearsViewModel(getGears, syncGear, notification)
 
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.gears).isEqualTo(emptyList<Gear>())
-            assertThat(state.process).isEqualTo(ProcState.Idle)
+            assertThat(state.loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -82,15 +86,19 @@ class GearsViewModelTest {
         every { getGears() } returns flowOf(gears)
         coEvery { syncGear() } coAnswers { Result.success(Unit) }
 
-        viewModel = GearsViewModel(getGears, syncGear)
+        viewModel = GearsViewModel(getGears, syncGear, notification)
 
         viewModel.state.test {
-            assertThat(awaitItem().process).isEqualTo(ProcState.Idle)
-            viewModel.onAction(GearsAction.Sync)
-            assertThat(awaitItem().process).isEqualTo(ProcState.Success("Gears synced"))
+            awaitItem()
+            awaitItem()
+            viewModel.sync()
+
+            assertThat(awaitItem().loading).isTrue()
+            assertThat(awaitItem().loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
         coVerify { syncGear() }
+        verify { notification.show("Gears synced") }
     }
 
     @Test
@@ -98,15 +106,19 @@ class GearsViewModelTest {
         every { getGears() } returns flowOf(gears)
         coEvery { syncGear() } returns Result.success(Unit)
 
-        viewModel = GearsViewModel(getGears, syncGear)
+        viewModel = GearsViewModel(getGears, syncGear, notification)
 
         viewModel.state.test {
-            assertThat(awaitItem().process).isEqualTo(ProcState.Idle)
-            viewModel.onAction(GearsAction.Sync)
-            assertThat(awaitItem().process).isEqualTo(ProcState.Success("Gears synced"))
+            awaitItem()
+            awaitItem()
+            viewModel.sync()
+
+            assertThat(awaitItem().loading).isTrue()
+            assertThat(awaitItem().loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
         coVerify { syncGear() }
+        verify { notification.show("Gears synced") }
     }
 
     @Test
@@ -114,33 +126,19 @@ class GearsViewModelTest {
         every { getGears() } returns flowOf(gears)
         coEvery { syncGear() } returns Result.failure(Exception("error"))
 
-        viewModel = GearsViewModel(getGears, syncGear)
+        viewModel = GearsViewModel(getGears, syncGear, notification)
 
         viewModel.state.test {
-            assertThat(awaitItem().process).isEqualTo(ProcState.Idle)
-            viewModel.onAction(GearsAction.Sync)
-            assertThat(awaitItem().process).isEqualTo(ProcState.Failure("error"))
+            awaitItem()
+            awaitItem()
+            viewModel.sync()
+
+            assertThat(awaitItem().loading).isTrue()
+            assertThat(awaitItem().loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
         coVerify { syncGear() }
-    }
-
-    @Test
-    fun `Reset state`() = runTest {
-        every { getGears() } returns flowOf(gears)
-        coEvery { syncGear() } returns Result.success(Unit)
-
-        viewModel = GearsViewModel(getGears, syncGear)
-
-        viewModel.state.test {
-            assertThat(awaitItem().process).isEqualTo(ProcState.Idle)
-            viewModel.onAction(GearsAction.Sync)
-            assertThat(awaitItem().process).isEqualTo(ProcState.Success("Gears synced"))
-            viewModel.onAction(GearsAction.Reset)
-            assertThat(awaitItem().process).isEqualTo(ProcState.Idle)
-            cancelAndIgnoreRemainingEvents()
-        }
-        coVerify { syncGear() }
+        verify { notification.show("error") }
     }
 }
 

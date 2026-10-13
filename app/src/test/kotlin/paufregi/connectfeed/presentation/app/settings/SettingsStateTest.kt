@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.settings
+package paufregi.connectfeed.presentation.app.settings
 
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest

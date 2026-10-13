@@ -244,43 +244,6 @@ class AppRepositoryTest {
     }
 
     @Test
-    fun `Get gear`() = runTest {
-        val gear = Gear(
-            id = "gear-1",
-            name = "gear",
-            type = GearType.Shoe,
-            distance = 1000,
-            stravaId = null
-        )
-        val gearEntity = GearEntity(
-            id = "gear-1",
-            userId = user.id,
-            name = "gear",
-            type = GearType.Shoe,
-            distance = 1000,
-        )
-
-        coEvery { dao.getGear(any()) } returns gearEntity
-
-        val res = repo.getGear("gear-1")
-
-        assertThat(res).isEqualTo(gear)
-
-        coVerify { dao.getGear("gear-1") }
-    }
-
-    @Test
-    fun `Get gear - no result`() = runTest {
-        coEvery { dao.getGear(any()) } returns null
-
-        val res = repo.getGear("gear-1")
-
-        assertThat(res).isNull()
-
-        coVerify { dao.getGear("gear-1") }
-    }
-
-    @Test
     fun `Save gear`() = runTest {
         val gear = Gear(
             id = "gear-1",
