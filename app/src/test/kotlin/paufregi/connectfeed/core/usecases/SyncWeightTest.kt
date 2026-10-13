@@ -63,21 +63,10 @@ class SyncWeightTest {
     val today = Date()
     val yesterday = Date(today.time - 24 * 60 * 60 * 1000)
 
-    val weights = listOf(Weight(
-        timestamp = today,
-        weight = 76.15f,
-        bmi = 23.8f,
-        fat = 23.2f,
-        visceralFat = 7,
-        water = 55.4f,
-        muscle = 55.59f,
-        bone = 2.89f,
-        basalMet = 1618f,
-        metabolicAge = 35,
-    ),
+    val weights = listOf(
         Weight(
-            timestamp = yesterday,
-            weight = 75.15f,
+            timestamp = today,
+            weight = 76.15f,
             bmi = 23.8f,
             fat = 23.2f,
             visceralFat = 7,
@@ -86,8 +75,20 @@ class SyncWeightTest {
             bone = 2.89f,
             basalMet = 1618f,
             metabolicAge = 35,
+        ),
+            Weight(
+                timestamp = yesterday,
+                weight = 75.15f,
+                bmi = 23.8f,
+                fat = 23.2f,
+                visceralFat = 7,
+                water = 55.4f,
+                muscle = 55.59f,
+                bone = 2.89f,
+                basalMet = 1618f,
+                metabolicAge = 35,
+            )
         )
-    )
 
     @Test
     fun `Sync weight`() = runTest {
@@ -113,6 +114,18 @@ class SyncWeightTest {
 
         coVerify { garminRepo.uploadFile(any()) }
         coVerify { stravaRepo.updateAthlete(weights[0].weight) }
+    }
+
+    @Test
+    fun `Sync weight with Strava - no weight today`() = runTest {
+        every { isStravaConnected() } returns flowOf(true)
+        coEvery { garminRepo.uploadFile(any()) } returns Result.success(Unit)
+
+        val result = useCase(listOf(weights[1]), today)
+
+        assertThat(result.isSuccess).isTrue()
+        coVerify { garminRepo.uploadFile(any()) }
+        coVerify(exactly = 0) { stravaRepo.updateAthlete(any()) }
     }
 
     @Test

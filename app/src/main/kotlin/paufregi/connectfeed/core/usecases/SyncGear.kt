@@ -27,9 +27,10 @@ class SyncGear @Inject constructor(
 
         val garminDeferred = async { garminRepo.getGears() }
         val stravaDeferred = async {
-            isStravaConnected().firstOrNull()?.let {
-                stravaRepo.getAthlete()
-            } ?: Result.success(Athlete(0))
+            when (isStravaConnected().firstOrNull()) {
+                true -> stravaRepo.getAthlete()
+                else -> Result.success(Athlete(0))
+            }
         }
 
         val garminResult = runCatchingResult { garminDeferred.await() }

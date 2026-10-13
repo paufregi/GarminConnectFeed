@@ -70,7 +70,6 @@ class SyncGearTest {
         every { isStravaConnected() } returns flowOf(false)
         every { appRepo.getAllGears(user) } returns flowOf(dbGears)
         coEvery { garminRepo.getGears() } returns Result.success(garminGears)
-        coEvery { stravaRepo.getAthlete() } returns Result.success(Athlete(0))
 
         val res = useCase()
 
@@ -79,7 +78,6 @@ class SyncGearTest {
         verify { authRepo.getUser() }
         verify { isStravaConnected() }
         coVerify { garminRepo.getGears() }
-        coVerify { stravaRepo.getAthlete() }
         verify { appRepo.getAllGears(user) }
         coVerify { appRepo.saveGear(user, match { it.id == "id-1" }) }
         coVerify { appRepo.saveGear(user, match { it.id == "id-2" }) }
