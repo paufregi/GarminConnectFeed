@@ -20,6 +20,7 @@ class SignIn @Inject constructor(
             authRepo.exchangeGarminToken(ticket, garminClientId)
                 .onSuccess { authRepo.saveGarminToken(it) }
                 .andThen { repo.getUserProfile() }
+                .onFailure { authRepo.clear() }
         }
     }
 }

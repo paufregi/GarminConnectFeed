@@ -140,14 +140,16 @@ val authTokenJson = """
         "expires_in": ${authToken.expiresIn},
         "refresh_token_expires_in": ${authToken.refreshTokenExpiresIn},
         "scope": "SCOPE",
-        "jti": "JTI",
+        "jti": "JTI"
     }
     """.trimIndent()
 
 val refreshedAuthTokenJson = """
     {
         "access_token": "${refreshedToken.accessToken}",
+        "expires_in": 3600
         "refresh_token": "${refreshedToken.refreshToken}"
+        "refresh_token_expires_in": 86400
     }
     """.trimIndent()
 

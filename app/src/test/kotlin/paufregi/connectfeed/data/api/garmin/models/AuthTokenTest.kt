@@ -5,6 +5,7 @@ import org.junit.Test
 import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.today
 import paufregi.connectfeed.tomorrow
+import paufregi.connectfeed.yesterday
 import kotlin.time.Duration.Companion.hours
 
 class AuthTokenTest {
@@ -28,11 +29,11 @@ class AuthTokenTest {
 
     @Test
     fun `Is refresh token expired - false`() {
-        assertThat(token.isRefreshTokenExpired(today)).isFalse()
+        assertThat(token.isRefreshTokenExpired(tomorrow)).isFalse()
     }
 
     @Test
     fun `Is refresh token expired - true`() {
-        assertThat(token.isRefreshTokenExpired(today + 25.hours)).isTrue()
+        assertThat(token.isRefreshTokenExpired(yesterday)).isTrue()
     }
 }

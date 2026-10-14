@@ -52,7 +52,6 @@ class SyncWeightTest {
         verify {
             isStravaConnected()
             Formatter.dateTimeForFilename(any()).format(any())
-            FitWriter.weights(any(), weights)
         }
         confirmVerified(isStravaConnected, garminRepo, stravaRepo, Formatter, FitWriter)
         clearAllMocks()
@@ -99,6 +98,7 @@ class SyncWeightTest {
 
         assertThat(res.isSuccess).isTrue()
 
+        verify { FitWriter.weights(any(), weights) }
         coVerify { garminRepo.uploadFile(any()) }
     }
 
@@ -112,6 +112,7 @@ class SyncWeightTest {
 
         assertThat(res.isSuccess).isTrue()
 
+        verify { FitWriter.weights(any(), weights) }
         coVerify { garminRepo.uploadFile(any()) }
         coVerify { stravaRepo.updateAthlete(weights[0].weight) }
     }
@@ -124,8 +125,8 @@ class SyncWeightTest {
         val result = useCase(listOf(weights[1]), today)
 
         assertThat(result.isSuccess).isTrue()
+        verify { FitWriter.weights(any(), listOf(weights[1])) }
         coVerify { garminRepo.uploadFile(any()) }
-        coVerify(exactly = 0) { stravaRepo.updateAthlete(any()) }
     }
 
     @Test
@@ -139,7 +140,7 @@ class SyncWeightTest {
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin")
 
-
+        verify { FitWriter.weights(any(), weights) }
         coVerify { garminRepo.uploadFile(any()) }
         coVerify { stravaRepo.updateAthlete(weights[0].weight) }
     }
@@ -155,6 +156,7 @@ class SyncWeightTest {
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Strava")
 
+        verify { FitWriter.weights(any(), weights) }
         coVerify {
             garminRepo.uploadFile(any())
             stravaRepo.updateAthlete(weights[0].weight)
@@ -172,6 +174,7 @@ class SyncWeightTest {
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin & Strava")
 
+        verify { FitWriter.weights(any(), weights) }
         coVerify {
             garminRepo.uploadFile(any())
             stravaRepo.updateAthlete(weights[0].weight)

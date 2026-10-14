@@ -32,7 +32,6 @@ class AuthInterceptor @Inject constructor(
             else {
                 repo.refreshGarminToken(token.refreshToken, clientId)
                     .onSuccess { repo.saveGarminToken(it) }
-                    .onFailure { Log.e("AuthInterceptor", "Failed to refresh token: ${it.message} - ${it.cause}") }
             }
         } ?: Result.failure("No token found")
 }

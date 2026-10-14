@@ -82,8 +82,8 @@ class AuthInterceptorTest {
         val validToken = createAuthToken(tomorrow)
 
         every { authRepo.getGarminToken() } returns flowOf(expiredToken)
-        coEvery { authRepo.refreshGarminToken(clientId, expiredToken.refreshToken) } returns Result.success(validToken)
-        coEvery { authRepo.saveGarminToken(validToken) } returns Unit
+        coEvery { authRepo.refreshGarminToken(any(), any()) } returns Result.success(validToken)
+        coEvery { authRepo.saveGarminToken(any()) } returns Unit
 
         api.test()
 
@@ -92,7 +92,7 @@ class AuthInterceptorTest {
 
         verify { authRepo.getGarminToken() }
         coVerify {
-            authRepo.refreshGarminToken(clientId, expiredToken.refreshToken)
+            authRepo.refreshGarminToken(expiredToken.refreshToken, clientId)
             authRepo.saveGarminToken(validToken)
         }
     }
@@ -110,10 +110,10 @@ class AuthInterceptorTest {
 
     @Test
     fun `Failure - refresh expired token`() = runTest {
-        val expiredToken = createAuthToken(today)
+        val expiredToken = createAuthToken(yesterday)
 
         every { authRepo.getGarminToken() } returns flowOf(expiredToken)
-        coEvery { authRepo.refreshGarminToken(clientId, expiredToken.refreshToken) } returns Result.failure("Refresh failed")
+        coEvery { authRepo.refreshGarminToken(any(), any()) } returns Result.failure("Refresh failed")
 
         val res = api.test()
 
@@ -121,7 +121,7 @@ class AuthInterceptorTest {
 
         verify { authRepo.getGarminToken() }
         coVerify {
-            authRepo.refreshGarminToken(clientId, expiredToken.refreshToken)
+            authRepo.refreshGarminToken(expiredToken.refreshToken, clientId)
         }
     }
 }

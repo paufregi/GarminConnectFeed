@@ -135,16 +135,17 @@ class QuickUpdateActivityTest{
     fun `Update activity - no training effect`() = runTest {
         val garminDescription = "Workout: VO₂ max"
         val stravaDescription = "description\n\nWorkout: VO₂ max"
+        val activityWithoutTrainingEffect = activity.copy(trainingEffect = null)
 
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val res = useCase(activity.copy(trainingEffect = null), profile, description, water, feel, effort, workout, gear)
+        val res = useCase(activityWithoutTrainingEffect, profile, description, water, feel, effort, workout, gear)
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
-            garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear)
+            garminRepo.updateActivity(activityWithoutTrainingEffect, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear)
+            stravaRepo.updateActivity(activityWithoutTrainingEffect, profile.name, stravaDescription, profile.eventType?.commute, gear)
         }
     }
 

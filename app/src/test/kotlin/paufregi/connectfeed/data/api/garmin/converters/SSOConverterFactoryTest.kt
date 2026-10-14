@@ -54,7 +54,7 @@ class SSOConverterFactoryTest {
     @Test
     fun `Unsupported responseBody converter`() {
         val result = factory
-            .responseBodyConverter(Ticket::class.java, arrayOf(), mockk<Retrofit>() )
+            .responseBodyConverter(String::class.java, arrayOf(), mockk<Retrofit>() )
 
         assertThat(result).isNull()
     }

@@ -76,7 +76,7 @@ class UpdateActivityTest{
     @Test
     fun `Update activity - with Strava`() = runTest {
         val garminDescription = "Workout: VO₂ max"
-        val stravaDescription = "description\n\nWorkout: VO₂ max\nBenefit: VO₂ max"
+        val stravaDescription = "description\n\nWorkout: VO₂ max\nBenefit: recovery"
 
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
@@ -93,7 +93,7 @@ class UpdateActivityTest{
     @Test
     fun `Update activity - no description`() = runTest {
         val garminDescription = "Workout: VO₂ max"
-        val stravaDescription = "Workout: VO₂ max\nBenefit: VO₂ max"
+        val stravaDescription = "Workout: VO₂ max\nBenefit: recovery"
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
@@ -108,7 +108,7 @@ class UpdateActivityTest{
 
     @Test
     fun `Update activity - no workout`() = runTest {
-        val stravaDescription = "description\n\nBenefit: VO₂ max"
+        val stravaDescription = "description\n\nBenefit: recovery"
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
@@ -125,16 +125,17 @@ class UpdateActivityTest{
     fun `Update activity - no training effect`() = runTest {
         val garminDescription = "Workout: VO₂ max"
         val stravaDescription = "description\n\nWorkout: VO₂ max"
+        val activityWithNoTrainingEffect = activity.copy(trainingEffect = null)
 
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
-        val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, true)
+        val res = useCase(activityWithNoTrainingEffect, name, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isTrue()
         coVerify {
-            garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear)
+            garminRepo.updateActivity(activityWithNoTrainingEffect, name, garminDescription, eventType, course, water, feel, effort, gear)
+            stravaRepo.updateActivity(activityWithNoTrainingEffect, name, stravaDescription, eventType.commute, gear)
         }
     }
 
@@ -176,7 +177,7 @@ class UpdateActivityTest{
     @Test
     fun `Update activity - garmin failed`() = runTest {
         val garminDescription = "Workout: VO₂ max"
-        val stravaDescription = "description\n\nWorkout: VO₂ max\nBenefit: VO₂ max"
+        val stravaDescription = "description\n\nWorkout: VO₂ max\nBenefit: recovery"
 
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
@@ -194,7 +195,7 @@ class UpdateActivityTest{
     @Test
     fun `Update activity - strava failed`() = runTest {
         val garminDescription = "Workout: VO₂ max"
-        val stravaDescription = "description\n\nWorkout: VO₂ max\nBenefit: VO₂ max"
+        val stravaDescription = "description\n\nWorkout: VO₂ max\nBenefit: recovery"
 
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.failure("error")
@@ -212,7 +213,7 @@ class UpdateActivityTest{
     @Test
     fun `Update activity - both failed`() = runTest {
         val garminDescription = "Workout: VO₂ max"
-        val stravaDescription = "description\n\nWorkout: VO₂ max\nBenefit: VO₂ max"
+        val stravaDescription = "description\n\nWorkout: VO₂ max\nBenefit: recovery"
 
         coEvery { garminRepo.updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
         coEvery { stravaRepo.updateActivity(any(), any(), any(), any(), any()) } returns Result.failure("error")

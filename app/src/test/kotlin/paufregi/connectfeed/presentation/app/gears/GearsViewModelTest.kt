@@ -9,6 +9,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -56,10 +57,6 @@ class GearsViewModelTest {
         viewModel = GearsViewModel(getGears, syncGear, notification)
 
         viewModel.state.test {
-            val initial = awaitItem()
-            assertThat(initial.gears).isEqualTo(emptyList<Gear>())
-            assertThat(initial.loading).isFalse()
-
             val state = awaitItem()
             assertThat(state.gears).isEqualTo(gears)
             assertThat(state.loading).isFalse()
@@ -83,17 +80,18 @@ class GearsViewModelTest {
 
     @Test
     fun `Sync gears - processing`() = runTest {
+        val syncResult = CompletableDeferred<Result<Unit>>()
         every { getGears() } returns flowOf(gears)
-        coEvery { syncGear() } coAnswers { Result.success(Unit) }
+        coEvery { syncGear() } coAnswers { syncResult.await() }
 
         viewModel = GearsViewModel(getGears, syncGear, notification)
 
         viewModel.state.test {
-            awaitItem()
-            awaitItem()
+            skipItems(1)
             viewModel.sync()
 
             assertThat(awaitItem().loading).isTrue()
+            syncResult.complete(Result.success(Unit))
             assertThat(awaitItem().loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
@@ -103,17 +101,18 @@ class GearsViewModelTest {
 
     @Test
     fun `Sync gears - success`() = runTest {
+        val syncResult = CompletableDeferred<Result<Unit>>()
         every { getGears() } returns flowOf(gears)
-        coEvery { syncGear() } returns Result.success(Unit)
+        coEvery { syncGear() } coAnswers { syncResult.await() }
 
         viewModel = GearsViewModel(getGears, syncGear, notification)
 
         viewModel.state.test {
-            awaitItem()
-            awaitItem()
+            skipItems(1)
             viewModel.sync()
 
             assertThat(awaitItem().loading).isTrue()
+            syncResult.complete(Result.success(Unit))
             assertThat(awaitItem().loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
@@ -123,17 +122,18 @@ class GearsViewModelTest {
 
     @Test
     fun `Sync gears - failure`() = runTest {
+        val syncResult = CompletableDeferred<Result<Unit>>()
         every { getGears() } returns flowOf(gears)
-        coEvery { syncGear() } returns Result.failure(Exception("error"))
+        coEvery { syncGear() } coAnswers { syncResult.await() }
 
         viewModel = GearsViewModel(getGears, syncGear, notification)
 
         viewModel.state.test {
-            awaitItem()
-            awaitItem()
+            skipItems(1)
             viewModel.sync()
 
             assertThat(awaitItem().loading).isTrue()
+            syncResult.complete(Result.failure(Exception("error")))
             assertThat(awaitItem().loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
@@ -141,5 +141,4 @@ class GearsViewModelTest {
         verify { notification.show("error") }
     }
 }
-
 

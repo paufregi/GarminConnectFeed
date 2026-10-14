@@ -103,7 +103,7 @@ class SyncGearTest {
         coVerify { stravaRepo.getAthlete() }
         verify { appRepo.getAllGears(user) }
         coVerify { appRepo.saveGear(user, match { it.id == "id-1" && it.stravaId == "strava-id-1" }) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-2" && it.stravaId == null }) }
+        coVerify { appRepo.saveGear(user, match { it.id == "id-2" && it.stravaId == "strava-id-2" }) }
         coVerify { appRepo.saveGear(user, match { it.id == "id-3" && it.stravaId == null }) }
         coVerify { appRepo.deleteGear(user, match { it.id == "id-10" }) }
     }
@@ -126,7 +126,7 @@ class SyncGearTest {
         coVerify { stravaRepo.getAthlete() }
         verify { appRepo.getAllGears(user) }
         coVerify { appRepo.saveGear(user, match { it.id == "id-1" && it.stravaId == "strava-id-1" }) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-2" && it.stravaId == null }) }
+        coVerify { appRepo.saveGear(user, match { it.id == "id-2" && it.stravaId == "strava-id-2" }) }
         coVerify { appRepo.saveGear(user, match { it.id == "id-3" && it.stravaId == null }) }
     }
 

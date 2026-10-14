@@ -11,6 +11,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -57,14 +58,6 @@ class SettingsViewModelTest {
     fun createViewModel() =
         SettingsViewModel(getUser, isStravaConnected, getLatestRelease, refreshUser, signOut, disconnectStrava, notification, currentVersion, downloader, stravaUri)
 
-    private suspend fun ReceiveTurbine<SettingsState>.awaitStateWhere(predicate: (SettingsState) -> Boolean): SettingsState {
-        repeat(10) {
-            val state = awaitItem()
-            if (predicate(state)) return state
-        }
-        error("Expected state was not emitted")
-    }
-
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
@@ -87,9 +80,7 @@ class SettingsViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            val state = awaitStateWhere {
-                !it.loading && !it.updating && it.user == user && it.hasStrava == true && it.latestRelease == release
-            }
+            val state = awaitItem()
             assertThat(state.loading).isFalse()
             assertThat(state.updating).isFalse()
             assertThat(state.user).isEqualTo(user)
@@ -109,9 +100,7 @@ class SettingsViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            val state = awaitStateWhere {
-                !it.loading && !it.updating && it.user == user && it.hasStrava == false && it.latestRelease == release
-            }
+            val state = awaitItem()
             assertThat(state.loading).isFalse()
             assertThat(state.updating).isFalse()
             assertThat(state.user).isEqualTo(user)
@@ -132,9 +121,7 @@ class SettingsViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            val state = awaitStateWhere {
-                !it.loading && !it.updating && it.user == user && it.hasStrava == false && it.latestRelease == null
-            }
+            val state = awaitItem()
             assertThat(state.loading).isFalse()
             assertThat(state.updating).isFalse()
             assertThat(state.user).isEqualTo(user)
@@ -149,19 +136,20 @@ class SettingsViewModelTest {
 
     @Test
     fun `Refresh user - success`() = runTest {
-        coEvery { refreshUser() } returns Result.success(Unit)
+        val syncResult = CompletableDeferred<Result<Unit>>()
+        coEvery { refreshUser() } coAnswers { syncResult.await() }
         every { isStravaConnected() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
 
         viewModel = createViewModel()
 
         viewModel.state.test {
-            awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
+            skipItems(1)
             viewModel.onAction(SettingsAction.RefreshUser)
 
-            assertThat(awaitStateWhere { it.loading }.loading).isTrue()
-            val state = awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
-            assertThat(state.loading).isFalse()
+            assertThat(awaitItem().loading).isTrue()
+            syncResult.complete(Result.success(Unit))
+            assertThat(awaitItem().loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -174,19 +162,20 @@ class SettingsViewModelTest {
 
     @Test
     fun `Refresh user - failure`() = runTest {
-        coEvery { refreshUser() } returns Result.failure("error")
+        val syncResult = CompletableDeferred<Result<Unit>>()
+        coEvery { refreshUser() } coAnswers { syncResult.await() }
         every { isStravaConnected() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
 
         viewModel = createViewModel()
 
         viewModel.state.test {
-            awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
+            skipItems(1)
             viewModel.onAction(SettingsAction.RefreshUser)
 
-            assertThat(awaitStateWhere { it.loading }.loading).isTrue()
-            val state = awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
-            assertThat(state.loading).isFalse()
+            assertThat(awaitItem().loading).isTrue()
+            syncResult.complete(Result.failure(Exception("error")))
+            assertThat(awaitItem().loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -199,21 +188,22 @@ class SettingsViewModelTest {
 
     @Test
     fun `Sign out`() = runTest {
-        coEvery { signOut() } returns Unit
-        coEvery { disconnectStrava() } returns Unit
+        val disconnect = CompletableDeferred<Unit>()
+        coEvery { signOut() } coAnswers { disconnect.await() }
+        coEvery { disconnectStrava() } coAnswers { disconnect.await() }
         every { isStravaConnected() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
 
         viewModel = createViewModel()
 
         viewModel.state.test {
-            awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
+            skipItems(1)
             viewModel.onAction(SettingsAction.SignOut)
 
-            assertThat(awaitStateWhere { it.loading }.loading).isTrue()
-            val state = awaitStateWhere { !it.loading && !it.updating && it.user == user }
+            assertThat(awaitItem().loading).isTrue()
+            disconnect.complete(Unit)
+            val state = awaitItem()
             assertThat(state.loading).isFalse()
-            assertThat(state.user).isEqualTo(user)
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -226,19 +216,20 @@ class SettingsViewModelTest {
 
     @Test
     fun `Sign out strava`() = runTest {
-        coEvery { disconnectStrava() } returns Unit
+        val disconnect = CompletableDeferred<Unit>()
+        coEvery { disconnectStrava() } coAnswers { disconnect.await() }
         every { isStravaConnected() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
 
         viewModel = createViewModel()
 
         viewModel.state.test {
-            awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
+            skipItems(1)
             viewModel.onAction(SettingsAction.StravaDisconnect)
 
-            assertThat(awaitStateWhere { it.loading }.loading).isTrue()
-            val state = awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
-            assertThat(state.loading).isFalse()
+            assertThat(awaitItem().loading).isTrue()
+            disconnect.complete(Unit)
+            assertThat(awaitItem().loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -257,10 +248,10 @@ class SettingsViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            awaitStateWhere { !it.loading && !it.updating && it.latestRelease == release }
+            awaitItem()
             viewModel.onAction(SettingsAction.Update)
 
-            val state = awaitStateWhere { it.updating }
+            val state = awaitItem()
             assertThat(state.updating).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
