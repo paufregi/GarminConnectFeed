@@ -47,8 +47,8 @@ class LoginViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.status).isNull()
-            assertThat(state.username).isEqualTo("paulfrancis.ellis@gmail.com")
-            assertThat(state.password).isEqualTo("QEfNgWo9mHToGuCJapQs")
+            assertThat(state.username).isEmpty()
+            assertThat(state.password).isEmpty()
             assertThat(state.user).isNull()
             assertThat(state.showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
@@ -65,7 +65,7 @@ class LoginViewModelTest {
             val state = awaitItem()
             assertThat(state.status).isNull()
             assertThat(state.username).isEqualTo("user")
-            assertThat(state.password).isEqualTo("QEfNgWo9mHToGuCJapQs")
+            assertThat(state.password).isEmpty()
             assertThat(state.user).isNull()
             assertThat(state.showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
@@ -81,7 +81,7 @@ class LoginViewModelTest {
             skipItems(1)
             val state = awaitItem()
             assertThat(state.status).isNull()
-            assertThat(state.username).isEqualTo("paulfrancis.ellis@gmail.com")
+            assertThat(state.username).isEmpty()
             assertThat(state.password).isEqualTo("pass")
             assertThat(state.user).isNull()
             assertThat(state.showPassword).isFalse()
@@ -98,8 +98,8 @@ class LoginViewModelTest {
             skipItems(1)
             val state = awaitItem()
             assertThat(state.status).isNull()
-            assertThat(state.username).isEqualTo("paulfrancis.ellis@gmail.com")
-            assertThat(state.password).isEqualTo("QEfNgWo9mHToGuCJapQs")
+            assertThat(state.username).isEmpty()
+            assertThat(state.password).isEmpty()
             assertThat(state.user).isNull()
             assertThat(state.showPassword).isTrue()
             cancelAndIgnoreRemainingEvents()
@@ -118,8 +118,8 @@ class LoginViewModelTest {
             skipItems(4)
             val state = awaitItem()
             assertThat(state.status).isNull()
-            assertThat(state.username).isEqualTo("paulfrancis.ellis@gmail.com")
-            assertThat(state.password).isEqualTo("QEfNgWo9mHToGuCJapQs")
+            assertThat(state.username).isEmpty()
+            assertThat(state.password).isEmpty()
             assertThat(state.user).isNull()
             assertThat(state.showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
@@ -171,5 +171,37 @@ class LoginViewModelTest {
         }
 
         coVerify { signIn("user", "pass") }
+    }
+
+    @Test
+    fun `Save user`() = runTest {
+        val user = User(1, "user", "avatar")
+        coEvery { signIn(any(), any()) } returns Result.success(user)
+        coEvery { saveUser(any()) } returns Unit
+
+        viewModel = LoginViewModel(signIn, saveUser)
+
+        viewModel.state.test {
+            viewModel.onAction(LoginAction.SetUsername("user"))
+            viewModel.onAction(LoginAction.SetPassword("pass"))
+            skipItems(2)
+            viewModel.onAction(LoginAction.SignIn)
+            skipItems(2)
+            viewModel.onAction(LoginAction.SaveUser)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify { signIn("user", "pass") }
+        coVerify { saveUser(user) }
+    }
+
+    @Test
+    fun `Save user - no user`() = runTest {
+        val user = User(1, "user", "avatar")
+        coEvery { saveUser(any()) } returns Unit
+
+        viewModel = LoginViewModel(signIn, saveUser)
+
+        viewModel.onAction(LoginAction.SaveUser)
     }
 }

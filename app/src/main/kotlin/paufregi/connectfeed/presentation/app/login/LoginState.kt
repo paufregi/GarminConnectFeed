@@ -11,8 +11,8 @@ sealed interface Status {
 
 data class LoginState(
     val status: Status? = null,
-    val username: String = "paulfrancis.ellis@gmail.com",
-    val password: String = "QEfNgWo9mHToGuCJapQs",
+    val username: String = "",
+    val password: String = "",
     val user: User? = null,
     val showPassword: Boolean = false,
 )
