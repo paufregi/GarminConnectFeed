@@ -83,6 +83,36 @@ Tests live in `app/src/test/` (unit) and `app/src/androidTest/` (instrumented).
 
 ---
 
+## Model Unit Test Standard
+
+Follow the full **Model Unit Test Standard** in `.github/copilot-instructions.md`.
+Use Course/Profile/Gear tests for compatibility, ActivityType/GearType tests for
+type rules, and Version tests for parsing, formatting, and comparison examples.
+
+- Place `<Model>Test` in `app/src/test/kotlin/paufregi/connectfeed/core/models/`
+  with the matching package. Use plain JUnit4 and inline Truth assertions.
+- Use real model objects and deterministic synthetic fixtures, including fixed
+  dates. Share immutable baseline fixtures and vary relevant fields with `copy`.
+- Pure synchronous model tests need no mocks, setup/teardown, factory/assertion
+  helpers, coroutine runner, dispatcher rule, Turbine, or Hilt. ViewModel-specific
+  test infrastructure requirements do not apply.
+- Name tests by behavior and variation, such as `compatible - same type`,
+  `Parse - fail invalid`, or `IsLowerThan - lower minor`.
+- Test one logical scenario category at a time; multiple explicit assertions for
+  representative inputs are encouraged. Assert outcomes directly, not via helpers
+  that recompute production logic.
+- Cover behavior rather than generated data-class plumbing. Compatibility coverage
+  includes positive/negative cases, parent/subtype directions, sibling/unrelated
+  types, and valid wildcard cases on both sides.
+- Respect model-specific rules, including bike/shoe/unknown gear differences.
+  Exercise model wrappers with real `Activity` values; type-level tests alone are
+  insufficient. Cover meaningful defaults through observable behavior.
+- For parsing, cover valid/prefixed and malformed/component-invalid inputs. For
+  comparisons, cover equality and lower/higher components. Assert exact formatting
+  output and parsed component values.
+
+---
+
 ## ViewModel Unit Test Standard
 
 Follow the full **ViewModel Unit Test Standard** in

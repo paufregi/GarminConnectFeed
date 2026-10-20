@@ -114,6 +114,34 @@ that belongs in a use case.
   new tests must be compatible with this runner.
 - Flag any PR that deletes tests without a clear justification.
 
+### Model test review checklist
+
+Apply the **Model Unit Test Standard** in `.github/copilot-instructions.md`.
+Use Course/Profile/Gear, ActivityType/GearType, and Version tests as references.
+
+- Tests live in the matching model package with a `<Model>Test` class and use
+  plain JUnit4 and inline Truth assertions.
+- Pure synchronous model tests use real instances and deterministic fixtures, not
+  mocks, current-clock values, coroutine/Android infrastructure, or unnecessary
+  setup/teardown and factory/assertion helpers. Do not enforce ViewModel-specific
+  mock lifecycle or `createViewModel` requirements on model tests.
+- Names identify a behavior and scenario, such as `compatible - same parent` or
+  `Parse - valid with prefix`. Multiple explicit examples of one logical scenario
+  may be asserted in a single test.
+- Tests target model behavior and meaningful defaults, not generated data-class
+  plumbing. Expected results must be explicit, not derived by calling the same
+  production logic under test.
+- Compatibility coverage includes accepted and rejected inputs, both directions
+  of parent/subtype relationships where supported, sibling and unrelated types,
+  and applicable `Any`/`Unknown` wildcard cases on either side.
+- Domain-specific gear rules are preserved. Model `compatible(activity)` wrappers
+  are tested with real activities, even if type-level compatibility tests exist.
+- Parsing coverage checks valid/prefixed input, malformed structure, invalid
+  components, parsed values, and the actual failure contract. Comparisons cover
+  equality and lower/higher components; formatting assertions check exact output.
+- Changes to model/type behavior include corresponding test-matrix updates.
+  Do not demand unrelated behavior changes merely to satisfy new tests.
+
 ### ViewModel test review checklist
 
 Apply the **ViewModel Unit Test Standard** in `.github/copilot-instructions.md`.

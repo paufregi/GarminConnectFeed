@@ -52,6 +52,65 @@ Use these instructions when generating or modifying code in this repository.
   - Compose UI tests with Hilt where relevant (`@HiltAndroidTest`)
 - Keep tests near the feature/module being changed (`app/src/test` or `app/src/androidTest`).
 
+### Model Unit Test Standard
+
+Follow `CourseTest`, `ProfileTest`, and `GearTest` for model compatibility helpers,
+`ActivityTypeTest` and `GearTypeTest` for type rules, and `VersionTest` for parsing,
+formatting, and comparisons. Keep tests in
+`app/src/test/kotlin/paufregi/connectfeed/core/models/`, using the model's package
+and a matching `<Model>Test` class.
+
+#### Structure and assertions
+
+- Use plain JUnit4 `@Test` methods and inline Truth assertions. Pure synchronous
+  model tests do not need `runTest`, Turbine, `MainDispatcherRule`, Hilt, or Android
+  instrumentation.
+- Construct real model instances rather than mocking models or their collaborators.
+  Use small, deterministic fixtures: synthetic identifiers/names and fixed dates
+  such as `LocalDateTime.MIN`, not the current clock.
+- Share immutable baseline fixtures as `private val` properties when useful.
+  Use `copy(...)` to vary the field relevant to a case; use local values for
+  scenario-specific inputs and expected results.
+- Keep tests direct and self-contained. Do not introduce fixture factories,
+  assertion helpers, setup/teardown, or MockK verification for pure model tests.
+  The mandatory ViewModel factory and mock lifecycle rules do not apply here.
+- Use descriptive backtick names that identify the behavior and variation, such
+  as `compatible - same type`, `compatible - different parents`,
+  `Parse - valid with prefix`, and `IsLowerThan - higher patch`.
+- Keep one logical scenario category per test. Several explicit assertions for
+  representative inputs in that category are appropriate; unlike action tests,
+  model tests need not be limited to a single function invocation.
+- Assert actual results directly with `isTrue()`, `isFalse()`, `isNull()`, or
+  `isEqualTo(...)`. For successful parsing, check the parsed component values as
+  well as non-nullness. Keep expected values explicit rather than calculating them
+  through the same production helper under test.
+
+#### Behavior coverage
+
+- Prioritize model behavior: compatibility, derived properties, meaningful
+  defaults, parsing, formatting, and comparisons. Do not add boilerplate tests
+  solely for compiler-generated data-class getters, `copy`, or equality.
+- Compatibility tests must cover accepted and rejected inputs, including exact
+  matches, parent/subtype in both directions and sibling subtypes where supported,
+  unrelated types/parents, and `Any`/`Unknown` wildcards on either side where valid.
+  Assert each direction explicitly when testing a symmetric rule.
+- Preserve domain-specific differences: bike gear accepts cycling types; shoe
+  gear also accepts walking and hiking; unknown gear accepts any activity.
+  Do not assume gear compatibility follows the same hierarchy as course/profile
+  compatibility.
+- Test a model's public `compatible(activity)` helper with a real `Activity`,
+  even when it delegates to a type helper. Type-level tests do not replace
+  model-level coverage. Test meaningful defaults, such as a profile's default
+  `Any` type or a gear's default `Unknown` type, through observable behavior.
+- Parsing tests should distinguish valid input, supported prefixes, malformed
+  structure, and invalid components. Assert the documented failure result, such
+  as `null`, rather than assuming an exception.
+- Comparison tests should cover equality and lower/higher major, minor, and patch
+  components where applicable. Formatting tests should assert the exact output,
+  including prefixes and separators.
+- Extend the relevant test matrix when a model/type rule changes; preserve intended
+  behavior rather than changing production logic just to make a test pass.
+
 ### ViewModel Unit Test Standard
 
 Use `SettingsViewModelTest` as the baseline for structure and tone. The current
@@ -147,4 +206,3 @@ compatibility guards. Tests live under
 Detailed, project-specific review criteria (architecture rules, security checks, Room migration
 requirements, test coverage expectations, dependency conventions) are in
 `.github/copilot-review-instructions.md`. Apply those rules when reviewing pull requests.
-
