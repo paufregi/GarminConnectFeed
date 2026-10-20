@@ -12,4 +12,7 @@ data class Profile(
     val gear: Boolean = false,
     val feelAndEffort: Boolean = false,
     val trainingEffect: Boolean = false,
-)
+) {
+    fun compatible(activity: Activity): Boolean =
+        this.type.compatible(activity.type)
+}
