@@ -14,17 +14,21 @@ to Garmin Connect, and lets users edit Garmin/Strava activities via custom profi
 
 | Stack element | Detail |
 |---|---|
-| Language | Kotlin, JVM 17 |
-| UI | Jetpack Compose + Material 3 |
+| Language / build | Kotlin 2.4.21, JVM 17, Android Gradle Plugin 9.4.1 |
+| Android | min SDK 33; compile / target SDK 37 |
+| UI | Jetpack Compose 1.12.0 + Material 3 1.4.0 |
 | DI | Hilt 2.60.1 |
-| Local storage | Room 2.8.4 (`GarminDatabase` / `GarminDao` / `ProfileEntity`) |
-| Network | Retrofit 3 + OkHttp 5 |
+| Local storage | Room 2.8.5 (`GarminDatabase`, `GarminDao`, profile/gear entities); DataStore 1.3.0-rc01 (`AuthStore`) + Tink |
+| Network | Retrofit 3.0.0 + OkHttp 5.5.0; kotlinx.serialization JSON |
 | State | `StateFlow` + `stateIn(SharingStarted.WhileSubscribed)` |
-| UI process state | `ProcessState` sealed class (`Idle`, `Processing`, `Success`, `Failure`) |
-| Navigation | Compose Navigation, sealed `Route` objects |
+| UI process state | Shared `ProcState` (`Running`, `Success`, `Failure`); feature-specific `Status` and state classes |
+| Navigation | Navigation 3 1.2.0; serializable `NavKey` routes (`AppRoute`, `ActivitiesRoute`, `ProfilesRoute`) |
 | Auth | Garmin OAuth 1.0a (OkHttp Signpost), Strava OAuth 2.0 |
 | Tests (unit) | JUnit4 + MockK + Turbine + Truth |
-| Tests (instrumented) | `@HiltAndroidTest` Compose tests, custom runner `paufregi.connectfeed.TestRunner` |
+| Tests (instrumented) | `@HiltAndroidTest` Compose tests; custom `paufregi.connectfeed.TestRunner`; managed Pixel 10, API 36 |
+
+Dependency versions are defined in `gradle/libs.versions.toml`; Android SDK and
+managed-device settings are in `app/build.gradle.kts`.
 
 ---
 
@@ -34,15 +38,28 @@ to Garmin Connect, and lets users edit Garmin/Strava activities via custom profi
 app/src/main/kotlin/paufregi/connectfeed/
   ConnectFeed.kt            # Application entrypoint; runs startup cleanup
   presentation/
-    main/                   # MainActivity, MainViewModel, app-level NavHost
-    activities/             # Feature screens (Screen, ViewModel, State, Action)
-    gears/
-    login/
-    profiles/
-    settings/
-    strava/
-    syncweight/
+    app/
+      AppActivity.kt        # Main application activity and app composition
+      AppViewModel.kt       # User flow mapped to app authentication state
+      AppState.kt
+      Navigation.kt         # NavKey routes and drawer menu specification
+      activities/
+        Activities.kt       # Activity navigation
+        list/               # Activity list screen, state, actions, ViewModel
+        edit/               # Full edit screen, state, actions, effects, ViewModel
+        quickedit/          # Profile-based edit screen, state, actions, effects, ViewModel
+      profiles/
+        Profiles.kt         # Profile navigation
+        list/               # Profile list screen, state, actions, ViewModel
+        edit/               # Profile editor screen, state, actions, effects, ViewModel
+      gears/                # Gear list and synchronization
+      login/                # Garmin sign-in
+      settings/             # Account, Strava connection, and app updates
+    strava/                 # Strava OAuth callback activity and ViewModel
+    syncweight/             # Weight-import activity and ViewModel
     ui/                     # Shared Compose components, icons, theme, models, utils
+      components/notification/ # Notification manager, state, and ViewModel
+      models/ProcState.kt   # Shared operation result state
   core/
     usecases/               # Business logic only — no Android/Compose imports
     models/                 # Domain models (ActivityType, Profile, …)
@@ -50,11 +67,16 @@ app/src/main/kotlin/paufregi/connectfeed/
   data/
     repository/             # Mediate between use cases ↔ APIs/DB
     api/                    # Retrofit interfaces (garmin/, strava/, github/)
-    database/               # Room DB, DAO, entities, migrations
-    datastore/              # DataStore (AuthStore, StravaStore)
+    database/               # Room DB, DAO, entities, converters, migrations
+    datastore/              # AuthStore, persisted auth models, serializers
     utils/                  # App-level helpers (security/update support)
   di/                       # Hilt modules
   system/                   # Startup/update helpers (CleanUp, Downloader, Installer)
+
+app/src/test/kotlin/paufregi/connectfeed/         # JVM unit tests by package
+app/src/androidTest/kotlin/paufregi/connectfeed/  # Instrumented tests and TestRunner
+app/src/testFixtures/                            # Shared test fixtures
+app/schemas/                                    # Exported Room schemas
 ```
 
 **Layer rule** (never skip): `presentation` → `core/usecases` → `data/repository` → `data/api|database|datastore`
