@@ -22,6 +22,7 @@ import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.core.utils.finally
+import paufregi.connectfeed.core.utils.updateIf
 import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 
 @ExperimentalCoroutinesApi
@@ -60,9 +61,13 @@ class QuickEditViewModel @AssistedInject constructor(
         }
     }
 
+    internal fun injectState(state: QuickEditState) {
+        _state.value = state
+    }
+
     fun onAction(action: QuickEditAction) = when (action) {
-        is QuickEditAction.SetProfile -> _state.update { it.copy(profile = action.profile) }
-        is QuickEditAction.SetGear -> _state.update { it.copy(gear = action.gear) }
+        is QuickEditAction.SetProfile -> _state.updateIf({action.profile == null || action.profile.compatible(it.activity)}) { it.copy(profile = action.profile) }
+        is QuickEditAction.SetGear -> _state.updateIf( { action.gear.compatible(it.activity) } ) { it.copy(gear = action.gear) }
         is QuickEditAction.SetDescription -> _state.update { it.copy(description = action.description) }
         is QuickEditAction.SetWater -> _state.update { it.copy(water = action.water) }
         is QuickEditAction.SetEffort -> _state.update { it.copy(effort = action.effort?.takeIf { e -> e > 0 }) }
@@ -96,4 +101,3 @@ class QuickEditViewModel @AssistedInject constructor(
         _effects.send(QuickEditEffect.NavigateBack)
     }
 }
-

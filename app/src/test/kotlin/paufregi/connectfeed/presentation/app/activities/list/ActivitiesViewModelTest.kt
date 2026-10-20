@@ -5,6 +5,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
@@ -27,50 +28,77 @@ class ActivitiesViewModelTest {
     private val getActivities = mockk<GetActivities>()
     private val notification = mockk<NotificationManager>(relaxed = true)
 
+    private val activities = listOf(
+        Activity(1, "Run", ActivityType.Running, EventType.Training, date = LocalDateTime.MIN),
+        Activity(2, "Ride", ActivityType.Cycling, EventType.Race, date = LocalDateTime.MIN),
+    )
+
+    private lateinit var viewModel: ActivitiesViewModel
+
+    private fun createViewModel() = ActivitiesViewModel(getActivities, notification)
+
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     @After
     fun tearDown() {
+        confirmVerified(getActivities, notification)
         clearAllMocks()
     }
 
     @Test
-    fun `Loads activities successfully`() = runTest {
-        val activities = listOf(
-            Activity(1, "Run", ActivityType.Running, EventType.Training, date = LocalDateTime.MIN)
-        )
+    fun `Initial state`() = runTest {
         val result = CompletableDeferred<Result<List<Activity>>>()
         coEvery { getActivities() } coAnswers { result.await() }
 
-        val viewModel = ActivitiesViewModel(getActivities, notification)
+        viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem().loading).isTrue()
+            val loading = awaitItem()
+            assertThat(loading.loading).isTrue()
+            assertThat(loading.activities).isEmpty()
             result.complete(Result.success(activities))
-            val loaded = awaitItem()
-            assertThat(loaded.activities).isEqualTo(activities)
-            assertThat(loaded.loading).isFalse()
+            val state = awaitItem()
+            assertThat(state.loading).isFalse()
+            assertThat(state.activities).isEqualTo(activities)
             cancelAndIgnoreRemainingEvents()
         }
 
         coVerify(exactly = 1) { getActivities() }
-        verify(exactly = 0) { notification.show(any()) }
     }
 
     @Test
-    fun `Reports load failure and clears loading state`() = runTest {
+    fun `Initial state - no activities`() = runTest {
         val result = CompletableDeferred<Result<List<Activity>>>()
         coEvery { getActivities() } coAnswers { result.await() }
 
-        val viewModel = ActivitiesViewModel(getActivities, notification)
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem().loading).isTrue()
+            result.complete(Result.success(emptyList()))
+            val state = awaitItem()
+            assertThat(state.loading).isFalse()
+            assertThat(state.activities).isEmpty()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify(exactly = 1) { getActivities() }
+    }
+
+    @Test
+    fun `Initial state - fail to load activities`() = runTest {
+        val result = CompletableDeferred<Result<List<Activity>>>()
+        coEvery { getActivities() } coAnswers { result.await() }
+
+        viewModel = createViewModel()
 
         viewModel.state.test {
             assertThat(awaitItem().loading).isTrue()
             result.complete(Result.failure(IllegalStateException("network error")))
-            val failed = awaitItem()
-            assertThat(failed.activities).isEmpty()
-            assertThat(failed.loading).isFalse()
+            val state = awaitItem()
+            assertThat(state.loading).isFalse()
+            assertThat(state.activities).isEmpty()
             cancelAndIgnoreRemainingEvents()
         }
 

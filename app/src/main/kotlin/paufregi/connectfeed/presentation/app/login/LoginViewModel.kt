@@ -23,6 +23,10 @@ class LoginViewModel @Inject constructor(
     val state = _state
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(500L), _state.value)
 
+    internal fun injectState(state: LoginState) {
+        _state.value = state
+    }
+
     fun onAction(action: LoginAction) {
         when (action) {
             is LoginAction.SetUsername -> _state.update { it.copy(username = action.username) }

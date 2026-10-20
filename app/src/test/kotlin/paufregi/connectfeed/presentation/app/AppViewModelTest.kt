@@ -3,11 +3,14 @@ package paufregi.connectfeed.presentation.app
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Rule
@@ -21,41 +24,78 @@ class AppViewModelTest {
 
     private val getUser = mockk<GetUser>()
 
+    private val user = User(1, "user", "avatar")
+
+    private lateinit var viewModel: AppViewModel
+
+    private fun createViewModel() = AppViewModel(getUser)
+
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     @After
     fun tearDown() {
+        confirmVerified(getUser)
         clearAllMocks()
     }
 
     @Test
-    fun `Maps user changes to authentication state`() = runTest {
-        val user = User(1, "user", "avatar")
-        val userFlow = MutableStateFlow<User?>(user)
-        every { getUser() } returns userFlow
-
-        val viewModel = AppViewModel(getUser)
-
-        viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(AppState.Authenticated(user))
-            userFlow.value = null
-            assertThat(awaitItem()).isEqualTo(AppState.NotAuthenticated)
-            userFlow.value = user
-            assertThat(awaitItem()).isEqualTo(AppState.Authenticated(user))
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `Starts in loading state`() = runTest {
+    fun `Initial state`() = runTest {
         every { getUser() } returns emptyFlow()
 
-        val viewModel = AppViewModel(getUser)
-
+        viewModel = createViewModel()
         viewModel.state.test {
             assertThat(awaitItem()).isEqualTo(AppState.Loading)
             cancelAndIgnoreRemainingEvents()
         }
+
+        verify(exactly = 1) { getUser() }
+    }
+
+    @Test
+    fun `Initial state - authenticated`() = runTest {
+        every { getUser() } returns flowOf(user)
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(AppState.Authenticated(user))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify(exactly = 1) { getUser() }
+    }
+
+    @Test
+    fun `Initial state - not authenticated`() = runTest {
+        every { getUser() } returns flowOf(null)
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(AppState.NotAuthenticated)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify(exactly = 1) { getUser() }
+    }
+
+    @Test
+    fun `User changes`() = runTest {
+        val users = MutableStateFlow<User?>(user)
+        every { getUser() } returns users
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(AppState.Authenticated(user))
+            users.value = null
+            assertThat(awaitItem()).isEqualTo(AppState.NotAuthenticated)
+            users.value = user
+            assertThat(awaitItem()).isEqualTo(AppState.Authenticated(user))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify(exactly = 1) { getUser() }
     }
 }

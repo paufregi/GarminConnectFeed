@@ -11,25 +11,26 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.apache.commons.io.IOUtils
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.models.Weight
 import paufregi.connectfeed.core.usecases.GetUser
 import paufregi.connectfeed.core.usecases.SyncWeight
-import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.core.utils.RenphoReader
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.models.ProcState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 import paufregi.connectfeed.user
-import java.io.InputStream
-import java.util.Locale
+import java.io.ByteArrayInputStream
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class SyncWeightViewModelTest {
@@ -37,99 +38,238 @@ class SyncWeightViewModelTest {
     private val getUser = mockk<GetUser>()
     private val syncWeight = mockk<SyncWeight>()
 
+    private val inputStream = ByteArrayInputStream("weights".toByteArray())
+    private val weights = listOf(
+        Weight(
+            timestamp = Date(1_700_000_000_000),
+            weight = 70.5f,
+            bmi = 22.1f,
+            fat = 15.2f,
+            visceralFat = 5,
+            water = 60.3f,
+            muscle = 55.4f,
+            bone = 3.1f,
+            basalMet = 1650f,
+            metabolicAge = 30,
+        )
+    )
+
     private lateinit var viewModel: SyncWeightViewModel
+
+    fun createViewModel() = SyncWeightViewModel(getUser, syncWeight)
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     @Before
-    fun setup(){
+    fun setup() {
         mockkObject(RenphoReader)
-
-        every { getUser() } returns flowOf(user)
-        viewModel = SyncWeightViewModel(getUser, syncWeight)
     }
 
     @After
-    fun tearDown(){
-        confirmVerified(syncWeight, RenphoReader)
+    fun tearDown() {
+        confirmVerified(getUser, syncWeight, RenphoReader)
         clearAllMocks()
         unmockkObject(RenphoReader)
     }
 
-    val formatter = Formatter.dateTimeForImport(Locale.getDefault())
-    val csvText = """
-            No.,Date,Time,Weight(kg),BMI,Body Fat Percentage(%),Body Fat Mass(kg),Muscle Percentage(%),Muscle Mass(kg),Skeletal Muscle Percentage(%),Skeletal Muscle Mass(kg),Bone Percentage(%),Bone Mass(kg),Protein Percentage(%),Protein Mass(kg),Body Water Percentage(%),Body Water Mass(kg),Fat-Free Mass(kg),Subcutaneous Fat(%),Visceral Fat,BMR(kcal),Metabolic Age,WHR (Waist-to-Hip Ratio),Optimal Weight(kg),Weight Level,Body Type,Target to optimal weight(kg),Target to optimal muscle mass(kg),Target to optimal fat mass(kg),Remarks,
-            1,2026.08.16,07:59:46,74.15,23.1,14.1,10.46,81.6,60.51,55.5,41.15,4.3,3.18,19.6,14.53,62.0,45.97,63.69,12.3,6,1743,36,--,--,--,--,--,--,--,,
-        """.trimIndent()
-    val inputStream: InputStream = IOUtils.toInputStream(csvText, "UTF-8")
-    val weights = listOf(Weight(
-        timestamp = formatter.parse("2026.08.16 07:59:46")!!,
-        weight = 74.15f,
-        bmi = 23.1f,
-        fat = 14.1f,
-        visceralFat = 6,
-        water = 62.0f,
-        muscle = 60.51f,
-        bone = 3.18f,
-        basalMet = 1743f,
-        metabolicAge = 36,
-    ))
-
     @Test
-    fun `Sync weight`() = runTest {
-        every { RenphoReader.read(any()) } returns Result.success(weights)
-        coEvery { syncWeight(any(), any()) } returns Result.success(Unit)
+    fun `Initial state`() = runTest {
+        every { getUser() } returns flowOf(user)
+
+        viewModel = createViewModel()
 
         viewModel.state.test {
             assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+    }
+
+    @Test
+    fun `Initial user`() = runTest {
+        every { getUser() } returns flowOf(user)
+
+        viewModel = createViewModel()
+
+        viewModel.user.test {
+            assertThat(awaitItem()).isEqualTo(user)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+    }
+
+    @Test
+    fun `Initial user - no user`() = runTest {
+        every { getUser() } returns flowOf(null)
+
+        viewModel = createViewModel()
+
+        viewModel.user.test {
+            assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+    }
+
+    @Test
+    fun `Initial user - user updated`() = runTest {
+        val userFlow = MutableStateFlow<User?>(null)
+        every { getUser() } returns userFlow
+
+        viewModel = createViewModel()
+
+        viewModel.user.test {
+            assertThat(awaitItem()).isNull()
+
+            userFlow.value = user
+
+            assertThat(awaitItem()).isEqualTo(user)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+    }
+
+    @Test
+    fun `Sync weight - success`() = runTest {
+        val syncResult = CompletableDeferred<Result<Unit>>()
+        every { getUser() } returns flowOf(user)
+        every { RenphoReader.read(any()) } returns Result.success(weights)
+        coEvery { syncWeight(any(), any()) } coAnswers { syncResult.await() }
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            viewModel.injectState(ProcState.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(ProcState.Failure("previous"))
+
             viewModel.updateWeight(inputStream)
+
+            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            syncResult.complete(Result.success(Unit))
             assertThat(awaitItem()).isEqualTo(ProcState.Success("Sync succeeded"))
             cancelAndIgnoreRemainingEvents()
         }
 
+        verify { getUser() }
+        verify { RenphoReader.read(inputStream) }
         coVerify { syncWeight(weights, any()) }
-        verify { RenphoReader.read(inputStream) }
-    }
-
-    @Test
-    fun `Sync weight - failure no input stream`() = runTest {
-        viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
-            viewModel.updateWeight(null)
-            val state = awaitItem()
-            assertThat(state).isEqualTo(ProcState.Failure("nothing to sync"))
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `Sync weight - failure - empty file`() = runTest {
-        val inputStream = IOUtils.toInputStream("", "UTF-8")
-
-        every { RenphoReader.read(any()) } returns Result.success(emptyList())
-
-        viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
-            viewModel.updateWeight(inputStream)
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("nothing to sync"))
-            cancelAndIgnoreRemainingEvents()
-        }
-        verify { RenphoReader.read(inputStream) }
     }
 
     @Test
     fun `Sync weight - failure`() = runTest {
+        val syncResult = CompletableDeferred<Result<Unit>>()
+        every { getUser() } returns flowOf(user)
         every { RenphoReader.read(any()) } returns Result.success(weights)
-        coEvery { syncWeight(any(), any()) } returns Result.failure("error")
+        coEvery { syncWeight(any(), any()) } coAnswers { syncResult.await() }
+
+        viewModel = createViewModel()
 
         viewModel.state.test {
             assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            viewModel.injectState(ProcState.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(ProcState.Failure("previous"))
+
             viewModel.updateWeight(inputStream)
+
+            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            syncResult.complete(Result.failure("error"))
             assertThat(awaitItem()).isEqualTo(ProcState.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
+
+        verify { getUser() }
+        verify { RenphoReader.read(inputStream) }
         coVerify { syncWeight(weights, any()) }
+    }
+
+    @Test
+    fun `Sync weight - failure without message`() = runTest {
+        val syncResult = CompletableDeferred<Result<Unit>>()
+        every { getUser() } returns flowOf(user)
+        every { RenphoReader.read(any()) } returns Result.success(weights)
+        coEvery { syncWeight(any(), any()) } coAnswers { syncResult.await() }
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            viewModel.injectState(ProcState.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(ProcState.Failure("previous"))
+
+            viewModel.updateWeight(inputStream)
+
+            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            syncResult.complete(Result.failure(Exception()))
+            assertThat(awaitItem()).isEqualTo(ProcState.Failure("Unknown error"))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+        verify { RenphoReader.read(inputStream) }
+        coVerify { syncWeight(weights, any()) }
+    }
+
+    @Test
+    fun `Sync weight - no input stream`() = runTest {
+        every { getUser() } returns flowOf(user)
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+
+            viewModel.updateWeight(null)
+
+            assertThat(awaitItem()).isEqualTo(ProcState.Failure("nothing to sync"))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+    }
+
+    @Test
+    fun `Sync weight - read error`() = runTest {
+        every { getUser() } returns flowOf(user)
+        every { RenphoReader.read(any()) } returns Result.failure("error")
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+
+            viewModel.updateWeight(inputStream)
+
+            assertThat(awaitItem()).isEqualTo(ProcState.Failure("failed to read file"))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+        verify { RenphoReader.read(inputStream) }
+    }
+
+    @Test
+    fun `Sync weight - empty file`() = runTest {
+        every { getUser() } returns flowOf(user)
+        every { RenphoReader.read(any()) } returns Result.success(emptyList())
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+
+            viewModel.updateWeight(inputStream)
+
+            assertThat(awaitItem()).isEqualTo(ProcState.Failure("nothing to sync"))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
         verify { RenphoReader.read(inputStream) }
     }
 }

@@ -24,6 +24,10 @@ class StravaViewModel @Inject constructor(
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
     val user = getUser().stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), null)
 
+    internal fun injectState(state: ProcState) {
+        _state.value = state
+    }
+
     fun exchangeToken(code: String) = viewModelScope.launch {
         _state.update { ProcState.Running }
 

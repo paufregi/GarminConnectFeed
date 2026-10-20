@@ -55,6 +55,10 @@ class ProfileViewModel @AssistedInject constructor(
         .onStart { load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
+    internal fun injectState(state: ProfileState) {
+        _state.value = state
+    }
+
     private fun load() = viewModelScope.launch {
         _state.update { it.copy(
             loading = true,

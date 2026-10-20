@@ -11,6 +11,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -31,12 +32,14 @@ class GearsViewModelTest {
     private val syncGear = mockk<SyncGear>()
     private val notification = mockk<NotificationManager>(relaxed = true)
 
-    private lateinit var viewModel: GearsViewModel
-
     private val gears = listOf(
         Gear(id = "gear-1", name = "Daily trainers", type = GearType.Shoe, distance = 12345),
         Gear(id = "gear-2", name = "Weekend bike", type = GearType.Bike, distance = 67890),
     )
+
+    private lateinit var viewModel: GearsViewModel
+
+    fun createViewModel() = GearsViewModel(getGears, syncGear, notification)
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
@@ -46,7 +49,7 @@ class GearsViewModelTest {
 
     @After
     fun tearDown() {
-        confirmVerified(syncGear, notification)
+        confirmVerified(getGears, syncGear, notification)
         clearAllMocks()
     }
 
@@ -54,7 +57,7 @@ class GearsViewModelTest {
     fun `Initial state`() = runTest {
         every { getGears() } returns flowOf(gears)
 
-        viewModel = GearsViewModel(getGears, syncGear, notification)
+        viewModel = createViewModel()
 
         viewModel.state.test {
             val state = awaitItem()
@@ -62,41 +65,46 @@ class GearsViewModelTest {
             assertThat(state.loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
+
+        verify { getGears() }
     }
 
     @Test
     fun `Initial state - empty list`() = runTest {
         every { getGears() } returns flowOf(emptyList())
 
-        viewModel = GearsViewModel(getGears, syncGear, notification)
+        viewModel = createViewModel()
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.gears).isEqualTo(emptyList<Gear>())
+            assertThat(state.gears).isEmpty()
             assertThat(state.loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
+
+        verify { getGears() }
     }
 
     @Test
-    fun `Sync gears - processing`() = runTest {
-        val syncResult = CompletableDeferred<Result<Unit>>()
-        every { getGears() } returns flowOf(gears)
-        coEvery { syncGear() } coAnswers { syncResult.await() }
+    fun `Initial state - gears updated`() = runTest {
+        val gearsFlow = MutableStateFlow(gears)
+        val updatedGears = gears + Gear(id = "gear-3", name = "Trail shoes", type = GearType.Shoe, distance = 100)
+        every { getGears() } returns gearsFlow
 
-        viewModel = GearsViewModel(getGears, syncGear, notification)
+        viewModel = createViewModel()
 
         viewModel.state.test {
-            skipItems(1)
-            viewModel.sync()
+            assertThat(awaitItem().gears).isEqualTo(gears)
 
-            assertThat(awaitItem().loading).isTrue()
-            syncResult.complete(Result.success(Unit))
-            assertThat(awaitItem().loading).isFalse()
+            gearsFlow.value = updatedGears
+
+            val state = awaitItem()
+            assertThat(state.gears).isEqualTo(updatedGears)
+            assertThat(state.loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
-        coVerify { syncGear() }
-        verify { notification.show("Gears synced") }
+
+        verify { getGears() }
     }
 
     @Test
@@ -105,19 +113,23 @@ class GearsViewModelTest {
         every { getGears() } returns flowOf(gears)
         coEvery { syncGear() } coAnswers { syncResult.await() }
 
-        viewModel = GearsViewModel(getGears, syncGear, notification)
+        viewModel = createViewModel()
 
         viewModel.state.test {
-            skipItems(1)
+            assertThat(awaitItem().loading).isFalse()
             viewModel.sync()
 
             assertThat(awaitItem().loading).isTrue()
             syncResult.complete(Result.success(Unit))
-            assertThat(awaitItem().loading).isFalse()
+            val state = awaitItem()
+            assertThat(state.loading).isFalse()
+            assertThat(state.gears).isEqualTo(gears)
             cancelAndIgnoreRemainingEvents()
         }
-        coVerify { syncGear() }
+
+        verify { getGears() }
         verify { notification.show("Gears synced") }
+        coVerify { syncGear() }
     }
 
     @Test
@@ -126,19 +138,45 @@ class GearsViewModelTest {
         every { getGears() } returns flowOf(gears)
         coEvery { syncGear() } coAnswers { syncResult.await() }
 
-        viewModel = GearsViewModel(getGears, syncGear, notification)
+        viewModel = createViewModel()
 
         viewModel.state.test {
-            skipItems(1)
+            assertThat(awaitItem().loading).isFalse()
             viewModel.sync()
 
             assertThat(awaitItem().loading).isTrue()
             syncResult.complete(Result.failure(Exception("error")))
+            val state = awaitItem()
+            assertThat(state.loading).isFalse()
+            assertThat(state.gears).isEqualTo(gears)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getGears() }
+        verify { notification.show("error") }
+        coVerify { syncGear() }
+    }
+
+    @Test
+    fun `Sync gears - failure without message`() = runTest {
+        val syncResult = CompletableDeferred<Result<Unit>>()
+        every { getGears() } returns flowOf(gears)
+        coEvery { syncGear() } coAnswers { syncResult.await() }
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem().loading).isFalse()
+            viewModel.sync()
+
+            assertThat(awaitItem().loading).isTrue()
+            syncResult.complete(Result.failure(Exception()))
             assertThat(awaitItem().loading).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
+
+        verify { getGears() }
+        verify { notification.show("Sync failed") }
         coVerify { syncGear() }
-        verify { notification.show("error") }
     }
 }
-

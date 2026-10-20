@@ -24,6 +24,7 @@ import paufregi.connectfeed.core.usecases.GetGears
 import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.utils.finally
+import paufregi.connectfeed.core.utils.updateIf
 import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 
 @ExperimentalCoroutinesApi
@@ -74,12 +75,16 @@ class EditViewModel @AssistedInject constructor(
             .finally { _state.update { it.copy(status = null) } }
     }
 
+    internal fun injectState(state: EditState) {
+        _state.value = state
+    }
+
     fun onAction(action: EditAction) = when (action) {
         is EditAction.SetName -> _state.update { it.copy(name = action.name) }
         is EditAction.SetDescription -> _state.update { it.copy(description = action.description) }
         is EditAction.SetEventType -> _state.update { it.copy(eventType = action.eventType) }
-        is EditAction.SetCourse ->  _state.update { it.copy( course = action.course ) }
-        is EditAction.SetGear -> _state.update { it.copy(gear = action.gear) }
+        is EditAction.SetCourse -> _state.updateIf({ action.course.compatible(it.activity)}) { it.copy( course = action.course ) }
+        is EditAction.SetGear -> _state.updateIf({ action.gear.compatible(it.activity)}) { it.copy(gear = action.gear) }
         is EditAction.SetWater -> _state.update { it.copy(water = action.water) }
         is EditAction.SetEffort -> _state.update { it.copy(effort = action.effort?.takeIf { e -> e > 0 }) }
         is EditAction.SetFeel -> _state.update { it.copy(feel = action.feel) }
@@ -109,11 +114,10 @@ class EditViewModel @AssistedInject constructor(
             trainingEffect = state.value.trainingEffect,
         )
         .onSuccess { _state.update { it.copy(status = Status.Success) } }
-        .onFailure { r -> _state.update { it.copy(status = Status.Failure(r.message ?: "Something went wrong: unknown error")) } }
+        .onFailure { r -> _state.update { it.copy(status = Status.Failure(r.message ?: "unknown error")) } }
     }
 
     private fun navigateBack() = viewModelScope.launch {
         _effects.send(EditEffect.NavigateBack)
     }
 }
-
