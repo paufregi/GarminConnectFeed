@@ -16,11 +16,11 @@ class SignIn @Inject constructor(
     suspend operator fun invoke(username: String, password: String): Result<User> {
         if (username.isBlank() || password.isBlank()) return Result.failure("Validation error")
 
-        return authRepo.garminLogin(username, password).andThen { ticket ->
-            authRepo.exchangeGarminToken(ticket, garminClientId)
-                .onSuccess { authRepo.saveGarminToken(it) }
-                .andThen { repo.getUserProfile() }
-                .onFailure { authRepo.clear() }
+        return authRepo.garminLogin(username, password)
+            .andThen { ticket -> authRepo.exchangeGarminToken(ticket, garminClientId)
+            .onSuccess { authRepo.saveGarminToken(it) }
+            .andThen { repo.getUserProfile() }
+            .onFailure { authRepo.clear() }
         }
     }
 }
