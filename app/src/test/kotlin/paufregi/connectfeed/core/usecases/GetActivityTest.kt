@@ -63,6 +63,37 @@ class GetActivityTest {
     }
 
     @Test
+    fun `Get activity - no distance`() {
+        val garminActivity = GarminActivity(
+            id = 1,
+            name = "Morning Run",
+            type = GarminActivityType(1, "running", ActivityType.Running),
+            eventType = EventType.Training,
+            distance = 0.0,
+            trainingEffectLabel = "Base",
+            startDateTime = LocalDateTime.of(2024, 6, 1, 8, 0, 0),
+            workoutId = 101,
+        )
+
+        every { repo.getActivity(1) } returns garminActivity
+
+        val res = useCase(1, 12)
+
+        assertThat(res).isNotNull()
+        assertThat(res?.id).isEqualTo(1)
+        assertThat(res?.name).isEqualTo("Morning Run")
+        assertThat(res?.type).isEqualTo(ActivityType.Running)
+        assertThat(res?.eventType).isEqualTo(EventType.Training)
+        assertThat(res?.distance).isEqualTo(10_234.0)
+        assertThat(res?.trainingEffect).isEqualTo("Base")
+        assertThat(res?.date).isEqualTo(LocalDateTime.of(2024, 6, 1, 8, 0, 0))
+        assertThat(res?.workoutId).isEqualTo(101)
+        assertThat(res?.stravaId).isEqualTo(12)
+
+        verify { repo.getActivity(1) }
+    }
+
+    @Test
     fun `Get activity - no activity`() {
         every { repo.getActivity(1) } returns null
 

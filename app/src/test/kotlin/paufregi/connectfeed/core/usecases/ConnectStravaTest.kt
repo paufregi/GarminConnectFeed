@@ -41,10 +41,8 @@ class ConnectStravaTest{
 
         assertThat(result.isSuccess).isTrue()
 
-        coVerify {
-            repo.exchangeStravaToken("CLIENT_ID", "CLIENT_SECRET", "code")
-            repo.saveStravaToken(token)
-        }
+        coVerify { repo.exchangeStravaToken("CLIENT_ID", "CLIENT_SECRET", "code") }
+        coVerify { repo.saveStravaToken(token) }
     }
 
     @Test
@@ -57,9 +55,7 @@ class ConnectStravaTest{
         assertThat(result.exceptionOrNull()?.message).isEqualTo("error")
 
 
-        coVerify {
-            repo.exchangeStravaToken("CLIENT_ID", "CLIENT_SECRET", "code")
-        }
+        coVerify { repo.exchangeStravaToken("CLIENT_ID", "CLIENT_SECRET", "code") }
         coVerify { repo.exchangeStravaToken("CLIENT_ID", "CLIENT_SECRET", "code") }
 
     }

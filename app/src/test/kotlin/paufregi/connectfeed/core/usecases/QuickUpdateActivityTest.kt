@@ -92,10 +92,8 @@ class QuickUpdateActivityTest{
         val res = useCase(activity, profile, description, water, feel, effort, workout, gear)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear) }
     }
 
     @Test
@@ -109,10 +107,8 @@ class QuickUpdateActivityTest{
         val res = useCase(activity, profile, null, water, feel, effort, workout, gear)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear) }
     }
 
     @Test
@@ -125,10 +121,8 @@ class QuickUpdateActivityTest{
         val res = useCase(activity, profile, description, water, feel, effort, null, gear)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            garminRepo.updateActivity(activity, profile.name, null, profile.eventType, profile.course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, profile.name, null, profile.eventType, profile.course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear) }
     }
 
     @Test
@@ -143,10 +137,8 @@ class QuickUpdateActivityTest{
         val res = useCase(activityWithoutTrainingEffect, profile, description, water, feel, effort, workout, gear)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            garminRepo.updateActivity(activityWithoutTrainingEffect, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activityWithoutTrainingEffect, profile.name, stravaDescription, profile.eventType?.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activityWithoutTrainingEffect, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activityWithoutTrainingEffect, profile.name, stravaDescription, profile.eventType?.commute, gear) }
     }
 
     @Test
@@ -160,10 +152,8 @@ class QuickUpdateActivityTest{
         val res = useCase(activity, profile.copy(trainingEffect = false), description, water, feel, effort, workout, gear)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear) }
     }
 
     @Test
@@ -186,10 +176,8 @@ class QuickUpdateActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin activity")
-        coVerify {
-            garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear) }
     }
 
     @Test
@@ -204,10 +192,8 @@ class QuickUpdateActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Strava activity")
-        coVerify {
-            garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear) }
     }
 
     @Test
@@ -222,9 +208,7 @@ class QuickUpdateActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin and Strava activities")
-        coVerify {
-            garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear) }
     }
 }

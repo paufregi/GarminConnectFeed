@@ -40,10 +40,8 @@ class RefreshUserTest{
 
         assertThat(res.isSuccess).isTrue()
 
-        coVerify {
-            repo.getUserProfile()
-            authRepo.saveUser(user)
-        }
+        coVerify { repo.getUserProfile() }
+        coVerify { authRepo.saveUser(user) }
     }
 
     @Test

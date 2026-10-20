@@ -43,7 +43,7 @@ class IsStravaConnectedTest{
     }
 
     @Test
-    fun `Not logged In - no code`() = runTest {
+    fun `Not logged In - no token`() = runTest {
         every { repo.getStravaToken() } returns flowOf(null)
         val res = useCase()
 

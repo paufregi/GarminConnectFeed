@@ -49,10 +49,8 @@ class SyncWeightTest {
 
     @After
     fun tearDown(){
-        verify {
-            isStravaConnected()
-            Formatter.dateTimeForFilename(any()).format(any())
-        }
+        verify { isStravaConnected() }
+        verify { Formatter.dateTimeForFilename(any()).format(any()) }
         confirmVerified(isStravaConnected, garminRepo, stravaRepo, Formatter, FitWriter)
         clearAllMocks()
         unmockkObject(Formatter::class)
@@ -157,10 +155,8 @@ class SyncWeightTest {
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Strava")
 
         verify { FitWriter.weights(any(), weights) }
-        coVerify {
-            garminRepo.uploadFile(any())
-            stravaRepo.updateAthlete(weights[0].weight)
-        }
+        coVerify { garminRepo.uploadFile(any()) }
+        coVerify { stravaRepo.updateAthlete(weights[0].weight) }
     }
 
     @Test
@@ -175,9 +171,7 @@ class SyncWeightTest {
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin & Strava")
 
         verify { FitWriter.weights(any(), weights) }
-        coVerify {
-            garminRepo.uploadFile(any())
-            stravaRepo.updateAthlete(weights[0].weight)
-        }
+        coVerify { garminRepo.uploadFile(any()) }
+        coVerify { stravaRepo.updateAthlete(weights[0].weight) }
     }
 }

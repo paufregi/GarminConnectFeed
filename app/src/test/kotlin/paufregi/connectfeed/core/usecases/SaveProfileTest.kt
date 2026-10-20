@@ -123,7 +123,7 @@ class SaveProfileTest{
     }
 
     @Test
-    fun `Invalid - Course not compatible with activity type`() = runTest {
+    fun `Invalid - Course not compatible`() = runTest {
         val profile = Profile(
             id = 1,
             name = "Test",

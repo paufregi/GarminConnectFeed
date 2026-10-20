@@ -108,7 +108,7 @@ class GetActivitiesTest{
             ),
         )
         every { isStravaConnected() } returns flowOf(false)
-        coEvery { garminRepo.getActivities(10) } returns Result.success(garminActivities)
+        coEvery { garminRepo.getActivities(any()) } returns Result.success(garminActivities)
 
         val res = useCase()
 
@@ -175,7 +175,6 @@ class GetActivitiesTest{
         verify { isStravaConnected() }
         coVerify { garminRepo.getActivities(10) }
         coVerify { stravaRepo.getActivities(15) }
-
     }
 
     @Test

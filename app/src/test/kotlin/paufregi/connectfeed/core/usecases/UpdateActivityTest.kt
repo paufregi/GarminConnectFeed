@@ -84,10 +84,8 @@ class UpdateActivityTest{
         val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear) }
     }
 
     @Test
@@ -100,10 +98,8 @@ class UpdateActivityTest{
         val res = useCase(activity, name, null, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear) }
     }
 
     @Test
@@ -115,10 +111,8 @@ class UpdateActivityTest{
         val res = useCase(activity, name, description, eventType, course, water, feel, effort, null, gear, true)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            garminRepo.updateActivity(activity, name, null, eventType, course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, name, null, eventType, course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear) }
     }
 
     @Test
@@ -133,10 +127,8 @@ class UpdateActivityTest{
         val res = useCase(activityWithNoTrainingEffect, name, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            garminRepo.updateActivity(activityWithNoTrainingEffect, name, garminDescription, eventType, course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activityWithNoTrainingEffect, name, stravaDescription, eventType.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activityWithNoTrainingEffect, name, garminDescription, eventType, course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activityWithNoTrainingEffect, name, stravaDescription, eventType.commute, gear) }
     }
 
     @Test
@@ -150,10 +142,8 @@ class UpdateActivityTest{
         val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, false)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify {
-            garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear) }
     }
 
     @Test
@@ -186,10 +176,8 @@ class UpdateActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin activity")
-        coVerify {
-            garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear) }
     }
 
     @Test
@@ -204,10 +192,8 @@ class UpdateActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Strava activity")
-        coVerify {
-            garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear) }
     }
 
     @Test
@@ -222,9 +208,7 @@ class UpdateActivityTest{
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin & Strava activities")
-        coVerify {
-            garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear)
-            stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear)
-        }
+        coVerify { garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear) }
+        coVerify { stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear) }
     }
 }

@@ -99,11 +99,9 @@ class SignInTest{
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't authorize")
 
-        coVerify {
-            authRepo.garminLogin(username, password)
-            authRepo.exchangeGarminToken(ticket, clientId)
-            authRepo.clear()
-        }
+        coVerify { authRepo.garminLogin(username, password) }
+        coVerify { authRepo.exchangeGarminToken(ticket, clientId) }
+        coVerify { authRepo.clear() }
     }
 
     @Test
@@ -118,13 +116,11 @@ class SignInTest{
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't fetch user")
 
-        coVerify {
-            authRepo.garminLogin(username, password)
-            authRepo.exchangeGarminToken(ticket, clientId)
-            authRepo.saveGarminToken(authToken)
-            repo.getUserProfile()
-            authRepo.clear()
-        }
+        coVerify { authRepo.garminLogin(username, password) }
+        coVerify { authRepo.exchangeGarminToken(ticket, clientId) }
+        coVerify { authRepo.saveGarminToken(authToken) }
+        coVerify { repo.getUserProfile() }
+        coVerify { authRepo.clear() }
     }
 
 
