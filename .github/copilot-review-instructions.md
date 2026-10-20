@@ -114,6 +114,39 @@ that belongs in a use case.
   new tests must be compatible with this runner.
 - Flag any PR that deletes tests without a clear justification.
 
+### ViewModel test review checklist
+
+Apply the **ViewModel Unit Test Standard** in `.github/copilot-instructions.md`.
+Use `SettingsViewModelTest` as the baseline, with Edit/QuickEdit tests as examples
+of state injection and compatibility guards. Check the following:
+
+- Suites use JUnit4, MockK, Truth, Turbine, `runTest`, and `MainDispatcherRule`,
+  with a mandatory `createViewModel()` helper and per-test instantiation.
+- `setup()` contains only invariant mock configuration; scenario-dependent
+  results belong in individual tests. Avoid additional assertion/stubbing helpers.
+- `tearDown()` includes **every** mock in `confirmVerified(...)`, followed by
+  `clearAllMocks()`. Getter, relaxed, and object mocks must not be omitted; restore
+  object mocks when applicable.
+- Names follow `Initial state`, `Initial state - <variation>`, and action names
+  such as `Set name`, `Save - success`, or `Set gear - incompatible`.
+- Initial-state variations are covered, and each action test invokes one action
+  once. Flag chains of actions used to prepare a different action. For ViewModels
+  without `onAction`, check public functions and exposed flows instead.
+- Pre-existing edited state is seeded through an internal `injectState` function
+  that only assigns the supplied state to the backing MutableStateFlow. No
+  reflection or test-only constructor parameters. Startup must finish before
+  injection, and the seeded emission must be consumed before the action.
+- Assertions are inline and observe real state transitions. Async tests use
+  `CompletableDeferred` to expose intermediate loading states, not sleeps or
+  arbitrary delays. Equal StateFlow values must not be awaited as new emissions.
+- Check success/failure, null-message fallbacks, reset/null/missing-data guards,
+  notifications, and navigation effects where applicable. An ignored incompatible
+  selection must preserve an existing valid selection and emit no new state.
+- All actual mock interactions are explicitly verified, including initialization
+  getters. **Each `verify` or `coVerify` block contains exactly one function call.**
+  Suspend calls use `coVerify`. Flag grouped calls or attempts to bypass strict
+  verification by clearing call histories or broadly verifying unrelated calls.
+
 ---
 
 ## Dependencies — Always Check
@@ -166,4 +199,3 @@ that belongs in a use case.
   or `Dispatchers.IO` appropriately.
 - Release builds use ProGuard (`proguard-rules.pro`); new reflection-based or
   serialization classes may need `-keep` rules.
-

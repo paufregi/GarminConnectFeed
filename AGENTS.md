@@ -83,6 +83,42 @@ Tests live in `app/src/test/` (unit) and `app/src/androidTest/` (instrumented).
 
 ---
 
+## ViewModel Unit Test Standard
+
+Follow the full **ViewModel Unit Test Standard** in
+`.github/copilot-instructions.md`. Use `SettingsViewModelTest` as the baseline and
+the current Edit/QuickEdit suites for seeded state and compatibility guards.
+
+- Use JUnit4 + MockK + Truth + Turbine, `runTest`, and `MainDispatcherRule`.
+- Every suite must have a `createViewModel()` helper; create the ViewModel in each
+  test. Avoid other helpers, especially assertion and scenario-stubbing helpers.
+- `setup()` contains only invariant mock configuration. Keep varying results and
+  scenario setup inside individual tests.
+- `tearDown()` must call `confirmVerified` with **all** mocks, including getters,
+  relaxed mocks, and object mocks, then `clearAllMocks()`. Restore object mocks
+  when applicable.
+- Name tests `Initial state`, `Initial state - <variation>`, or
+  `<Action name> - <variation>` (omit the suffix for a simple action).
+- Cover initial-state variations and each `onAction` action in isolation, with one
+  action invocation per test. If `onAction` is absent, test public functions and
+  exposed flows instead.
+- Seed pre-existing edited state with
+  `internal fun injectState(state: FeatureState) { _state.value = state }`.
+  This function only replaces backing state. Do not use reflection or setup-action
+  sequences. Subscribe, finish startup loading, inject, and consume/assert the
+  seeded emission before invoking the action.
+- Account for StateFlow equality suppression: do not await unchanged state, and
+  seed a non-loading status before expecting a loading transition.
+- Assert state inline. Use `CompletableDeferred` for async loading/success/failure
+  transitions; assert notifications/navigation and relevant fallback/guard cases.
+- For an incompatible selection that is ignored, seed a compatible selection,
+  invoke the incompatible action, and assert no emission and unchanged state.
+- Verify all actual mock calls, including initialization getters. Each `verify`
+  or `coVerify` block must verify **exactly one function call**. Use `coVerify` for
+  suspend functions. Never weaken `confirmVerified` to hide unverified calls.
+
+---
+
 ## Critical Rules
 
 ### Never do
@@ -131,4 +167,3 @@ Tests live in `app/src/test/` (unit) and `app/src/androidTest/` (instrumented).
 - **Strava**: add to `data/api/strava/`; use the authenticated `StravaApi` interface with token-refresh support.
 - **GitHub**: used only for update checks — avoid calls in hot paths (rate-limited, unauthenticated).
 - All endpoints must use `suspend` functions; no callbacks.
-
