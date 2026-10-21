@@ -55,7 +55,7 @@ class StravaAuthTest {
     fun `Refresh token`() = runTest {
         server.enqueue(code = 200, body = stravaRefreshTokenJson)
 
-        val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
+        val res = api.refresh("CLIENT_ID", "CLIENT_SECRET", "TOKEN")
 
         val request = server.takeRequest()
 
@@ -69,7 +69,7 @@ class StravaAuthTest {
     fun `Refresh - failure`() = runTest {
         server.enqueue(400)
 
-        val res = api.exchange("CLIENT_ID", "CLIENT_SECRET", "CODE")
+        val res = api.refresh("CLIENT_ID", "CLIENT_SECRET", "TOKEN")
 
         assertThat(res.isSuccessful).isFalse()
         assertThat(res.body()).isNull()
