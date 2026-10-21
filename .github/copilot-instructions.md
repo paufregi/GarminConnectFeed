@@ -1,208 +1,108 @@
-# Copilot Instructions for ConnectFeed
+# Coding Guidelines
 
-Use these instructions when generating or modifying code in this repository.
+Write code that fits the surrounding feature rather than imposing a new pattern.
+Prefer direct, readable implementations and small, complete changes. Existing
+behavior and explicit task requirements take precedence over stylistic cleanup.
 
-## Project Context
+## Architecture
 
-- App: ConnectFeed (Android, Kotlin)
-- Purpose: Sync Renpho Health data to Garmin Connect, plus Garmin/Strava activity editing via profiles
-- UI: Jetpack Compose
-- DI: Hilt
-- Local persistence: Room (`GarminDatabase`, `GarminDao`, `ProfileEntity`)
-- Network: Retrofit APIs for Garmin, Strava, and GitHub
-- State handling: `StateFlow` in ViewModels, commonly `stateIn` with `SharingStarted.WhileSubscribed`
+- The app uses Kotlin, Jetpack Compose with Material 3, Hilt, Room, DataStore,
+  Retrofit, OkHttp, and Kotlin serialization.
+- Organize presentation by feature, with nested packages for distinct flows such
+  as listing and editing. Keep reusable UI separate from feature-specific code.
+- Keep responsibilities separated:
+  - Presentation renders state, handles user actions, and coordinates UI effects.
+  - Use cases expose application operations and orchestrate domain behavior.
+  - Repositories coordinate remote and local data, authentication, and mapping.
+  - APIs, persistence, and platform services handle their respective boundaries.
+- ViewModels use use cases instead of calling APIs, DAOs, or stores directly.
+  Keep domain models and business rules independent of Compose and Android UI.
+- Keep platform-dependent work in the platform/infrastructure layer and inject it
+  where needed. Preserve existing platform integrations rather than hiding them
+  behind unnecessary new abstractions.
+- Do not require every feature to have identical files or types. Add state,
+  actions, effects, previews, or navigation containers when the feature needs them.
 
-## Architecture Guidance
+## Kotlin Style
 
-- Keep presentation code in `app/src/main/kotlin/paufregi/connectfeed/presentation/` by feature.
-- Preserve feature structure (`Screen`, `ViewModel`, state/action classes).
-- Keep business logic in `core/usecases/`.
-- Keep external/local data access in repositories under `data/repository/`.
-- Use Hilt modules in `di/` for wiring dependencies.
+- Use four-space indentation, descriptive names, small functions, and immutable
+  `val` properties where possible. Match nearby formatting and visibility.
+- Prefer data classes for value/state objects, sealed types for closed variants,
+  and enums for simple fixed values. Do not introduce parallel representations of
+  an existing concept.
+- Use constructor injection. Keep dependencies explicit and avoid service locators
+  or mutable global state.
+- Use `operator fun invoke` for use cases where that is the established convention.
+  Prefer expression bodies for simple delegation or transformations.
+- Use nullability and meaningful defaults deliberately. Prefer safe calls,
+  `let`, `takeIf`, and explicit validation over non-null assertions or unsafe casts.
+- Use `copy` for immutable updates and existing collection/scope helpers when they
+  improve readability. Avoid deeply nested scope functions and clever one-liners.
+- Reuse shared domain helpers instead of repeating compatibility, mapping, or
+  formatting rules in presentation code.
+- Add comments only for non-obvious intent, constraints, or tradeoffs. Do not
+  document self-explanatory code or introduce boilerplate documentation.
 
-## Code Generation Conventions
+## State, Actions, and Effects
 
-- Follow existing Kotlin style and naming in nearby files.
-- Prefer small, focused changes that fit existing architecture.
-- Reuse existing models and sealed types instead of introducing parallel structures.
-- For navigation changes, extend sealed `Route` usage patterns already present.
-- For process/result UI states, use `ProcessState` (`Idle`, `Processing`, `Success`, `Failure`).
+- Keep mutable state private and expose read-only flows. Update immutable state
+  with `copy`, using flow update helpers for transformations.
+- Combine repository/use-case flows with local editing state where needed.
+  Follow the existing subscription-driven `stateIn` sharing strategy.
+- Dispatch user actions through a feature's action type and `onAction` when that
+  pattern exists. Simple standalone flows may expose focused public methods.
+- Keep simple field updates in the action dispatcher; extract asynchronous
+  operations into focused functions.
+- Use the existing shared process state or feature-specific status type. Do not
+  invent extra states or replace local status types merely for uniformity.
+- Deliver one-off navigation through effects rather than persistent state when
+  the feature uses an effect stream. Use the existing notification mechanism for
+  user-facing messages.
+- Launch ViewModel work in `viewModelScope`; use structured concurrency elsewhere.
+  Do not use `GlobalScope`, block the main thread, or swallow cancellation.
+- Follow existing `Result` handling and completion helpers. Preserve error messages,
+  fallback behavior, and deliberate no-op guards; never disguise unexpected
+  failures as successful empty data.
 
-## Profiles and Activity Types
+## Compose and Navigation
 
-- Profiles are user-scoped and persisted through `ProfileEntity`.
-- When adding profile fields:
-  - Update `ProfileEntity`
-  - Update profile and quick edit UI/ViewModel logic
-  - Add/adjust Room migration/schema as needed
-- Activity compatibility logic relies on `core/models/ActivityType.kt`; extend there first when adding types.
+- Separate stateful screen wiring from reusable content where useful. Pass state
+  and action callbacks to content rather than passing ViewModels through the tree.
+- Collect state with lifecycle awareness. Keep side effects out of composition and
+  use correctly keyed effect handlers.
+- Reuse shared components, theme typography, colors, spacing conventions, and
+  preview patterns. Extract UI by responsibility, not an arbitrary line limit.
+- Use typed, serializable Navigation 3 keys and feature-owned back stacks. Preserve
+  route arguments and assisted ViewModel construction for navigation inputs.
+- Use `@HiltViewModel` with constructor injection or assisted injection as needed.
+  Add module bindings/providers only when construction requires them.
 
-## Data and Security
+## Data and Integrations
 
-- Do not hardcode secrets.
-- Keep key/secret usage aligned with `local.properties` + `buildConfigField` setup.
-- Respect dependency version constraints/substitution configured in `app/build.gradle.kts`.
+- Keep domain models distinct from transport and persisted representations where
+  the existing design separates them. Map at the appropriate data boundary.
+- Preserve user scoping in persisted queries and mutations.
+- Persisted schema changes require a migration, exported schema updates, and
+  appropriate integration coverage. Maintain converter and serialization behavior.
+- Extend domain compatibility rules centrally and wire affected editors,
+  filtering, persistence, and mappings consistently.
+- Keep network operations suspending and use existing authenticated clients,
+  signing, and token-refresh pipelines. Preserve rate-limit and update-check usage.
+- Never hardcode credentials or log tokens, credentials, or sensitive health data.
+  Use the existing build-time configuration and encrypted persistence mechanisms.
+- Use dependency catalog aliases and respect existing dependency substitutions.
+  Do not duplicate libraries or add abstractions/dependencies without a clear need.
 
-## Testing Expectations
+## Testing and Validation
 
-- Add or update tests for behavior changes.
-- Prefer existing test patterns:
-  - Unit tests: `./gradlew test`
-  - Instrumented tests: `./gradlew pixel10Check`
-  - Compose UI tests with Hilt where relevant (`@HiltAndroidTest`)
-- Keep tests near the feature/module being changed (`app/src/test` or `app/src/androidTest`).
-
-### Model Unit Test Standard
-
-Follow `CourseTest`, `ProfileTest`, and `GearTest` for model compatibility helpers,
-`ActivityTypeTest` and `GearTypeTest` for type rules, and `VersionTest` for parsing,
-formatting, and comparisons. Keep tests in
-`app/src/test/kotlin/paufregi/connectfeed/core/models/`, using the model's package
-and a matching `<Model>Test` class.
-
-#### Structure and assertions
-
-- Use plain JUnit4 `@Test` methods and inline Truth assertions. Pure synchronous
-  model tests do not need `runTest`, Turbine, `MainDispatcherRule`, Hilt, or Android
-  instrumentation.
-- Construct real model instances rather than mocking models or their collaborators.
-  Use small, deterministic fixtures: synthetic identifiers/names and fixed dates
-  such as `LocalDateTime.MIN`, not the current clock.
-- Share immutable baseline fixtures as `private val` properties when useful.
-  Use `copy(...)` to vary the field relevant to a case; use local values for
-  scenario-specific inputs and expected results.
-- Keep tests direct and self-contained. Do not introduce fixture factories,
-  assertion helpers, setup/teardown, or MockK verification for pure model tests.
-  The mandatory ViewModel factory and mock lifecycle rules do not apply here.
-- Use descriptive backtick names that identify the behavior and variation, such
-  as `compatible - same type`, `compatible - different parents`,
-  `Parse - valid with prefix`, and `IsLowerThan - higher patch`.
-- Keep one logical scenario category per test. Several explicit assertions for
-  representative inputs in that category are appropriate; unlike action tests,
-  model tests need not be limited to a single function invocation.
-- Assert actual results directly with `isTrue()`, `isFalse()`, `isNull()`, or
-  `isEqualTo(...)`. For successful parsing, check the parsed component values as
-  well as non-nullness. Keep expected values explicit rather than calculating them
-  through the same production helper under test.
-
-#### Behavior coverage
-
-- Prioritize model behavior: compatibility, derived properties, meaningful
-  defaults, parsing, formatting, and comparisons. Do not add boilerplate tests
-  solely for compiler-generated data-class getters, `copy`, or equality.
-- Compatibility tests must cover accepted and rejected inputs, including exact
-  matches, parent/subtype in both directions and sibling subtypes where supported,
-  unrelated types/parents, and `Any`/`Unknown` wildcards on either side where valid.
-  Assert each direction explicitly when testing a symmetric rule.
-- Preserve domain-specific differences: bike gear accepts cycling types; shoe
-  gear also accepts walking and hiking; unknown gear accepts any activity.
-  Do not assume gear compatibility follows the same hierarchy as course/profile
-  compatibility.
-- Test a model's public `compatible(activity)` helper with a real `Activity`,
-  even when it delegates to a type helper. Type-level tests do not replace
-  model-level coverage. Test meaningful defaults, such as a profile's default
-  `Any` type or a gear's default `Unknown` type, through observable behavior.
-- Parsing tests should distinguish valid input, supported prefixes, malformed
-  structure, and invalid components. Assert the documented failure result, such
-  as `null`, rather than assuming an exception.
-- Comparison tests should cover equality and lower/higher major, minor, and patch
-  components where applicable. Formatting tests should assert the exact output,
-  including prefixes and separators.
-- Extend the relevant test matrix when a model/type rule changes; preserve intended
-  behavior rather than changing production logic just to make a test pass.
-
-### ViewModel Unit Test Standard
-
-Use `SettingsViewModelTest` as the baseline for structure and tone. The current
-`EditViewModelTest` and `QuickEditViewModelTest` demonstrate seeded state and
-compatibility guards. Tests live under
-`app/src/test/kotlin/paufregi/connectfeed/presentation/` in the matching feature package.
-
-#### Structure and naming
-
-- Use JUnit4, MockK, Truth assertions, Turbine, `runTest`, and the existing
-  `MainDispatcherRule`. Follow the nearby coroutine opt-in convention.
-- Declare mocks and reusable, synthetic fixtures as class properties, with
-  `private lateinit var viewModel` and a **mandatory** `private fun createViewModel()`
-  helper. Instantiate the ViewModel explicitly in each test.
-- `@Before fun setup()` must contain only invariant mock configuration: stubs that
-  return the same result throughout the suite. Put scenario-specific stubs inside
-  their tests. Do not construct the ViewModel, seed state, or invoke actions in setup.
-- `@After fun tearDown()` must call `confirmVerified(...)` with **all** mocks,
-  including getters and relaxed mocks, followed by `clearAllMocks()`. Include
-  object mocks in verification and restore them when applicable.
-- Avoid additional helper functions, especially assertion helpers or shared
-  scenario-stubbing helpers. Keep arrange/act/assert steps visible inside each test.
-- Use descriptive backtick names: `Initial state`, `Initial state - no strava`,
-  `Set name`, `Set profile - null`, `Set gear - incompatible`, `Save - success`,
-  `Save - failure`, and `Save - failure without message`.
-
-#### Scope and state seeding
-
-- Organize tests around the initial state and its meaningful variations, followed
-  by `onAction` behavior. Cover each action separately: invoke **one action once**
-  per action test, rather than driving several actions to prepare another action.
-  If there is no `onAction`, test the other public functions and exposed flows.
-- Test genuine startup variations through dependency stubs, such as connected vs
-  disconnected users, missing data, empty lists, and loading/failure states.
-- When an action needs pre-existing edited state, add an internal function to the
-  ViewModel that accepts its state type and only replaces the backing state:
-
-  ```kotlin
-  internal fun injectState(state: FeatureState) {
-      _state.value = state
-  }
-  ```
-
-- Use `injectState` in those tests instead of reflection, extra constructor
-  parameters, or a sequence of setup actions. Subscribe to the exposed state,
-  consume initial loading as needed, inject the state, and consume/assert the
-  seeded emission before invoking the action. Finish startup loading first so it
-  cannot overwrite the seed.
-- Remember that StateFlow suppresses equal values. Ensure the seed differs from
-  the current state before awaiting its emission, and seed a non-loading status
-  when the action is expected to emit a new loading transition.
-
-#### Assertions and mock verification
-
-- Use `state.test { ... }` and explicit inline Truth assertions on emitted state.
-  Assert relevant fields and preservation of unrelated seeded values where useful.
-  Finish subscriptions with `cancelAndIgnoreRemainingEvents()`.
-- Use `CompletableDeferred` to control suspended operations and assert the actual
-  loading/processing transition before completing success or failure. Do not rely
-  on sleeps, arbitrary delays, or fragile counts of transient emissions.
-- Cover success, failure, null-message fallbacks, nullable inputs, reset behavior,
-  and missing-data guards where supported. Assert notifications and navigation
-  effects as well as state, including the absence of effects when appropriate.
-- For incompatible course, gear, or profile actions that are intentionally ignored,
-  seed a valid existing selection, invoke the incompatible action, then assert
-  `expectNoEvents()` and that `viewModel.state.value` still equals the seeded
-  emitted state. Do not wait for an emission from a no-op.
-- Verify every actual dependency interaction, including invariant getter calls
-  from initialization. Use `verify` for ordinary functions and `coVerify` for
-  suspend functions. **Each verification block must contain exactly one function
-  call**; never group several calls in a single block:
-
-  ```kotlin
-  verify { getUser() }
-  verify { isStravaConnected() }
-  coVerify { getLatestRelease() }
-  coVerify { refreshUser() }
-  verify { notification.show("User data refreshed") }
-  ```
-
-- Keep `confirmVerified` strict; do not bypass it with broad verification,
-  unnecessary relaxed mocks, or cleared call histories.
-
-## Practical Editing Rules
-
-- Avoid broad refactors unless requested.
-- Preserve existing public behavior unless task explicitly changes it.
-- Keep API changes minimal and backward-compatible when possible.
-- If uncertain, follow patterns from nearest existing implementation in the same feature folder.
-
-## Code Review
-
-Detailed, project-specific review criteria (architecture rules, security checks, Room migration
-requirements, test coverage expectations, dependency conventions) are in
-`.github/copilot-review-instructions.md`. Apply those rules when reviewing pull requests.
+- Add or update tests at the layer whose behavior changes. Use JVM tests for pure
+  logic and instrumented tests for Android, persistence, and UI integration.
+- Unit tests use JUnit4, MockK, Truth, Turbine, and coroutine test utilities as
+  appropriate. Compose integration tests use Hilt and the configured test runner.
+- Mirror production packages in the corresponding test source set.
+- Validate in this order: `./gradlew assemble`, `./gradlew test`, instrumented
+  `./gradlew pixel10Check` when UI, Room, or Hilt wiring changes, then `./gradlew lint`.
+  Documentation-only edits do not require application builds.
+- Read [the testing guidelines](copilot-testing-instructions.md) for test structure
+  and behavior, and [the review guidelines](copilot-review-instructions.md) when
+  reviewing changes.
