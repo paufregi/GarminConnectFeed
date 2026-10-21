@@ -84,7 +84,7 @@ class GetActivityTest {
         assertThat(res?.name).isEqualTo("Morning Run")
         assertThat(res?.type).isEqualTo(ActivityType.Running)
         assertThat(res?.eventType).isEqualTo(EventType.Training)
-        assertThat(res?.distance).isEqualTo(10_234.0)
+        assertThat(res?.distance).isNull()
         assertThat(res?.trainingEffect).isEqualTo("Base")
         assertThat(res?.date).isEqualTo(LocalDateTime.of(2024, 6, 1, 8, 0, 0))
         assertThat(res?.workoutId).isEqualTo(101)

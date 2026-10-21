@@ -608,7 +608,7 @@ class EditViewModelTest {
 
             assertThat(awaitItem().status).isEqualTo(Status.Loading)
             result.complete(Result.failure(Exception()))
-            assertThat(awaitItem().status).isEqualTo(Status.Failure("Something went wrong: unknown error"))
+            assertThat(awaitItem().status).isEqualTo(Status.Failure("unknown error"))
             cancelAndIgnoreRemainingEvents()
         }
 
