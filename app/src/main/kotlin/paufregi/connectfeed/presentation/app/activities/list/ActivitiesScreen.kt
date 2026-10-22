@@ -39,21 +39,27 @@ internal fun ActivitiesScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when (state.loading){
+    ActivitiesContent(state, user, navigate, onOpen)
+}
+
+@Composable
+@ExperimentalMaterial3Api
+internal fun ActivitiesContent(
+    state: ActivitiesState,
+    user: User,
+    navigate: (AppRoute) -> Unit = {},
+    onOpen: (Long, Long?) -> Unit = { _, _ -> },
+) {
+    when (state.loading) {
         true -> AppLoading(TITLE, AppRoute.Activities)
-        false -> List(
-            state = state,
-            user = user,
-            navigate = navigate,
-            onOpen = onOpen,
-        )
+        false -> ActivityList(state, user, navigate, onOpen)
     }
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-private fun List(
+private fun ActivityList(
     @PreviewParameter(ActivitiesPreview::class) state: ActivitiesState,
     user: User = User.ANONYM,
     navigate: (AppRoute) -> Unit = {},

@@ -57,17 +57,26 @@ internal fun ProfileScreen(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    ProfileContent(state = state, navBack = navBack, onAction = viewModel::onAction)
+}
+
+@Composable
+@ExperimentalMaterial3Api
+internal fun ProfileContent(
+    state: ProfileState,
+    navBack: () -> Unit = {},
+    onAction: (ProfileAction) -> Unit = {},
+) {
     when (state.loading) {
         true -> FormLoading(title(state))
-        false -> Form(state = state, navBack = navBack, onAction = viewModel::onAction)
-
+        false -> ProfileForm(state = state, navBack = navBack, onAction = onAction)
     }
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-private fun Form(
+private fun ProfileForm(
     @PreviewParameter(ProfilePreview::class) state: ProfileState,
     navBack: () -> Unit = {},
     onAction: (ProfileAction) -> Unit = {},

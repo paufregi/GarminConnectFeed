@@ -8,10 +8,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.presentation.ui.components.loading.ActivityLoading
 import paufregi.connectfeed.presentation.ui.components.status.ActivityFailure
 import paufregi.connectfeed.presentation.ui.components.status.ActivitySuccess
@@ -38,12 +40,22 @@ class SyncWeightActivity : ComponentActivity() {
             val state by viewModel.state.collectAsStateWithLifecycle()
             val user by viewModel.user.collectAsStateWithLifecycle()
             Theme {
-                when(val s = state) {
-                    is ProcState.Success -> ActivitySuccess(TITLE, user, s.message ?: "") { finish() }
-                    is ProcState.Failure -> ActivityFailure(TITLE, user,"Sync failed!", s.reason) { finish() }
-                    is ProcState.Running -> ActivityLoading(TITLE, user)
-                }
+                SyncWeightContent(state, user) { finish() }
             }
         }
+    }
+}
+
+@Composable
+@ExperimentalMaterial3Api
+internal fun SyncWeightContent(
+    state: ProcState,
+    user: User? = null,
+    onDone: () -> Unit = {},
+) {
+    when (val process = state) {
+        is ProcState.Success -> ActivitySuccess(TITLE, user, process.message ?: "") { onDone() }
+        is ProcState.Failure -> ActivityFailure(TITLE, user, "Sync failed!", process.reason) { onDone() }
+        is ProcState.Running -> ActivityLoading(TITLE, user)
     }
 }

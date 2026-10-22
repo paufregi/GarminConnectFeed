@@ -42,21 +42,27 @@ internal fun Gears(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when (state.loading){
+    GearsContent(state, user, navigate, viewModel::sync)
+}
+
+@Composable
+@ExperimentalMaterial3Api
+internal fun GearsContent(
+    state: GearsState,
+    user: User,
+    navigate: (AppRoute) -> Unit = {},
+    onSync: () -> Unit = {},
+) {
+    when (state.loading) {
         true -> AppLoading(TITLE, AppRoute.Gears)
-        false -> List(
-            state = state,
-            user = user,
-            navigate = navigate,
-            onSync = viewModel::sync
-        )
+        false -> GearList(state, user, navigate, onSync)
     }
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-private fun List(
+private fun GearList(
     @PreviewParameter(GearsStatePreview::class) state: GearsState,
     user: User = User.ANONYM,
     navigate: (AppRoute) -> Unit = {},

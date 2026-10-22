@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import paufregi.connectfeed.connectPort
+import paufregi.connectfeed.garminAuthPort
 import paufregi.connectfeed.garminSSOPort
 import javax.inject.Named
 import javax.inject.Singleton
@@ -39,7 +40,7 @@ object TestGarminModule {
     @Provides
     @Singleton
     @Named("GarminAuthUrl")
-    fun provideGarminAuthUrl(): String = "https://localhost:${connectPort}/"
+    fun provideGarminAuthUrl(): String = "https://localhost:${garminAuthPort}/"
 
     @Provides
     @Singleton

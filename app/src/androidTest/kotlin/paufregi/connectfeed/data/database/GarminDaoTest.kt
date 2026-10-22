@@ -113,18 +113,18 @@ class GarminDaoTest {
         )
 
         dao.saveGear(gear)
-        assertThat(dao.getGear(gear.id)).isEqualTo(gear)
-
         dao.saveGear(gear2)
-        assertThat(dao.getGear(gear2.id)).isEqualTo(gear2)
 
-        dao.deleteGear(gear)
-        assertThat(dao.getGear(gear.id)).isNull()
-
-        dao.getAllGears(1).test {
-            assertThat(awaitItem()).isEmpty()
-            dao.saveGear(gear)
+        dao.getAllGears(gear.userId).test {
             assertThat(awaitItem()).containsExactly(gear)
+            dao.deleteGear(gear)
+            assertThat(awaitItem()).isEmpty()
+
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        dao.getAllGears(gear2.userId).test {
+            assertThat(awaitItem()).containsExactly(gear2)
             cancelAndIgnoreRemainingEvents()
         }
     }

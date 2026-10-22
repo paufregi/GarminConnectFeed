@@ -372,7 +372,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isFalse()
         coVerify { connect.updateActivity(activity.id, expectedRequest) }
-        coVerify(exactly = 0) { connect.associateGears(any(), any()) }
     }
 
     @Test

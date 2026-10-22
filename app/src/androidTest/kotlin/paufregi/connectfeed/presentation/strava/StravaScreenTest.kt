@@ -8,38 +8,37 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.presentation.ui.models.ProcState
 
-@HiltAndroidTest
 @ExperimentalMaterial3Api
-@OptIn(ExperimentalTestApi::class)
+@ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class StravaScreenTest {
 
     @Test
-    fun `Loading spinning`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Running status shows loading screen`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            StravaScreen(state = StravaState(ProcState.Processing))
+            StravaContent(state = ProcState.Running)
         }
         onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
-    fun `Strava linked`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Success status shows linked message`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            StravaScreen(state = StravaState(ProcState.Success("Strava linked")))
+            StravaContent(state = ProcState.Success())
         }
-        onNodeWithText("Strava linked").assertIsDisplayed()
+        onNodeWithText("Strava linked!").assertIsDisplayed()
     }
 
     @Test
-    fun `Sign in - failure`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Failure status shows message and reason`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            StravaScreen(state = StravaState(ProcState.Failure("Link failed")))
+            StravaContent(state = ProcState.Failure("Authorization failed"))
         }
-        onNodeWithText("Link failed").assertIsDisplayed()
+        onNodeWithText("Link failed!").assertIsDisplayed()
+        onNodeWithText("Something went wrong: Authorization failed").assertIsDisplayed()
     }
 }

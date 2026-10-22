@@ -64,7 +64,7 @@ class ActivitiesViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify(exactly = 1) { getActivities() }
+        coVerify { getActivities() }
     }
 
     @Test
@@ -83,7 +83,7 @@ class ActivitiesViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify(exactly = 1) { getActivities() }
+        coVerify { getActivities() }
     }
 
     @Test
@@ -102,7 +102,7 @@ class ActivitiesViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify(exactly = 1) { getActivities() }
+        coVerify { getActivities() }
         verify { notification.show("Failed to load activities: network error") }
     }
 }

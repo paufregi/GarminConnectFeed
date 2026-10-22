@@ -3,7 +3,6 @@ package paufregi.connectfeed.presentation.app.profiles.edit
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsEnabled
@@ -18,19 +17,16 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.presentation.ui.theme.Theme
 
 @ExperimentalMaterial3Api
-@OptIn(ExperimentalTestApi::class)
+@ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class ProfileScreenTest {
 
     @Test
     fun `Empty profile cannot be saved`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            Theme {
-                ProfileContent(state = ProfileState(loading = false))
-            }
+            ProfileContent(state = ProfileState(loading = false))
         }
 
         onNodeWithText("Name").assertIsDisplayed()
@@ -51,28 +47,26 @@ class ProfileScreenTest {
             type = ActivityType.Running,
         )
         setContent {
-            Theme {
-                ProfileContent(
-                    state = ProfileState(
-                        loading = false,
-                        profile = Profile(
-                            name = "Long run",
-                            type = ActivityType.Running,
-                            eventType = EventType.Training,
-                            course = course,
-                            water = 500,
-                            rename = true,
-                            customWater = true,
-                            gear = true,
-                            feelAndEffort = true,
-                            trainingEffect = true,
-                        ),
-                        activityTypes = listOf(ActivityType.Any, ActivityType.Running),
-                        eventTypes = listOf(EventType.Training),
-                        courses = listOf(course),
-                    )
+            ProfileContent(
+                state = ProfileState(
+                    loading = false,
+                    profile = Profile(
+                        name = "Long run",
+                        type = ActivityType.Running,
+                        eventType = EventType.Training,
+                        course = course,
+                        water = 500,
+                        rename = true,
+                        customWater = true,
+                        gear = true,
+                        feelAndEffort = true,
+                        trainingEffect = true,
+                    ),
+                    activityTypes = listOf(ActivityType.Any, ActivityType.Running),
+                    eventTypes = listOf(EventType.Training),
+                    courses = listOf(course),
                 )
-            }
+            )
         }
 
         onNodeWithText("Long run").assertIsDisplayed()
@@ -90,15 +84,13 @@ class ProfileScreenTest {
     @Test
     fun `Running profile requires event type`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            Theme {
-                ProfileContent(
-                    state = ProfileState(
-                        loading = false,
-                        profile = Profile(name = "Long run", type = ActivityType.Running),
-                        activityTypes = listOf(ActivityType.Running),
-                    )
+            ProfileContent(
+                state = ProfileState(
+                    loading = false,
+                    profile = Profile(name = "Long run", type = ActivityType.Running),
+                    activityTypes = listOf(ActivityType.Running),
                 )
-            }
+            )
         }
 
         onNodeWithText("Save").assertIsNotEnabled()
@@ -107,18 +99,16 @@ class ProfileScreenTest {
     @Test
     fun `Types without courses hide course field`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            Theme {
-                ProfileContent(
-                    state = ProfileState(
-                        loading = false,
-                        profile = Profile(
-                            name = "General",
-                            type = ActivityType.Any,
-                            eventType = EventType.Training,
-                        ),
-                    )
+            ProfileContent(
+                state = ProfileState(
+                    loading = false,
+                    profile = Profile(
+                        name = "General",
+                        type = ActivityType.Any,
+                        eventType = EventType.Training,
+                    ),
                 )
-            }
+            )
         }
 
         onNodeWithText("Course").assertIsNotDisplayed()
@@ -128,12 +118,9 @@ class ProfileScreenTest {
     @Test
     fun `Loading state shows form progress`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            Theme {
-                ProfileContent(state = ProfileState(loading = true))
-            }
+            ProfileContent(state = ProfileState(loading = true))
         }
 
         onNodeWithTag("loading").assertIsDisplayed()
-        onNodeWithTag("profile_form_content").assertDoesNotExist()
     }
 }

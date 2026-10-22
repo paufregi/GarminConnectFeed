@@ -4,8 +4,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import paufregi.connectfeed.githubPort
-import javax.inject.Named
+import paufregi.connectfeed.data.api.github.Github
+import paufregi.connectfeed.githubRelease
+import retrofit2.Response
 import javax.inject.Singleton
 
 @Module
@@ -17,6 +18,7 @@ object TestGithubModule {
 
     @Provides
     @Singleton
-    @Named("GithubUrl")
-    fun provideGithubUrl(): String = "https://localhost:${githubPort}/"
+    fun provideGithub(): Github = object : Github {
+        override suspend fun getLatestRelease() = Response.success(githubRelease)
+    }
 }

@@ -51,11 +51,20 @@ internal fun LoginScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    LoginContent(state, viewModel::onAction)
+}
+
+@Composable
+@ExperimentalMaterial3Api
+internal fun LoginContent(
+    state: LoginState,
+    onAction: (LoginAction) -> Unit = {},
+) {
     when(val p = state.status) {
         is Status.Loading -> Loading()
-        is Status.Success -> Welcome(state, viewModel::onAction)
-        is Status.Failure -> ActivityFailure("Connect Feed", null, "Login failed!", p.reason) { viewModel.onAction(LoginAction.Reset) }
-        else -> LoginForm(state, viewModel::onAction)
+        is Status.Success -> Welcome(state, onAction)
+        is Status.Failure -> ActivityFailure("Connect Feed", null, "Login failed!", p.reason) { onAction(LoginAction.Reset) }
+        else -> LoginForm(state, onAction)
     }
 }
 

@@ -64,7 +64,23 @@ internal fun EditScreen(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when(val s = state.status) {
+    EditContent(
+        state = state,
+        onAction = viewModel::onAction,
+        navBack = navBack,
+        navQuickEdit = navQuickEdit,
+    )
+}
+
+@Composable
+@ExperimentalMaterial3Api
+internal fun EditContent(
+    state: EditState,
+    onAction: (EditAction) -> Unit = {},
+    navBack: () -> Unit = {},
+    navQuickEdit: () -> Unit = {},
+) {
+    when (val s = state.status) {
         is Status.Loading -> FormLoading(TITLE, Icons.App.QuickEdit)
         is Status.Success -> EditSuccess(
             title = TITLE,
@@ -76,11 +92,11 @@ internal fun EditScreen(
             title = TITLE,
             reason = s.reason,
             actionIcon = TopButton.action(Icons.App.QuickEdit, false) { },
-            onReset = { viewModel.onAction(EditAction.ResetStatus) }
+            onReset = { onAction(EditAction.ResetStatus) }
         )
         else -> Form(
             state = state,
-            onAction = viewModel::onAction,
+            onAction = onAction,
             navBack = navBack,
             navQuickEdit = navQuickEdit,
         )

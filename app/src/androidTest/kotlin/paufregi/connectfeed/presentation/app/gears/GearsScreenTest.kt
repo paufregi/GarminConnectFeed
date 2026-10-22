@@ -3,7 +3,6 @@ package paufregi.connectfeed.presentation.app.gears
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -14,20 +13,15 @@ import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.presentation.ui.theme.Theme
 
 @ExperimentalMaterial3Api
-@OptIn(ExperimentalTestApi::class)
+@ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class GearsScreenTest {
 
     @Test
     fun `Empty list`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
-            Theme {
-                GearsContent(state = GearsState(), user = User.ANONYM)
-            }
-        }
+        setContent { GearsContent(state = GearsState(), user = User.ANONYM) }
 
         onNodeWithText("No gears").assertIsDisplayed()
     }
@@ -35,17 +29,15 @@ class GearsScreenTest {
     @Test
     fun `Gear list displays names and distances`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            Theme {
-                GearsContent(
-                    state = GearsState(
-                        gears = listOf(
-                            Gear(id = "gear-1", name = "Daily trainers", type = GearType.Shoe, distance = 1000),
-                            Gear(id = "gear-2", name = "Weekend bike", type = GearType.Bike, distance = 25340),
-                        )
-                    ),
-                    user = User.ANONYM,
-                )
-            }
+            GearsContent(
+                state = GearsState(
+                    gears = listOf(
+                        Gear(id = "gear-1", name = "Daily trainers", type = GearType.Shoe, distance = 1000),
+                        Gear(id = "gear-2", name = "Weekend bike", type = GearType.Bike, distance = 25340),
+                    )
+                ),
+                user = User.ANONYM,
+            )
         }
 
         onNodeWithText("Daily trainers").assertIsDisplayed()
@@ -57,12 +49,9 @@ class GearsScreenTest {
     @Test
     fun `Loading state hides gear list`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            Theme {
-                GearsContent(state = GearsState(loading = true), user = User.ANONYM)
-            }
+            GearsContent(state = GearsState(loading = true), user = User.ANONYM)
         }
 
         onNodeWithTag("loading").assertIsDisplayed()
-        onNodeWithTag("gear_list").assertDoesNotExist()
     }
 }

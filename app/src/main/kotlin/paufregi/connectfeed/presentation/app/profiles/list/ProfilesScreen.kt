@@ -44,16 +44,29 @@ internal fun ProfilesScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    ProfilesContent(state, user, navigate, onOpen, onCreate, viewModel::onAction)
+}
+
+@Composable
+@ExperimentalMaterial3Api
+internal fun ProfilesContent(
+    state: ProfilesState,
+    user: User,
+    navigate: (AppRoute) -> Unit = {},
+    onOpen: (Long) -> Unit = {},
+    onCreate: () -> Unit = {},
+    onAction: (ProfilesAction) -> Unit = {},
+) {
     when (state.isLoading) {
         true -> AppLoading(TITLE, AppRoute.Profiles)
-        false -> List(state, user, navigate, onOpen, onCreate, viewModel::onAction)
+        false -> ProfileList(state, user, navigate, onOpen, onCreate, onAction)
     }
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-private fun List(
+private fun ProfileList(
     @PreviewParameter(ProfilesStatePreview::class) state: ProfilesState,
     user: User = User.ANONYM,
     navigate: (AppRoute) -> Unit = {},

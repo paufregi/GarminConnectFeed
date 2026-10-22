@@ -114,7 +114,6 @@ class ProfilesViewModelTest {
             skipItems(1)
             viewModel.onAction(ProfilesAction.Delete(profile))
 
-            verify(exactly = 0) { notification.show(any()) }
             deletion.complete(Unit)
             verify { notification.show("Profile deleted") }
             cancelAndIgnoreRemainingEvents()

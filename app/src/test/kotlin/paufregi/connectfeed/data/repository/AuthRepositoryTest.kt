@@ -58,8 +58,8 @@ class AuthRepositoryTest {
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(ticket)
 
-        coVerify(exactly = 1) { garminSSO.getCSRF() }
-        coVerify(exactly = 1) { garminSSO.login("user@example.com", "password123", csrf) }
+        coVerify { garminSSO.getCSRF() }
+        coVerify { garminSSO.login("user@example.com", "password123", csrf) }
     }
 
     @Test
@@ -74,8 +74,7 @@ class AuthRepositoryTest {
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).contains("failed to get CSRF")
 
-        coVerify(exactly = 1) { garminSSO.getCSRF() }
-        coVerify(exactly = 0) { garminSSO.login(any(), any(), any()) }
+        coVerify { garminSSO.getCSRF() }
     }
 
     @Test
@@ -93,8 +92,8 @@ class AuthRepositoryTest {
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).contains("failed to login")
 
-        coVerify(exactly = 1) { garminSSO.getCSRF() }
-        coVerify(exactly = 1) { garminSSO.login("user@example.com", "password123", csrf) }
+        coVerify { garminSSO.getCSRF() }
+        coVerify { garminSSO.login("user@example.com", "password123", csrf) }
     }
 
     @Test

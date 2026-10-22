@@ -135,12 +135,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGithub(
-        @Named("GithubUrl") url: String,
-    ): Github = Github.client(url)
-
-    @Provides
-    @Singleton
     @Named("tempFolder")
     fun provideTempFolder(@ApplicationContext context: Context): File =
         context.cacheDir

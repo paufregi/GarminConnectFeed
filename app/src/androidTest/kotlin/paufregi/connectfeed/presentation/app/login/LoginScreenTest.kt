@@ -13,19 +13,16 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.presentation.ui.theme.Theme
 
 @ExperimentalMaterial3Api
-@OptIn(ExperimentalTestApi::class)
+@ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class LoginScreenTest {
 
     @Test
     fun `Empty form disables sign in`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            Theme {
-                LoginContent(state = LoginState())
-            }
+            LoginContent(state = LoginState())
         }
 
         onNodeWithText("Username").assertIsDisplayed()
@@ -36,9 +33,7 @@ class LoginScreenTest {
     @Test
     fun `Filled form masks password`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            Theme {
-                LoginContent(state = LoginState(username = "test-user", password = "test-pass"))
-            }
+            LoginContent(state = LoginState(username = "test-user", password = "test-pass"))
         }
 
         onNodeWithText("test-user").assertIsDisplayed()
@@ -49,9 +44,7 @@ class LoginScreenTest {
     @Test
     fun `Loading status`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            Theme {
-                LoginContent(state = LoginState(status = Status.Loading))
-            }
+            LoginContent(state = LoginState(status = Status.Loading))
         }
 
         onNodeWithTag("loading").assertIsDisplayed()
@@ -60,9 +53,7 @@ class LoginScreenTest {
     @Test
     fun `Failure status`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            Theme {
-                LoginContent(state = LoginState(status = Status.Failure("Invalid credentials")))
-            }
+            LoginContent(state = LoginState(status = Status.Failure("Invalid credentials")))
         }
 
         onNodeWithText("Login failed!").assertIsDisplayed()
@@ -72,11 +63,9 @@ class LoginScreenTest {
     @Test
     fun `Success status welcomes user`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            Theme {
-                LoginContent(
-                    state = LoginState(status = Status.Success, user = User(1, "Test User", "url"))
-                )
-            }
+            LoginContent(
+                state = LoginState(status = Status.Success, user = User(1, "Test User", "url"))
+            )
         }
 
         onNodeWithText("Welcome Test User").assertIsDisplayed()

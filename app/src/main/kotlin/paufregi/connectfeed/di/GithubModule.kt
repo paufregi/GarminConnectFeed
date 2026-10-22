@@ -16,4 +16,10 @@ object GithubModule {
     @Singleton
     @Named("GithubUrl")
     fun provideGithubUrl(): String = Github.BASE_URL
+
+    @Provides
+    @Singleton
+    fun provideGithub(
+        @Named("GithubUrl") url: String,
+    ): Github = Github.client(url)
 }

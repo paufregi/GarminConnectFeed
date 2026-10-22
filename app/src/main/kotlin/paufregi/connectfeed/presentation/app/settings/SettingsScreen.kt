@@ -64,16 +64,27 @@ internal fun SettingsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when(state.loading){
+    SettingsContent(state, navigate, viewModel::onAction, viewModel.stravaAuthUri)
+}
+
+@Composable
+@ExperimentalMaterial3Api
+internal fun SettingsContent(
+    state: SettingsState,
+    navigate: (AppRoute) -> Unit = {},
+    onAction: (SettingsAction) -> Unit = {},
+    stravaAuthUri: Uri = Uri.EMPTY,
+) {
+    when (state.loading) {
         true -> AppLoading(TITLE, AppRoute.Settings)
-        false -> Settings(state, navigate, viewModel::onAction, viewModel.stravaAuthUri)
+        false -> SettingsForm(state, navigate, onAction, stravaAuthUri)
     }
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-private fun Settings(
+private fun SettingsForm(
     @PreviewParameter(SettingsStatePreview::class) state: SettingsState,
     navigate: (AppRoute) -> Unit = {},
     onAction: (SettingsAction) -> Unit = {},

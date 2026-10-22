@@ -8,46 +8,37 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.presentation.ui.models.ProcState
 
-@HiltAndroidTest
 @ExperimentalMaterial3Api
-@OptIn(ExperimentalTestApi::class)
+@ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class SyncWeightScreenTest {
-    
-    @Test
-    fun `Status idle`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
-            SyncWeightScreen(state = SyncWeightState(ProcState.Idle))
-        }
-        onNodeWithText("Don't know what to do").assertIsDisplayed()
-    }
 
     @Test
-    fun `Status uploading`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Running status shows loading screen`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SyncWeightScreen(state = SyncWeightState(ProcState.Processing))
+            SyncWeightContent(state = ProcState.Running)
         }
         onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
-    fun `Status success`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Success status shows message`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SyncWeightScreen(state = SyncWeightState(ProcState.Success("Sync succeeded")))
+            SyncWeightContent(state = ProcState.Success("Sync succeeded"))
         }
         onNodeWithText("Sync succeeded").assertIsDisplayed()
     }
 
     @Test
-    fun `Status failure`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Failure status shows message and reason`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SyncWeightScreen(state = SyncWeightState(ProcState.Failure("Sync failed")))
+            SyncWeightContent(state = ProcState.Failure("Invalid file"))
         }
-        onNodeWithText("Sync failed").assertIsDisplayed()
+        onNodeWithText("Sync failed!").assertIsDisplayed()
+        onNodeWithText("Something went wrong: Invalid file").assertIsDisplayed()
     }
 }
