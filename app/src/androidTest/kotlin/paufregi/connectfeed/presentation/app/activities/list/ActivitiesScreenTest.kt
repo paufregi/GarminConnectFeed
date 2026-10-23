@@ -9,7 +9,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.time.LocalDateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,6 +16,7 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.User
+import java.time.LocalDateTime
 
 @ExperimentalMaterial3Api
 @ExperimentalTestApi

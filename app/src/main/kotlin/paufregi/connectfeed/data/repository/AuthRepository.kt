@@ -1,6 +1,5 @@
 package paufregi.connectfeed.data.repository
 
-import android.util.Log
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.utils.andThen
 import paufregi.connectfeed.core.utils.toResult

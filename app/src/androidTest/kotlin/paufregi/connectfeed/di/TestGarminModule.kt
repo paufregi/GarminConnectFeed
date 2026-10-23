@@ -19,23 +19,13 @@ object TestGarminModule {
 
     @Provides
     @Singleton
-    @Named("GarminConsumerKey")
-    fun provideGarminConsumerKey(): String = "00000000-0000-0000-0000-000000000000"
-
-    @Provides
-    @Singleton
-    @Named("GarminConsumerSecret")
-    fun provideGarminConsumerSecret(): String = "abcdefghijklmopqrstuvwxyz"
+    @Named("GarminClientId")
+    fun provideGarminClientId(): String = "GARMIN_CLIENT_ID"
 
     @Provides
     @Singleton
     @Named("GarminConnectUrl")
     fun provideGarminConnectUrl(): String = "https://localhost:${connectPort}/"
-
-    @Provides
-    @Singleton
-    @Named("GarminPreAuthUrl")
-    fun provideGarminPreAuthUrl(): String = "https://localhost:${connectPort}/"
 
     @Provides
     @Singleton

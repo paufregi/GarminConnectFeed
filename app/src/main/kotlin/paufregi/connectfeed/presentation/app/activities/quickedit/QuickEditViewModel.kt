@@ -21,7 +21,6 @@ import paufregi.connectfeed.core.usecases.GetGears
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
-import paufregi.connectfeed.core.utils.finally
 import paufregi.connectfeed.core.utils.updateIf
 import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 

@@ -18,7 +18,7 @@ object GarminModule {
     @Provides
     @Singleton
     @Named("GarminClientId")
-    fun provideGarminConsumerKey(): String = BuildConfig.GARMIN_CLIENT_ID
+    fun provideGarminClientId(): String = BuildConfig.GARMIN_CLIENT_ID
 
     @Provides
     @Singleton

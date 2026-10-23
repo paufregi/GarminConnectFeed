@@ -43,7 +43,7 @@ class AuthStoreTest {
         val user1 = User(1, "Paul", "url_1")
         val user2 = User(2, "Francis", "url_2")
 
-        dataStore.garminToken.test {
+        dataStore.user.test {
             assertThat(awaitItem()).isNull()
             dataStore.saveUser(user1)
             assertThat(awaitItem()).isEqualTo(user1)
@@ -57,8 +57,18 @@ class AuthStoreTest {
 
     @Test
     fun `Save retrieve and clear Garmin token`() = runTest {
-        val token1 = GarminAuthToken("GARMIN_ACCESS_1", "GARMIN_REFRESH_1")
-        val token2 = GarminAuthToken("GARMIN_ACCESS_2", "GARMIN_REFRESH_2")
+        val token1 = GarminAuthToken(
+            accessToken = "GARMIN_ACCESS_1",
+            expiresIn = 3600,
+            refreshToken = "GARMIN_REFRESH_1",
+            refreshTokenExpiresIn = 7200,
+        )
+        val token2 = GarminAuthToken(
+            accessToken = "GARMIN_ACCESS_2",
+            expiresIn = 3601,
+            refreshToken = "GARMIN_REFRESH_2",
+            refreshTokenExpiresIn = 7201,
+        )
 
         dataStore.garminToken.test {
             assertThat(awaitItem()).isNull()
@@ -100,7 +110,12 @@ class AuthStoreTest {
     @Test
     fun `Clear all`() = runTest {
         val user = User(1, "Paul", "url")
-        val garminToken = GarminAuthToken("GARMIN_ACCESS", "GARMIN_REFRESH")
+        val garminToken = GarminAuthToken(
+            accessToken = "GARMIN_ACCESS",
+            expiresIn = 3600,
+            refreshToken = "GARMIN_REFRESH",
+            refreshTokenExpiresIn = 7200,
+        )
         val stravaToken = StravaAuthToken(
             accessToken = "STRAVA_ACCESS",
             refreshToken = "STRAVA_REFRESH",
@@ -120,7 +135,12 @@ class AuthStoreTest {
     @Test
     fun `Clear strava only`() = runTest {
         val user = User(1, "Paul", "url")
-        val garminToken = GarminAuthToken("GARMIN_ACCESS", "GARMIN_REFRESH")
+        val garminToken = GarminAuthToken(
+            accessToken = "GARMIN_ACCESS",
+            expiresIn = 3600,
+            refreshToken = "GARMIN_REFRESH",
+            refreshTokenExpiresIn = 7200,
+        )
         val stravaToken = StravaAuthToken(
             accessToken = "STRAVA_ACCESS",
             refreshToken = "STRAVA_REFRESH",

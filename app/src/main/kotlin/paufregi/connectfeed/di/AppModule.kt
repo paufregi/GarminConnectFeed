@@ -38,12 +38,14 @@ import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor as Stra
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
     @Provides
     @Singleton
     fun provideDataStore(
         @ApplicationContext context: Context,
         @Named("MasterKey") masterKey: String,
-        @Named("DataStoreFileName") dataStoreFileName: String
+        @Named("DataStoreFileName") dataStoreFileName: String,
+        @Named("DataStoreDirectory") dataStoreDirectory: File,
     ): DataStore<Auth> {
         val aead = SecurityManager.getAead(context, masterKey)
 
@@ -53,10 +55,11 @@ object AppModule {
             associatedData = dataStoreFileName.toByteArray(Charsets.UTF_8)
         )
 
+        val file = File(dataStoreDirectory, dataStoreFileName)
         return DataStoreFactory.create(
             serializer = encryptedSerializer,
             scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-            produceFile = { File(context.filesDir, "datastore/$dataStoreFileName") }
+            produceFile = { file }
         )
     }
 
@@ -150,5 +153,4 @@ object AppModule {
     @Named("downloader")
     fun provideDownloader(@ApplicationContext context: Context): Downloader =
         Downloader(context, context.getSystemService(DownloadManager::class.java))
-
 }

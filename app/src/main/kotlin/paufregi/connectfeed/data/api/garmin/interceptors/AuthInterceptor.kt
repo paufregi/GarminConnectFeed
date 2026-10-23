@@ -1,6 +1,5 @@
 package paufregi.connectfeed.data.api.garmin.interceptors
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking

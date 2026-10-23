@@ -21,7 +21,6 @@ import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.data.repository.AuthRepository
-import paufregi.connectfeed.today
 import paufregi.connectfeed.tomorrow
 import paufregi.connectfeed.yesterday
 import retrofit2.Response

@@ -6,7 +6,6 @@ import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.today
 import paufregi.connectfeed.tomorrow
 import paufregi.connectfeed.yesterday
-import kotlin.time.Duration.Companion.hours
 
 class AuthTokenTest {
 
