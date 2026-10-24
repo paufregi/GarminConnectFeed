@@ -30,7 +30,7 @@ class UpdateActivity @Inject constructor(
         gear: Gear?,
         trainingEffect: Boolean,
     ): Result<Unit> = coroutineScope {
-        if (name == null || (course != null && !activity.type.allowCourse))
+        if (name.isNullOrBlank() || (course != null && !(activity.type.allowCourse && course.compatible(activity))))
             return@coroutineScope Result.failure("Validation error")
 
         val garminDeferred = async {

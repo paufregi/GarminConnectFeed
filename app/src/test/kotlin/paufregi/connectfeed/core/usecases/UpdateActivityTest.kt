@@ -155,10 +155,28 @@ class UpdateActivityTest{
     }
 
     @Test
+    fun `Invalid - blank name`() = runTest {
+        val res = useCase(activity, "   ", description, eventType, course, water, feel, effort, workout, gear, true)
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
+    }
+
+    @Test
     fun `Invalid - course not allowed`() = runTest {
         val invalidActivity = activity.copy(type = ActivityType.Swimming)
 
         val res = useCase(invalidActivity, name, description, eventType, course, water, feel, effort, workout, gear, true)
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
+    }
+
+    @Test
+    fun `Invalid - course incompatible with activity`() = runTest {
+        val cyclingCourse = course.copy(type = ActivityType.Cycling)
+
+        val res = useCase(activity, name, description, eventType, cyclingCourse, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
