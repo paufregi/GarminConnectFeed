@@ -20,8 +20,8 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class GearsViewModel @Inject constructor(
     getGears: GetGears,
-    val syncGear: SyncGear,
-    val notification: NotificationManager,
+    private val syncGear: SyncGear,
+    private val notification: NotificationManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(GearsState())
 

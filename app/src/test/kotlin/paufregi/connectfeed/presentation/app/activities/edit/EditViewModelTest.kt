@@ -31,6 +31,7 @@ import paufregi.connectfeed.core.usecases.GetGears
 import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
+import paufregi.connectfeed.presentation.ui.models.Status
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 import java.time.LocalDateTime
 
@@ -139,11 +140,14 @@ class EditViewModelTest {
     @Test
     fun `Initial state - missing activity`() = runTest {
         every { getActivity(activity.id, activity.stravaId) } returns null
+        coEvery { getCourses() } returns Result.success(emptyList())
 
         viewModel = createViewModel()
 
-        viewModel.effects.test {
-            assertThat(awaitItem()).isEqualTo(EditEffect.NavigateBack)
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.notFound).isTrue()
+            assertThat(state.activity).isEqualTo(Activity.EMPTY)
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -151,6 +155,7 @@ class EditViewModelTest {
         verify { getEventTypes() }
         verify { getGears() }
         verify { notification.show("Activity not found") }
+        coVerify { getCourses() }
     }
 
     @Test
@@ -544,7 +549,7 @@ class EditViewModelTest {
 
             assertThat(awaitItem().status).isEqualTo(Status.Loading)
             result.complete(Result.success(Unit))
-            assertThat(awaitItem().status).isEqualTo(Status.Success)
+            assertThat(awaitItem().status).isEqualTo(Status.Success())
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -638,7 +643,7 @@ class EditViewModelTest {
 
             assertThat(awaitItem().status).isEqualTo(Status.Loading)
             result.complete(Result.success(Unit))
-            assertThat(awaitItem().status).isEqualTo(Status.Success)
+            assertThat(awaitItem().status).isEqualTo(Status.Success())
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -670,7 +675,7 @@ class EditViewModelTest {
 
             assertThat(awaitItem().status).isEqualTo(Status.Loading)
             result.complete(Result.success(Unit))
-            assertThat(awaitItem().status).isEqualTo(Status.Success)
+            assertThat(awaitItem().status).isEqualTo(Status.Success())
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -701,7 +706,7 @@ class EditViewModelTest {
 
             assertThat(awaitItem().status).isEqualTo(Status.Loading)
             result.complete(Result.success(Unit))
-            assertThat(awaitItem().status).isEqualTo(Status.Success)
+            assertThat(awaitItem().status).isEqualTo(Status.Success())
             cancelAndIgnoreRemainingEvents()
         }
 

@@ -7,12 +7,10 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,17 +24,18 @@ import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.core.utils.finally
 import paufregi.connectfeed.core.utils.updateIf
 import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
+import paufregi.connectfeed.presentation.ui.models.Status
 
 @ExperimentalCoroutinesApi
 @HiltViewModel(assistedFactory = EditViewModel.Factory::class)
 class EditViewModel @AssistedInject constructor(
     getActivity: GetActivity,
     getEventTypes: GetEventTypes,
-    val getCourses: GetCourses,
-    val getGears: GetGears,
-    val getWorkout: GetWorkout,
-    val updateActivity: UpdateActivity,
-    val notification: NotificationManager,
+    private val getCourses: GetCourses,
+    private val getGears: GetGears,
+    private val getWorkout: GetWorkout,
+    private val updateActivity: UpdateActivity,
+    private val notification: NotificationManager,
     @Assisted private val id: Long,
     @Assisted private val stravaId: Long?,
 ) : ViewModel() {
@@ -45,9 +44,6 @@ class EditViewModel @AssistedInject constructor(
     interface Factory {
         fun create(id: Long, stravaId: Long? = null): EditViewModel
     }
-
-    private val _effects = Channel<EditEffect>(Channel.BUFFERED)
-    val effects = _effects.receiveAsFlow()
 
     private val _state = MutableStateFlow(
         EditState(
@@ -61,10 +57,7 @@ class EditViewModel @AssistedInject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
     init {
-        if (_state.value.activity == Activity.EMPTY) {
-            notification.show("Activity not found")
-            navigateBack()
-        }
+        if (_state.value.notFound) notification.show("Activity not found")
     }
 
     private fun load() = viewModelScope.launch{
@@ -94,7 +87,7 @@ class EditViewModel @AssistedInject constructor(
     }
 
     private fun save() = viewModelScope.launch {
-        if (state.value.activity == Activity.EMPTY) return@launch
+        if (state.value.notFound) return@launch
 
         _state.update { it.copy(status = Status.Loading) }
 
@@ -113,11 +106,7 @@ class EditViewModel @AssistedInject constructor(
             gear = state.value.gear,
             trainingEffect = state.value.trainingEffect,
         )
-        .onSuccess { _state.update { it.copy(status = Status.Success) } }
+        .onSuccess { _state.update { it.copy(status = Status.Success()) } }
         .onFailure { r -> _state.update { it.copy(status = Status.Failure(r.message ?: "unknown error")) } }
-    }
-
-    private fun navigateBack() = viewModelScope.launch {
-        _effects.send(EditEffect.NavigateBack)
     }
 }

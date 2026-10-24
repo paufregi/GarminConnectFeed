@@ -3,12 +3,8 @@ package paufregi.connectfeed.presentation.app.activities.quickedit
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.presentation.ui.models.Status
 
-sealed interface Status {
-    data object Loading : Status
-    data object Success: Status
-    data class Failure(val reason: String) : Status
-}
 data class QuickEditState(
     val status: Status? = null,
 
@@ -23,6 +19,9 @@ data class QuickEditState(
     val effort: Float? = null,
     val feel: Float? = null,
 ) {
+    val notFound: Boolean
+        get() = activity == Activity.EMPTY
+
     val availableProfiles: List<Profile>
         get() = profiles.filter { it.type.compatible(activity.type) }
 

@@ -7,11 +7,11 @@ import paufregi.connectfeed.core.models.Weight
 import paufregi.connectfeed.core.utils.FitWriter
 import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.core.utils.runCatchingResult
 import paufregi.connectfeed.core.utils.sameDay
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaRepository
 import java.io.File
+import java.io.IOException
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Date
@@ -29,10 +29,14 @@ class SyncWeight @Inject constructor(
             val dateFormatter = Formatter.dateTimeForFilename(ZoneId.systemDefault())
             val filename = "ws_${dateFormatter.format(Instant.now())}.fit"
             val file = File(folder, filename)
-            FitWriter.weights(file, weights)
-            val res = garminRepo.uploadFile(file)
-            file.delete()
-            res
+            try {
+                FitWriter.weights(file, weights)
+                garminRepo.uploadFile(file)
+            } catch (e: IOException) {
+                Result.failure(e)
+            } finally {
+                file.delete()
+            }
         }
 
         val stravaDeferred = async {
@@ -40,16 +44,18 @@ class SyncWeight @Inject constructor(
                 weights.find { it.timestamp.sameDay(today) }
                     ?.let { stravaRepo.updateAthlete(it.weight) }
                     ?: Result.success(Unit)
-            } else Result.success(Unit)  
+            } else Result.success(Unit)
         }
 
-        val garminResult = runCatchingResult { garminDeferred.await() }
-        val stravaResult = runCatchingResult { stravaDeferred.await() }
+        val garminResult = garminDeferred.await()
+        val stravaResult = stravaDeferred.await()
 
-        if(garminResult.isFailure && stravaResult.isSuccess) return@coroutineScope Result.failure("Couldn't update Garmin")
-        if(garminResult.isSuccess && stravaResult.isFailure) return@coroutineScope Result.failure("Couldn't update Strava")
-        if(garminResult.isFailure && stravaResult.isFailure) return@coroutineScope Result.failure("Couldn't update Garmin & Strava")
-
-        Result.success(Unit)
+        when {
+            garminResult.isFailure && stravaResult.isFailure ->
+                Result.failure("Couldn't update Garmin & Strava", garminResult.exceptionOrNull(), stravaResult.exceptionOrNull())
+            garminResult.isFailure -> Result.failure("Couldn't update Garmin", garminResult.exceptionOrNull())
+            stravaResult.isFailure -> Result.failure("Couldn't update Strava", stravaResult.exceptionOrNull())
+            else -> Result.success(Unit)
+        }
     }
 }

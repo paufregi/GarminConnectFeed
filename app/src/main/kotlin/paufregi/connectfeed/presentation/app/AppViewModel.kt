@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AppViewModel @Inject constructor(
-    val getUser: GetUser,
+    private val getUser: GetUser,
 ) : ViewModel() {
 
     val state = getUser().map { user -> user?.let { AppState.Authenticated(it) } ?: AppState.NotAuthenticated }

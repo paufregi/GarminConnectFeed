@@ -7,7 +7,7 @@ import paufregi.connectfeed.data.api.strava.serializers.SportTypeSerializer
 import java.time.LocalDateTime
 
 @Serializable
-data class Activity(
+data class ActivityDto(
     @SerialName("id")
     val id: Long,
     @SerialName("name")

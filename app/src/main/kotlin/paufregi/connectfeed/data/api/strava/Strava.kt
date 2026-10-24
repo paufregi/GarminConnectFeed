@@ -4,9 +4,9 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor
-import paufregi.connectfeed.data.api.strava.models.Activity
+import paufregi.connectfeed.data.api.strava.models.ActivityDto
 import paufregi.connectfeed.data.api.strava.models.Athlete
-import paufregi.connectfeed.data.api.strava.models.UpdateActivity
+import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -33,12 +33,12 @@ interface Strava {
         @Query("after") after: Long? = null,
         @Query("page") page: Int? = 1,
         @Query("per_page") perPage: Int,
-    ): Response<List<Activity>>
+    ): Response<List<ActivityDto>>
 
     @PUT("activities/{id}")
     suspend fun updateActivity(
         @Path("id") id: Long,
-        @Body updateActivity: UpdateActivity,
+        @Body updateActivity: UpdateActivityDto,
     ): Response<Unit>
 
     companion object {

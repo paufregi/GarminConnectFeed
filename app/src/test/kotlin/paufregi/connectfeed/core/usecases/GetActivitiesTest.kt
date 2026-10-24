@@ -17,13 +17,13 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.utils.failure
+import paufregi.connectfeed.data.api.garmin.models.ActivityTypeDto
 import paufregi.connectfeed.data.api.strava.models.SportType
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaRepository
 import java.time.LocalDateTime
-import paufregi.connectfeed.data.api.garmin.models.Activity as GarminActivity
-import paufregi.connectfeed.data.api.garmin.models.ActivityType as GarminActivityType
-import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
+import paufregi.connectfeed.data.api.garmin.models.ActivityDto as GarminActivityDto
+import paufregi.connectfeed.data.api.strava.models.ActivityDto as StravaActivityDto
 
 class GetActivitiesTest{
     private val isStravaConnected = mockk<IsStravaConnected>()
@@ -32,20 +32,20 @@ class GetActivitiesTest{
     private lateinit var useCase: GetActivities
 
     private val garminActivities = listOf(
-        GarminActivity(
+        GarminActivityDto(
             id = 1,
             name = "Morning Run",
-            type = GarminActivityType(1, "running", ActivityType.Running),
+            type = ActivityTypeDto(1, "running", ActivityType.Running),
             eventType = EventType.Training,
             distance = 10_234.0,
             trainingEffectLabel = "Base",
             startDateTime = LocalDateTime.of(2024, 6, 1, 8, 0, 0),
             workoutId = 101,
         ),
-        GarminActivity(
+        GarminActivityDto(
             id = 2,
             name = "Evening Ride",
-            type = GarminActivityType(10, "road_biking", ActivityType.RoadBiking),
+            type = ActivityTypeDto(10, "road_biking", ActivityType.RoadBiking),
             eventType = EventType.Recreation,
             distance = 24_120.0,
             trainingEffectLabel = null,
@@ -54,14 +54,14 @@ class GetActivitiesTest{
         ),
     )
     private val stravaActivities = listOf(
-        StravaActivity(
+        StravaActivityDto(
             id = 11,
             name = "Lunch Ride on Strava",
             sportType = SportType.Ride,
             distance = 41_020.0,
             startDateTime = LocalDateTime.of(2024, 6, 2, 12, 0, 30),
         ),
-        StravaActivity(
+        StravaActivityDto(
             id = 12,
             name = "Morning Run",
             sportType = SportType.Run,

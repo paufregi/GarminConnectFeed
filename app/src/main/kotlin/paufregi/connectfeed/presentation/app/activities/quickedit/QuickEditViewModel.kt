@@ -7,11 +7,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,16 +21,17 @@ import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.core.utils.updateIf
 import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
+import paufregi.connectfeed.presentation.ui.models.Status
 
 @ExperimentalCoroutinesApi
 @HiltViewModel(assistedFactory = QuickEditViewModel.Factory::class)
 class QuickEditViewModel @AssistedInject constructor(
     getActivity: GetActivity,
     getProfiles: GetProfiles,
-    val getGears: GetGears,
-    val getWorkout: GetWorkout,
-    val updateActivity: QuickUpdateActivity,
-    val notification: NotificationManager,
+    private val getGears: GetGears,
+    private val getWorkout: GetWorkout,
+    private val updateActivity: QuickUpdateActivity,
+    private val notification: NotificationManager,
     @Assisted private val id: Long,
     @Assisted private val stravaId: Long?,
 ) : ViewModel() {
@@ -41,9 +40,6 @@ class QuickEditViewModel @AssistedInject constructor(
     interface Factory {
         fun create(id: Long, stravaId: Long? = null): QuickEditViewModel
     }
-
-    private val _effects = Channel<QuickEditEffect>(Channel.BUFFERED)
-    val effects = _effects.receiveAsFlow()
 
     private val _state = MutableStateFlow(
         QuickEditState(activity = getActivity(id, stravaId) ?: Activity.EMPTY)
@@ -54,10 +50,7 @@ class QuickEditViewModel @AssistedInject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
     init {
-        if (_state.value.activity == Activity.EMPTY) {
-            notification.show("Activity not found")
-            navigateBack()
-        }
+        if (_state.value.notFound) notification.show("Activity not found")
     }
 
     internal fun injectState(state: QuickEditState) {
@@ -76,7 +69,7 @@ class QuickEditViewModel @AssistedInject constructor(
     }
 
     private fun save() = viewModelScope.launch {
-        if (state.value.activity == Activity.EMPTY) return@launch
+        if (state.value.notFound) return@launch
 
         _state.update { it.copy(status = Status.Loading) }
 
@@ -92,11 +85,7 @@ class QuickEditViewModel @AssistedInject constructor(
             workout = workout,
             gear = state.value.gear,
         )
-        .onSuccess { _state.update { it.copy(status = Status.Success) } }
+        .onSuccess { _state.update { it.copy(status = Status.Success()) } }
         .onFailure { r -> _state.update { it.copy(status = Status.Failure(r.message ?: "Something went wrong: unknown error")) } }
-    }
-
-    private fun navigateBack() = viewModelScope.launch {
-        _effects.send(QuickEditEffect.NavigateBack)
     }
 }

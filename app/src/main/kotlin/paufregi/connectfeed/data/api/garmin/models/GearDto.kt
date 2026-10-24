@@ -6,7 +6,7 @@ import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.data.api.garmin.serializers.GearTypeSerializer
 
 @Serializable
-data class Gear(
+data class GearDto(
     @SerialName("uuid")
     val id: String,
     @SerialName("brand")

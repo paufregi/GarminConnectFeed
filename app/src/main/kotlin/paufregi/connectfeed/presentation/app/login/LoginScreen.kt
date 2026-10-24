@@ -40,8 +40,8 @@ import coil3.compose.AsyncImage
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.frame.ActivityFrame
 import paufregi.connectfeed.presentation.ui.components.frame.OkBar
-import paufregi.connectfeed.presentation.ui.components.loading.Loading
 import paufregi.connectfeed.presentation.ui.components.status.FailureMessage
+import paufregi.connectfeed.presentation.ui.models.Status
 import paufregi.connectfeed.presentation.ui.utils.add
 
 @Composable
@@ -61,7 +61,7 @@ internal fun LoginContent(
     onAction: (LoginAction) -> Unit = {},
 ) {
     when(val p = state.status) {
-        is Status.Loading -> Loading()
+        is Status.Loading -> ActivityFrame(title = "Connect Feed", loading = true)
         is Status.Success -> Welcome(state, onAction)
         is Status.Failure -> ActivityFrame(
             title = "Connect Feed",

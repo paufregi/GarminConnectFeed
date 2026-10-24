@@ -1,8 +1,11 @@
 package paufregi.connectfeed.core.utils
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.SerializationException
 import retrofit2.Response
+import java.io.IOException
 import java.util.Calendar
 import java.util.Date
 import kotlin.time.Instant
@@ -21,16 +24,30 @@ fun Date.sameDay(other: Date): Boolean {
             calendar1.get(Calendar.DAY_OF_YEAR) == calendar2.get(Calendar.DAY_OF_YEAR)
 }
 
-inline fun <reified T> Response<T>.toResult(): Result<T> =
-    when (this.isSuccessful) {
-        true -> Result.success(this.body() ?: Unit as T)
-        false -> Result.failure(this.errorBody()?.string() ?: "Unknown error")
-    }
+/**
+ * Maps a Retrofit response to a [Result]. A successful response without a body resolves to
+ * [emptyBody] when given, to [Unit] when `T` is `Unit`, and is otherwise a failure.
+ */
+inline fun <reified T> Response<T>.toResult(emptyBody: T? = null): Result<T> {
+    if (!isSuccessful) return Result.failure(errorBody()?.string() ?: "Unknown error")
 
-fun <T> Response<T>.toResult(emptyBody: T): Result<T> =
-    when (this.isSuccessful) {
-        true -> Result.success(this.body() ?: emptyBody)
-        false -> Result.failure(this.errorBody()?.string() ?: "Unknown error")
+    val value = body() ?: emptyBody ?: if (T::class == Unit::class) Unit as T else null
+    return value?.let { Result.success(it) } ?: Result.failure("Empty response body")
+}
+
+/**
+ * Executes a Retrofit call and folds transport failures (no network, timeouts, malformed
+ * payloads) into a [Result] so callers never need try/catch. Cancellation is rethrown.
+ */
+inline fun <reified T> apiCall(emptyBody: T? = null, call: () -> Response<T>): Result<T> =
+    try {
+        call().toResult(emptyBody)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: IOException) {
+        Result.failure(e)
+    } catch (e: SerializationException) {
+        Result.failure(e)
     }
 
 inline fun <T, R> Result<T>.andThen(block: (T) -> Result<R>): Result<R> =
@@ -40,6 +57,13 @@ inline fun <T> Result<T>.finally(block: () -> Unit): Result<T> =
     this.onSuccess { block() }.onFailure { block() }.map { it }
 
 fun <T> Result.Companion.failure(cause: String): Result<T> = failure(Exception(cause))
+
+/** Builds a failure whose message appends the underlying reasons, keeping the first as the cause. */
+fun <T> Result.Companion.failure(message: String, vararg causes: Throwable?): Result<T> {
+    val details = causes.mapNotNull { it?.message?.takeIf(String::isNotBlank) }.distinct()
+    val fullMessage = if (details.isEmpty()) message else "$message: ${details.joinToString("; ")}"
+    return failure(Exception(fullMessage, causes.firstNotNullOfOrNull { it }))
+}
 
 fun <T> Result<T>.mapFailure(transform: (exception: Throwable) -> Throwable): Result<T> =
     when (val exception = exceptionOrNull()) {
@@ -54,13 +78,6 @@ fun <R, T> Result<T>.mapOrFailure(transform: (value: T) -> R?): Result<R> {
         this.isSuccess -> Result.failure("Transformation returned null")
         else -> Result.failure(this.exceptionOrNull() ?: Exception("Unknown error"))
     }
-}
-
-inline fun <T, R> T.runCatchingResult(block: T.() -> Result<R>): Result<R> {
-    return runCatching { block() }.fold(
-        onSuccess = { it },
-        onFailure = { Result.failure(it) }
-    )
 }
 
 

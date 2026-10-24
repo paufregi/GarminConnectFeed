@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.usecases.SaveUser
 import paufregi.connectfeed.core.usecases.SignIn
+import paufregi.connectfeed.presentation.ui.models.Status
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,7 +42,7 @@ class LoginViewModel @Inject constructor(
     private fun signInAction() = viewModelScope.launch {
         _state.update { it.copy(status = Status.Loading) }
         signIn(state.value.username, state.value.password)
-            .onSuccess { user -> _state.update { it.copy(status = Status.Success, user = user) } }
+            .onSuccess { user -> _state.update { it.copy(status = Status.Success(), user = user) } }
             .onFailure { r -> _state.update { it.copy(status = Status.Failure(r.message ?: "Something went wrong: unknown error")) } }
     }
 

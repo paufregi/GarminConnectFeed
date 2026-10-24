@@ -11,10 +11,10 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.data.api.garmin.models.ActivityDto
+import paufregi.connectfeed.data.api.garmin.models.ActivityTypeDto
 import paufregi.connectfeed.data.repository.GarminRepository
 import java.time.LocalDateTime
-import paufregi.connectfeed.data.api.garmin.models.Activity as GarminActivity
-import paufregi.connectfeed.data.api.garmin.models.ActivityType as GarminActivityType
 
 class GetActivityTest {
     private val repo = mockk<GarminRepository>()
@@ -33,10 +33,10 @@ class GetActivityTest {
 
     @Test
     fun `Get activity`() {
-        val garminActivity = GarminActivity(
+        val garminActivity = ActivityDto(
             id = 1,
             name = "Morning Run",
-            type = GarminActivityType(1, "running", ActivityType.Running),
+            type = ActivityTypeDto(1, "running", ActivityType.Running),
             eventType = EventType.Training,
             distance = 10_234.0,
             trainingEffectLabel = "Base",
@@ -64,10 +64,10 @@ class GetActivityTest {
 
     @Test
     fun `Get activity - no distance`() {
-        val garminActivity = GarminActivity(
+        val garminActivity = ActivityDto(
             id = 1,
             name = "Morning Run",
-            type = GarminActivityType(1, "running", ActivityType.Running),
+            type = ActivityTypeDto(1, "running", ActivityType.Running),
             eventType = EventType.Training,
             distance = 0.0,
             trainingEffectLabel = "Base",

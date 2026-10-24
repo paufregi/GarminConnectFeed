@@ -8,6 +8,11 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -94,6 +99,33 @@ class AuthInterceptorTest {
             authRepo.refreshGarminToken(expiredToken.refreshToken, clientId)
             authRepo.saveGarminToken(validToken)
         }
+    }
+
+    @Test
+    fun `Success - parallel requests refresh expired token once`() = runTest {
+        val expiredToken = createAuthToken(yesterday)
+        val validToken = createAuthToken(tomorrow)
+        val storedToken = MutableStateFlow(expiredToken)
+        server.enqueue(200)
+
+        every { authRepo.getGarminToken() } returns storedToken
+        coEvery { authRepo.refreshGarminToken(any(), any()) } coAnswers {
+            delay(200)
+            Result.success(validToken)
+        }
+        coEvery { authRepo.saveGarminToken(any()) } answers { storedToken.value = firstArg() }
+
+        val first = async(Dispatchers.IO) { api.test() }
+        val second = async(Dispatchers.IO) { api.test() }
+        awaitAll(first, second)
+
+        repeat(2) {
+            assertThat(server.takeRequest().headers["Authorization"]).isEqualTo("Bearer ${validToken.accessToken}")
+        }
+
+        verify { authRepo.getGarminToken() }
+        coVerify(exactly = 1) { authRepo.refreshGarminToken(expiredToken.refreshToken, clientId) }
+        coVerify(exactly = 1) { authRepo.saveGarminToken(validToken) }
     }
 
     @Test

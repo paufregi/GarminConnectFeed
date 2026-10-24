@@ -30,6 +30,7 @@ import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
 import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
+import paufregi.connectfeed.presentation.ui.models.Status
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 import java.time.LocalDateTime
 
@@ -111,8 +112,10 @@ class QuickEditViewModelTest {
 
         viewModel = createViewModel()
 
-        viewModel.effects.test {
-            assertThat(awaitItem()).isEqualTo(QuickEditEffect.NavigateBack)
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.notFound).isTrue()
+            assertThat(state.activity).isEqualTo(Activity.EMPTY)
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -423,7 +426,7 @@ class QuickEditViewModelTest {
 
             assertThat(awaitItem().status).isEqualTo(Status.Loading)
             result.complete(Result.success(Unit))
-            assertThat(awaitItem().status).isEqualTo(Status.Success)
+            assertThat(awaitItem().status).isEqualTo(Status.Success())
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -541,7 +544,7 @@ class QuickEditViewModelTest {
 
             assertThat(awaitItem().status).isEqualTo(Status.Loading)
             result.complete(Result.success(Unit))
-            assertThat(awaitItem().status).isEqualTo(Status.Success)
+            assertThat(awaitItem().status).isEqualTo(Status.Success())
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -570,7 +573,7 @@ class QuickEditViewModelTest {
 
             assertThat(awaitItem().status).isEqualTo(Status.Loading)
             result.complete(Result.success(Unit))
-            assertThat(awaitItem().status).isEqualTo(Status.Success)
+            assertThat(awaitItem().status).isEqualTo(Status.Success())
             cancelAndIgnoreRemainingEvents()
         }
 

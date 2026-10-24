@@ -4,12 +4,7 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Gear
-
-sealed interface Status {
-    data object Loading : Status
-    data object Success: Status
-    data class Failure(val reason: String) : Status
-}
+import paufregi.connectfeed.presentation.ui.models.Status
 
 data class EditState(
     val status: Status? = Status.Loading,
@@ -29,6 +24,9 @@ data class EditState(
     val feel: Float? = null,
     val trainingEffect: Boolean = false,
 ) {
+    val notFound: Boolean
+        get() = activity == Activity.EMPTY
+
     val availableCourses: List<Course>
         get() = courses.filter { it.type.compatible(activity.type) }
 

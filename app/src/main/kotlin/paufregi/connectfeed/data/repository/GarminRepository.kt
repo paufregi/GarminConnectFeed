@@ -9,43 +9,43 @@ import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.utils.andThen
-import paufregi.connectfeed.core.utils.toResult
+import paufregi.connectfeed.core.utils.apiCall
 import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.models.ActivityDto
+import paufregi.connectfeed.data.api.garmin.models.GearDto
 import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
-import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
+import paufregi.connectfeed.data.api.garmin.models.UpdateActivityDto
 import java.io.File
 import javax.inject.Inject
-import paufregi.connectfeed.data.api.garmin.models.Activity as GarminActivity
-import paufregi.connectfeed.data.api.garmin.models.Gear as GarminGear
 
 class GarminRepository @Inject constructor(
     private val garmin: GarminConnect,
 ) {
 
-    val activities: MutableMap<Long, GarminActivity> = mutableMapOf()
+    // Replaced atomically on each fetch so readers never observe a half-populated cache.
+    @Volatile
+    private var activities: Map<Long, ActivityDto> = emptyMap()
 
     suspend fun getUserProfile() =
-        garmin.getUserProfile().toResult().map {
+        apiCall { garmin.getUserProfile() }.map {
             User(
                 id = it.id,
                 name = it.name,
                 profileImageUrl = it.avatarUrl
             ) }
 
-    suspend fun getActivities(limit: Int): Result<List<GarminActivity>> =
-        garmin.getActivities(limit).toResult(emptyList()).onSuccess {
-            activities.clear()
-            activities.putAll(it.associateBy { a -> a.id })
-        }
+    suspend fun getActivities(limit: Int): Result<List<ActivityDto>> =
+        apiCall(emptyList()) { garmin.getActivities(limit) }
+            .onSuccess { activities = it.associateBy { a -> a.id } }
 
-    fun getActivity(id: Long): GarminActivity? = activities[id]
+    fun getActivity(id: Long): ActivityDto? = activities[id]
 
-    suspend fun getGears(): Result<List<GarminGear>> =
-        garmin.getGears().toResult(emptyList())
+    suspend fun getGears(): Result<List<GearDto>> =
+        apiCall(emptyList()) { garmin.getGears() }
 
     suspend fun getCourses(): Result<List<Course>> =
-        garmin.getCourses().toResult(emptyList()).map { r -> r.map {
+        apiCall(emptyList()) { garmin.getCourses() }.map { r -> r.map {
             Course(
                 id = it.id,
                 name = it.name,
@@ -54,7 +54,7 @@ class GarminRepository @Inject constructor(
             ) } }
 
     suspend fun getWorkout(id: Long): Result<Workout> =
-        garmin.getWorkout(id).toResult().map {
+        apiCall { garmin.getWorkout(id) }.map {
             Workout(
                 id = it.id,
                 name = it.name,
@@ -71,7 +71,7 @@ class GarminRepository @Inject constructor(
         effort: Float?,
         gear: Gear?,
     ): Result<Unit> {
-        val request = UpdateActivity(
+        val request = UpdateActivityDto(
             id = activity.id,
             name = name,
             description = description,
@@ -80,10 +80,10 @@ class GarminRepository @Inject constructor(
             summary = Summary(water, feel, effort)
         )
 
-        return garmin.updateActivity(activity.id, request).toResult()
+        return apiCall { garmin.updateActivity(activity.id, request) }
             .andThen {
                 gear?.let {
-                    garmin.associateGears(activity.id, listOf(it.id)).toResult()
+                    apiCall { garmin.associateGears(activity.id, listOf(it.id)) }
                 } ?: Result.success(Unit)
             }
     }
@@ -91,6 +91,6 @@ class GarminRepository @Inject constructor(
     suspend fun uploadFile(file: File): Result<Unit> {
         val multipartBody =
             MultipartBody.Part.createFormData("fit", file.name, file.asRequestBody())
-        return garmin.uploadFile(multipartBody).toResult()
+        return apiCall { garmin.uploadFile(multipartBody) }
     }
 }

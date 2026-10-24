@@ -8,7 +8,6 @@ import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.core.utils.runCatchingResult
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaRepository
 import javax.inject.Inject
@@ -60,13 +59,15 @@ class QuickUpdateActivity @Inject constructor(
             } ?: Result.success(Unit)
         }
 
-        val garminResult = runCatchingResult { garminDeferred.await() }
-        val stravaResult = runCatchingResult { stravaDeferred.await() }
+        val garminResult = garminDeferred.await()
+        val stravaResult = stravaDeferred.await()
 
-        if(garminResult.isFailure && stravaResult.isSuccess) return@coroutineScope Result.failure("Couldn't update Garmin activity")
-        if(garminResult.isSuccess && stravaResult.isFailure) return@coroutineScope Result.failure("Couldn't update Strava activity")
-        if(garminResult.isFailure && stravaResult.isFailure) return@coroutineScope Result.failure("Couldn't update Garmin and Strava activities")
-
-        Result.success(Unit)
+        when {
+            garminResult.isFailure && stravaResult.isFailure ->
+                Result.failure("Couldn't update Garmin and Strava activities", garminResult.exceptionOrNull(), stravaResult.exceptionOrNull())
+            garminResult.isFailure -> Result.failure("Couldn't update Garmin activity", garminResult.exceptionOrNull())
+            stravaResult.isFailure -> Result.failure("Couldn't update Strava activity", stravaResult.exceptionOrNull())
+            else -> Result.success(Unit)
+        }
     }
 }

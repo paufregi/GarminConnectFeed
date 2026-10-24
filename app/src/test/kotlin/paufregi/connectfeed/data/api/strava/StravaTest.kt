@@ -15,11 +15,11 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor
-import paufregi.connectfeed.data.api.strava.models.Activity
+import paufregi.connectfeed.data.api.strava.models.ActivityDto
 import paufregi.connectfeed.data.api.strava.models.Athlete
 import paufregi.connectfeed.data.api.strava.models.SportType
 import paufregi.connectfeed.data.api.strava.models.SummaryGear
-import paufregi.connectfeed.data.api.strava.models.UpdateActivity
+import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
 import paufregi.connectfeed.stravaActivitiesJson
 import paufregi.connectfeed.stravaAthlete
@@ -114,14 +114,14 @@ class StravaTest {
         val res = api.getActivities(perPage = 3)
 
         val expected = listOf(
-            Activity(
+            ActivityDto(
                 id = 1,
                 name = "Happy Friday",
                 distance = 7803.6,
                 sportType = SportType.Run,
                 startDateTime = LocalDateTime.of(2018, 5, 2, 5, 15, 9)
             ),
-            Activity(
+            ActivityDto(
                 id = 2,
                 name = "Bondcliff",
                 distance = 23676.5,
@@ -142,7 +142,7 @@ class StravaTest {
         val res = api.getActivities(perPage = 3)
 
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(emptyList<Activity>())
+        assertThat(res.body()).isEqualTo(emptyList<ActivityDto>())
         verify { authInterceptor.intercept(any()) }
     }
 
@@ -159,7 +159,7 @@ class StravaTest {
     @Test
     fun `Update activity`() = runTest {
         server.enqueue(200)
-        val updateActivity = UpdateActivity(
+        val updateActivity = UpdateActivityDto(
             name = "newName",
             description = "newDescription",
             commute = true,
@@ -174,7 +174,7 @@ class StravaTest {
     @Test
     fun `Update activity - failure`() = runTest {
         server.enqueue(400)
-        val updateActivity = UpdateActivity(
+        val updateActivity = UpdateActivityDto(
             name = "newName",
             description = "newDescription",
             commute = true,

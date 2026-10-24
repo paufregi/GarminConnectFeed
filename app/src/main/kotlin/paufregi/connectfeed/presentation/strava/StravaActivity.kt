@@ -16,7 +16,7 @@ import paufregi.connectfeed.presentation.ui.components.frame.ActivityFrame
 import paufregi.connectfeed.presentation.ui.components.frame.OkBar
 import paufregi.connectfeed.presentation.ui.components.status.FailureMessage
 import paufregi.connectfeed.presentation.ui.components.status.SuccessMessage
-import paufregi.connectfeed.presentation.ui.models.ProcState
+import paufregi.connectfeed.presentation.ui.models.Status
 import paufregi.connectfeed.presentation.ui.theme.Theme
 
 private const val TITLE = "Connect Strava"
@@ -48,20 +48,20 @@ class StravaActivity : ComponentActivity() {
 @Composable
 @ExperimentalMaterial3Api
 internal fun StravaContent(
-    state: ProcState,
+    state: Status,
     user: User? = null,
     onDone: () -> Unit = {},
 ) {
     ActivityFrame(
         title = TITLE,
         user = user,
-        loading = state is ProcState.Running,
+        loading = state is Status.Loading,
         bottomBar = { OkBar(onDone) },
     ) { padding ->
         when (state) {
-            is ProcState.Success -> SuccessMessage("Strava linked!", padding)
-            is ProcState.Failure -> FailureMessage("Link failed!", state.reason, padding)
-            is ProcState.Running -> Unit
+            is Status.Success -> SuccessMessage("Strava linked!", padding)
+            is Status.Failure -> FailureMessage("Link failed!", state.reason, padding)
+            is Status.Loading -> Unit
         }
     }
 }

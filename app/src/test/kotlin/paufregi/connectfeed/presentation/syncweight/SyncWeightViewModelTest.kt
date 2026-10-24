@@ -26,7 +26,7 @@ import paufregi.connectfeed.core.usecases.GetUser
 import paufregi.connectfeed.core.usecases.SyncWeight
 import paufregi.connectfeed.core.utils.RenphoReader
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.presentation.ui.models.ProcState
+import paufregi.connectfeed.presentation.ui.models.Status
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 import paufregi.connectfeed.user
 import java.io.ByteArrayInputStream
@@ -80,7 +80,7 @@ class SyncWeightViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -144,15 +144,15 @@ class SyncWeightViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
-            viewModel.injectState(ProcState.Failure("previous"))
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            viewModel.injectState(Status.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("previous"))
 
             viewModel.updateWeight(inputStream)
 
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
             syncResult.complete(Result.success(Unit))
-            assertThat(awaitItem()).isEqualTo(ProcState.Success("Sync succeeded"))
+            assertThat(awaitItem()).isEqualTo(Status.Success("Sync succeeded"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -171,15 +171,15 @@ class SyncWeightViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
-            viewModel.injectState(ProcState.Failure("previous"))
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            viewModel.injectState(Status.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("previous"))
 
             viewModel.updateWeight(inputStream)
 
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
             syncResult.complete(Result.failure("error"))
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("error"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -198,15 +198,15 @@ class SyncWeightViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
-            viewModel.injectState(ProcState.Failure("previous"))
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            viewModel.injectState(Status.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("previous"))
 
             viewModel.updateWeight(inputStream)
 
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
             syncResult.complete(Result.failure(Exception()))
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("Unknown error"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("Unknown error"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -222,11 +222,11 @@ class SyncWeightViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
 
             viewModel.updateWeight(null)
 
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("nothing to sync"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("nothing to sync"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -241,11 +241,11 @@ class SyncWeightViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
 
             viewModel.updateWeight(inputStream)
 
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("failed to read file"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("failed to read file"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -261,11 +261,11 @@ class SyncWeightViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
 
             viewModel.updateWeight(inputStream)
 
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("nothing to sync"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("nothing to sync"))
             cancelAndIgnoreRemainingEvents()
         }
 

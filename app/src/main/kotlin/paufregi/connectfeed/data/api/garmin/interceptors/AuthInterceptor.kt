@@ -3,10 +3,12 @@ package paufregi.connectfeed.data.api.garmin.interceptors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.Interceptor
 import okhttp3.Response
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
 import paufregi.connectfeed.data.api.utils.authRequest
 import paufregi.connectfeed.data.api.utils.failedAuthResponse
 import paufregi.connectfeed.data.repository.AuthRepository
@@ -17,6 +19,10 @@ class AuthInterceptor @Inject constructor(
     private val clientId: String,
 ) : Interceptor {
 
+    // Parallel requests must not each refresh an expired token; the first one wins and
+    // the rest re-read the stored token once the lock is released.
+    private val refreshMutex = Mutex()
+
     override fun intercept(chain: Interceptor.Chain): Response  =
         runBlocking(Dispatchers.IO) {
             getOrRefreshToken().fold(
@@ -25,12 +31,16 @@ class AuthInterceptor @Inject constructor(
             )
         }
 
-    private suspend fun getOrRefreshToken(): Result<AuthToken> =
-        repo.getGarminToken().firstOrNull()?.let { token ->
-            if (!token.isExpired()) { Result.success(token) }
-            else {
-                repo.refreshGarminToken(token.refreshToken, clientId)
-                    .onSuccess { repo.saveGarminToken(it) }
-            }
-        } ?: Result.failure("No token found")
+    private suspend fun getOrRefreshToken(): Result<AuthTokenDto> {
+        val token = repo.getGarminToken().firstOrNull() ?: return Result.failure("No token found")
+        if (!token.isExpired()) return Result.success(token)
+
+        return refreshMutex.withLock {
+            val current = repo.getGarminToken().firstOrNull() ?: return Result.failure("No token found")
+            if (!current.isExpired()) return Result.success(current)
+
+            repo.refreshGarminToken(current.refreshToken, clientId)
+                .onSuccess { repo.saveGarminToken(it) }
+        }
+    }
 }

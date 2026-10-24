@@ -10,7 +10,7 @@ import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
-import paufregi.connectfeed.presentation.ui.models.ProcState
+import paufregi.connectfeed.presentation.ui.models.Status
 
 @ExperimentalMaterial3Api
 @ExperimentalTestApi
@@ -20,7 +20,7 @@ class StravaScreenTest {
     @Test
     fun `Running status shows loading screen`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            StravaContent(state = ProcState.Running)
+            StravaContent(state = Status.Loading)
         }
         onNodeWithTag("loading").assertIsDisplayed()
     }
@@ -28,7 +28,7 @@ class StravaScreenTest {
     @Test
     fun `Success status shows linked message`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            StravaContent(state = ProcState.Success())
+            StravaContent(state = Status.Success())
         }
         onNodeWithText("Strava linked!").assertIsDisplayed()
     }
@@ -36,7 +36,7 @@ class StravaScreenTest {
     @Test
     fun `Failure status shows message and reason`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            StravaContent(state = ProcState.Failure("Authorization failed"))
+            StravaContent(state = Status.Failure("Authorization failed"))
         }
         onNodeWithText("Link failed!").assertIsDisplayed()
         onNodeWithText("Something went wrong: Authorization failed").assertIsDisplayed()

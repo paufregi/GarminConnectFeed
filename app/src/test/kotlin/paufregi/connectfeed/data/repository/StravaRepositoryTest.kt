@@ -19,12 +19,12 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.data.api.strava.Strava
+import paufregi.connectfeed.data.api.strava.models.ActivityDto
 import paufregi.connectfeed.data.api.strava.models.SportType
-import paufregi.connectfeed.data.api.strava.models.UpdateActivity
+import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
 import retrofit2.Response
 import java.time.LocalDateTime
-import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
 
 class StravaRepositoryTest {
 
@@ -76,14 +76,14 @@ class StravaRepositoryTest {
     @Test
     fun `Get activities`() = runTest {
         val activities = listOf(
-            StravaActivity(
+            ActivityDto(
                 id = 1,
                 name = "activity_1",
                 distance = 10234.00,
                 sportType = SportType.Run,
                 startDateTime = LocalDateTime.of(2018, 5, 2, 12, 15, 9)
             ),
-            StravaActivity(
+            ActivityDto(
                 id = 2,
                 name = "activity_2",
                 distance = 17759.00,
@@ -107,7 +107,7 @@ class StravaRepositoryTest {
         val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<StravaActivity>())
+        assertThat(res.getOrNull()).isEqualTo(emptyList<ActivityDto>())
         coVerify { strava.getActivities(perPage = 5) }
     }
 
@@ -154,7 +154,7 @@ class StravaRepositoryTest {
         val commute = true
 
 
-        val expectedRequest = UpdateActivity(
+        val expectedRequest = UpdateActivityDto(
             name = name,
             description = description,
             commute = commute,
@@ -182,7 +182,7 @@ class StravaRepositoryTest {
         val description = "newDescription"
         val commute = true
 
-        val expectedRequest = UpdateActivity(
+        val expectedRequest = UpdateActivityDto(
             name = name,
             description = description,
             commute = commute,
@@ -208,7 +208,7 @@ class StravaRepositoryTest {
         val description = "newDescription"
         val commute = true
 
-        val expectedRequest = UpdateActivity(
+        val expectedRequest = UpdateActivityDto(
             name = name,
             description = description,
             commute = commute,
@@ -236,7 +236,7 @@ class StravaRepositoryTest {
         val commute = true
         val noStravaGear = gear.copy(stravaId = null)
 
-        val expectedRequest = UpdateActivity(
+        val expectedRequest = UpdateActivityDto(
             name = name,
             description = description,
             commute = commute,
@@ -264,7 +264,7 @@ class StravaRepositoryTest {
         val description = "newDescription"
         val commute = true
 
-        val expectedRequest = UpdateActivity(
+        val expectedRequest = UpdateActivityDto(
             name = name,
             description = description,
             commute = commute,

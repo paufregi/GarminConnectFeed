@@ -18,6 +18,7 @@ import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.usecases.SaveUser
 import paufregi.connectfeed.core.usecases.SignIn
 import paufregi.connectfeed.core.utils.failure
+import paufregi.connectfeed.presentation.ui.models.Status
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
@@ -182,7 +183,7 @@ class LoginViewModelTest {
             assertThat(awaitItem().status).isEqualTo(Status.Loading)
             signInResult.complete(Result.success(user))
             val state = awaitItem()
-            assertThat(state.status).isEqualTo(Status.Success)
+            assertThat(state.status).isEqualTo(Status.Success())
             assertThat(state.username).isEqualTo(username)
             assertThat(state.password).isEqualTo(password)
             assertThat(state.user).isEqualTo(user)
@@ -254,7 +255,7 @@ class LoginViewModelTest {
 
         viewModel.state.test {
             assertThat(awaitItem()).isEqualTo(LoginState())
-            viewModel.injectState(LoginState(status = Status.Success, username = username, password = password, user = user))
+            viewModel.injectState(LoginState(status = Status.Success(), username = username, password = password, user = user))
             assertThat(awaitItem().user).isEqualTo(user)
 
             viewModel.onAction(LoginAction.SaveUser)

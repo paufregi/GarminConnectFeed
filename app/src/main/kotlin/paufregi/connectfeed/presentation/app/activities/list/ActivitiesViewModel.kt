@@ -18,8 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 @ExperimentalCoroutinesApi
 class ActivitiesViewModel @Inject constructor(
-    val getActivities: GetActivities,
-    val notification: NotificationManager,
+    private val getActivities: GetActivities,
+    private val notification: NotificationManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(ActivitiesState())
 
@@ -34,9 +34,6 @@ class ActivitiesViewModel @Inject constructor(
             .onSuccess { activities -> _state.update { it.copy(activities = activities) } }
             .onFailure { notification.show("Failed to load activities: ${it.message}") }
             .finally { _state.update { it.copy(loading = false) } }
-    }
-
-    fun onAction(action: ActivitiesAction) {
     }
 }
 

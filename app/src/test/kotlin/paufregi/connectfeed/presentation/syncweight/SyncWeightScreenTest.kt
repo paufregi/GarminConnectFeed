@@ -10,7 +10,7 @@ import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
-import paufregi.connectfeed.presentation.ui.models.ProcState
+import paufregi.connectfeed.presentation.ui.models.Status
 
 @ExperimentalMaterial3Api
 @ExperimentalTestApi
@@ -20,7 +20,7 @@ class SyncWeightScreenTest {
     @Test
     fun `Running status shows loading screen`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SyncWeightContent(state = ProcState.Running)
+            SyncWeightContent(state = Status.Loading)
         }
         onNodeWithTag("loading").assertIsDisplayed()
     }
@@ -28,7 +28,7 @@ class SyncWeightScreenTest {
     @Test
     fun `Success status shows message`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SyncWeightContent(state = ProcState.Success("Sync succeeded"))
+            SyncWeightContent(state = Status.Success("Sync succeeded"))
         }
         onNodeWithText("Sync succeeded").assertIsDisplayed()
     }
@@ -36,7 +36,7 @@ class SyncWeightScreenTest {
     @Test
     fun `Failure status shows message and reason`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            SyncWeightContent(state = ProcState.Failure("Invalid file"))
+            SyncWeightContent(state = Status.Failure("Invalid file"))
         }
         onNodeWithText("Sync failed!").assertIsDisplayed()
         onNodeWithText("Something went wrong: Invalid file").assertIsDisplayed()

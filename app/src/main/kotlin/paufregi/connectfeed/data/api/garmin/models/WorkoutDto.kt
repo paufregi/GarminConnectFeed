@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Workout(
+data class WorkoutDto(
     @SerialName("workoutId")
     val id: Long,
     @SerialName("workoutName")

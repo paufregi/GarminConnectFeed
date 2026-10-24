@@ -136,7 +136,7 @@ class SyncWeightTest {
         val res = useCase(weights, today)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin: error")
 
         verify { FitWriter.weights(any(), weights) }
         coVerify { garminRepo.uploadFile(any()) }
@@ -152,7 +152,7 @@ class SyncWeightTest {
         val res = useCase(weights, today)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Strava")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Strava: error")
 
         verify { FitWriter.weights(any(), weights) }
         coVerify { garminRepo.uploadFile(any()) }
@@ -168,7 +168,7 @@ class SyncWeightTest {
         val res = useCase(weights, today)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin & Strava")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin & Strava: error")
 
         verify { FitWriter.weights(any(), weights) }
         coVerify { garminRepo.uploadFile(any()) }

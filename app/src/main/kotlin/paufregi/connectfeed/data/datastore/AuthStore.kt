@@ -5,8 +5,8 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.map
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.datastore.models.Auth
-import paufregi.connectfeed.data.api.garmin.models.AuthToken as GarminAuthToken
-import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto as GarminAuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthTokenDto as StravaAuthToken
 
 class AuthStore @Inject constructor(private val store: DataStore<Auth>) {
 

@@ -8,23 +8,23 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
-import paufregi.connectfeed.data.api.garmin.models.ActivityType
-import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
+import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.data.api.garmin.models.ActivityTypeDto
 
-object ActivityTypeSerializer : KSerializer<ActivityType> {
+object ActivityTypeSerializer : KSerializer<ActivityTypeDto> {
 
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("ActivityType") {
         element<Long>("typeId")
         element<String>("typeKey")
     }
 
-    override fun serialize(encoder: Encoder, value: ActivityType) =
+    override fun serialize(encoder: Encoder, value: ActivityTypeDto) =
         encoder.encodeStructure(descriptor) {
             encodeLongElement(descriptor, 0, value.id)
             encodeStringElement(descriptor, 1, value.key)
         }
 
-    override fun deserialize(decoder: Decoder): ActivityType =
+    override fun deserialize(decoder: Decoder): ActivityTypeDto =
         decoder.decodeStructure(descriptor) {
             var id = 0L
             var key = ""
@@ -39,41 +39,41 @@ object ActivityTypeSerializer : KSerializer<ActivityType> {
             }
 
             val coreType = when (id) {
-                1L -> CoreActivityType.Running
-                8L -> CoreActivityType.TrackRunning
-                6L -> CoreActivityType.TrailRunning
-                18L -> CoreActivityType.TreadmillRunning
-                181L -> CoreActivityType.UltraRun
-                2L -> CoreActivityType.Cycling
-                20L -> CoreActivityType.DownhillBiking
-                176L -> CoreActivityType.EBiking
-                175L -> CoreActivityType.EBikingMountain
-                143L -> CoreActivityType.GravelCycling
-                5L -> CoreActivityType.MountainBiking
-                10L -> CoreActivityType.RoadBiking
-                25L -> CoreActivityType.IndoorRide
-                152L -> CoreActivityType.VirtualRide
-                180L -> CoreActivityType.HIIT
-                164L -> CoreActivityType.Breathwork
-                11L -> CoreActivityType.Cardio
-                254L -> CoreActivityType.JumpRope
-                13L -> CoreActivityType.StrengthTraining
-                163L -> CoreActivityType.Yoga
-                27L -> CoreActivityType.PoolSwimming
-                28L -> CoreActivityType.OpenWaterSwimming
-                26L -> CoreActivityType.Swimming
-                89L -> CoreActivityType.Multisport
-                9L -> CoreActivityType.Walking
-                3L -> CoreActivityType.Hiking
-                252L -> CoreActivityType.Snowboarding
-                231L -> CoreActivityType.Kayaking
-                239L -> CoreActivityType.StandUpPaddling
-                240L -> CoreActivityType.Surfing
-                242L -> CoreActivityType.Windsurf
+                1L -> ActivityType.Running
+                8L -> ActivityType.TrackRunning
+                6L -> ActivityType.TrailRunning
+                18L -> ActivityType.TreadmillRunning
+                181L -> ActivityType.UltraRun
+                2L -> ActivityType.Cycling
+                20L -> ActivityType.DownhillBiking
+                176L -> ActivityType.EBiking
+                175L -> ActivityType.EBikingMountain
+                143L -> ActivityType.GravelCycling
+                5L -> ActivityType.MountainBiking
+                10L -> ActivityType.RoadBiking
+                25L -> ActivityType.IndoorRide
+                152L -> ActivityType.VirtualRide
+                180L -> ActivityType.HIIT
+                164L -> ActivityType.Breathwork
+                11L -> ActivityType.Cardio
+                254L -> ActivityType.JumpRope
+                13L -> ActivityType.StrengthTraining
+                163L -> ActivityType.Yoga
+                27L -> ActivityType.PoolSwimming
+                28L -> ActivityType.OpenWaterSwimming
+                26L -> ActivityType.Swimming
+                89L -> ActivityType.Multisport
+                9L -> ActivityType.Walking
+                3L -> ActivityType.Hiking
+                252L -> ActivityType.Snowboarding
+                231L -> ActivityType.Kayaking
+                239L -> ActivityType.StandUpPaddling
+                240L -> ActivityType.Surfing
+                242L -> ActivityType.Windsurf
 
-                else -> CoreActivityType.Unknown
+                else -> ActivityType.Unknown
             }
 
-            ActivityType(id = id, key = key, type = coreType)
+            ActivityTypeDto(id = id, key = key, type = coreType)
         }
 }

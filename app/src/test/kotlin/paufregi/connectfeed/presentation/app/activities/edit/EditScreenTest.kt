@@ -18,6 +18,7 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
+import paufregi.connectfeed.presentation.ui.models.Status
 import java.time.LocalDateTime
 
 @ExperimentalMaterial3Api
@@ -94,7 +95,7 @@ class EditScreenTest {
     @Test
     fun `Success status displays completion`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
-            EditContent(state = EditState(activity = testActivity, status = Status.Success))
+            EditContent(state = EditState(activity = testActivity, status = Status.Success()))
         }
 
         onNodeWithText("Update completed!").assertIsDisplayed()

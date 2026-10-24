@@ -6,12 +6,12 @@ import mockwebserver3.MockResponse
 import mockwebserver3.RecordedRequest
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.GarminAuth
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
-fun createAuthToken(issuedAt: Instant) = AuthToken(
+fun createAuthToken(issuedAt: Instant) = AuthTokenDto(
     accessToken = jwt {
         claims {
             issuedAt(issuedAt)

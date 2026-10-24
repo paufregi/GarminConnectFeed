@@ -26,13 +26,13 @@ import javax.inject.Named
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    val getUser: GetUser,
-    val isStravaConnected: IsStravaConnected,
-    val getLatestRelease: GetLatestRelease,
-    val refreshUser: RefreshUser,
-    val signOut: SignOut,
-    val disconnectStrava: DisconnectStrava,
-    val notification: NotificationManager,
+    private val getUser: GetUser,
+    private val isStravaConnected: IsStravaConnected,
+    private val getLatestRelease: GetLatestRelease,
+    private val refreshUser: RefreshUser,
+    private val signOut: SignOut,
+    private val disconnectStrava: DisconnectStrava,
+    private val notification: NotificationManager,
     @param:Named("currentVersion") val version: String,
     @param:Named("downloader") val downloader: Downloader,
     @param:Named("StravaAuthUri") val stravaAuthUri: Uri,

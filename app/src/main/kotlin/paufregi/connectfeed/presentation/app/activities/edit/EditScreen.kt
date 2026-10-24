@@ -39,6 +39,7 @@ import paufregi.connectfeed.presentation.ui.components.status.FailureMessage
 import paufregi.connectfeed.presentation.ui.components.status.SuccessMessage
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 import paufregi.connectfeed.presentation.ui.icons.app.App
+import paufregi.connectfeed.presentation.ui.models.Status
 import paufregi.connectfeed.presentation.ui.utils.add
 
 private const val TITLE = "Edit activity"
@@ -56,13 +57,11 @@ internal fun EditScreen(
         creationCallback = { it.create(id, stravaId) }
     )
 
-    LaunchedEffect(viewModel) {
-        viewModel.effects.collect { effect ->
-            if (effect is EditEffect.NavigateBack) navBack()
-        }
-    }
-
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(state.notFound) {
+        if (state.notFound) navBack()
+    }
 
     EditContent(
         state = state,

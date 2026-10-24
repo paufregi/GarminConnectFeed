@@ -16,6 +16,7 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.utils.failure
+import paufregi.connectfeed.data.api.garmin.models.GearDto
 import paufregi.connectfeed.data.api.strava.models.Athlete
 import paufregi.connectfeed.data.api.strava.models.SummaryGear
 import paufregi.connectfeed.data.repository.AppRepository
@@ -23,7 +24,6 @@ import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaRepository
 import paufregi.connectfeed.user
-import paufregi.connectfeed.data.api.garmin.models.Gear as GarminGear
 
 class SyncGearTest {
 
@@ -35,9 +35,9 @@ class SyncGearTest {
     private lateinit var useCase: SyncGear
 
     private val garminGears = listOf(
-        GarminGear("id-1", null, null, "bike-1", GearType.Bike, 10000.0),
-        GarminGear("id-2", "brand", "shoe", null, GearType.Shoe, 123.0),
-        GarminGear("id-3", null, null, "other shoe", GearType.Shoe, 456.0)
+        GearDto("id-1", null, null, "bike-1", GearType.Bike, 10000.0),
+        GearDto("id-2", "brand", "shoe", null, GearType.Shoe, 123.0),
+        GearDto("id-3", null, null, "other shoe", GearType.Shoe, 456.0)
     )
 
     private val stravaAthlete = Athlete(

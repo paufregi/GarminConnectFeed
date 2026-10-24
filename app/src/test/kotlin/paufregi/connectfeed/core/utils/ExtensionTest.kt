@@ -1,10 +1,13 @@
 package paufregi.connectfeed.core.utils
 
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.serialization.SerializationException
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Test
 import retrofit2.Response
+import java.io.IOException
 import java.util.Date
 import kotlin.time.Instant
 import java.time.Instant as JInstant
@@ -54,6 +57,26 @@ class ExtensionTest {
 
         assertThat(result.isSuccess).isTrue()
         assertThat(result.getOrNull()).isEqualTo(Unit)
+    }
+
+    @Test
+    fun `Response - toResult - empty body resolves to Unit`() {
+        val resp = Response.success<Unit>(null)
+
+        val result = resp.toResult()
+
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(Unit)
+    }
+
+    @Test
+    fun `Response - toResult - empty body without default is failure`() {
+        val resp = Response.success<String>(null)
+
+        val result = resp.toResult()
+
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("Empty response body")
     }
 
     @Test
@@ -167,33 +190,80 @@ class ExtensionTest {
     }
 
     @Test
-    fun `runCatchingResult - success`() {
-        val block: () -> Result<String> = { Result.success("Success") }
-
-        val result = runCatchingResult { block() }
+    fun `apiCall - success`() {
+        val result = apiCall { Response.success("Success") }
 
         assertThat(result.isSuccess).isTrue()
-        assertThat(result).isEqualTo(Result.success("Success"))
+        assertThat(result.getOrNull()).isEqualTo("Success")
     }
 
     @Test
-    fun `runCatchingResult - failure`() {
-        val block: () -> Result<String> = { Result.failure<String>("Fail") }
-
-        val result = runCatchingResult { block() }
+    fun `apiCall - http error`() {
+        val result = apiCall<String> { Response.error(400, "fail".toResponseBody()) }
 
         assertThat(result.isSuccess).isFalse()
-        assertThat(result.exceptionOrNull()?.message).isEqualTo("Fail")
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("fail")
     }
 
     @Test
-    fun `runCatchingResult - exception`() {
-        val block: () -> Result<String> = { throw Exception("Fail") }
-
-        val result = runCatchingResult { block() }
+    fun `apiCall - io exception becomes failure`() {
+        val result = apiCall<String> { throw IOException("offline") }
 
         assertThat(result.isSuccess).isFalse()
-        assertThat(result.exceptionOrNull()?.message).isEqualTo("Fail")
+        assertThat(result.exceptionOrNull()).isInstanceOf(IOException::class.java)
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("offline")
+    }
+
+    @Test
+    fun `apiCall - serialization exception becomes failure`() {
+        val result = apiCall<String> { throw SerializationException("bad json") }
+
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("bad json")
+    }
+
+    @Test(expected = CancellationException::class)
+    fun `apiCall - cancellation is rethrown`() {
+        apiCall<String> { throw CancellationException("cancelled") }
+    }
+
+    @Test
+    fun `apiCall - empty body - io exception becomes failure`() {
+        val result = apiCall(emptyList<String>()) { throw IOException("offline") }
+
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("offline")
+    }
+
+    @Test
+    fun `apiCall - empty body - null body uses default`() {
+        val result = apiCall(emptyList<String>()) { Response.success<List<String>>(null) }
+
+        assertThat(result.getOrNull()).isEmpty()
+    }
+
+    @Test
+    fun `Result - failure with causes - appends reasons`() {
+        val result = Result.failure<Unit>("Couldn't update", Exception("garmin down"), Exception("strava down"))
+
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("Couldn't update: garmin down; strava down")
+        assertThat(result.exceptionOrNull()?.cause?.message).isEqualTo("garmin down")
+    }
+
+    @Test
+    fun `Result - failure with causes - skips null and blank`() {
+        val result = Result.failure<Unit>("Couldn't update", null, Exception(""), Exception("strava down"))
+
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("Couldn't update: strava down")
+        assertThat(result.exceptionOrNull()?.cause?.message).isEqualTo("")
+    }
+
+    @Test
+    fun `Result - failure with causes - no details`() {
+        val result = Result.failure<Unit>("Couldn't update", null)
+
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("Couldn't update")
+        assertThat(result.exceptionOrNull()?.cause).isNull()
     }
 
     @Test

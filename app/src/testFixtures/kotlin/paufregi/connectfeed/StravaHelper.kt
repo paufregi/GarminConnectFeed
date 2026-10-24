@@ -5,11 +5,11 @@ import mockwebserver3.MockResponse
 import mockwebserver3.RecordedRequest
 import okhttp3.Headers
 import paufregi.connectfeed.data.api.strava.models.Athlete
-import paufregi.connectfeed.data.api.strava.models.AuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthTokenDto
 import paufregi.connectfeed.data.api.strava.models.SummaryGear
 import kotlin.time.Instant
 
-fun createStravaToken(expiresAt: Instant, accessToken: String = "ACCESS_TOKEN", refreshToken: String = "REFRESH_TOKEN") = AuthToken(
+fun createStravaToken(expiresAt: Instant, accessToken: String = "ACCESS_TOKEN", refreshToken: String = "REFRESH_TOKEN") = AuthTokenDto(
     accessToken = accessToken,
     refreshToken = refreshToken,
     expiresAt = expiresAt,

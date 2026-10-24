@@ -10,7 +10,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 @Serializable
-data class AuthToken(
+data class AuthTokenDto(
     @SerialName("access_token")
     val accessToken: String,
     @SerialName("expires_in")

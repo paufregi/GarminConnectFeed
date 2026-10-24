@@ -8,13 +8,13 @@ import paufregi.connectfeed.data.api.garmin.serializers.LocalDateTimeSerializer
 import java.time.LocalDateTime
 
 @Serializable
-data class Activity(
+data class ActivityDto(
     @SerialName("activityId")
     val id: Long,
     @SerialName("activityName")
     val name: String,
     @SerialName("activityType")
-    val type: ActivityType,
+    val type: ActivityTypeDto,
     @SerialName("eventType")
     @Serializable(with = EventTypeSerializer::class)
     val eventType: EventType,

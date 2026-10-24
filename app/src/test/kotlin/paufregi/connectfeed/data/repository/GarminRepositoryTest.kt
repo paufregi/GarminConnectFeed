@@ -21,18 +21,19 @@ import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.models.ActivityDto
+import paufregi.connectfeed.data.api.garmin.models.ActivityTypeDto
+import paufregi.connectfeed.data.api.garmin.models.CourseDto
+import paufregi.connectfeed.data.api.garmin.models.GearDto
 import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
-import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
+import paufregi.connectfeed.data.api.garmin.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
+import paufregi.connectfeed.data.api.garmin.models.WorkoutDto
 import retrofit2.Response
 import java.io.File
+import java.io.IOException
 import java.time.LocalDateTime
-import paufregi.connectfeed.data.api.garmin.models.Activity as GarminActivity
-import paufregi.connectfeed.data.api.garmin.models.ActivityType as GarminActivityType
-import paufregi.connectfeed.data.api.garmin.models.Course as GarminCourse
-import paufregi.connectfeed.data.api.garmin.models.Gear as GarminGear
-import paufregi.connectfeed.data.api.garmin.models.Workout as GarminWorkout
 
 class GarminRepositoryTest {
 
@@ -92,25 +93,50 @@ class GarminRepositoryTest {
         coVerify { connect.getUserProfile() }
     }
 
+     @Test
+    fun `Get user - network error becomes failure`() = runTest {
+        coEvery { connect.getUserProfile() } throws IOException("offline")
+
+        val res = repo.getUserProfile()
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()).isInstanceOf(IOException::class.java)
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("offline")
+
+        coVerify { connect.getUserProfile() }
+    }
+
+    @Test
+    fun `Get activities - network error becomes failure`() = runTest {
+        coEvery { connect.getActivities(any()) } throws IOException("offline")
+
+        val res = repo.getActivities(10)
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("offline")
+
+        coVerify { connect.getActivities(10) }
+    }
+
     @Test
     fun `Get activities`() = runTest {
         val activities = listOf(
-            GarminActivity(
+            ActivityDto(
                 id = 1,
                 name = "activity_1",
                 distance = 10234.00,
                 trainingEffectLabel = "recovery",
-                type = GarminActivityType(id = 1, key = "running", type = ActivityType.Running),
+                type = ActivityTypeDto(id = 1, key = "running", type = ActivityType.Running),
                 eventType = EventType.Training,
                 startDateTime = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
                 workoutId = 1
             ),
-            GarminActivity(
+            ActivityDto(
                 id = 2,
                 name = "activity_2",
                 distance = 17759.00,
                 trainingEffectLabel = "recovery",
-                type = GarminActivityType(id = 10, key = "road_biking", type = ActivityType.RoadBiking),
+                type = ActivityTypeDto(id = 10, key = "road_biking", type = ActivityType.RoadBiking),
                 eventType = EventType.Training,
                 startDateTime = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
                 workoutId = 2
@@ -127,12 +153,12 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get activities - empty list`() = runTest {
-        coEvery { connect.getActivities(any()) } returns Response.success(emptyList<GarminActivity>())
+        coEvery { connect.getActivities(any()) } returns Response.success(emptyList<ActivityDto>())
 
         val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<GarminActivity>())
+        assertThat(res.getOrNull()).isEqualTo(emptyList<ActivityDto>())
         coVerify { connect.getActivities(5) }
     }
 
@@ -143,7 +169,7 @@ class GarminRepositoryTest {
         val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<GarminActivity>())
+        assertThat(res.getOrNull()).isEqualTo(emptyList<ActivityDto>())
         coVerify { connect.getActivities(5) }
     }
 
@@ -160,8 +186,8 @@ class GarminRepositoryTest {
     @Test
     fun `Get gears`() = runTest {
         val gears = listOf(
-            GarminGear(id = "1", brand = "Mizuno", model = "Neo Vista", name = null, type = GearType.Shoe),
-            GarminGear(id = "2", brand = "Giant", model = "Contend AR", name = "Nova", type = GearType.Bike)
+            GearDto(id = "1", brand = "Mizuno", model = "Neo Vista", name = null, type = GearType.Shoe),
+            GearDto(id = "2", brand = "Giant", model = "Contend AR", name = "Nova", type = GearType.Bike)
         )
         coEvery { connect.getGears() } returns Response.success(gears)
 
@@ -207,8 +233,8 @@ class GarminRepositoryTest {
     @Test
     fun `Get courses`() = runTest {
         val courses = listOf(
-            GarminCourse(id = 1, name = "course 1", distance = 10234.00, type = GarminActivityType(id = 1, key = "running", type = ActivityType.Running)),
-            GarminCourse(id = 2, name = "course 2", distance = 15007.00, type = GarminActivityType(id = 10, key = "road_biking", type = ActivityType.RoadBiking))
+            CourseDto(id = 1, name = "course 1", distance = 10234.00, type = ActivityTypeDto(id = 1, key = "running", type = ActivityType.Running)),
+            CourseDto(id = 2, name = "course 2", distance = 15007.00, type = ActivityTypeDto(id = 10, key = "road_biking", type = ActivityType.RoadBiking))
         )
         coEvery { connect.getCourses() } returns Response.success(courses)
 
@@ -248,7 +274,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get workout`() = runTest {
-        val workout = GarminWorkout(1, "workout")
+        val workout = WorkoutDto(1, "workout")
         coEvery { connect.getWorkout(any()) } returns Response.success(workout)
 
         val expected = Workout(1, "workout")
@@ -284,7 +310,7 @@ class GarminRepositoryTest {
         val effort = 50f
         val feel = 80f
 
-        val expectedUpdateRequest = UpdateActivity(
+        val expectedUpdateRequest = UpdateActivityDto(
             id = 1,
             name = name,
             description = description,
@@ -314,7 +340,7 @@ class GarminRepositoryTest {
     fun `Update activity - no gear`() = runTest {
         coEvery { connect.updateActivity(any(), any()) } returns Response.success(Unit)
 
-        val expectedRequest = UpdateActivity(
+        val expectedRequest = UpdateActivityDto(
             id = 1,
             name = "newName",
             description = "newDescription",
@@ -349,7 +375,7 @@ class GarminRepositoryTest {
         val course = Course(1, "course", 10234.00, ActivityType.Cycling)
         val water = 2
 
-        val expectedRequest = UpdateActivity(
+        val expectedRequest = UpdateActivityDto(
             id = 1,
             name = name,
             description = description,

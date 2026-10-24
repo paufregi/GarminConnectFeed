@@ -19,8 +19,8 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class ProfilesViewModel @Inject constructor(
     getProfiles: GetProfiles,
-    val deleteProfile: DeleteProfile,
-    val notification: NotificationManager,
+    private val deleteProfile: DeleteProfile,
+    private val notification: NotificationManager,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfilesState())

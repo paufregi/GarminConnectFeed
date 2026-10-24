@@ -5,7 +5,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.firstOrNull
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.utils.andThen
-import paufregi.connectfeed.core.utils.runCatchingResult
 import paufregi.connectfeed.data.api.strava.models.Athlete
 import paufregi.connectfeed.data.repository.AppRepository
 import paufregi.connectfeed.data.repository.AuthRepository
@@ -33,8 +32,8 @@ class SyncGear @Inject constructor(
             }
         }
 
-        val garminResult = runCatchingResult { garminDeferred.await() }
-        val stravaGears = runCatchingResult { stravaDeferred.await() }.getOrDefault(Athlete(0))
+        val garminResult = garminDeferred.await()
+        val stravaGears = stravaDeferred.await().getOrDefault(Athlete(0))
 
         garminResult.map { garminGears ->
             garminGears.map { garminGear ->

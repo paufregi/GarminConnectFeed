@@ -22,7 +22,7 @@ import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.usecases.ConnectStrava
 import paufregi.connectfeed.core.usecases.GetUser
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.presentation.ui.models.ProcState
+import paufregi.connectfeed.presentation.ui.models.Status
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 import paufregi.connectfeed.user
 
@@ -57,7 +57,7 @@ class StravaViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -120,15 +120,15 @@ class StravaViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
-            viewModel.injectState(ProcState.Failure("previous"))
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            viewModel.injectState(Status.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("previous"))
 
             viewModel.exchangeToken(code)
 
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
             connectResult.complete(Result.success(Unit))
-            assertThat(awaitItem()).isEqualTo(ProcState.Success("Strava linked"))
+            assertThat(awaitItem()).isEqualTo(Status.Success("Strava linked"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -145,15 +145,15 @@ class StravaViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
-            viewModel.injectState(ProcState.Failure("previous"))
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            viewModel.injectState(Status.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("previous"))
 
             viewModel.exchangeToken(code)
 
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
             connectResult.complete(Result.failure("error"))
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("error"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -170,15 +170,15 @@ class StravaViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
-            viewModel.injectState(ProcState.Failure("previous"))
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            viewModel.injectState(Status.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("previous"))
 
             viewModel.exchangeToken(code)
 
-            assertThat(awaitItem()).isEqualTo(ProcState.Running)
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
             connectResult.complete(Result.failure(Exception()))
-            assertThat(awaitItem()).isEqualTo(ProcState.Failure("unknown error"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("unknown error"))
             cancelAndIgnoreRemainingEvents()
         }
 

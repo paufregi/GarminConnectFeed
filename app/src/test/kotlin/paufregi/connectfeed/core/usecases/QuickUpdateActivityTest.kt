@@ -175,7 +175,7 @@ class QuickUpdateActivityTest{
         val res = useCase(activity, profile, description, water, feel, effort, workout, gear)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin activity")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin activity: error")
         coVerify { garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear) }
         coVerify { stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear) }
     }
@@ -191,7 +191,7 @@ class QuickUpdateActivityTest{
         val res = useCase(activity, profile, description, water, feel, effort, workout, gear)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Strava activity")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Strava activity: error")
         coVerify { garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear) }
         coVerify { stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear) }
     }
@@ -207,7 +207,7 @@ class QuickUpdateActivityTest{
         val res = useCase(activity, profile, description, water, feel, effort, workout, gear)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin and Strava activities")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin and Strava activities: error")
         coVerify { garminRepo.updateActivity(activity, profile.name, garminDescription, profile.eventType, profile.course, water, feel, effort, gear) }
         coVerify { stravaRepo.updateActivity(activity, profile.name, stravaDescription, profile.eventType?.commute, gear) }
     }

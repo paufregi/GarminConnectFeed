@@ -7,7 +7,7 @@ import paufregi.connectfeed.today
 import paufregi.connectfeed.tomorrow
 import paufregi.connectfeed.yesterday
 
-class AuthTokenTest {
+class AuthTokenDtoTest {
 
     val token = createAuthToken(today)
 

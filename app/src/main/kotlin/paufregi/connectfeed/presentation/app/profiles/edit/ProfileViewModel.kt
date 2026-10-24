@@ -29,10 +29,10 @@ import paufregi.connectfeed.presentation.ui.components.notification.Notification
 class ProfileViewModel @AssistedInject constructor(
     getActivityTypes: GetActivityTypesForProfile,
     getEventTypes: GetEventTypes,
-    val getProfile: GetProfile,
-    val getCourses: GetCourses,
-    val saveProfile: SaveProfile,
-    val notification: NotificationManager,
+    private val getProfile: GetProfile,
+    private val getCourses: GetCourses,
+    private val saveProfile: SaveProfile,
+    private val notification: NotificationManager,
     @Assisted private val id: Long?,
 ) : ViewModel() {
 

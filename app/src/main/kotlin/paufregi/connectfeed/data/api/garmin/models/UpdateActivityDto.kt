@@ -6,7 +6,7 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.data.api.garmin.serializers.EventTypeSerializer
 
 @Serializable
-data class UpdateActivity(
+data class UpdateActivityDto(
     @SerialName("activityId")
     val id: Long,
     @SerialName("activityName")

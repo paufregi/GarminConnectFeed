@@ -2,7 +2,7 @@ package paufregi.connectfeed.data.api.garmin
 
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -25,7 +25,7 @@ interface GarminAuth {
         @Field("grant_type") grantType: String = GRANT_TYPE_EXCHANGE,
         @Field("service_url") serviceUrl: String = SERVICE_URL,
         @HeaderMap headerMap: Map<String, String> = nativeHeader,
-    ): Response<AuthToken>
+    ): Response<AuthTokenDto>
 
     @FormUrlEncoded
     @POST("/di-oauth2-service/oauth/token")
@@ -36,7 +36,7 @@ interface GarminAuth {
         @Field("grant_type") grantType: String = GRANT_TYPE_REFRESH,
         @Field("service_url") serviceUrl: String = SERVICE_URL,
         @HeaderMap headerMap: Map<String, String> = nativeHeader,
-    ): Response<AuthToken>
+    ): Response<AuthTokenDto>
 
     companion object {
         const val BASE_URL = "https://diauth.garmin.com"

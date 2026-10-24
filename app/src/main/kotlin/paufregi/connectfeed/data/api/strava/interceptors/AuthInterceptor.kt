@@ -3,10 +3,12 @@ package paufregi.connectfeed.data.api.strava.interceptors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.Interceptor
 import okhttp3.Response
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.data.api.strava.models.AuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthTokenDto
 import paufregi.connectfeed.data.api.utils.authRequest
 import paufregi.connectfeed.data.api.utils.failedAuthResponse
 import paufregi.connectfeed.data.repository.AuthRepository
@@ -19,6 +21,10 @@ class AuthInterceptor @Inject constructor(
     @param:Named("StravaClientSecret") val clientSecret: String,
 ) : Interceptor {
 
+    // Parallel requests must not each refresh an expired token; the first one wins and
+    // the rest re-read the stored token once the lock is released.
+    private val refreshMutex = Mutex()
+
     override fun intercept(chain: Interceptor.Chain): Response =
         runBlocking(Dispatchers.IO) {
             getOrRefreshToken().fold(
@@ -27,10 +33,16 @@ class AuthInterceptor @Inject constructor(
             )
         }
 
-    private suspend fun getOrRefreshToken(): Result<AuthToken> =
-        repo.getStravaToken().firstOrNull()?.let { token ->
-            if (!token.isExpired()) Result.success(token)
-            else repo.refreshStravaToken(clientId, clientSecret, token.refreshToken)
+    private suspend fun getOrRefreshToken(): Result<AuthTokenDto> {
+        val token = repo.getStravaToken().firstOrNull() ?: return Result.failure("No token found")
+        if (!token.isExpired()) return Result.success(token)
+
+        return refreshMutex.withLock {
+            val current = repo.getStravaToken().firstOrNull() ?: return Result.failure("No token found")
+            if (!current.isExpired()) return Result.success(current)
+
+            repo.refreshStravaToken(clientId, clientSecret, current.refreshToken)
                 .onSuccess { repo.saveStravaToken(it) }
-        } ?: Result.failure("No token found")
+        }
+    }
 }

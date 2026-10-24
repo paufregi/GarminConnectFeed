@@ -4,7 +4,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.firstOrNull
 import paufregi.connectfeed.core.models.Activity
-import paufregi.connectfeed.core.utils.runCatchingResult
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaRepository
 import java.time.Duration
@@ -25,8 +24,8 @@ class GetActivities @Inject constructor(
             }
         }
 
-        val garminResult = runCatchingResult { garminDeferred.await() }
-        val stravaActivities = runCatchingResult { stravaDeferred.await() }.getOrDefault(emptyList())
+        val garminResult = garminDeferred.await()
+        val stravaActivities = stravaDeferred.await().getOrDefault(emptyList())
 
         garminResult.map { garminActivities ->
             garminActivities.map { garminActivity ->

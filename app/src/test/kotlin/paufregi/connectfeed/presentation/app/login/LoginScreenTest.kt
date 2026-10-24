@@ -13,6 +13,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.User
+import paufregi.connectfeed.presentation.ui.models.Status
 
 @ExperimentalMaterial3Api
 @ExperimentalTestApi
@@ -64,7 +65,7 @@ class LoginScreenTest {
     fun `Success status welcomes user`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             LoginContent(
-                state = LoginState(status = Status.Success, user = User(1, "Test User", "url"))
+                state = LoginState(status = Status.Success(), user = User(1, "Test User", "url"))
             )
         }
 

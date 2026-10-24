@@ -1,12 +1,7 @@
 package paufregi.connectfeed.presentation.app.login
 
 import paufregi.connectfeed.core.models.User
-
-sealed interface Status {
-    data object Loading : Status
-    data object Success: Status
-    data class Failure(val reason: String) : Status
-}
+import paufregi.connectfeed.presentation.ui.models.Status
 
 
 data class LoginState(

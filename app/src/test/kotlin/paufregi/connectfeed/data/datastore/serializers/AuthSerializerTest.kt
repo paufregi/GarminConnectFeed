@@ -9,8 +9,8 @@ import paufregi.connectfeed.data.datastore.models.Auth
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.time.Instant
-import paufregi.connectfeed.data.api.garmin.models.AuthToken as GarminAuthToken
-import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto as GarminAuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthTokenDto as StravaAuthToken
 
 class AuthSerializerTest {
 

@@ -175,7 +175,7 @@ class UpdateActivityTest{
         val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin activity")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin activity: error")
         coVerify { garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear) }
         coVerify { stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear) }
     }
@@ -191,7 +191,7 @@ class UpdateActivityTest{
         val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Strava activity")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Strava activity: error")
         coVerify { garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear) }
         coVerify { stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear) }
     }
@@ -207,7 +207,7 @@ class UpdateActivityTest{
         val res = useCase(activity, name, description, eventType, course, water, feel, effort, workout, gear, true)
 
         assertThat(res.isSuccess).isFalse()
-        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin & Strava activities")
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin & Strava activities: error")
         coVerify { garminRepo.updateActivity(activity, name, garminDescription, eventType, course, water, feel, effort, gear) }
         coVerify { stravaRepo.updateActivity(activity, name, stravaDescription, eventType.commute, gear) }
     }

@@ -2,29 +2,29 @@ package paufregi.connectfeed.data.repository
 
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Gear
+import paufregi.connectfeed.core.utils.apiCall
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.strava.Strava
+import paufregi.connectfeed.data.api.strava.models.ActivityDto
 import paufregi.connectfeed.data.api.strava.models.Athlete
-import paufregi.connectfeed.data.api.strava.models.UpdateActivity
+import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
 import javax.inject.Inject
-import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
 
 class StravaRepository @Inject constructor(
     private val strava: Strava,
 ) {
     suspend fun getAthlete(): Result<Athlete> =
-        strava.getAthlete().toResult()
+        apiCall { strava.getAthlete() }
 
-    suspend fun getActivities(limit: Int): Result<List<StravaActivity>> =
-        strava.getActivities(perPage = limit).toResult()
+    suspend fun getActivities(limit: Int): Result<List<ActivityDto>> =
+        apiCall { strava.getActivities(perPage = limit) }
 
     suspend fun updateAthlete(
         weight: Float
     ): Result<Unit> {
         val request = UpdateAthlete(weight = weight)
-        return strava.updateAthlete(request).toResult()
+        return apiCall { strava.updateAthlete(request) }
     }
 
     suspend fun updateActivity(
@@ -34,13 +34,13 @@ class StravaRepository @Inject constructor(
         commute: Boolean?,
         gear: Gear?,
     ): Result<Unit> = activity.stravaId?.let {
-        val request = UpdateActivity(
+        val request = UpdateActivityDto(
             name = name,
             description = description,
             commute = commute,
             gearId = gear?.stravaId
         )
 
-        return strava.updateActivity(activity.stravaId, request).toResult()
+        return apiCall { strava.updateActivity(activity.stravaId, request) }
     }?: Result.failure("No Strava activity")
 }

@@ -17,25 +17,25 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.activitiesJson
+import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.coursesJson
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
-import paufregi.connectfeed.data.api.garmin.models.Activity
-import paufregi.connectfeed.data.api.garmin.models.ActivityType
-import paufregi.connectfeed.data.api.garmin.models.Course
-import paufregi.connectfeed.data.api.garmin.models.Gear
+import paufregi.connectfeed.data.api.garmin.models.ActivityDto
+import paufregi.connectfeed.data.api.garmin.models.ActivityTypeDto
+import paufregi.connectfeed.data.api.garmin.models.CourseDto
+import paufregi.connectfeed.data.api.garmin.models.GearDto
 import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
-import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
+import paufregi.connectfeed.data.api.garmin.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.garmin.models.UserProfile
-import paufregi.connectfeed.data.api.garmin.models.Workout
+import paufregi.connectfeed.data.api.garmin.models.WorkoutDto
 import paufregi.connectfeed.gearsJson
 import paufregi.connectfeed.userProfileJson
 import paufregi.connectfeed.workoutJson
 import java.io.File
 import java.time.LocalDateTime
-import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 
 class GarminConnectTest {
 
@@ -117,22 +117,22 @@ class GarminConnectTest {
         val res = api.getActivities(limit = 3)
 
         val expected = listOf(
-            Activity(
+            ActivityDto(
                 id = 1,
                 name = "Activity 1",
                 distance = 17803.69921875,
                 trainingEffectLabel = "RECOVERY",
-                type = ActivityType(id = 10, key = "road_biking", type = CoreActivityType.RoadBiking),
+                type = ActivityTypeDto(id = 10, key = "road_biking", type = ActivityType.RoadBiking),
                 eventType = EventType.Transportation,
                 startDateTime = LocalDateTime.of(2024, 10, 24, 20, 15, 0),
                 workoutId = 1,
             ),
-            Activity(
+            ActivityDto(
                 id = 2,
                 name = "Activity 2",
                 distance = 17759.779296875,
                 trainingEffectLabel = "RECOVERY",
-                type = ActivityType(id = 10, key = "road_biking", type = CoreActivityType.RoadBiking),
+                type = ActivityTypeDto(id = 10, key = "road_biking", type = ActivityType.RoadBiking),
                 eventType = EventType.Transportation,
                 startDateTime = LocalDateTime.of(2024, 10, 24, 6, 52, 48),
                 workoutId = 2
@@ -151,7 +151,7 @@ class GarminConnectTest {
         val res = api.getActivities(limit = 3)
 
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(emptyList<Activity>())
+        assertThat(res.body()).isEqualTo(emptyList<ActivityDto>())
         verify { authInterceptor.intercept(any()) }
     }
 
@@ -168,7 +168,7 @@ class GarminConnectTest {
     @Test
     fun `Update activity`() = runTest {
         server.enqueue(200)
-        val updateActivity = UpdateActivity(
+        val updateActivity = UpdateActivityDto(
             id = 1,
             name = "newName",
             description = "newDescription",
@@ -185,7 +185,7 @@ class GarminConnectTest {
     @Test
     fun `Update activity - failure`() = runTest {
         server.enqueue(400)
-        val updateActivity = UpdateActivity(
+        val updateActivity = UpdateActivityDto(
             id = 1,
             name = "newName",
             description = "newDescription",
@@ -206,8 +206,8 @@ class GarminConnectTest {
         val res = api.getCourses()
 
         val expected = listOf(
-            Course(id = 1, name = "Course 1", distance = 10234.81, type = ActivityType(id = 1, key = "running", type = CoreActivityType.Running)),
-            Course(id = 2, name = "Course 2", distance = 15007.59, type = ActivityType(id = 10, key = "road_biking", type = CoreActivityType.RoadBiking))
+            CourseDto(id = 1, name = "Course 1", distance = 10234.81, type = ActivityTypeDto(id = 1, key = "running", type = ActivityType.Running)),
+            CourseDto(id = 2, name = "Course 2", distance = 15007.59, type = ActivityTypeDto(id = 10, key = "road_biking", type = ActivityType.RoadBiking))
         )
 
         assertThat(res.isSuccessful).isTrue()
@@ -243,7 +243,7 @@ class GarminConnectTest {
         val res = api.getWorkout(1)
 
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(Workout(id = 1, name = "Power - Zone 6"))
+        assertThat(res.body()).isEqualTo(WorkoutDto(id = 1, name = "Power - Zone 6"))
         verify { authInterceptor.intercept(any()) }
     }
 
@@ -264,7 +264,7 @@ class GarminConnectTest {
         val res = api.getGears()
 
         val expected = listOf(
-            Gear(
+            GearDto(
                 id = "522f1e21-0822-451d-88a3-b0b661802c2f",
                 brand = "Mizuno",
                 model = "Neo Vista",
@@ -272,7 +272,7 @@ class GarminConnectTest {
                 type = GearType.Shoe,
                 distance = 51955.4501953125
             ),
-            Gear(
+            GearDto(
                 id = "789dccf8-b669-4903-bf46-7d8d9369124e",
                 brand = "Giant",
                 model = "Contend AR",
@@ -294,7 +294,7 @@ class GarminConnectTest {
         val res = api.getGears()
 
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(emptyList<Gear>())
+        assertThat(res.body()).isEqualTo(emptyList<GearDto>())
         verify { authInterceptor.intercept(any()) }
     }
 

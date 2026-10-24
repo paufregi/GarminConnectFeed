@@ -4,9 +4,9 @@ import mockwebserver3.Dispatcher
 import mockwebserver3.MockResponse
 import mockwebserver3.RecordedRequest
 import paufregi.connectfeed.data.api.github.models.Asset
-import paufregi.connectfeed.data.api.github.models.Release
+import paufregi.connectfeed.data.api.github.models.ReleaseDto
 
-val githubRelease = Release(
+val githubRelease = ReleaseDto(
     tagName = "v2.2.2",
     assets = listOf(
         Asset(
