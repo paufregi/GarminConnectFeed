@@ -11,6 +11,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -142,6 +143,34 @@ class ProfileViewModelTest {
         verify { getEventTypes() }
         coVerify { getProfile(profile.id) }
         coVerify { getCourses() }
+    }
+
+    @Test
+    fun `Initial state - re-subscription keeps edits`() = runTest {
+        coEvery { getProfile(profile.id) } returns profile
+        coEvery { getCourses() } returns Result.success(courses)
+        val edited = profile.copy(name = "Evening run")
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem().profile).isEqualTo(profile)
+            viewModel.injectState(viewModel.state.value.copy(profile = edited))
+            assertThat(awaitItem().profile).isEqualTo(edited)
+            cancelAndIgnoreRemainingEvents()
+        }
+        advanceTimeBy(1001L)
+
+        viewModel.state.test {
+            assertThat(awaitItem().profile).isEqualTo(edited)
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getActivityTypes() }
+        verify { getEventTypes() }
+        coVerify(exactly = 1) { getProfile(profile.id) }
+        coVerify(exactly = 1) { getCourses() }
     }
 
     @Test

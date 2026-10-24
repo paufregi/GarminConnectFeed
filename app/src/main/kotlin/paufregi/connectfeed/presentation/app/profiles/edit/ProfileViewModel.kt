@@ -51,8 +51,12 @@ class ProfileViewModel @AssistedInject constructor(
         )
     )
 
+    // The state flow restarts after the subscriber timeout (e.g. app backgrounded); reloading
+    // then would overwrite everything the user has typed, so the initial load runs once.
+    private var loaded = false
+
     val state = _state
-        .onStart { load() }
+        .onStart { if (!loaded) load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
     internal fun injectState(state: ProfileState) {
@@ -60,6 +64,7 @@ class ProfileViewModel @AssistedInject constructor(
     }
 
     private fun load() = viewModelScope.launch {
+        loaded = true
         _state.update { it.copy(
             loading = true,
             profile = getProfile(id) ?: Profile()
