@@ -6,7 +6,6 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
     data object Other: ActivityType("Other")
     data object Unknown : ActivityType("Unknown")
 
-    // GARMIN
     // Running
     data object Running: ActivityType("Running") // 1 - parent for running
     data object TrackRunning: ActivityType("Track Running", Running) // 8

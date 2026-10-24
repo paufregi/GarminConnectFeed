@@ -14,7 +14,6 @@ class GetGears @Inject constructor(
     private val authRepo: AuthRepository,
     private val repo: AppRepository
 ) {
-    // Switching user must drop the previous user's stream, not merge both.
     operator fun invoke(): Flow<List<Gear>> =
         authRepo.getUser().flatMapLatest { user ->
             user?.let { repo.getAllGears(it) } ?: flowOf(emptyList())

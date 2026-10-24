@@ -59,8 +59,6 @@ object AppModule {
         val file = File(dataStoreDirectory, dataStoreFileName)
         return DataStoreFactory.create(
             serializer = encryptedSerializer,
-            // A restored backup carries the ciphertext but not the keystore master key, so the
-            // file can no longer be decrypted; treat it as a signed-out state instead of crashing.
             corruptionHandler = ReplaceFileCorruptionHandler { Auth() },
             scope = scope,
             produceFile = { file }

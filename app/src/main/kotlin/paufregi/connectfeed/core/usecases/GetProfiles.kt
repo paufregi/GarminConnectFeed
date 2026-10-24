@@ -13,7 +13,6 @@ class GetProfiles @Inject constructor(
     private val authRepo: AuthRepository,
     private val repo: AppRepository
 ) {
-    // Switching user must drop the previous user's stream, not merge both.
     @ExperimentalCoroutinesApi
     operator fun invoke(): Flow<List<Profile>> =
         authRepo.getUser().flatMapLatest { user ->
