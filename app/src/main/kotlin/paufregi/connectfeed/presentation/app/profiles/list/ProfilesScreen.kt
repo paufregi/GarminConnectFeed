@@ -27,7 +27,6 @@ import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.presentation.app.AppRoute
 import paufregi.connectfeed.presentation.ui.components.cards.ProfileCard
 import paufregi.connectfeed.presentation.ui.components.frame.AppFrame
-import paufregi.connectfeed.presentation.ui.components.loading.AppLoading
 import paufregi.connectfeed.presentation.ui.utils.add
 
 private const val TITLE = "Profiles"
@@ -47,26 +46,10 @@ internal fun ProfilesScreen(
     ProfilesContent(state, user, navigate, onOpen, onCreate, viewModel::onAction)
 }
 
-@Composable
-@ExperimentalMaterial3Api
-internal fun ProfilesContent(
-    state: ProfilesState,
-    user: User,
-    navigate: (AppRoute) -> Unit = {},
-    onOpen: (Long) -> Unit = {},
-    onCreate: () -> Unit = {},
-    onAction: (ProfilesAction) -> Unit = {},
-) {
-    when (state.isLoading) {
-        true -> AppLoading(TITLE, AppRoute.Profiles)
-        false -> ProfileList(state, user, navigate, onOpen, onCreate, onAction)
-    }
-}
-
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-private fun ProfileList(
+internal fun ProfilesContent(
     @PreviewParameter(ProfilesStatePreview::class) state: ProfilesState,
     user: User = User.ANONYM,
     navigate: (AppRoute) -> Unit = {},
@@ -79,6 +62,7 @@ private fun ProfileList(
         user = user,
         currentRoute = AppRoute.Profiles,
         navigate = navigate,
+        loading = state.isLoading,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onCreate,

@@ -29,10 +29,8 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.ui.components.Dropdown
 import paufregi.connectfeed.presentation.ui.components.DropdownItem
 import paufregi.connectfeed.presentation.ui.components.Toggle
-import paufregi.connectfeed.presentation.ui.components.frame.BottomApp
 import paufregi.connectfeed.presentation.ui.components.frame.FormFrame
-import paufregi.connectfeed.presentation.ui.components.frame.TopButton
-import paufregi.connectfeed.presentation.ui.components.loading.FormLoading
+import paufregi.connectfeed.presentation.ui.components.frame.SaveBar
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 import paufregi.connectfeed.presentation.ui.utils.add
 
@@ -60,34 +58,19 @@ internal fun ProfileScreen(
     ProfileContent(state = state, navBack = navBack, onAction = viewModel::onAction)
 }
 
-@Composable
-@ExperimentalMaterial3Api
-internal fun ProfileContent(
-    state: ProfileState,
-    navBack: () -> Unit = {},
-    onAction: (ProfileAction) -> Unit = {},
-) {
-    when (state.loading) {
-        true -> FormLoading(title(state))
-        false -> ProfileForm(state = state, navBack = navBack, onAction = onAction)
-    }
-}
-
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-private fun ProfileForm(
+internal fun ProfileContent(
     @PreviewParameter(ProfilePreview::class) state: ProfileState,
     navBack: () -> Unit = {},
     onAction: (ProfileAction) -> Unit = {},
-){
+) {
     FormFrame(
         title = title(state),
-        navIcon = TopButton.back { navBack() },
-        bottomContent = BottomApp.save(
-            onClick = { onAction(ProfileAction.Save) },
-            enabled = (state.canSave)
-        )
+        navBack = navBack,
+        loading = state.loading,
+        bottomBar = { SaveBar(state.canSave) { onAction(ProfileAction.Save) } },
     ) { padding ->
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),

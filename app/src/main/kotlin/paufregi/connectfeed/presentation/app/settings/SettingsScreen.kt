@@ -47,7 +47,6 @@ import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
 import paufregi.connectfeed.presentation.ui.components.TextIcon
 import paufregi.connectfeed.presentation.ui.components.frame.AppFrame
-import paufregi.connectfeed.presentation.ui.components.loading.AppLoading
 import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
 import paufregi.connectfeed.presentation.ui.icons.garmin.Logo
 import paufregi.connectfeed.presentation.ui.icons.strava.Logo
@@ -67,24 +66,10 @@ internal fun SettingsScreen(
     SettingsContent(state, navigate, viewModel::onAction, viewModel.stravaAuthUri)
 }
 
-@Composable
-@ExperimentalMaterial3Api
-internal fun SettingsContent(
-    state: SettingsState,
-    navigate: (AppRoute) -> Unit = {},
-    onAction: (SettingsAction) -> Unit = {},
-    stravaAuthUri: Uri = Uri.EMPTY,
-) {
-    when (state.loading) {
-        true -> AppLoading(TITLE, AppRoute.Settings)
-        false -> SettingsForm(state, navigate, onAction, stravaAuthUri)
-    }
-}
-
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-private fun SettingsForm(
+internal fun SettingsContent(
     @PreviewParameter(SettingsStatePreview::class) state: SettingsState,
     navigate: (AppRoute) -> Unit = {},
     onAction: (SettingsAction) -> Unit = {},
@@ -94,6 +79,7 @@ private fun SettingsForm(
         title = TITLE,
         currentRoute = AppRoute.Settings,
         navigate = navigate,
+        loading = state.loading,
     ) {
         val context = LocalContext.current
         var signOutDialog by remember { mutableStateOf(false) }

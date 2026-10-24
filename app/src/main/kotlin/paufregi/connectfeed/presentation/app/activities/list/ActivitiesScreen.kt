@@ -23,7 +23,6 @@ import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.presentation.app.AppRoute
 import paufregi.connectfeed.presentation.ui.components.cards.ActivityCard
 import paufregi.connectfeed.presentation.ui.components.frame.AppFrame
-import paufregi.connectfeed.presentation.ui.components.loading.AppLoading
 import paufregi.connectfeed.presentation.ui.utils.add
 
 private const val TITLE = "Activities"
@@ -42,35 +41,21 @@ internal fun ActivitiesScreen(
     ActivitiesContent(state, user, navigate, onOpen)
 }
 
-@Composable
-@ExperimentalMaterial3Api
-internal fun ActivitiesContent(
-    state: ActivitiesState,
-    user: User,
-    navigate: (AppRoute) -> Unit = {},
-    onOpen: (Long, Long?) -> Unit = { _, _ -> },
-) {
-    when (state.loading) {
-        true -> AppLoading(TITLE, AppRoute.Activities)
-        false -> ActivityList(state, user, navigate, onOpen)
-    }
-}
-
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-private fun ActivityList(
+internal fun ActivitiesContent(
     @PreviewParameter(ActivitiesPreview::class) state: ActivitiesState,
     user: User = User.ANONYM,
     navigate: (AppRoute) -> Unit = {},
-    onOpen: (Long, Long?) -> Unit = { _,_ -> },
-    onAction: (ActivitiesAction) -> Unit = {},
+    onOpen: (Long, Long?) -> Unit = { _, _ -> },
 ) {
     AppFrame(
         title = TITLE,
         user = user,
         currentRoute = AppRoute.Activities,
         navigate = navigate,
+        loading = state.loading,
     ) { padding ->
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),

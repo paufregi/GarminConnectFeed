@@ -14,9 +14,10 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.presentation.ui.components.loading.ActivityLoading
-import paufregi.connectfeed.presentation.ui.components.status.ActivityFailure
-import paufregi.connectfeed.presentation.ui.components.status.ActivitySuccess
+import paufregi.connectfeed.presentation.ui.components.frame.ActivityFrame
+import paufregi.connectfeed.presentation.ui.components.frame.OkBar
+import paufregi.connectfeed.presentation.ui.components.status.FailureMessage
+import paufregi.connectfeed.presentation.ui.components.status.SuccessMessage
 import paufregi.connectfeed.presentation.ui.models.ProcState
 import paufregi.connectfeed.presentation.ui.theme.Theme
 
@@ -53,9 +54,16 @@ internal fun SyncWeightContent(
     user: User? = null,
     onDone: () -> Unit = {},
 ) {
-    when (val process = state) {
-        is ProcState.Success -> ActivitySuccess(TITLE, user, process.message ?: "") { onDone() }
-        is ProcState.Failure -> ActivityFailure(TITLE, user, "Sync failed!", process.reason) { onDone() }
-        is ProcState.Running -> ActivityLoading(TITLE, user)
+    ActivityFrame(
+        title = TITLE,
+        user = user,
+        loading = state is ProcState.Running,
+        bottomBar = { OkBar(onDone) },
+    ) { padding ->
+        when (state) {
+            is ProcState.Success -> SuccessMessage(state.message ?: "", padding)
+            is ProcState.Failure -> FailureMessage("Sync failed!", state.reason, padding)
+            is ProcState.Running -> Unit
+        }
     }
 }

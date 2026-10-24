@@ -27,7 +27,6 @@ import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.presentation.app.AppRoute
 import paufregi.connectfeed.presentation.ui.components.cards.GearCard
 import paufregi.connectfeed.presentation.ui.components.frame.AppFrame
-import paufregi.connectfeed.presentation.ui.components.loading.AppLoading
 import paufregi.connectfeed.presentation.ui.utils.add
 
 private const val TITLE = "Gears"
@@ -45,24 +44,10 @@ internal fun Gears(
     GearsContent(state, user, navigate, viewModel::sync)
 }
 
-@Composable
-@ExperimentalMaterial3Api
-internal fun GearsContent(
-    state: GearsState,
-    user: User,
-    navigate: (AppRoute) -> Unit = {},
-    onSync: () -> Unit = {},
-) {
-    when (state.loading) {
-        true -> AppLoading(TITLE, AppRoute.Gears)
-        false -> GearList(state, user, navigate, onSync)
-    }
-}
-
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-private fun GearList(
+internal fun GearsContent(
     @PreviewParameter(GearsStatePreview::class) state: GearsState,
     user: User = User.ANONYM,
     navigate: (AppRoute) -> Unit = {},
@@ -73,6 +58,7 @@ private fun GearList(
         user = user,
         currentRoute = AppRoute.Gears,
         navigate = navigate,
+        loading = state.loading,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onSync,

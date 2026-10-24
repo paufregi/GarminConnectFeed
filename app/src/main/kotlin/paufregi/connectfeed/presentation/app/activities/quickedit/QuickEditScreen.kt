@@ -34,12 +34,12 @@ import paufregi.connectfeed.presentation.ui.components.EffortSlider
 import paufregi.connectfeed.presentation.ui.components.FeelSelector
 import paufregi.connectfeed.presentation.ui.components.cards.ActivityCard
 import paufregi.connectfeed.presentation.ui.components.cards.ProfileCard
-import paufregi.connectfeed.presentation.ui.components.frame.BottomApp
 import paufregi.connectfeed.presentation.ui.components.frame.FormFrame
-import paufregi.connectfeed.presentation.ui.components.frame.TopButton
-import paufregi.connectfeed.presentation.ui.components.loading.FormLoading
-import paufregi.connectfeed.presentation.ui.components.status.EditFailure
-import paufregi.connectfeed.presentation.ui.components.status.EditSuccess
+import paufregi.connectfeed.presentation.ui.components.frame.OkBar
+import paufregi.connectfeed.presentation.ui.components.frame.SaveBar
+import paufregi.connectfeed.presentation.ui.components.status.ActivityLinks
+import paufregi.connectfeed.presentation.ui.components.status.FailureMessage
+import paufregi.connectfeed.presentation.ui.components.status.SuccessMessage
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 import paufregi.connectfeed.presentation.ui.icons.app.App
 import paufregi.connectfeed.presentation.ui.utils.add
@@ -84,19 +84,23 @@ internal fun QuickEditContent(
     navEdit: () -> Unit = {},
 ) {
     when (val s = state.status) {
-        is Status.Loading -> FormLoading(TITLE, Icons.App.Edit)
-        is Status.Success -> EditSuccess(
+        is Status.Loading -> FormFrame(TITLE, action = Icons.App.Edit, loading = true)
+        is Status.Success -> FormFrame(
             title = TITLE,
-            activity = state.activity,
-            navBack = navBack,
-            actionIcon = TopButton.action(Icons.App.QuickEdit, false) { }
-        )
-        is Status.Failure -> EditFailure(
+            action = Icons.App.Edit,
+            enabled = false,
+            bottomBar = { OkBar(navBack) },
+        ) { padding ->
+            SuccessMessage("Update completed!", padding) { ActivityLinks(state.activity) }
+        }
+        is Status.Failure -> FormFrame(
             title = TITLE,
-            reason = s.reason,
-            actionIcon = TopButton.action(Icons.App.QuickEdit, false) { },
-            onReset = { onAction(QuickEditAction.ResetStatus) }
-        )
+            action = Icons.App.Edit,
+            enabled = false,
+            bottomBar = { OkBar { onAction(QuickEditAction.ResetStatus) } },
+        ) { padding ->
+            FailureMessage("Update failed!", s.reason, padding)
+        }
         else -> Form(
             state = state,
             onAction = onAction,
@@ -118,9 +122,10 @@ private fun Form(
     val navAction = state.profile?.let { { onAction(QuickEditAction.SetProfile(null)) } } ?: { navBack() }
     FormFrame(
         title = TITLE,
-        navIcon = TopButton.back { navAction() },
-        actionIcon = TopButton.action(Icons.App.Edit) { navEdit() },
-        bottomContent = BottomApp.save(state.canSave) { onAction(QuickEditAction.Save) }
+        navBack = navAction,
+        action = Icons.App.Edit,
+        onAction = navEdit,
+        bottomBar = { SaveBar(state.canSave) { onAction(QuickEditAction.Save) } },
     ) { padding ->
         if(state.profile == null) {
             LazyColumn(

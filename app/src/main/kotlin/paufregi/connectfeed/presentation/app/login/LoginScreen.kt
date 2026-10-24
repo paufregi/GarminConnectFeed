@@ -39,9 +39,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.frame.ActivityFrame
-import paufregi.connectfeed.presentation.ui.components.frame.BottomApp
+import paufregi.connectfeed.presentation.ui.components.frame.OkBar
 import paufregi.connectfeed.presentation.ui.components.loading.Loading
-import paufregi.connectfeed.presentation.ui.components.status.ActivityFailure
+import paufregi.connectfeed.presentation.ui.components.status.FailureMessage
 import paufregi.connectfeed.presentation.ui.utils.add
 
 @Composable
@@ -63,7 +63,12 @@ internal fun LoginContent(
     when(val p = state.status) {
         is Status.Loading -> Loading()
         is Status.Success -> Welcome(state, onAction)
-        is Status.Failure -> ActivityFailure("Connect Feed", null, "Login failed!", p.reason) { onAction(LoginAction.Reset) }
+        is Status.Failure -> ActivityFrame(
+            title = "Connect Feed",
+            bottomBar = { OkBar { onAction(LoginAction.Reset) } },
+        ) { padding ->
+            FailureMessage("Login failed!", p.reason, padding)
+        }
         else -> LoginForm(state, onAction)
     }
 }
@@ -78,7 +83,7 @@ private fun LoginForm(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    ActivityFrame(title = "Login", testTag = "login_form") {
+    ActivityFrame(title = "Login") {
         Column(
             verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -147,8 +152,7 @@ fun Welcome(
 ) {
     ActivityFrame(
         title = "Connect Feed",
-        testTag = "welcome_screen",
-        bottomContent = BottomApp.ok { onAction(LoginAction.SaveUser) }
+        bottomBar = { OkBar { onAction(LoginAction.SaveUser) } },
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
