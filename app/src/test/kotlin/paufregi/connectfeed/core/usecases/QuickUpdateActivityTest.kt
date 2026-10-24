@@ -165,6 +165,35 @@ class QuickUpdateActivityTest{
     }
 
     @Test
+    fun `Invalid - profile incompatible with activity`() = runTest {
+        val res = useCase(activity, profile.copy(type = ActivityType.Cycling, course = null), description, water, feel, effort, workout, gear)
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
+    }
+
+    @Test
+    fun `Invalid - course not allowed for activity`() = runTest {
+        val swim = activity.copy(type = ActivityType.Swimming)
+        val anyProfile = profile.copy(type = ActivityType.Any, course = Course(9, "loop", 1.0, ActivityType.Any))
+
+        val res = useCase(swim, anyProfile, description, water, feel, effort, workout, gear)
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
+    }
+
+    @Test
+    fun `Invalid - course incompatible with activity`() = runTest {
+        val anyProfile = profile.copy(type = ActivityType.Any, course = Course(9, "ride", 1.0, ActivityType.Cycling))
+
+        val res = useCase(activity, anyProfile, description, water, feel, effort, workout, gear)
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Validation error")
+    }
+
+    @Test
     fun `Update activity - garmin failed`() = runTest {
         val garminDescription = "Workout: VO₂ max"
         val stravaDescription = "description\n\nWorkout: VO₂ max\nBenefit: recovery"

@@ -26,8 +26,13 @@ class QuickUpdateActivity @Inject constructor(
         workout: Workout?,
         gear: Gear?,
     ): Result<Unit> = coroutineScope {
-        if (profile == null)
+        if (profile == null || !profile.compatible(activity))
             return@coroutineScope Result.failure("Validation error")
+        // Wildcard profiles may carry a course; it must still fit the concrete activity.
+        profile.course?.let { course ->
+            if (!activity.type.allowCourse || !course.compatible(activity))
+                return@coroutineScope Result.failure("Validation error")
+        }
 
         val garminDeferred = async {
             garminRepo.updateActivity(
