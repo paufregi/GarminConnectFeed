@@ -5,6 +5,7 @@ import com.appstractive.jwt.from
 import com.appstractive.jwt.issuedAt
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import paufregi.connectfeed.data.api.utils.serializers.InstantSerializer
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant

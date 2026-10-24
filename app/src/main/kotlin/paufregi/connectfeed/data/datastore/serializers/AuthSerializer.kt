@@ -9,11 +9,14 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object AuthSerializer : Serializer<Auth> {
+    // Defaults must be written: token issue times are derived on receipt and must survive restarts.
+    private val json = Json { encodeDefaults = true }
+
     override val defaultValue: Auth = Auth()
 
     override suspend fun readFrom(input: InputStream): Auth =
         runCatching {
-            Json.decodeFromString(
+            json.decodeFromString(
                 Auth.serializer(),
                 input.readBytes().decodeToString()
             )
@@ -21,6 +24,6 @@ object AuthSerializer : Serializer<Auth> {
 
     override suspend fun writeTo(t: Auth, output: OutputStream) =
         withContext(Dispatchers.IO) {
-                output.write(Json.encodeToString(Auth.serializer(), t).toByteArray())
+                output.write(json.encodeToString(Auth.serializer(), t).toByteArray())
         }
 }
