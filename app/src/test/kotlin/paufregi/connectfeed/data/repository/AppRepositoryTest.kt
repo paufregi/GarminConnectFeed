@@ -244,50 +244,29 @@ class AppRepositoryTest {
     }
 
     @Test
-    fun `Save gear`() = runTest {
-        val gear = Gear(
-            id = "gear-1",
-            name = "gear",
-            type = GearType.Shoe,
-            distance = 1000,
-            stravaId = null
+    fun `Replace gears`() = runTest {
+        val gears = listOf(
+            Gear(id = "gear-1", name = "gear 1", type = GearType.Shoe, distance = 1000),
+            Gear(id = "gear-2", name = "gear 2", type = GearType.Bike, distance = 2000, stravaId = "strava-2"),
         )
-        val gearEntity = GearEntity(
-            id = "gear-1",
-            userId = user.id,
-            name = "gear",
-            type = GearType.Shoe,
-            distance = 1000
+        val gearEntities = listOf(
+            GearEntity(id = "gear-1", userId = user.id, name = "gear 1", type = GearType.Shoe, distance = 1000),
+            GearEntity(id = "gear-2", userId = user.id, name = "gear 2", type = GearType.Bike, distance = 2000, stravaId = "strava-2"),
         )
 
-        coEvery { dao.saveGear(any()) } returns Unit
+        coEvery { dao.replaceGears(any(), any()) } returns Unit
 
-        repo.saveGear(user, gear)
+        repo.replaceGears(user, gears)
 
-        coVerify { dao.saveGear(gearEntity) }
+        coVerify { dao.replaceGears(user.id, gearEntities) }
     }
 
     @Test
-    fun `Delete gear`() = runTest {
-        val gear = Gear(
-            id = "gear-1",
-            name = "gear",
-            type = GearType.Shoe,
-            distance = 1000,
-            stravaId = null
-        )
-        val gearEntity = GearEntity(
-            id = "gear-1",
-            userId = user.id,
-            name = "gear",
-            type = GearType.Shoe,
-            distance = 1000
-        )
+    fun `Replace gears - empty list`() = runTest {
+        coEvery { dao.replaceGears(any(), any()) } returns Unit
 
-        coEvery { dao.deleteGear(any()) } returns Unit
+        repo.replaceGears(user, emptyList())
 
-        repo.deleteGear(user, gear)
-
-        coVerify { dao.deleteGear(gearEntity) }
+        coVerify { dao.replaceGears(user.id, emptyList()) }
     }
 }

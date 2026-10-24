@@ -27,11 +27,8 @@ class AppRepository @Inject constructor(
 
     fun getAllGears(user: User): Flow<List<Gear>> =
         garminDao.getAllGears(user.id).map { gears -> gears.map { it.toCore() } }
-    
-    suspend fun saveGear(user: User, gear: Gear) =
-        garminDao.saveGear(gear.toEntity(user.id))
 
-    suspend fun deleteGear(user: User, gear: Gear) =
-        garminDao.deleteGear(gear.toEntity(user.id))
+    suspend fun replaceGears(user: User, gears: List<Gear>) =
+        garminDao.replaceGears(user.id, gears.map { it.toEntity(user.id) })
 }
 

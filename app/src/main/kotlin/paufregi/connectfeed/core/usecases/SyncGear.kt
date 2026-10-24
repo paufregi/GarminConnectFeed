@@ -5,6 +5,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.firstOrNull
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.utils.andThen
+import paufregi.connectfeed.core.utils.runSuspendCatching
 import paufregi.connectfeed.data.api.strava.models.Athlete
 import paufregi.connectfeed.data.repository.AppRepository
 import paufregi.connectfeed.data.repository.AuthRepository
@@ -52,16 +53,7 @@ class SyncGear @Inject constructor(
                 )
             }
         }.andThen { gears ->
-                val existingGears = appRepo.getAllGears(user).firstOrNull() ?: emptyList()
-                val newGearIds = gears.map { it.id }.toSet()
-
-            runCatching {
-                existingGears
-                    .filterNot { it.id in newGearIds }
-                    .forEach { appRepo.deleteGear(user, it) }
-
-                gears.forEach { appRepo.saveGear(user, it) }
-            }
+            runSuspendCatching { appRepo.replaceGears(user, gears) }
         }
     }
 }

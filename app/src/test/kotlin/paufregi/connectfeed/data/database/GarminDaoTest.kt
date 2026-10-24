@@ -134,4 +134,47 @@ class GarminDaoTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @Test
+    fun `Replace gears - only affects the given user`() = runTest {
+        val kept = GearEntity(id = "gear-1", userId = 1, name = "gear1", type = GearType.Shoe, distance = 1000)
+        val removed = GearEntity(id = "gear-2", userId = 1, name = "gear2", type = GearType.Bike, distance = 2000)
+        val otherUser = GearEntity(id = "gear-3", userId = 2, name = "gear3", type = GearType.Bike, distance = 3000)
+        val updated = kept.copy(distance = 1500, stravaId = "strava-1")
+        val added = GearEntity(id = "gear-4", userId = 1, name = "gear4", type = GearType.Shoe, distance = 10)
+
+        dao.saveGear(kept)
+        dao.saveGear(removed)
+        dao.saveGear(otherUser)
+
+        dao.getAllGears(1).test {
+            assertThat(awaitItem()).containsExactly(removed, kept)
+
+            dao.replaceGears(1, listOf(updated, added))
+            assertThat(awaitItem()).containsExactly(updated, added)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        dao.getAllGears(2).test {
+            assertThat(awaitItem()).containsExactly(otherUser)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Replace gears - empty list clears the user`() = runTest {
+        val gear = GearEntity(id = "gear-1", userId = 1, name = "gear1", type = GearType.Shoe, distance = 1000)
+
+        dao.saveGear(gear)
+
+        dao.getAllGears(1).test {
+            assertThat(awaitItem()).containsExactly(gear)
+
+            dao.replaceGears(1, emptyList())
+            assertThat(awaitItem()).isEmpty()
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 }

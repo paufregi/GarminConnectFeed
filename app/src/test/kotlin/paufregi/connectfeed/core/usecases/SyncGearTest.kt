@@ -8,6 +8,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -46,16 +47,15 @@ class SyncGearTest {
         shoes = listOf(SummaryGear("strava-id-2", "brand shoe"))
     )
 
-    private val dbGears = listOf(
-        Gear("id-1", "bike-1", GearType.Bike, 1000, "strava-id-1"),
-        Gear("id-10", "shoes-10", GearType.Shoe, 100)
+    private val unmatchedGears = listOf(
+        Gear("id-1", "bike-1", GearType.Bike, 10000, null),
+        Gear("id-2", "brand shoe", GearType.Shoe, 123, null),
+        Gear("id-3", "other shoe", GearType.Shoe, 456, null),
     )
 
     @Before
     fun setup() {
         useCase = SyncGear(authRepo, isStravaConnected, garminRepo, stravaRepo, appRepo)
-        coEvery { appRepo.saveGear(any(), any()) } returns Unit
-        coEvery { appRepo.deleteGear(any(), any()) } returns Unit
     }
 
     @After
@@ -68,8 +68,8 @@ class SyncGearTest {
     fun `Sync gears`() = runTest {
         every { authRepo.getUser() } returns flowOf(user)
         every { isStravaConnected() } returns flowOf(false)
-        every { appRepo.getAllGears(user) } returns flowOf(dbGears)
         coEvery { garminRepo.getGears() } returns Result.success(garminGears)
+        coEvery { appRepo.replaceGears(any(), any()) } returns Unit
 
         val res = useCase()
 
@@ -78,20 +78,16 @@ class SyncGearTest {
         verify { authRepo.getUser() }
         verify { isStravaConnected() }
         coVerify { garminRepo.getGears() }
-        verify { appRepo.getAllGears(user) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-1" }) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-2" }) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-3" }) }
-        coVerify { appRepo.deleteGear(user, match { it.id == "id-10" }) }
+        coVerify { appRepo.replaceGears(user, unmatchedGears) }
     }
 
     @Test
     fun `Sync gears with strava`() = runTest {
         every { authRepo.getUser() } returns flowOf(user)
         every { isStravaConnected() } returns flowOf(true)
-        every { appRepo.getAllGears(user) } returns flowOf(dbGears)
         coEvery { garminRepo.getGears() } returns Result.success(garminGears)
         coEvery { stravaRepo.getAthlete() } returns Result.success(stravaAthlete)
+        coEvery { appRepo.replaceGears(any(), any()) } returns Unit
 
         val res = useCase()
 
@@ -101,42 +97,25 @@ class SyncGearTest {
         verify { isStravaConnected() }
         coVerify { garminRepo.getGears() }
         coVerify { stravaRepo.getAthlete() }
-        verify { appRepo.getAllGears(user) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-1" && it.stravaId == "strava-id-1" }) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-2" && it.stravaId == "strava-id-2" }) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-3" && it.stravaId == null }) }
-        coVerify { appRepo.deleteGear(user, match { it.id == "id-10" }) }
-    }
-
-    @Test
-    fun `Sync gears - empty DB`() = runTest {
-        every { authRepo.getUser() } returns flowOf(user)
-        every { isStravaConnected() } returns flowOf(true)
-        every { appRepo.getAllGears(user) } returns flowOf(emptyList())
-        coEvery { garminRepo.getGears() } returns Result.success(garminGears)
-        coEvery { stravaRepo.getAthlete() } returns Result.success(stravaAthlete)
-
-        val res = useCase()
-
-        assertThat(res.isSuccess).isTrue()
-
-        verify { authRepo.getUser() }
-        verify { isStravaConnected() }
-        coVerify { garminRepo.getGears() }
-        coVerify { stravaRepo.getAthlete() }
-        verify { appRepo.getAllGears(user) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-1" && it.stravaId == "strava-id-1" }) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-2" && it.stravaId == "strava-id-2" }) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-3" && it.stravaId == null }) }
+        coVerify {
+            appRepo.replaceGears(
+                user,
+                listOf(
+                    Gear("id-1", "bike-1", GearType.Bike, 10000, "strava-id-1"),
+                    Gear("id-2", "brand shoe", GearType.Shoe, 123, "strava-id-2"),
+                    Gear("id-3", "other shoe", GearType.Shoe, 456, null),
+                )
+            )
+        }
     }
 
     @Test
     fun `Sync gears - strava empty list`() = runTest {
         every { authRepo.getUser() } returns flowOf(user)
         every { isStravaConnected() } returns flowOf(true)
-        every { appRepo.getAllGears(user) } returns flowOf(dbGears)
         coEvery { garminRepo.getGears() } returns Result.success(garminGears)
         coEvery { stravaRepo.getAthlete() } returns Result.success(Athlete(1, emptyList(), emptyList()))
+        coEvery { appRepo.replaceGears(any(), any()) } returns Unit
 
         val res = useCase()
 
@@ -146,20 +125,16 @@ class SyncGearTest {
         verify { isStravaConnected() }
         coVerify { garminRepo.getGears() }
         coVerify { stravaRepo.getAthlete() }
-        verify { appRepo.getAllGears(user) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-1" && it.stravaId == null }) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-2" && it.stravaId == null }) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-3" && it.stravaId == null }) }
-        coVerify { appRepo.deleteGear(user, match { it.id == "id-10" }) }
+        coVerify { appRepo.replaceGears(user, unmatchedGears) }
     }
 
     @Test
     fun `Sync gears - garmin empty list`() = runTest {
         every { authRepo.getUser() } returns flowOf(user)
         every { isStravaConnected() } returns flowOf(true)
-        every { appRepo.getAllGears(user) } returns flowOf(dbGears)
         coEvery { garminRepo.getGears() } returns Result.success(emptyList())
         coEvery { stravaRepo.getAthlete() } returns Result.success(stravaAthlete)
+        coEvery { appRepo.replaceGears(any(), any()) } returns Unit
 
         val res = useCase()
 
@@ -169,36 +144,35 @@ class SyncGearTest {
         verify { isStravaConnected() }
         coVerify { garminRepo.getGears() }
         coVerify { stravaRepo.getAthlete() }
-        verify { appRepo.getAllGears(user) }
-        coVerify { appRepo.deleteGear(user, match { it.id == "id-1" }) }
-        coVerify { appRepo.deleteGear(user, match { it.id == "id-10" }) }
+        coVerify { appRepo.replaceGears(user, emptyList()) }
     }
 
     @Test
     fun `Sync gears - garmin failure`() = runTest {
         every { authRepo.getUser() } returns flowOf(user)
         every { isStravaConnected() } returns flowOf(true)
-        every { appRepo.getAllGears(user) } returns flowOf(dbGears)
         coEvery { garminRepo.getGears() } returns Result.failure("Failed to load Garmin")
         coEvery { stravaRepo.getAthlete() } returns Result.success(stravaAthlete)
 
         val res = useCase()
 
-        assertThat(res.isSuccess).isFalse()
+        assertThat(res.isFailure).isTrue()
+        assertThat(res.exceptionOrNull()).hasMessageThat().isEqualTo("Failed to load Garmin")
 
         verify { authRepo.getUser() }
         verify { isStravaConnected() }
         coVerify { garminRepo.getGears() }
         coVerify { stravaRepo.getAthlete() }
+        coVerify(exactly = 0) { appRepo.replaceGears(any(), any()) }
     }
 
     @Test
     fun `Sync gears - strava failure`() = runTest {
         every { authRepo.getUser() } returns flowOf(user)
         every { isStravaConnected() } returns flowOf(true)
-        every { appRepo.getAllGears(user) } returns flowOf(dbGears)
         coEvery { garminRepo.getGears() } returns Result.success(garminGears)
         coEvery { stravaRepo.getAthlete() } returns Result.failure("Failed to load Strava")
+        coEvery { appRepo.replaceGears(any(), any()) } returns Unit
 
         val res = useCase()
 
@@ -208,11 +182,42 @@ class SyncGearTest {
         verify { isStravaConnected() }
         coVerify { garminRepo.getGears() }
         coVerify { stravaRepo.getAthlete() }
-        verify { appRepo.getAllGears(user) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-1" && it.stravaId == null }) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-2" && it.stravaId == null }) }
-        coVerify { appRepo.saveGear(user, match { it.id == "id-3" && it.stravaId == null }) }
-        coVerify { appRepo.deleteGear(user, match { it.id == "id-10" }) }
+        coVerify { appRepo.replaceGears(user, unmatchedGears) }
+    }
+
+    @Test
+    fun `Sync gears - database failure`() = runTest {
+        every { authRepo.getUser() } returns flowOf(user)
+        every { isStravaConnected() } returns flowOf(false)
+        coEvery { garminRepo.getGears() } returns Result.success(garminGears)
+        coEvery { appRepo.replaceGears(any(), any()) } throws IllegalStateException("disk full")
+
+        val res = useCase()
+
+        assertThat(res.isFailure).isTrue()
+        assertThat(res.exceptionOrNull()).hasMessageThat().isEqualTo("disk full")
+
+        verify { authRepo.getUser() }
+        verify { isStravaConnected() }
+        coVerify { garminRepo.getGears() }
+        coVerify { appRepo.replaceGears(user, unmatchedGears) }
+    }
+
+    @Test
+    fun `Sync gears - cancellation is propagated`() = runTest {
+        every { authRepo.getUser() } returns flowOf(user)
+        every { isStravaConnected() } returns flowOf(false)
+        coEvery { garminRepo.getGears() } returns Result.success(garminGears)
+        coEvery { appRepo.replaceGears(any(), any()) } throws CancellationException("cancelled")
+
+        val thrown = runCatching { useCase() }.exceptionOrNull()
+
+        assertThat(thrown).isInstanceOf(CancellationException::class.java)
+
+        verify { authRepo.getUser() }
+        verify { isStravaConnected() }
+        coVerify { garminRepo.getGears() }
+        coVerify { appRepo.replaceGears(user, unmatchedGears) }
     }
 
     @Test
@@ -230,3 +235,4 @@ class SyncGearTest {
         verify { authRepo.getUser() }
     }
 }
+

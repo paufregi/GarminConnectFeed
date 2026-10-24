@@ -53,6 +53,16 @@ inline fun <reified T> apiCall(emptyBody: T? = null, call: () -> Response<T>): R
 inline fun <T, R> Result<T>.andThen(block: (T) -> Result<R>): Result<R> =
     fold(onSuccess = block, onFailure = { Result.failure(it) })
 
+/** Like [runCatching] but never swallows coroutine cancellation. */
+inline fun <T> runSuspendCatching(block: () -> T): Result<T> =
+    try {
+        Result.success(block())
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
 inline fun <T> Result<T>.finally(block: () -> Unit): Result<T> =
     this.onSuccess { block() }.onFailure { block() }.map { it }
 
