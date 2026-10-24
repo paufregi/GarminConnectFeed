@@ -48,7 +48,9 @@ class AppActivity : ComponentActivity() {
                 Notification {
                     when(val s = state) {
                         is AppState.Authenticated -> {
-                            key(state) {
+                            // Keying on the whole state would rebuild the nav host (and every
+                            // screen ViewModel) whenever the user's name/avatar is refreshed.
+                            key(s.user.id) {
                                 NavDisplay(
                                     backStack = backStack,
                                     onBack = { backStack.removeLastOrNull() },
