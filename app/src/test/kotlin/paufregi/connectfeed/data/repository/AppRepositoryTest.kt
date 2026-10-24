@@ -92,13 +92,13 @@ class AppRepositoryTest {
 
     @Test
     fun `Get all profile - no result`() = runTest {
-        coEvery { dao.getProfile(any()) } returns null
+        coEvery { dao.getProfile(any(), any()) } returns null
 
-        val res = repo.getProfile(1)
+        val res = repo.getProfile(user, 1)
 
         assertThat(res).isNull()
 
-        coVerify { dao.getProfile(1) }
+        coVerify { dao.getProfile(user.id, 1) }
     }
 
     @Test
@@ -135,13 +135,13 @@ class AppRepositoryTest {
             water = 2
         )
 
-        coEvery { dao.getProfile(any()) } returns profileEntity
+        coEvery { dao.getProfile(any(), any()) } returns profileEntity
 
-        val res = repo.getProfile(1)
+        val res = repo.getProfile(user, 1)
 
         assertThat(res).isEqualTo(profile)
 
-        coVerify { dao.getProfile(1) }
+        coVerify { dao.getProfile(user.id, 1) }
     }
 
     @Test

@@ -83,13 +83,14 @@ class GarminDaoTest {
         )
 
         dao.saveProfile(profile)
-        assertThat(dao.getProfile(profile.id)).isEqualTo(profile)
+        assertThat(dao.getProfile(profile.userId, profile.id)).isEqualTo(profile)
 
         dao.saveProfile(profile2)
-        assertThat(dao.getProfile(profile2.id)).isEqualTo(profile2)
+        assertThat(dao.getProfile(profile2.userId, profile2.id)).isEqualTo(profile2)
+        assertThat(dao.getProfile(profile.userId, profile2.id)).isNull()
 
         dao.deleteProfile(profile)
-        assertThat(dao.getProfile(profile.id)).isNull()
+        assertThat(dao.getProfile(profile.userId, profile.id)).isNull()
 
         dao.getAllProfiles(1).test {
             assertThat(awaitItem()).isEmpty()
