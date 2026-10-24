@@ -1,6 +1,7 @@
 package paufregi.connectfeed.core.utils
 
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -8,11 +9,25 @@ import java.util.Locale
 object Formatter {
     val dateTimeForFilename = { zoneId: ZoneId ->
         DateTimeFormatter
-            .ofPattern("yyyyMMdd_hhmmss")
+            .ofPattern("yyyyMMdd_HHmmss")
             .withZone(zoneId)
     }
 
     val dateTimeForImport = { locale: Locale -> SimpleDateFormat("yyyy.MM.dd HH:mm:ss", locale) }
+
+    fun localDateTime(
+        datetime: LocalDateTime,
+        today: LocalDateTime = LocalDateTime.now(),
+    ): String {
+        val yesterday = today.minusDays(1)
+        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+        return when {
+            datetime.toLocalDate() == today.toLocalDate() -> "Today ${datetime.format(timeFormatter)}"
+            datetime.toLocalDate() == yesterday.toLocalDate() -> "Yesterday ${datetime.format(timeFormatter)}"
+            else -> datetime.format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm"))
+        }
+    }
 
     fun distance(distance: Double): String =
         "%,.2f".format(Locale.getDefault(), distance / 1000)
@@ -20,22 +35,30 @@ object Formatter {
     fun distance(distance: Int): String =
         "%,d".format(Locale.getDefault(), distance / 1000)
 
-    fun workout(workout: String?) =
+    fun garminDescription(workout: String?) =
         workout?.let { "Workout: ${it.lowercase().vo2max()}" }
 
-    fun description(
+    fun stravaDescription(
         description: String?,
         trainingEffect: String?,
-        trainingEffectFlag: Boolean,
-        workout: String? = null,
-    ): String? {
-        val details = buildList {
-            workout?.let { add(workout(it)) }
-            trainingEffect?.let { if (trainingEffectFlag) add("Benefit: $it") }
-        }
+        workout: String?,
+    ): String =
+        buildList {
+            description?.let {
+                add(it)
+                if (workout != null || trainingEffect != null) add("")
+            }
 
-        if (details.isEmpty()) return description
-        if (description.isNullOrEmpty()) return details.joinToString("\n")
-        return "$description\n\n${details.joinToString("\n")}"
-    }
+            workout?.let { add("Workout: ${it.lowercase().vo2max()}") }
+            trainingEffect?.let {
+                val label = when (it) {
+                    "SPEED" -> "sprint"
+                    "ANAEROBIC_CAPACITY" -> "anaerobic capacity"
+                    "LACTATE_THRESHOLD" -> "threshold"
+                    "AEROBIC_BASE" -> "base"
+                    else -> it
+                }
+                add("Benefit: ${label.lowercase().vo2max()}")
+            }
+        }.joinToString("\n")
 }

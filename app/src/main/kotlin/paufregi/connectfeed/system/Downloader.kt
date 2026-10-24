@@ -16,6 +16,7 @@ class Downloader(val context: Context, val downloadManager: DownloadManager) {
         val request = DownloadManager.Request(release.downloadUrl.toUri())
             .setMimeType("application/vnd.android.package-archive")
             .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
+            .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
             .setTitle(apkName)
             .setDestinationInExternalFilesDir(context, "update", apkName)

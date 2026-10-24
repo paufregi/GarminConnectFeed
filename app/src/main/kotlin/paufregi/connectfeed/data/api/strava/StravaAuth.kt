@@ -2,7 +2,7 @@ package paufregi.connectfeed.data.api.strava
 
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
-import paufregi.connectfeed.data.api.strava.models.AuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthTokenDto
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -21,21 +21,21 @@ interface StravaAuth {
         @Field("client_secret") clientSecret: String,
         @Field("code") code: String,
         @Field("grant_type") grantType: String = "authorization_code"
-    ): Response<AuthToken>
+    ): Response<AuthTokenDto>
 
     @FormUrlEncoded
     @POST("api/v3/oauth/token")
     @Headers("Content-Type: application/x-www-form-urlencoded")
-    suspend fun refreshAccessToken(
+    suspend fun refresh(
         @Field("client_id") clientId: String,
         @Field("client_secret") clientSecret: String,
         @Field("refresh_token") refreshToken: String,
         @Field("grant_type") grantType: String = "refresh_token"
-    ): Response<AuthToken>
+    ): Response<AuthTokenDto>
 
     @FormUrlEncoded
     @POST("oauth/deauthorize")
-    suspend fun deauthorization(
+    suspend fun deauthorize(
         @Field("access_token") accessToken: String
     ): Response<Unit>
 

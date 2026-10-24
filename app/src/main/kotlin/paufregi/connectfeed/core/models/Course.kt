@@ -5,4 +5,7 @@ data class Course(
     val name: String,
     val distance: Double,
     val type: ActivityType
-)
+) {
+    fun compatible(activity: Activity): Boolean =
+        this.type.compatible(activity.type)
+}

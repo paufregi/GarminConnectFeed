@@ -5,10 +5,10 @@ import paufregi.connectfeed.core.models.ActivityType.Hiking
 import paufregi.connectfeed.core.models.ActivityType.Running
 import paufregi.connectfeed.core.models.ActivityType.Walking
 
-enum class GearType(order: Int) {
+enum class GearType(val order: Int) {
     Bike(1),
     Shoe(2),
-    Unknown(100);
+    Unknown(10);
 
     fun compatible(activityType: ActivityType): Boolean =
         when (this) {

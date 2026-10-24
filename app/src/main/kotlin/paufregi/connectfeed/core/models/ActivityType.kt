@@ -45,49 +45,11 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
     // Other
     data object Walking: ActivityType("Walking", Other) // 9
     data object Hiking: ActivityType("Hiking", Other) // 3
-
-    // Other
     data object Snowboarding: ActivityType("Snowboarding", Other) // 252
     data object Kayaking: ActivityType("Kayaking", Other) // 231
     data object StandUpPaddling: ActivityType("Stand Up Paddling", Other) // 239
     data object Surfing: ActivityType("Surfing", Other) // 240
     data object Windsurf: ActivityType("Windsurf", Other) // 242
-
-    // STRAVA
-    // Running
-    data object StravaRunning: ActivityType("Strava Running", Running) // Run
-    data object StravaTrailRun: ActivityType("Strava Trail Run", Running) // TrailRun
-
-    // Cycling
-    data object StravaRide: ActivityType("Ride", Cycling) // Ride
-    data object StravaMountainBikeRide: ActivityType("Mountain Bike Ride", Cycling) // MountainBikeRide
-    data object StravaGravelRide: ActivityType("Gravel Ride", Cycling) // GravelRide
-    data object StravaEBikeRide: ActivityType("E Bike Ride", Cycling) // EBikeRide
-    data object StravaEMountainBikeRide: ActivityType("E Mountain Bike Ride", Cycling) // EMountainBikeRide
-    data object StravaVirtualRide: ActivityType("Virtual Ride", Cycling) // VirtualRide
-
-    // Fitness
-    data object StravaHIIT: ActivityType("HIIT", Fitness) // HighIntensityIntervalTraining
-    data object StravaWorkout: ActivityType("Workout", Fitness) // Workout
-    data object StravaWeightTraining: ActivityType("Weight Training", Fitness) // WeightTraining
-    data object StravaYoga: ActivityType("Yoga", Fitness) // Yoga
-
-    // Swimming
-    data object StravaSwim: ActivityType("Swim", Swimming) // Swim
-
-    // Other
-    data object StravaWalk: ActivityType("Walk", Other) // Walk
-    data object StravaHike: ActivityType("Hike", Other) // Hike
-
-    // Other
-    data object StravaSnowboard: ActivityType("Snowboard", Other) // Snowboard
-    data object StravaKayaking: ActivityType("Kayaking", Other) // Kayaking
-    data object StravaStandUpPaddling: ActivityType("Stand Up Paddling", Other) // StandUpPaddling
-    data object StravaSurfing: ActivityType("Surfing", Other) // Surfing
-    data object StravaWindsurf: ActivityType("Windsurf", Other) // Windsurf
-
-    // Other
-    data object StravaFootball: ActivityType("Football", Other) // Soccer
 
     val allowCourse: Boolean
         get() = (parent ?: this) in setOf(Running, Cycling)

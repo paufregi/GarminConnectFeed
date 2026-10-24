@@ -31,7 +31,4 @@ interface GarminDao {
 
     @Query("SELECT * FROM gears WHERE userId = :userId ORDER BY type, name")
     fun getAllGears(userId: Long): Flow<List<GearEntity>>
-
-    @Query("SELECT * FROM gears WHERE ID = :id")
-    suspend fun getGear(id: String): GearEntity?
 }

@@ -4,26 +4,35 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.connectfeed.core.usecases.StravaCodeExchange
-import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.core.usecases.ConnectStrava
+import paufregi.connectfeed.core.usecases.GetUser
+import paufregi.connectfeed.presentation.ui.models.Status
 import javax.inject.Inject
 
 @HiltViewModel
 class StravaViewModel @Inject constructor(
-    val stravaCodeExchange: StravaCodeExchange
+    private val getUser: GetUser,
+    private val enableStrava: ConnectStrava
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<StravaState>(StravaState())
+    private val _state = MutableStateFlow<Status>(Status.Loading)
 
-    val state = _state.asStateFlow()
+    val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
+    val user = getUser().stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), null)
+
+    internal fun injectState(state: Status) {
+        _state.value = state
+    }
 
     fun exchangeToken(code: String) = viewModelScope.launch {
-        _state.update { StravaState(ProcessState.Processing) }
-        stravaCodeExchange(code)
-            .onSuccess { _state.update { StravaState(ProcessState.Success("Strava linked")) } }
-            .onFailure { _state.update { StravaState(ProcessState.Failure("Link failed")) } }
+        _state.update { Status.Loading }
+
+        enableStrava(code)
+            .onSuccess { _state.update { Status.Success("Strava linked") } }
+            .onFailure { e -> _state.update { Status.Failure(e.message ?: "unknown error") } }
     }
 }

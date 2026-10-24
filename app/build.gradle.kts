@@ -44,8 +44,7 @@ android {
             properties.load(localPropertiesFile.inputStream())
         }
 
-        buildConfigField("String", "GARMIN_CONSUMER_KEY", "\"${properties.getProperty("garmin.consumer_key", "GARMIN_CONSUMER_KEY")}\"")
-        buildConfigField("String", "GARMIN_CONSUMER_SECRET", "\"${properties.getProperty("garmin.consumer_secret", "GARMIN_CONSUMER_SECRET")}\"")
+        buildConfigField("String", "GARMIN_CLIENT_ID", "\"${properties.getProperty("garmin.client_id", "GARMIN_CLIENT_ID")}\"")
 
         buildConfigField("String", "STRAVA_CLIENT_ID", "\"${properties.getProperty("strava.client_id", "STRAVA_CLIENT_ID")}\"")
         buildConfigField("String", "STRAVA_CLIENT_SECRET", "\"${properties.getProperty("strava.client_secret", "STRAVA_CLIENT_SECRET")}\"")
@@ -81,6 +80,9 @@ android {
 
     testOptions {
         animationsDisabled = true
+        unitTests {
+            isIncludeAndroidResources = true
+        }
         managedDevices {
             allDevices {
                 register("pixel10", ManagedVirtualDevice::class) {
@@ -99,10 +101,14 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.datastore.tink)
+    implementation(libs.tink.android)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
@@ -126,15 +132,22 @@ dependencies {
     testImplementation(testFixtures(project(":app")))
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.junit)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.android.core.testing)
 
     androidTestImplementation(testFixtures(project(":app")))
     androidTestImplementation(libs.android.core.testing)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.hilt.testing)
 
+    kspTest(libs.hilt.compiler)
     kspAndroidTest(libs.hilt.compiler)
+    kspTestFixtures(libs.hilt.compiler)
+    testFixturesApi(libs.hilt.testing)
+    testFixturesImplementation(libs.androidx.room.ktx)
     testFixturesApi(libs.kotlinx.coroutines.test)
     testFixturesApi(libs.turbine)
     testFixturesApi(libs.truth)

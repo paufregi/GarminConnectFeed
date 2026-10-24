@@ -5,4 +5,8 @@ data class Gear(
     val name: String,
     val type: GearType = GearType.Unknown,
     val distance: Int? = null,
-)
+    val stravaId: String? = null
+) {
+    fun compatible(activity: Activity): Boolean =
+        this.type.compatible(activity.type)
+}
