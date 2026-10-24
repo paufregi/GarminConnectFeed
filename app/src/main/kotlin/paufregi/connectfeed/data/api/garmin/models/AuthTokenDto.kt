@@ -26,7 +26,6 @@ data class AuthTokenDto(
     fun isExpired(now: Instant = Clock.System.now()): Boolean =
         issuedAt + expiresIn.seconds <= now
 
-
     fun isRefreshTokenExpired(now: Instant = Clock.System.now()): Boolean =
-        issuedAt + refreshTokenExpiresIn.seconds > now
+        issuedAt + refreshTokenExpiresIn.seconds <= now
 }
