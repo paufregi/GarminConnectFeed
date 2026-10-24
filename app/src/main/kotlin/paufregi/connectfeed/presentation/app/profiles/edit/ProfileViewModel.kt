@@ -95,6 +95,7 @@ class ProfileViewModel @AssistedInject constructor(
     }
 
     private fun save() = viewModelScope.launch {
+        _state.update { it.copy(loading = true) }
         saveProfile(state.value.profile)
             .onSuccess {
                 notification.show("Profile saved")

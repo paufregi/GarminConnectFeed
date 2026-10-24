@@ -82,7 +82,7 @@ class SettingsViewModel @Inject constructor(
     private fun signOutAction() = viewModelScope.launch {
         _state.update { it.copy(loading = true) }
         try {
-            disconnectStrava()
+            // signOut() resets the whole auth store, Strava token included.
             signOut()
         } catch (e: IOException) {
             notification.show("Failed to sign out: ${e.message}")

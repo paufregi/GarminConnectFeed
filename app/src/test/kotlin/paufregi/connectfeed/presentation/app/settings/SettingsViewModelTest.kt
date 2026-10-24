@@ -228,7 +228,6 @@ class SettingsViewModelTest {
     fun `Sign out`() = runTest {
         val disconnect = CompletableDeferred<Unit>()
         coEvery { signOut() } coAnswers { disconnect.await() }
-        coEvery { disconnectStrava() } coAnswers { disconnect.await() }
         every { isStravaConnected() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
 
@@ -246,7 +245,7 @@ class SettingsViewModelTest {
         }
 
         coVerify { signOut() }
-        coVerify { disconnectStrava() }
+        coVerify(exactly = 0) { disconnectStrava() }
         coVerify { getLatestRelease() }
         verify { getUser() }
         verify { isStravaConnected() }
@@ -255,7 +254,7 @@ class SettingsViewModelTest {
     @Test
     fun `Sign out - failure`() = runTest {
         val disconnect = CompletableDeferred<Unit>()
-        coEvery { disconnectStrava() } coAnswers { disconnect.await() }
+        coEvery { signOut() } coAnswers { disconnect.await() }
         every { isStravaConnected() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
 
@@ -271,8 +270,7 @@ class SettingsViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { disconnectStrava() }
-        coVerify(exactly = 0) { signOut() }
+        coVerify { signOut() }
         coVerify { getLatestRelease() }
         verify { getUser() }
         verify { isStravaConnected() }

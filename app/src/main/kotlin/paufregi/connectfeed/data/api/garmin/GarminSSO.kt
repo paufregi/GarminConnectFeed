@@ -1,6 +1,5 @@
 package paufregi.connectfeed.data.api.garmin
 
-import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import paufregi.connectfeed.data.api.garmin.converters.SSOConverterFactory
 import paufregi.connectfeed.data.api.garmin.models.CSRF
@@ -64,11 +63,6 @@ interface GarminSSO {
             "accept" to "text/html",
             "Referer" to loginReferer
         )
-
-        private val json = Json {
-            ignoreUnknownKeys = true
-            explicitNulls = false
-        }
 
         fun client(url: String): GarminSSO =
             Retrofit.Builder()
