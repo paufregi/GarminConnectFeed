@@ -13,6 +13,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -22,21 +23,22 @@ import paufregi.connectfeed.core.models.User
 @ExperimentalMaterial3Api
 fun ActivityFrame(
     title: String,
+    testTag: String,
     user: User? = null,
     bottomContent: @Composable () -> Unit = { },
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
+        modifier = Modifier.testTag(testTag),
         topBar = {
             TopAppBar(
-                title = { Text(title, modifier = Modifier
-                    .padding(start = 20.dp)
-                    .testTag("title")) },
+                title = { Text(title, modifier = Modifier.padding(start = 20.dp)) },
                 actions = {
                     user?.let {
                         AsyncImage(
-                            model = user.profileImageUrl.takeIf { it.isNotEmpty() }?: Icons.Default.Person,
+                            model = user.profileImageUrl.takeIf { it.isNotEmpty() },
                             contentDescription = user.name,
+                            fallback = rememberVectorPainter(Icons.Default.Person),
                             modifier = Modifier
                                 .padding(end = 14.dp)
                                 .size(46.dp)
@@ -47,6 +49,6 @@ fun ActivityFrame(
             )
         },
         bottomBar = bottomContent,
-        content = content
+        content = content,
     )
 }

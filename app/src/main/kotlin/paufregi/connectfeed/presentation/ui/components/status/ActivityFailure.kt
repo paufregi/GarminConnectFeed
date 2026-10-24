@@ -34,6 +34,7 @@ fun ActivityFailure(
 ) {
     ActivityFrame(
         title = title,
+        testTag = "activity_failure",
         user = user,
         bottomContent = BottomApp.ok { onDone() }
     ) {
@@ -44,7 +45,6 @@ fun ActivityFailure(
                 .fillMaxSize()
                 .consumeWindowInsets(it)
                 .padding(it.add(20.dp))
-                .testTag("failure")
         ) {
             Icon(
                 imageVector = Icons.Filled.Cancel,

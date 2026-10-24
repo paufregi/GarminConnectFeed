@@ -13,6 +13,7 @@ fun ActivityLoading(
 ) {
     ActivityFrame(
         title = title,
+        testTag = "activity_loading",
         user = user,
     ) { Loading(it) }
 }

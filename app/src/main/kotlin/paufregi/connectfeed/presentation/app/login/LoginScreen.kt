@@ -78,7 +78,7 @@ private fun LoginForm(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    ActivityFrame(title = "") {
+    ActivityFrame(title = "Login", testTag = "login_form") {
         Column(
             verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -89,7 +89,7 @@ private fun LoginForm(
             Text(
                 text = "Garmin Connect",
                 fontSize = 28.sp,
-                modifier = Modifier.padding(bottom = 20.dp)
+                modifier = Modifier.padding(bottom = 20.dp).testTag("username")
             )
             Text(
                 text = "Sign in with your Garmin Connect credentials",
@@ -147,6 +147,7 @@ fun Welcome(
 ) {
     ActivityFrame(
         title = "Connect Feed",
+        testTag = "welcome_screen",
         bottomContent = BottomApp.ok { onAction(LoginAction.SaveUser) }
     ) {
         Column(
@@ -156,23 +157,17 @@ fun Welcome(
                 .fillMaxSize()
                 .consumeWindowInsets(it)
                 .padding(it.add(20.dp))
-                .testTag("success")
         ) {
             AsyncImage(
                 model = state.user?.profileImageUrl,
                 contentDescription = null,
-                modifier = Modifier
-                    .scale(1.75f)
-                    .clip(CircleShape)
-                    .testTag("profileImage")
+                modifier = Modifier.scale(1.75f).clip(CircleShape)
             )
             Spacer(modifier = Modifier.size(42.dp))
             Text(
                 text = "Welcome ${state.user?.name ?: "Unknown"}",
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier
-                    .padding(bottom = 50.dp)
-                    .testTag("message")
+                modifier = Modifier.padding(bottom = 50.dp)
             )
         }
     }

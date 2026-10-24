@@ -9,7 +9,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -17,6 +20,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import paufregi.connectfeed.presentation.app.activities.Activities
 import paufregi.connectfeed.presentation.app.gears.Gears
 import paufregi.connectfeed.presentation.app.login.LoginScreen
@@ -36,9 +40,16 @@ class AppActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        var state: AppState = AppState.Loading
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.state.collect { state = it }
+            }
+        }
+        splashScreen.setKeepOnScreenCondition { state is AppState.Loading }
+
         setContent {
             val state by viewModel.state.collectAsStateWithLifecycle()
-            splashScreen.setKeepOnScreenCondition { state is AppState.Loading }
 
             val backStack = rememberNavBackStack(AppRoute.Activities)
             val navigate: (AppRoute) -> Unit = { backStack.add(it) }
@@ -69,7 +80,7 @@ class AppActivity : ComponentActivity() {
                                 LoginScreen()
                             }
                         }
-                        is AppState.Loading -> {}
+                        is AppState.Loading -> { }
                     }
 
                 }

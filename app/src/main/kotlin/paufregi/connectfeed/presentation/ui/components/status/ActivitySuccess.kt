@@ -33,6 +33,7 @@ internal fun ActivitySuccess(
 ) {
     ActivityFrame(
         title = title,
+        testTag = "activity_success",
         user = user,
         bottomContent = BottomApp.ok { onDone() }
     ) {
