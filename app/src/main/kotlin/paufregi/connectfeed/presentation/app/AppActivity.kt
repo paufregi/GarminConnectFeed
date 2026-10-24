@@ -42,9 +42,6 @@ class AppActivity : ComponentActivity() {
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             val backStack = rememberNavBackStack(AppRoute.Activities)
-            // Drawer destinations are peers: switching between them must not pile up
-            // entries, otherwise back walks through every visit. Keep the root and the
-            // current destination only.
             val navigate: (AppRoute) -> Unit = { route ->
                 if (backStack.lastOrNull() != route) {
                     while (backStack.size > 1) backStack.removeLastOrNull()
@@ -56,8 +53,6 @@ class AppActivity : ComponentActivity() {
                 Notification {
                     when(val s = state) {
                         is AppState.Authenticated -> {
-                            // Keying on the whole state would rebuild the nav host (and every
-                            // screen ViewModel) whenever the user's name/avatar is refreshed.
                             key(s.user.id) {
                                 NavDisplay(
                                     backStack = backStack,

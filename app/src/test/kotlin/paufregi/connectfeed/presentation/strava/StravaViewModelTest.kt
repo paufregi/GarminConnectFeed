@@ -124,7 +124,7 @@ class StravaViewModelTest {
             viewModel.injectState(Status.Failure("previous"))
             assertThat(awaitItem()).isEqualTo(Status.Failure("previous"))
 
-            viewModel.exchangeToken(code)
+            viewModel.authorize(code)
 
             assertThat(awaitItem()).isEqualTo(Status.Loading)
             connectResult.complete(Result.success(Unit))
@@ -149,7 +149,7 @@ class StravaViewModelTest {
             viewModel.injectState(Status.Failure("previous"))
             assertThat(awaitItem()).isEqualTo(Status.Failure("previous"))
 
-            viewModel.exchangeToken(code)
+            viewModel.authorize(code)
 
             assertThat(awaitItem()).isEqualTo(Status.Loading)
             connectResult.complete(Result.failure("error"))
@@ -170,10 +170,10 @@ class StravaViewModelTest {
 
         viewModel.state.test {
             assertThat(awaitItem()).isEqualTo(Status.Loading)
-            viewModel.exchangeToken(code)
+            viewModel.authorize(code)
             assertThat(awaitItem()).isEqualTo(Status.Success("Strava linked"))
 
-            viewModel.exchangeToken("another-code")
+            viewModel.authorize("another-code")
 
             expectNoEvents()
             assertThat(viewModel.state.value).isEqualTo(Status.Success("Strava linked"))
@@ -183,6 +183,44 @@ class StravaViewModelTest {
         verify { getUser() }
         coVerify(exactly = 1) { enableStrava(code) }
         coVerify(exactly = 0) { enableStrava("another-code") }
+    }
+
+    @Test
+    fun `Authorize - no code`() = runTest {
+        every { getUser() } returns flowOf(user)
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+
+            viewModel.authorize(code = null)
+
+            assertThat(awaitItem()).isEqualTo(Status.Failure("No authorization code"))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+        coVerify(exactly = 0) { enableStrava(any()) }
+    }
+
+    @Test
+    fun `Authorize - denied by user`() = runTest {
+        every { getUser() } returns flowOf(user)
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+
+            viewModel.authorize(code = null, error = "access_denied")
+
+            assertThat(awaitItem()).isEqualTo(Status.Failure("access_denied"))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+        coVerify(exactly = 0) { enableStrava(any()) }
     }
 
     @Test
@@ -198,7 +236,7 @@ class StravaViewModelTest {
             viewModel.injectState(Status.Failure("previous"))
             assertThat(awaitItem()).isEqualTo(Status.Failure("previous"))
 
-            viewModel.exchangeToken(code)
+            viewModel.authorize(code)
 
             assertThat(awaitItem()).isEqualTo(Status.Loading)
             connectResult.complete(Result.failure(Exception()))

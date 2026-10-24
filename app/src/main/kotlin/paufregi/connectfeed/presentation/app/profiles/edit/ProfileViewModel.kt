@@ -51,8 +51,6 @@ class ProfileViewModel @AssistedInject constructor(
         )
     )
 
-    // The state flow restarts after the subscriber timeout (e.g. app backgrounded); reloading
-    // then would overwrite everything the user has typed, so the initial load runs once.
     private var loaded = false
 
     val state = _state

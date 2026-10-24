@@ -30,9 +30,10 @@ class StravaActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        intent.data?.getQueryParameter("code")?.let {
-            viewModel.exchangeToken(it)
-        }
+        viewModel.authorize(
+            code = intent.data?.getQueryParameter("code"),
+            error = intent.data?.getQueryParameter("error"),
+        )
 
         setContent {
             val state by viewModel.state.collectAsStateWithLifecycle()

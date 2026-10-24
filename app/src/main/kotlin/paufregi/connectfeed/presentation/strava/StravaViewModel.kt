@@ -31,9 +31,15 @@ class StravaViewModel @Inject constructor(
         _state.value = state
     }
 
-    fun exchangeToken(code: String) {
+    /** Handles the OAuth redirect; a missing code (denied or malformed callback) is a failure. */
+    fun authorize(code: String?, error: String? = null) {
         if (started) return
         started = true
+
+        if (code.isNullOrBlank()) {
+            _state.update { Status.Failure(error ?: "No authorization code") }
+            return
+        }
 
         viewModelScope.launch {
             _state.update { Status.Loading }

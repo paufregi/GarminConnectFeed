@@ -31,10 +31,9 @@ class SyncWeightActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)?.let {
-            viewModel.updateWeight(contentResolver.openInputStream(it))
-        }
+        val stream = intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+            ?.let { runCatching { contentResolver.openInputStream(it) }.getOrNull() }
+        viewModel.updateWeight(stream)
 
         setContent {
             val state by viewModel.state.collectAsStateWithLifecycle()
