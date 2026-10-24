@@ -107,8 +107,11 @@ class SettingsViewModel @Inject constructor(
 
         downloader.downloadApk(release)
             .onSuccess { id ->
-                val status = downloader.status(id).first { it != DownloadStatus.Running }
-                if (status == DownloadStatus.Failed) notification.show("Failed to download update")
+                when (downloader.status(id).first { it != DownloadStatus.Running }) {
+                    DownloadStatus.Completed -> downloader.install(id)
+                        .onFailure { notification.show("Failed to install update: ${it.message}") }
+                    else -> notification.show("Failed to download update")
+                }
             }
             .onFailure { notification.show("Failed to download update: ${it.message}") }
             .finally { _state.update { it.copy(updating = false) } }

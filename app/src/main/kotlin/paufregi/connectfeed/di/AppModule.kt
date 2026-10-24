@@ -24,7 +24,6 @@ import paufregi.connectfeed.data.datastore.models.Auth
 import paufregi.connectfeed.data.datastore.serializers.AuthSerializer
 import paufregi.connectfeed.data.utils.SecurityManager
 import paufregi.connectfeed.system.Downloader
-import paufregi.connectfeed.system.UpdateStore
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
@@ -118,5 +117,5 @@ object AppModule {
     @Provides
     @Singleton
     fun provideDownloader(@ApplicationContext context: Context): Downloader =
-        Downloader(context, context.getSystemService(DownloadManager::class.java), UpdateStore(context))
+        Downloader(context, context.getSystemService(DownloadManager::class.java))
 }

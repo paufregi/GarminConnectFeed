@@ -336,6 +336,7 @@ class SettingsViewModelTest {
         coEvery { getLatestRelease() } returns Result.success(release)
         every { downloader.downloadApk(release) } returns Result.success(7L)
         every { downloader.status(7L) } returns status
+        every { downloader.install(7L) } returns Result.success(Unit)
 
         viewModel = createViewModel()
 
@@ -356,7 +357,38 @@ class SettingsViewModelTest {
         verify { isStravaConnected() }
         verify { downloader.downloadApk(release) }
         verify { downloader.status(7L) }
+        verify { downloader.install(7L) }
         verify(exactly = 0) { notification.show(any()) }
+    }
+
+    @Test
+    fun `Update - install failed`() = runTest {
+        val status = MutableSharedFlow<DownloadStatus>()
+        every { isStravaConnected() } returns flowOf(true)
+        coEvery { getLatestRelease() } returns Result.success(release)
+        every { downloader.downloadApk(release) } returns Result.success(7L)
+        every { downloader.status(7L) } returns status
+        every { downloader.install(7L) } returns Result.failure("Downloaded update not found")
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            awaitItem()
+            viewModel.onAction(SettingsAction.Update)
+
+            assertThat(awaitItem().updating).isTrue()
+            status.emit(DownloadStatus.Completed)
+            assertThat(awaitItem().updating).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify { getLatestRelease() }
+        verify { getUser() }
+        verify { isStravaConnected() }
+        verify { downloader.downloadApk(release) }
+        verify { downloader.status(7L) }
+        verify { downloader.install(7L) }
+        verify { notification.show("Failed to install update: Downloaded update not found") }
     }
 
     @Test
@@ -384,6 +416,7 @@ class SettingsViewModelTest {
         verify { isStravaConnected() }
         verify { downloader.downloadApk(release) }
         verify { downloader.status(7L) }
+        verify(exactly = 0) { downloader.install(any()) }
         verify { notification.show("Failed to download update") }
     }
 
