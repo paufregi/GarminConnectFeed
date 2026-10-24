@@ -7,7 +7,7 @@ compose = "1.12.0"
 materialIconExtended = "1.7.8"
 core = "1.7.0"
 coreSplashscreen = "1.2.0"
-coreTesting = "1.1.1"
+coreTesting = "2.2.0"
 datastore = "1.3.0-rc01"
 tinkAndroid = "1.23.0"
 fit = "21.218.0"
@@ -24,7 +24,6 @@ material3 = "1.4.0"
 mockk = "1.14.11"
 navigation3 = "1.2.0"
 okhttp = "5.5.0"
-okhttpSignpost = "1.1.0"
 retrofit = "3.0.0"
 robolectric = "4.17"
 roomVersion = "2.8.5"
@@ -61,7 +60,7 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 commons-csv = { module = "org.apache.commons:commons-csv", version.ref = "commonsCsv" }
 retrofit-converter = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
-android-core-testing = { module = "android.arch.core:core-testing", version.ref = "coreTesting" }
+android-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 fit = { module = "com.garmin:fit", version.ref = "fit" }
 hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
