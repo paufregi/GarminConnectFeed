@@ -9,9 +9,11 @@ import paufregi.connectfeed.data.api.garmin.models.Ticket
 import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.datastore.AuthStore
 import javax.inject.Inject
+import javax.inject.Singleton
 import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto as GarminAuthToken
 import paufregi.connectfeed.data.api.strava.models.AuthTokenDto as StravaAuthToken
 
+@Singleton
 class AuthRepository @Inject constructor(
     private val garminSSO: GarminSSO,
     private val garminAuth: GarminAuth,

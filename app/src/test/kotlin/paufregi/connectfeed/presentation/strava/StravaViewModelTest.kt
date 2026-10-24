@@ -162,6 +162,30 @@ class StravaViewModelTest {
     }
 
     @Test
+    fun `Exchange token - already started`() = runTest {
+        every { getUser() } returns flowOf(user)
+        coEvery { enableStrava(any()) } returns Result.success(Unit)
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            viewModel.exchangeToken(code)
+            assertThat(awaitItem()).isEqualTo(Status.Success("Strava linked"))
+
+            viewModel.exchangeToken("another-code")
+
+            expectNoEvents()
+            assertThat(viewModel.state.value).isEqualTo(Status.Success("Strava linked"))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+        coVerify(exactly = 1) { enableStrava(code) }
+        coVerify(exactly = 0) { enableStrava("another-code") }
+    }
+
+    @Test
     fun `Exchange token - failure without message`() = runTest {
         val connectResult = CompletableDeferred<Result<Unit>>()
         every { getUser() } returns flowOf(user)

@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -20,21 +21,23 @@ import paufregi.connectfeed.core.usecases.RefreshUser
 import paufregi.connectfeed.core.usecases.SignOut
 import paufregi.connectfeed.core.utils.finally
 import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
+import paufregi.connectfeed.system.DownloadStatus
 import paufregi.connectfeed.system.Downloader
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Named
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val getUser: GetUser,
-    private val isStravaConnected: IsStravaConnected,
+    getUser: GetUser,
+    isStravaConnected: IsStravaConnected,
     private val getLatestRelease: GetLatestRelease,
     private val refreshUser: RefreshUser,
     private val signOut: SignOut,
     private val disconnectStrava: DisconnectStrava,
     private val notification: NotificationManager,
+    private val downloader: Downloader,
     @param:Named("currentVersion") val version: String,
-    @param:Named("downloader") val downloader: Downloader,
     @param:Named("StravaAuthUri") val stravaAuthUri: Uri,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SettingsState(currentVersion = Version.parse(version)))
@@ -77,21 +80,37 @@ class SettingsViewModel @Inject constructor(
 
     private fun signOutAction() = viewModelScope.launch {
         _state.update { it.copy(loading = true) }
-        disconnectStrava()
-        signOut()
-        _state.update { it.copy(loading = false) }
+        try {
+            disconnectStrava()
+            signOut()
+        } catch (e: IOException) {
+            notification.show("Failed to sign out: ${e.message}")
+        } finally {
+            _state.update { it.copy(loading = false) }
+        }
     }
 
     private fun signOutStravaAction() = viewModelScope.launch {
         _state.update { it.copy(loading = true) }
-        disconnectStrava()
-        _state.update { it.copy(loading = false) }
+        try {
+            disconnectStrava()
+        } catch (e: IOException) {
+            notification.show("Failed to disconnect Strava: ${e.message}")
+        } finally {
+            _state.update { it.copy(loading = false) }
+        }
     }
 
     private fun updateAction() = viewModelScope.launch {
-        state.value.latestRelease?.let { release ->
-            _state.update { it.copy(updating = true) }
-            downloader.downloadApk(release)
-        }
+        val release = state.value.latestRelease ?: return@launch
+        _state.update { it.copy(updating = true) }
+
+        downloader.downloadApk(release)
+            .onSuccess { id ->
+                val status = downloader.status(id).first { it != DownloadStatus.Running }
+                if (status == DownloadStatus.Failed) notification.show("Failed to download update")
+            }
+            .onFailure { notification.show("Failed to download update: ${it.message}") }
+            .finally { _state.update { it.copy(updating = false) } }
     }
 }

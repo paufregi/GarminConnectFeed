@@ -6,9 +6,10 @@ import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.presentation.ui.models.Status
 
 data class QuickEditState(
-    val status: Status? = null,
+    val status: Status? = Status.Loading,
 
-    val activity: Activity,
+    val activity: Activity = Activity.EMPTY,
+    val notFound: Boolean = false,
     val profiles: List<Profile> = emptyList(),
     val gears: List<Gear> = emptyList(),
 
@@ -19,9 +20,6 @@ data class QuickEditState(
     val effort: Float? = null,
     val feel: Float? = null,
 ) {
-    val notFound: Boolean
-        get() = activity == Activity.EMPTY
-
     val availableProfiles: List<Profile>
         get() = profiles.filter { it.type.compatible(activity.type) }
 

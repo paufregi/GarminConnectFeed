@@ -12,6 +12,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -30,7 +31,9 @@ import paufregi.connectfeed.core.usecases.SignOut
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
+import paufregi.connectfeed.system.DownloadStatus
 import paufregi.connectfeed.system.Downloader
+import java.io.IOException
 
 @ExperimentalCoroutinesApi
 class SettingsViewModelTest {
@@ -55,7 +58,7 @@ class SettingsViewModelTest {
     private lateinit var viewModel: SettingsViewModel
 
     private fun createViewModel() =
-        SettingsViewModel(getUser, isStravaConnected, getLatestRelease, refreshUser, signOut, disconnectStrava, notification, currentVersion, downloader, stravaUri)
+        SettingsViewModel(getUser, isStravaConnected, getLatestRelease, refreshUser, signOut, disconnectStrava, notification, downloader, currentVersion, stravaUri)
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
@@ -249,6 +252,33 @@ class SettingsViewModelTest {
     }
 
     @Test
+    fun `Sign out - failure`() = runTest {
+        val disconnect = CompletableDeferred<Unit>()
+        coEvery { disconnectStrava() } coAnswers { disconnect.await() }
+        every { isStravaConnected() } returns flowOf(true)
+        coEvery { getLatestRelease() } returns Result.success(release)
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(SettingsAction.SignOut)
+
+            assertThat(awaitItem().loading).isTrue()
+            disconnect.completeExceptionally(IOException("disk full"))
+            assertThat(awaitItem().loading).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify { disconnectStrava() }
+        coVerify(exactly = 0) { signOut() }
+        coVerify { getLatestRelease() }
+        verify { getUser() }
+        verify { isStravaConnected() }
+        verify { notification.show("Failed to sign out: disk full") }
+    }
+
+    @Test
     fun `Sign out strava`() = runTest {
         val disconnect = CompletableDeferred<Unit>()
         coEvery { disconnectStrava() } coAnswers { disconnect.await() }
@@ -274,10 +304,38 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `Update - success`() = runTest {
+    fun `Sign out strava - failure`() = runTest {
+        val disconnect = CompletableDeferred<Unit>()
+        coEvery { disconnectStrava() } coAnswers { disconnect.await() }
         every { isStravaConnected() } returns flowOf(true)
         coEvery { getLatestRelease() } returns Result.success(release)
-        every { downloader.downloadApk(any()) } returns Result.success(Unit)
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onAction(SettingsAction.StravaDisconnect)
+
+            assertThat(awaitItem().loading).isTrue()
+            disconnect.completeExceptionally(IOException("disk full"))
+            assertThat(awaitItem().loading).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify { disconnectStrava() }
+        coVerify { getLatestRelease() }
+        verify { getUser() }
+        verify { isStravaConnected() }
+        verify { notification.show("Failed to disconnect Strava: disk full") }
+    }
+
+    @Test
+    fun `Update - success`() = runTest {
+        val status = MutableSharedFlow<DownloadStatus>()
+        every { isStravaConnected() } returns flowOf(true)
+        coEvery { getLatestRelease() } returns Result.success(release)
+        every { downloader.downloadApk(release) } returns Result.success(7L)
+        every { downloader.status(7L) } returns status
 
         viewModel = createViewModel()
 
@@ -285,8 +343,11 @@ class SettingsViewModelTest {
             awaitItem()
             viewModel.onAction(SettingsAction.Update)
 
-            val state = awaitItem()
-            assertThat(state.updating).isTrue()
+            assertThat(awaitItem().updating).isTrue()
+            status.emit(DownloadStatus.Running)
+            expectNoEvents()
+            status.emit(DownloadStatus.Completed)
+            assertThat(awaitItem().updating).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -294,6 +355,36 @@ class SettingsViewModelTest {
         verify { getUser() }
         verify { isStravaConnected() }
         verify { downloader.downloadApk(release) }
+        verify { downloader.status(7L) }
+        verify(exactly = 0) { notification.show(any()) }
+    }
+
+    @Test
+    fun `Update - download failed`() = runTest {
+        val status = MutableSharedFlow<DownloadStatus>()
+        every { isStravaConnected() } returns flowOf(true)
+        coEvery { getLatestRelease() } returns Result.success(release)
+        every { downloader.downloadApk(release) } returns Result.success(7L)
+        every { downloader.status(7L) } returns status
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            awaitItem()
+            viewModel.onAction(SettingsAction.Update)
+
+            assertThat(awaitItem().updating).isTrue()
+            status.emit(DownloadStatus.Failed)
+            assertThat(awaitItem().updating).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify { getLatestRelease() }
+        verify { getUser() }
+        verify { isStravaConnected() }
+        verify { downloader.downloadApk(release) }
+        verify { downloader.status(7L) }
+        verify { notification.show("Failed to download update") }
     }
 
     @Test
@@ -315,6 +406,7 @@ class SettingsViewModelTest {
         verify { getUser() }
         verify { isStravaConnected() }
         coVerify { getLatestRelease() }
+        verify(exactly = 0) { downloader.downloadApk(any()) }
     }
 
     @Test
@@ -329,7 +421,8 @@ class SettingsViewModelTest {
             awaitItem()
             viewModel.onAction(SettingsAction.Update)
 
-            assertThat(awaitItem().updating).isTrue()
+            expectNoEvents()
+            assertThat(viewModel.state.value.updating).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -337,6 +430,8 @@ class SettingsViewModelTest {
         verify { isStravaConnected() }
         verify { downloader.downloadApk(release) }
         coVerify { getLatestRelease() }
+        verify { notification.show("Failed to download update: error") }
+        verify(exactly = 0) { downloader.status(any()) }
     }
 
     @Test

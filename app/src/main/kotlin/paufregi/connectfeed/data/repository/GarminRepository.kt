@@ -18,7 +18,9 @@ import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivityDto
 import java.io.File
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class GarminRepository @Inject constructor(
     private val garmin: GarminConnect,
 ) {
@@ -39,7 +41,8 @@ class GarminRepository @Inject constructor(
         apiCall(emptyList()) { garmin.getActivities(limit) }
             .onSuccess { activities = it.associateBy { a -> a.id } }
 
-    fun getActivity(id: Long): ActivityDto? = activities[id]
+    suspend fun getActivity(id: Long): Result<ActivityDto> =
+        activities[id]?.let { Result.success(it) } ?: apiCall { garmin.getActivity(id) }
 
     suspend fun getGears(): Result<List<GearDto>> =
         apiCall(emptyList()) { garmin.getGears() }

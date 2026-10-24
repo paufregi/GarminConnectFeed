@@ -29,6 +29,7 @@ import paufregi.connectfeed.core.usecases.GetGears
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
+import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 import paufregi.connectfeed.presentation.ui.models.Status
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
@@ -79,7 +80,7 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Initial state`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -101,33 +102,60 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Initial state - missing activity`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns null
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.failure("not found")
 
         viewModel = createViewModel()
 
         viewModel.state.test {
             val state = awaitItem()
+            assertThat(state.status).isNull()
             assertThat(state.notFound).isTrue()
             assertThat(state.activity).isEqualTo(Activity.EMPTY)
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
-        verify { notification.show("Activity not found") }
+        verify { notification.show("Failed to load activity: not found") }
+    }
+
+    @Test
+    fun `Initial state - loading activity`() = runTest {
+        val result = CompletableDeferred<Result<Activity>>()
+        coEvery { getActivity(activity.id, activity.stravaId) } coAnswers { result.await() }
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            val loading = awaitItem()
+            assertThat(loading.status).isEqualTo(Status.Loading)
+            assertThat(loading.notFound).isFalse()
+            assertThat(loading.activity).isEqualTo(Activity.EMPTY)
+
+            result.complete(Result.success(activity))
+
+            val loaded = awaitItem()
+            assertThat(loaded.status).isNull()
+            assertThat(loaded.activity).isEqualTo(activity)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify { getActivity(activity.id, activity.stravaId) }
+        verify { getProfiles() }
+        verify { getGears() }
     }
 
     @Test
     fun `Set profile`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -141,14 +169,14 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Set profile - incompatible`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -166,14 +194,14 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Set profile - null`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -189,14 +217,14 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Set gear`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -208,14 +236,14 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Set gear - incompatible`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -232,14 +260,14 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Set description`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -251,14 +279,14 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Set water`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -270,14 +298,14 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Set effort`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -289,14 +317,14 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Set effort - zero`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -310,14 +338,14 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Set effort - negative`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -331,14 +359,14 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Set effort - null`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -352,14 +380,14 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Set feel`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -371,14 +399,14 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
 
     @Test
     fun `Reset status`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
 
         viewModel = createViewModel()
 
@@ -392,7 +420,7 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
     }
@@ -400,7 +428,7 @@ class QuickEditViewModelTest {
     @Test
     fun `Save - success`() = runTest {
         val result = CompletableDeferred<Result<Unit>>()
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
         coEvery { getWorkout(8) } returns Result.success(workout)
         coEvery {
             updateActivity(activity, profile, "description", 400, 4f, 2f, workout, gear)
@@ -412,6 +440,7 @@ class QuickEditViewModelTest {
             skipItems(1)
             viewModel.injectState(
                 QuickEditState(
+                    status = null,
                     activity = activity,
                     profile = profile,
                     gear = gear,
@@ -430,7 +459,7 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
         coVerify { getWorkout(8) }
@@ -440,7 +469,7 @@ class QuickEditViewModelTest {
     @Test
     fun `Save - failure`() = runTest {
         val result = CompletableDeferred<Result<Unit>>()
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
         coEvery { getWorkout(8) } returns Result.success(workout)
         coEvery {
             updateActivity(activity, profile, null, null, null, null, workout, null)
@@ -450,7 +479,7 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             skipItems(1)
-            viewModel.injectState(QuickEditState(activity = activity, profile = profile))
+            viewModel.injectState(QuickEditState(status = null, activity = activity, profile = profile))
             assertThat(awaitItem().profile).isEqualTo(profile)
             viewModel.onAction(QuickEditAction.Save)
 
@@ -460,7 +489,7 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
         coVerify { getWorkout(8) }
@@ -470,7 +499,7 @@ class QuickEditViewModelTest {
     @Test
     fun `Save - failure without message`() = runTest {
         val result = CompletableDeferred<Result<Unit>>()
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
         coEvery { getWorkout(8) } returns Result.success(workout)
         coEvery {
             updateActivity(activity, profile, null, null, null, null, workout, null)
@@ -480,7 +509,7 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             skipItems(1)
-            viewModel.injectState(QuickEditState(activity = activity, profile = profile))
+            viewModel.injectState(QuickEditState(status = null, activity = activity, profile = profile))
             assertThat(awaitItem().profile).isEqualTo(profile)
             viewModel.onAction(QuickEditAction.Save)
 
@@ -490,7 +519,7 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
         coVerify { getWorkout(8) }
@@ -500,7 +529,7 @@ class QuickEditViewModelTest {
     @Test
     fun `Save - no profile`() = runTest {
         val result = CompletableDeferred<Result<Unit>>()
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
         coEvery { getWorkout(8) } returns Result.success(workout)
         coEvery {
             updateActivity(activity, null, null, null, null, null, workout, null)
@@ -518,7 +547,7 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
         coVerify { getWorkout(8) }
@@ -529,7 +558,7 @@ class QuickEditViewModelTest {
     fun `Save - no workout`() = runTest {
         val noWorkoutActivity = activity.copy(workoutId = null)
         val result = CompletableDeferred<Result<Unit>>()
-        every { getActivity(activity.id, activity.stravaId) } returns noWorkoutActivity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(noWorkoutActivity)
         coEvery {
             updateActivity(noWorkoutActivity, profile, null, null, null, null, null, null)
         } coAnswers { result.await() }
@@ -538,7 +567,7 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             skipItems(1)
-            viewModel.injectState(QuickEditState(activity = noWorkoutActivity, profile = profile))
+            viewModel.injectState(QuickEditState(status = null, activity = noWorkoutActivity, profile = profile))
             assertThat(awaitItem().profile).isEqualTo(profile)
             viewModel.onAction(QuickEditAction.Save)
 
@@ -548,7 +577,7 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
         coVerify { updateActivity(noWorkoutActivity, profile, null, null, null, null, null, null) }
@@ -557,7 +586,7 @@ class QuickEditViewModelTest {
     @Test
     fun `Save - workout unavailable`() = runTest {
         val result = CompletableDeferred<Result<Unit>>()
-        every { getActivity(activity.id, activity.stravaId) } returns activity
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.success(activity)
         coEvery { getWorkout(8) } returns Result.failure(IllegalStateException("workout unavailable"))
         coEvery {
             updateActivity(activity, profile, null, null, null, null, null, null)
@@ -567,7 +596,7 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             skipItems(1)
-            viewModel.injectState(QuickEditState(activity = activity, profile = profile))
+            viewModel.injectState(QuickEditState(status = null, activity = activity, profile = profile))
             assertThat(awaitItem().profile).isEqualTo(profile)
             viewModel.onAction(QuickEditAction.Save)
 
@@ -577,7 +606,7 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
         coVerify { getWorkout(8) }
@@ -586,21 +615,22 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Save - missing activity`() = runTest {
-        every { getActivity(activity.id, activity.stravaId) } returns null
+        coEvery { getActivity(activity.id, activity.stravaId) } returns Result.failure("not found")
 
         viewModel = createViewModel()
 
         viewModel.state.test {
-            assertThat(awaitItem().activity).isEqualTo(Activity.EMPTY)
+            assertThat(awaitItem().notFound).isTrue()
             viewModel.onAction(QuickEditAction.Save)
 
             expectNoEvents()
             cancelAndIgnoreRemainingEvents()
         }
 
-        verify { getActivity(activity.id, activity.stravaId) }
+        coVerify { getActivity(activity.id, activity.stravaId) }
         verify { getProfiles() }
         verify { getGears() }
-        verify { notification.show("Activity not found") }
+        verify { notification.show("Failed to load activity: not found") }
+        coVerify(exactly = 0) { updateActivity(any(), any(), any(), any(), any(), any(), any(), any()) }
     }
 }

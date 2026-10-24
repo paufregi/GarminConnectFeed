@@ -14,7 +14,9 @@ import paufregi.connectfeed.data.api.utils.failedAuthResponse
 import paufregi.connectfeed.data.repository.AuthRepository
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 
+@Singleton
 class AuthInterceptor @Inject constructor(
     private val repo: AuthRepository,
     @param:Named("StravaClientId") val clientId: String,

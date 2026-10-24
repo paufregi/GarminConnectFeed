@@ -10,7 +10,9 @@ import paufregi.connectfeed.data.api.strava.models.Athlete
 import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class StravaRepository @Inject constructor(
     private val strava: Strava,
 ) {

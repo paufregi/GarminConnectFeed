@@ -41,6 +41,7 @@ class QuickEditScreenTest {
         setContent {
             QuickEditContent(
                 state = QuickEditState(
+                    status = null,
                     activity = testActivity,
                     profiles = emptyList(),
                 )
@@ -57,7 +58,7 @@ class QuickEditScreenTest {
         var action: QuickEditAction? = null
         setContent {
             QuickEditContent(
-                state = QuickEditState(activity = testActivity, profiles = listOf(profile)),
+                state = QuickEditState(status = null, activity = testActivity, profiles = listOf(profile)),
                 onAction = { action = it },
             )
         }
@@ -81,6 +82,7 @@ class QuickEditScreenTest {
         setContent {
             QuickEditContent(
                 state = QuickEditState(
+                    status = null,
                     activity = testActivity,
                     profiles = listOf(profile),
                     gears = listOf(gear),

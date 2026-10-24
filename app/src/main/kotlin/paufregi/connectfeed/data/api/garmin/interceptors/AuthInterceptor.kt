@@ -13,10 +13,13 @@ import paufregi.connectfeed.data.api.utils.authRequest
 import paufregi.connectfeed.data.api.utils.failedAuthResponse
 import paufregi.connectfeed.data.repository.AuthRepository
 import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Singleton
 
+@Singleton
 class AuthInterceptor @Inject constructor(
     private val repo: AuthRepository,
-    private val clientId: String,
+    @param:Named("GarminClientId") private val clientId: String,
 ) : Interceptor {
 
     // Parallel requests must not each refresh an expired token; the first one wins and

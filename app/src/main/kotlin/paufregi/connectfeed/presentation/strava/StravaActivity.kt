@@ -14,12 +14,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.presentation.ui.components.frame.ActivityFrame
 import paufregi.connectfeed.presentation.ui.components.frame.OkBar
+import paufregi.connectfeed.presentation.ui.components.loading.Loading
 import paufregi.connectfeed.presentation.ui.components.status.FailureMessage
 import paufregi.connectfeed.presentation.ui.components.status.SuccessMessage
 import paufregi.connectfeed.presentation.ui.models.Status
 import paufregi.connectfeed.presentation.ui.theme.Theme
-
-private const val TITLE = "Connect Strava"
 
 @AndroidEntryPoint
 @ExperimentalMaterial3Api
@@ -53,7 +52,7 @@ internal fun StravaContent(
     onDone: () -> Unit = {},
 ) {
     ActivityFrame(
-        title = TITLE,
+        title = "Connect Strava",
         user = user,
         loading = state is Status.Loading,
         bottomBar = { OkBar(onDone) },
@@ -61,7 +60,7 @@ internal fun StravaContent(
         when (state) {
             is Status.Success -> SuccessMessage("Strava linked!", padding)
             is Status.Failure -> FailureMessage("Link failed!", state.reason, padding)
-            is Status.Loading -> Unit
+            is Status.Loading -> Loading()
         }
     }
 }

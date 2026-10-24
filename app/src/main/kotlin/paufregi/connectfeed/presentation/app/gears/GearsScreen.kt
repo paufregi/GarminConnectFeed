@@ -29,8 +29,6 @@ import paufregi.connectfeed.presentation.ui.components.cards.GearCard
 import paufregi.connectfeed.presentation.ui.components.frame.AppFrame
 import paufregi.connectfeed.presentation.ui.utils.add
 
-private const val TITLE = "Gears"
-
 @Composable
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
@@ -54,7 +52,7 @@ internal fun GearsContent(
     onSync: () -> Unit = {},
 ) {
     AppFrame(
-        title = TITLE,
+        title = "Gears",
         user = user,
         currentRoute = AppRoute.Gears,
         navigate = navigate,

@@ -15,6 +15,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -23,7 +24,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.ui.components.Dropdown
@@ -47,9 +51,13 @@ internal fun ProfileScreen(
     val viewModel = hiltViewModel<ProfileViewModel, ProfileViewModel.Factory>(
         creationCallback = { it.create(id) })
 
-    LaunchedEffect(viewModel) {
-        viewModel.effects.collect { effect ->
-            if (effect is ProfileEffect.NavigateBack) navBack()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val currentNavBack by rememberUpdatedState(navBack)
+    LaunchedEffect(viewModel.effects, lifecycleOwner) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.effects.collect { effect ->
+                if (effect is ProfileEffect.NavigateBack) currentNavBack()
+            }
         }
     }
 

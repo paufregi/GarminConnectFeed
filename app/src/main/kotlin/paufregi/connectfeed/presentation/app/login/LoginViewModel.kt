@@ -22,7 +22,7 @@ class LoginViewModel @Inject constructor(
     private val _state = MutableStateFlow(LoginState())
 
     val state = _state
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(500L), _state.value)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
     internal fun injectState(state: LoginState) {
         _state.value = state

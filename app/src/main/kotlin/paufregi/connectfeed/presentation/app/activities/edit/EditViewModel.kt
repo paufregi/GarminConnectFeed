@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.usecases.GetActivity
 import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
@@ -29,7 +28,7 @@ import paufregi.connectfeed.presentation.ui.models.Status
 @ExperimentalCoroutinesApi
 @HiltViewModel(assistedFactory = EditViewModel.Factory::class)
 class EditViewModel @AssistedInject constructor(
-    getActivity: GetActivity,
+    private val getActivity: GetActivity,
     getEventTypes: GetEventTypes,
     private val getCourses: GetCourses,
     private val getGears: GetGears,
@@ -45,23 +44,24 @@ class EditViewModel @AssistedInject constructor(
         fun create(id: Long, stravaId: Long? = null): EditViewModel
     }
 
-    private val _state = MutableStateFlow(
-        EditState(
-            activity = getActivity(id, stravaId) ?: Activity.EMPTY,
-            eventTypes = getEventTypes()
-        )
-    )
+    private val _state = MutableStateFlow(EditState(eventTypes = getEventTypes()))
 
     val state = combine(_state, getGears()) { state, gears -> state.copy(gears = gears) }
         .onStart { load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
-    init {
-        if (_state.value.notFound) notification.show("Activity not found")
-    }
-
-    private fun load() = viewModelScope.launch{
+    private fun load() = viewModelScope.launch {
         _state.update { it.copy(status = Status.Loading) }
+
+        val activity = getActivity(id, stravaId)
+            .onFailure { notification.show("Failed to load activity: ${it.message}") }
+            .getOrNull()
+        if (activity == null) {
+            _state.update { it.copy(status = null, notFound = true) }
+            return@launch
+        }
+        _state.update { it.copy(activity = activity) }
+
         getCourses()
             .onSuccess { courses -> _state.update { it.copy(courses = courses) } }
             .onFailure { notification.show("Failed to load courses: ${it.message}") }

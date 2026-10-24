@@ -184,6 +184,61 @@ class GarminRepositoryTest {
     }
 
     @Test
+    fun `Get activity - cached`() = runTest {
+        val cached = ActivityDto(
+            id = 1,
+            name = "activity_1",
+            distance = 10234.00,
+            trainingEffectLabel = "recovery",
+            type = ActivityTypeDto(id = 1, key = "running", type = ActivityType.Running),
+            eventType = EventType.Training,
+            startDateTime = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
+            workoutId = 1
+        )
+        coEvery { connect.getActivities(any()) } returns Response.success(listOf(cached))
+        repo.getActivities(limit = 5)
+
+        val res = repo.getActivity(1)
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(cached)
+        coVerify { connect.getActivities(5) }
+        coVerify(exactly = 0) { connect.getActivity(any()) }
+    }
+
+    @Test
+    fun `Get activity - not cached`() = runTest {
+        val fetched = ActivityDto(
+            id = 7,
+            name = "activity_7",
+            distance = 5000.00,
+            trainingEffectLabel = "base",
+            type = ActivityTypeDto(id = 1, key = "running", type = ActivityType.Running),
+            eventType = EventType.Training,
+            startDateTime = LocalDateTime.of(2022, 5, 3, 7, 0, 0),
+            workoutId = null
+        )
+        coEvery { connect.getActivity(7) } returns Response.success(fetched)
+
+        val res = repo.getActivity(7)
+
+        assertThat(res.isSuccess).isTrue()
+        assertThat(res.getOrNull()).isEqualTo(fetched)
+        coVerify { connect.getActivity(7) }
+    }
+
+    @Test
+    fun `Get activity - failure`() = runTest {
+        coEvery { connect.getActivity(7) } returns Response.error(404, "not found".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.getActivity(7)
+
+        assertThat(res.isFailure).isTrue()
+        assertThat(res.exceptionOrNull()).hasMessageThat().isEqualTo("not found")
+        coVerify { connect.getActivity(7) }
+    }
+
+    @Test
     fun `Get gears`() = runTest {
         val gears = listOf(
             GearDto(id = "1", brand = "Mizuno", model = "Neo Vista", name = null, type = GearType.Shoe),

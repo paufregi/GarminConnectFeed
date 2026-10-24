@@ -53,8 +53,6 @@ import paufregi.connectfeed.presentation.ui.icons.strava.Logo
 import paufregi.connectfeed.presentation.ui.icons.strava.Strava
 import paufregi.connectfeed.presentation.ui.utils.add
 
-private const val TITLE = "Settings"
-
 @Composable
 @ExperimentalMaterial3Api
 internal fun SettingsScreen(
@@ -76,7 +74,7 @@ internal fun SettingsContent(
     stravaAuthUri: Uri = Uri.EMPTY,
 ) {
     AppFrame(
-        title = TITLE,
+        title = "Settings",
         currentRoute = AppRoute.Settings,
         navigate = navigate,
         loading = state.loading,

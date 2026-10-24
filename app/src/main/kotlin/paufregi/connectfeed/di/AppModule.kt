@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.tink.AeadSerializer
 import dagger.Module
 import dagger.Provides
@@ -17,18 +18,13 @@ import paufregi.connectfeed.BuildConfig
 import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.GarminSSO
-import paufregi.connectfeed.data.api.github.Github
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.StravaAuth
-import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.data.datastore.models.Auth
 import paufregi.connectfeed.data.datastore.serializers.AuthSerializer
-import paufregi.connectfeed.data.repository.AuthRepository
-import paufregi.connectfeed.data.repository.GarminRepository
-import paufregi.connectfeed.data.repository.GithubRepository
-import paufregi.connectfeed.data.repository.StravaRepository
 import paufregi.connectfeed.data.utils.SecurityManager
 import paufregi.connectfeed.system.Downloader
+import paufregi.connectfeed.system.UpdateStore
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
@@ -41,8 +37,14 @@ object AppModule {
 
     @Provides
     @Singleton
+    @Named("AppScope")
+    fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    @Provides
+    @Singleton
     fun provideDataStore(
         @ApplicationContext context: Context,
+        @Named("AppScope") scope: CoroutineScope,
         @Named("MasterKey") masterKey: String,
         @Named("DataStoreFileName") dataStoreFileName: String,
         @Named("DataStoreDirectory") dataStoreDirectory: File,
@@ -58,49 +60,14 @@ object AppModule {
         val file = File(dataStoreDirectory, dataStoreFileName)
         return DataStoreFactory.create(
             serializer = encryptedSerializer,
-            scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+            // A restored backup carries the ciphertext but not the keystore master key, so the
+            // file can no longer be decrypted; treat it as a signed-out state instead of crashing.
+            corruptionHandler = ReplaceFileCorruptionHandler { Auth() },
+            scope = scope,
             produceFile = { file }
         )
     }
 
-    @Provides
-    @Singleton
-    fun provideAuthRepository(
-        garminSSO: GarminSSO,
-        garminAuth: GarminAuth,
-        stravaAuth: StravaAuth,
-        authStore: AuthStore,
-    ): AuthRepository = AuthRepository(garminSSO, garminAuth, stravaAuth, authStore)
-
-    @Provides
-    @Singleton
-    fun provideGarminRepository(garmin: GarminConnect): GarminRepository =
-        GarminRepository(garmin)
-
-    @Provides
-    @Singleton
-    fun provideStravaRepository(strava: Strava): StravaRepository =
-        StravaRepository(strava)
-
-    @Provides
-    @Singleton
-    fun provideGithubRepository(github: Github): GithubRepository =
-        GithubRepository(github)
-
-    @Provides
-    @Singleton
-    fun provideGarminAuthInterceptor(
-        authRepository: AuthRepository,
-        @Named("GarminClientId") clientId: String
-    ): GarminAuthInterceptor = GarminAuthInterceptor(authRepository, clientId)
-
-    @Provides
-    @Singleton
-    fun provideStravaAuthInterceptor(
-        authRepository: AuthRepository,
-        @Named("StravaClientId") clientId: String,
-        @Named("StravaClientSecret") clientSecret: String,
-    ): StravaAuthInterceptor = StravaAuthInterceptor(authRepository, clientId, clientSecret)
 
     @Provides
     @Singleton
@@ -150,7 +117,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    @Named("downloader")
     fun provideDownloader(@ApplicationContext context: Context): Downloader =
-        Downloader(context, context.getSystemService(DownloadManager::class.java))
+        Downloader(context, context.getSystemService(DownloadManager::class.java), UpdateStore(context))
 }

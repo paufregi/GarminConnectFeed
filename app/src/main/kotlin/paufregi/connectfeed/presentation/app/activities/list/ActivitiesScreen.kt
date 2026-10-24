@@ -25,8 +25,6 @@ import paufregi.connectfeed.presentation.ui.components.cards.ActivityCard
 import paufregi.connectfeed.presentation.ui.components.frame.AppFrame
 import paufregi.connectfeed.presentation.ui.utils.add
 
-private const val TITLE = "Activities"
-
 @Composable
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
@@ -51,7 +49,7 @@ internal fun ActivitiesContent(
     onOpen: (Long, Long?) -> Unit = { _, _ -> },
 ) {
     AppFrame(
-        title = TITLE,
+        title = "Activities",
         user = user,
         currentRoute = AppRoute.Activities,
         navigate = navigate,

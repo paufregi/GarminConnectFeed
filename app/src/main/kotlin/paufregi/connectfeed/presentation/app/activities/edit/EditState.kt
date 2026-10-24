@@ -9,7 +9,8 @@ import paufregi.connectfeed.presentation.ui.models.Status
 data class EditState(
     val status: Status? = Status.Loading,
 
-    val activity: Activity,
+    val activity: Activity = Activity.EMPTY,
+    val notFound: Boolean = false,
     val eventTypes: List<EventType> = emptyList(),
     val courses: List<Course> = emptyList(),
     val gears: List<Gear> = emptyList(),
@@ -24,9 +25,6 @@ data class EditState(
     val feel: Float? = null,
     val trainingEffect: Boolean = false,
 ) {
-    val notFound: Boolean
-        get() = activity == Activity.EMPTY
-
     val availableCourses: List<Course>
         get() = courses.filter { it.type.compatible(activity.type) }
 

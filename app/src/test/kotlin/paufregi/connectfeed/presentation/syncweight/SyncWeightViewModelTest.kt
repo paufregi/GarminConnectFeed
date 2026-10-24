@@ -30,6 +30,7 @@ import paufregi.connectfeed.presentation.ui.models.Status
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 import paufregi.connectfeed.user
 import java.io.ByteArrayInputStream
+import java.io.InputStream
 import java.util.Date
 
 @ExperimentalCoroutinesApi
@@ -159,6 +160,36 @@ class SyncWeightViewModelTest {
         verify { getUser() }
         verify { RenphoReader.read(inputStream) }
         coVerify { syncWeight(weights, any()) }
+    }
+
+    @Test
+    fun `Sync weight - already started`() = runTest {
+        val secondStream = mockk<InputStream>()
+        every { getUser() } returns flowOf(user)
+        every { RenphoReader.read(any()) } returns Result.success(weights)
+        coEvery { syncWeight(any(), any()) } returns Result.success(Unit)
+        every { secondStream.close() } returns Unit
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            viewModel.updateWeight(inputStream)
+            assertThat(awaitItem()).isEqualTo(Status.Success("Sync succeeded"))
+
+            viewModel.updateWeight(secondStream)
+
+            expectNoEvents()
+            assertThat(viewModel.state.value).isEqualTo(Status.Success("Sync succeeded"))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+        verify(exactly = 1) { RenphoReader.read(inputStream) }
+        verify(exactly = 0) { RenphoReader.read(secondStream) }
+        coVerify(exactly = 1) { syncWeight(weights, any()) }
+        verify { secondStream.close() }
+        confirmVerified(secondStream)
     }
 
     @Test

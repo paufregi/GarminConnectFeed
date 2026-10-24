@@ -29,8 +29,6 @@ import paufregi.connectfeed.presentation.ui.components.cards.ProfileCard
 import paufregi.connectfeed.presentation.ui.components.frame.AppFrame
 import paufregi.connectfeed.presentation.ui.utils.add
 
-private const val TITLE = "Profiles"
-
 @Composable
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
@@ -58,7 +56,7 @@ internal fun ProfilesContent(
     onAction: (ProfilesAction) -> Unit = {},
 ) {
     AppFrame(
-        title = TITLE,
+        title = "Profiles",
         user = user,
         currentRoute = AppRoute.Profiles,
         navigate = navigate,

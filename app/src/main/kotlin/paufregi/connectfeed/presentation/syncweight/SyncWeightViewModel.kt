@@ -25,31 +25,42 @@ class SyncWeightViewModel @Inject constructor(
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
     val user = getUser().stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), null)
 
+    // The Activity re-delivers the shared file on every recreation; only sync it once.
+    private var started = false
+
     internal fun injectState(state: Status) {
         _state.value = state
     }
 
-    fun updateWeight(inputStream: InputStream?) = viewModelScope.launch {
-        _state.update { Status.Loading }
-        if (inputStream == null) {
-            _state.update { Status.Failure("nothing to sync") }
-            return@launch
+    fun updateWeight(inputStream: InputStream?) {
+        if (started) {
+            inputStream?.close()
+            return
         }
+        started = true
 
-        val weights = inputStream.use { stream ->
-            RenphoReader.read(stream)
-        }.onFailure {
-            _state.update { Status.Failure("failed to read file") }
-            return@launch
-        }.getOrElse { emptyList() }
+        viewModelScope.launch {
+            _state.update { Status.Loading }
+            if (inputStream == null) {
+                _state.update { Status.Failure("nothing to sync") }
+                return@launch
+            }
 
-        if (weights.isEmpty()) {
-            _state.update { Status.Failure("nothing to sync") }
-            return@launch
+            val weights = inputStream.use { stream ->
+                RenphoReader.read(stream)
+            }.onFailure {
+                _state.update { Status.Failure("failed to read file") }
+                return@launch
+            }.getOrElse { emptyList() }
+
+            if (weights.isEmpty()) {
+                _state.update { Status.Failure("nothing to sync") }
+                return@launch
+            }
+
+            syncWeight(weights)
+                .onSuccess { _state.update { Status.Success("Sync succeeded") }}
+                .onFailure { e -> _state.update { Status.Failure(e.message ?: "Unknown error") } }
         }
-
-        syncWeight(weights)
-            .onSuccess { _state.update { Status.Success("Sync succeeded") }}
-            .onFailure { e -> _state.update { Status.Failure(e.message ?: "Unknown error") } }
     }
 }

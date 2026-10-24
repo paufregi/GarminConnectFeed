@@ -7,8 +7,8 @@ import javax.inject.Inject
 class GetActivity @Inject constructor(
     private val garminRepo: GarminRepository,
 ) {
-    operator fun invoke(garminId: Long, stravaId: Long?): Activity? =
-        garminRepo.getActivity(garminId)?.let { activity ->
+    suspend operator fun invoke(garminId: Long, stravaId: Long?): Result<Activity> =
+        garminRepo.getActivity(garminId).map { activity ->
             Activity(
                 id = activity.id,
                 name = activity.name,

@@ -7,12 +7,6 @@ data class Version(
 ) {
     override fun toString(): String = "v$major.$minor.$patch"
 
-    fun same(other: Version): Boolean {
-        return this.major == other.major &&
-            this.minor == other.minor &&
-            this.patch == other.patch
-    }
-
     fun isLowerThan(other: Version): Boolean {
         if (this.major < other.major) return true
         if (this.major > other.major) return false

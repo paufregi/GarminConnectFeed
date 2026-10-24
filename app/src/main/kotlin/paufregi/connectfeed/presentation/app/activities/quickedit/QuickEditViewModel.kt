@@ -10,15 +10,16 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.usecases.GetActivity
 import paufregi.connectfeed.core.usecases.GetGears
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.GetWorkout
 import paufregi.connectfeed.core.usecases.QuickUpdateActivity
+import paufregi.connectfeed.core.utils.finally
 import paufregi.connectfeed.core.utils.updateIf
 import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 import paufregi.connectfeed.presentation.ui.models.Status
@@ -26,7 +27,7 @@ import paufregi.connectfeed.presentation.ui.models.Status
 @ExperimentalCoroutinesApi
 @HiltViewModel(assistedFactory = QuickEditViewModel.Factory::class)
 class QuickEditViewModel @AssistedInject constructor(
-    getActivity: GetActivity,
+    private val getActivity: GetActivity,
     getProfiles: GetProfiles,
     private val getGears: GetGears,
     private val getWorkout: GetWorkout,
@@ -41,16 +42,24 @@ class QuickEditViewModel @AssistedInject constructor(
         fun create(id: Long, stravaId: Long? = null): QuickEditViewModel
     }
 
-    private val _state = MutableStateFlow(
-        QuickEditState(activity = getActivity(id, stravaId) ?: Activity.EMPTY)
-    )
+    private val _state = MutableStateFlow(QuickEditState())
 
     val state = combine(_state, getProfiles(), getGears()) {
         state, profiles, gears -> state.copy(profiles = profiles, gears = gears)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
+    }
+        .onStart { load() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
 
-    init {
-        if (_state.value.notFound) notification.show("Activity not found")
+    private fun load() = viewModelScope.launch {
+        _state.update { it.copy(status = Status.Loading) }
+
+        getActivity(id, stravaId)
+            .onSuccess { activity -> _state.update { it.copy(activity = activity) } }
+            .onFailure {
+                notification.show("Failed to load activity: ${it.message}")
+                _state.update { it.copy(notFound = true) }
+            }
+            .finally { _state.update { it.copy(status = null) } }
     }
 
     internal fun injectState(state: QuickEditState) {

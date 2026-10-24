@@ -24,15 +24,23 @@ class StravaViewModel @Inject constructor(
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _state.value)
     val user = getUser().stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), null)
 
+    // The OAuth code is single-use; the Activity re-delivers it on every recreation.
+    private var started = false
+
     internal fun injectState(state: Status) {
         _state.value = state
     }
 
-    fun exchangeToken(code: String) = viewModelScope.launch {
-        _state.update { Status.Loading }
+    fun exchangeToken(code: String) {
+        if (started) return
+        started = true
 
-        enableStrava(code)
-            .onSuccess { _state.update { Status.Success("Strava linked") } }
-            .onFailure { e -> _state.update { Status.Failure(e.message ?: "unknown error") } }
+        viewModelScope.launch {
+            _state.update { Status.Loading }
+
+            enableStrava(code)
+                .onSuccess { _state.update { Status.Success("Strava linked") } }
+                .onFailure { e -> _state.update { Status.Failure(e.message ?: "unknown error") } }
+        }
     }
 }
