@@ -1,5 +1,6 @@
 package paufregi.connectfeed.core.usecases
 
+import com.garmin.fit.FitRuntimeException
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
@@ -23,6 +24,7 @@ import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.data.repository.StravaRepository
+import java.io.IOException
 import java.util.Date
 
 

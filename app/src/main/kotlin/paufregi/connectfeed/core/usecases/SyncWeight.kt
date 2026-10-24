@@ -1,5 +1,6 @@
 package paufregi.connectfeed.core.usecases
 
+import com.garmin.fit.FitRuntimeException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.firstOrNull
