@@ -164,7 +164,7 @@ fun Welcome(
         ) {
             AsyncImage(
                 model = state.user?.profileImageUrl,
-                contentDescription = null,
+                contentDescription = "Profile image",
                 modifier = Modifier.scale(1.75f).clip(CircleShape)
             )
             Spacer(modifier = Modifier.size(42.dp))

@@ -9,7 +9,7 @@ import java.util.Locale
 object Formatter {
     val dateTimeForFilename = { zoneId: ZoneId ->
         DateTimeFormatter
-            .ofPattern("yyyyMMdd_hhmmss")
+            .ofPattern("yyyyMMdd_HHmmss")
             .withZone(zoneId)
     }
 

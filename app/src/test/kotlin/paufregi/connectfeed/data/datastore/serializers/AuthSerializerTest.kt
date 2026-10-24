@@ -2,6 +2,7 @@ package paufregi.connectfeed.data.datastore.serializers
 
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import org.junit.Test
 import paufregi.connectfeed.core.models.User
@@ -36,7 +37,7 @@ class AuthSerializerTest {
     )
 
     @Test
-    fun `Serialize Auth to JSON`() = runBlocking {
+    fun `Serialize Auth to JSON`() = runTest {
         val output = ByteArrayOutputStream()
 
         AuthSerializer.writeTo(auth, output)
@@ -47,7 +48,7 @@ class AuthSerializerTest {
     }
 
     @Test
-    fun `Deserialize JSON to Auth`() = runBlocking {
+    fun `Deserialize JSON to Auth`() = runTest {
         val data = json.encodeToString(Auth.serializer(), auth).toByteArray(Charsets.UTF_8)
 
         val result = AuthSerializer.readFrom(ByteArrayInputStream(data))

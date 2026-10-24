@@ -45,8 +45,6 @@ sealed class ActivityType(val name: String, val parent: ActivityType? = null) {
     // Other
     data object Walking: ActivityType("Walking", Other) // 9
     data object Hiking: ActivityType("Hiking", Other) // 3
-
-    // Other
     data object Snowboarding: ActivityType("Snowboarding", Other) // 252
     data object Kayaking: ActivityType("Kayaking", Other) // 231
     data object StandUpPaddling: ActivityType("Stand Up Paddling", Other) // 239
