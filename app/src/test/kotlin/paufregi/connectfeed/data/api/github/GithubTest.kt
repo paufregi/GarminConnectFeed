@@ -7,13 +7,13 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.githubLatestReleaseJson
 import paufregi.connectfeed.githubRelease
 
 class GithubTest {
 
-    @JvmField @Rule val server = MockWebServerRule()
+    @JvmField @Rule val server = MockServer()
     private lateinit var api: Github
 
     @Before
