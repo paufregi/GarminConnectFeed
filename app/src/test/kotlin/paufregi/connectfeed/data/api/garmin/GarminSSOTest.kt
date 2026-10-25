@@ -6,7 +6,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.data.api.garmin.models.CSRF
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import paufregi.connectfeed.htmlCSRF
@@ -14,8 +14,7 @@ import paufregi.connectfeed.htmlTicket
 
 class GarminSSOTest {
 
-
-    @JvmField @Rule val server = MockWebServerRule()
+    @JvmField @Rule val server = MockServer()
     private lateinit var api: GarminSSO
 
     @Before
@@ -52,7 +51,7 @@ class GarminSSOTest {
     }
 
     @Test
-    fun `Get Ticket`() = runTest {
+    fun `Log in`() = runTest {
         server.enqueue(code = 200, body = htmlTicket)
 
         val res = api.login(username = "user", password = "pass", csrf = CSRF("csrf"))
@@ -67,7 +66,7 @@ class GarminSSOTest {
     }
 
     @Test
-    fun `Get Ticket - failure`() = runTest {
+    fun `Log in - failure`() = runTest {
         server.enqueue(400)
 
         val res = api.login(username = "user", password = "pass", csrf = CSRF("csrf"))
@@ -76,3 +75,7 @@ class GarminSSOTest {
         assertThat(res.body()).isNull()
     }
 }
+
+
+
+

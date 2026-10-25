@@ -2,13 +2,12 @@ package paufregi.connectfeed.data.api.garmin.converters
 
 import okhttp3.ResponseBody
 import paufregi.connectfeed.data.api.garmin.models.CSRF
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import retrofit2.Converter
 import retrofit2.Retrofit
 import java.lang.reflect.Type
 
-class GarminConverterFactory : Converter.Factory() {
+class SSOConverterFactory : Converter.Factory() {
 
     override fun stringConverter(
         type: Type,
@@ -16,8 +15,8 @@ class GarminConverterFactory : Converter.Factory() {
         retrofit: Retrofit
     ): Converter<*, String>? {
         return when (type) {
-            CSRF::class.java -> CSRFStringConverter()
-            Ticket::class.java -> TicketStringConverter()
+            CSRF::class.java -> CSRFConverter.StringConverter
+            Ticket::class.java -> TicketConverter.StringConverter
             else -> null
         }
     }
@@ -28,9 +27,8 @@ class GarminConverterFactory : Converter.Factory() {
         retrofit: Retrofit
     ): Converter<ResponseBody, *>? {
         return when (type) {
-            CSRF::class.java -> CSRFExtractor()
-            Ticket::class.java -> TicketExtractor()
-            PreAuthToken::class.java -> PreAuthTokenExtractor()
+            CSRF::class.java -> CSRFConverter.ResponseBodyConverter
+            Ticket::class.java -> TicketConverter.ResponseBodyConverter
             else -> null
         }
     }
