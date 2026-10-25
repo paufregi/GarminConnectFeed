@@ -82,7 +82,7 @@ Tests live in `app/src/test/` (unit) and `app/src/androidTest/` (instrumented).
 ### Always do
 - Add a **Room migration** and update the schema JSON in `app/schemas/` when changing any `@Entity`.
 - Use `ProcessState` for result-carrying UI state.
-- Keep navigation changes in `Navigation.kt` using `@Serializable` sealed `Route : NavKey` objects — no string-literal routes. Screens receive a `Navigator` (never a raw back stack).
+- Keep navigation changes in `Navigation.kt` using `@Serializable` sealed `Route : NavKey` objects — no string-literal routes. Screens receive a `Navigator` (never a raw back stack). Use `Navigator.navigateTopLevel` for drawer/bottom-bar destinations (resets the stack to the root) and `Navigator.navigate` only for detail screens such as `Route.Profile(id)`.
 - Keep the auth flow (`AuthRoute`) and the signed-in flow (`Route`) as separate sealed hierarchies hosted in separate `NavDisplay`s (`AuthNavigation` / `AppNavigation` in `MainActivity.kt`). Never add an auth screen to `Route` or an app screen to `AuthRoute`; switching between flows happens only via `MainViewModel.state.loggedIn`.
 - Wire new injectable classes in a Hilt module under `di/`; use `@HiltViewModel` for ViewModels.
 - Add or update tests for every behaviour change (use case unit test + ViewModel state test + screen smoke test).
