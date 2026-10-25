@@ -47,10 +47,10 @@ Use these instructions when generating or modifying code in this repository.
 
 - Add or update tests for behavior changes.
 - Prefer existing test patterns:
-  - Unit tests: `./gradlew test`
-  - Instrumented tests: `./gradlew pixel10Check`
-  - Compose UI tests with Hilt where relevant (`@HiltAndroidTest`)
-- Keep tests near the feature/module being changed (`app/src/test` or `app/src/androidTest`).
+  - Unit tests (incl. Robolectric screen/DAO/DataStore/Hilt integration tests): `./gradlew test`
+  - On-device smoke tests only: `./gradlew pixel10Check`
+  - Compose screen tests use `runAndroidComposeUiTest` under Robolectric; Hilt integration tests use `@HiltAndroidTest` + `@Config(application = HiltTestApplication::class)`
+- Keep tests near the feature/module being changed (`app/src/test`); shared fixtures and Hilt test modules live in `app/src/testFixtures`.
 
 ## Practical Editing Rules
 

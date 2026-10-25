@@ -18,7 +18,7 @@ project-tailored feedback on pull requests in this repository.
 | Navigation | Compose Navigation, sealed `Route` objects                               |
 | UI process state | `ProcessState` sealed class (`Idle`, `Processing`, `Success`, `Failure`) |
 | Tests (unit) | JUnit4 + MockK + Turbine + Truth (`./gradlew test`)                      |
-| Tests (UI/instrumented) | `@HiltAndroidTest` Compose tests (`./gradlew pixel10Check`)           |
+| Tests (UI)       | Robolectric Compose tests in `app/src/test` (`./gradlew test`); on-device smoke only via `./gradlew pixel10Check` |
 
 ---
 
@@ -106,12 +106,13 @@ that belongs in a use case.
 - **New use cases** must have unit tests covering happy path + at least one failure path.
 - **New ViewModel actions** should have unit tests using `Turbine` to assert state
   transitions.
-- **New Compose screens** should have at least a smoke test (`@HiltAndroidTest`) that
-  verifies the screen renders without crashing.
+- **New Compose screens** should have at least a Robolectric screen test
+  (`runAndroidComposeUiTest`) in `app/src/test` that verifies the screen renders.
 - Tests should use `MockK` for mocking, not Mockito; check that existing `mockk {}`
   patterns are followed.
-- Instrumented tests use a custom `TestRunner` (`paufregi.connectfeed.TestRunner`);
-  new tests must be compatible with this runner.
+- Instrumented tests (`app/src/androidTest`) are reserved for on-device smoke tests and use
+  a custom `TestRunner` (`paufregi.connectfeed.TestRunner`); prefer Robolectric for new tests.
+- Hilt `@TestInstallIn` modules live in `app/src/testFixtures/kotlin/paufregi/connectfeed/di` and are used by both source sets.
 - Flag any PR that deletes tests without a clear justification.
 
 ---
