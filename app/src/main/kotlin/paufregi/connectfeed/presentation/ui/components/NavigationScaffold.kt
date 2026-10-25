@@ -64,7 +64,7 @@ fun NavigationScaffold(
                         selected = item.index == selectedIndex,
                         onClick = {
                             scope.launch { drawerState.close() }
-                            nav.navigate(item.route)
+                            nav.navigateTopLevel(item.route)
                         },
                         icon = { Icon(item.icon, item.label) },
                     )
@@ -78,7 +78,7 @@ fun NavigationScaffold(
                         selected = item.index == selectedIndex,
                         onClick = {
                             scope.launch { drawerState.close() }
-                            nav.navigate(item.route)
+                            nav.navigateTopLevel(item.route)
                         },
                         icon = { Icon(item.icon, item.label) },
                     )

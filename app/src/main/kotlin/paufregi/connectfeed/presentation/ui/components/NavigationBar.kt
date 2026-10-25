@@ -23,7 +23,7 @@ fun NavigationBar(
             MaterialNavigationBarItem(
                 modifier = Modifier.testTag("nav_${item.label.lowercase()}"),
                 selected = index == selectedIndex,
-                onClick = { nav.navigate(item.route) },
+                onClick = { nav.navigateTopLevel(item.route) },
                 label = { Text(item.label) },
                 icon = { Icon(item.icon, item.label) }
             )

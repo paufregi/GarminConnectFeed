@@ -60,5 +60,79 @@ class NavigatorTest {
 
         assertThat(stack).containsExactly(Route.QuickEdit)
     }
+
+    @Test
+    fun `navigateTopLevel from root places destination above root`() {
+        val stack = backStack(Route.QuickEdit)
+        val nav = Navigator(stack)
+
+        nav.navigateTopLevel(Route.Profiles)
+
+        assertThat(stack).containsExactly(Route.QuickEdit, Route.Profiles).inOrder()
+    }
+
+    @Test
+    fun `navigateTopLevel does not grow the stack when toggling destinations`() {
+        val stack = backStack(Route.QuickEdit)
+        val nav = Navigator(stack)
+
+        nav.navigateTopLevel(Route.Profiles)
+        nav.navigateTopLevel(Route.Gears)
+        nav.navigateTopLevel(Route.Settings)
+        nav.navigateTopLevel(Route.Profiles)
+
+        assertThat(stack).containsExactly(Route.QuickEdit, Route.Profiles).inOrder()
+    }
+
+    @Test
+    fun `navigateTopLevel to root resets stack to root only`() {
+        val stack = backStack(Route.QuickEdit, Route.Profiles, Route.Profile(1))
+        val nav = Navigator(stack)
+
+        nav.navigateTopLevel(Route.QuickEdit)
+
+        assertThat(stack).containsExactly(Route.QuickEdit)
+    }
+
+    @Test
+    fun `navigateTopLevel discards detail entries`() {
+        val stack = backStack(Route.QuickEdit, Route.Profiles, Route.Profile(1))
+        val nav = Navigator(stack)
+
+        nav.navigateTopLevel(Route.Gears)
+
+        assertThat(stack).containsExactly(Route.QuickEdit, Route.Gears).inOrder()
+    }
+
+    @Test
+    fun `navigateTopLevel is idempotent on current destination`() {
+        val stack = backStack(Route.QuickEdit, Route.Profiles)
+        val nav = Navigator(stack)
+
+        nav.navigateTopLevel(Route.Profiles)
+
+        assertThat(stack).containsExactly(Route.QuickEdit, Route.Profiles).inOrder()
+    }
+
+    @Test
+    fun `navigateTopLevel on empty stack adds destination`() {
+        val stack = backStack()
+        val nav = Navigator(stack)
+
+        nav.navigateTopLevel(Route.Gears)
+
+        assertThat(stack).containsExactly(Route.Gears)
+    }
+
+    @Test
+    fun `back from top-level destination returns to root`() {
+        val stack = backStack(Route.QuickEdit)
+        val nav = Navigator(stack)
+
+        nav.navigateTopLevel(Route.Settings)
+        nav.navigateUp()
+
+        assertThat(stack).containsExactly(Route.QuickEdit)
+    }
 }
 

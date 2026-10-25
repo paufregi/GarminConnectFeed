@@ -51,12 +51,27 @@ sealed interface Route : NavKey {
  * Thin wrapper around a Navigation 3 back stack exposing the operations the UI needs.
  * The back stack is a plain [MutableList] so it can be backed by a `NavBackStack`
  * in the app or by an in-memory list in previews/tests.
+ *
+ * - [navigate] pushes a detail destination (e.g. `Route.Profile(id)`) on top of the stack.
+ * - [navigateTopLevel] switches between top-level destinations (drawer / bottom bar items):
+ *   the stack is reset to the root entry and the destination placed on top, so back from any
+ *   top-level screen returns to the root and the stack never grows by toggling menu items.
  */
 @Stable
 class Navigator(private val backStack: MutableList<NavKey> = mutableStateListOf()) {
 
     fun navigate(route: Route) {
         if (backStack.lastOrNull() != route) backStack.add(route)
+    }
+
+    fun navigateTopLevel(route: Route) {
+        if (backStack.isEmpty()) {
+            backStack.add(route)
+            return
+        }
+        // Pop everything but the root; never let the stack become empty.
+        while (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+        if (backStack.first() != route) backStack.add(route)
     }
 
     fun navigateUp() {
