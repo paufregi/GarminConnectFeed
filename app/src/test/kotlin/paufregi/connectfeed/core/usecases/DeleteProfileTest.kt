@@ -13,14 +13,14 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.data.repository.AppRepository
 import paufregi.connectfeed.data.repository.AuthRepository
-import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.user
 
 class DeleteProfileTest {
 
     private val auth = mockk<AuthRepository>()
-    private val repo = mockk<GarminRepository>()
+    private val repo = mockk<AppRepository>()
     private lateinit var useCase: DeleteProfile
 
     @Before
