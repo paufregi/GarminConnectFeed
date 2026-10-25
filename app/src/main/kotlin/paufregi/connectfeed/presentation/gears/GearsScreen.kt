@@ -31,11 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.presentation.Navigation
+import paufregi.connectfeed.presentation.Navigator
 import paufregi.connectfeed.presentation.ui.components.Loading
 import paufregi.connectfeed.presentation.ui.components.NavigationScaffold
 import paufregi.connectfeed.presentation.ui.components.SimpleScaffold
@@ -48,7 +47,7 @@ import paufregi.connectfeed.presentation.ui.utils.iconFor
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
 internal fun GearsScreen(
-    nav: NavHostController = rememberNavController(),
+    nav: Navigator = Navigator(),
 ) {
     val viewModel = hiltViewModel<GearsViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()

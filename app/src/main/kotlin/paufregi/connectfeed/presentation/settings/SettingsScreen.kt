@@ -36,10 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import paufregi.connectfeed.presentation.Navigation
+import paufregi.connectfeed.presentation.Navigator
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
 import paufregi.connectfeed.presentation.ui.components.Screen
@@ -53,7 +52,7 @@ import paufregi.connectfeed.presentation.ui.icons.strava.Strava
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun SettingsScreen(nav: NavHostController = rememberNavController()) {
+internal fun SettingsScreen(nav: Navigator = Navigator()) {
     val viewModel = hiltViewModel<SettingsViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -67,7 +66,7 @@ internal fun SettingsContent(
     @PreviewParameter(SettingsStatePreview::class) state: SettingsState,
     onAction: (SettingsAction) -> Unit = {},
     stravaAuthUri: Uri = Uri.EMPTY,
-    nav: NavHostController = rememberNavController(),
+    nav: Navigator = Navigator(),
 ) {
     val context = LocalContext.current
     var signOutDialog by remember { mutableStateOf(false) }

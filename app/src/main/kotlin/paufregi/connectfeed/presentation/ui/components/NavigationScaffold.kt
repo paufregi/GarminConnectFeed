@@ -26,9 +26,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
+import paufregi.connectfeed.presentation.Navigator
 import paufregi.connectfeed.presentation.Route
 
 data class NavigationItem(
@@ -44,7 +43,7 @@ fun NavigationScaffold(
     topItems: List<NavigationItem> = emptyList(),
     bottomItems: List<NavigationItem> = emptyList(),
     selectedIndex: Int = 0,
-    nav: NavHostController = rememberNavController(),
+    nav: Navigator = Navigator(),
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     bottomBar: @Composable () -> Unit = {},
@@ -65,7 +64,7 @@ fun NavigationScaffold(
                         selected = item.index == selectedIndex,
                         onClick = {
                             scope.launch { drawerState.close() }
-                            nav.navigate(item.route)
+                            nav.navigateTopLevel(item.route)
                         },
                         icon = { Icon(item.icon, item.label) },
                     )
@@ -79,7 +78,7 @@ fun NavigationScaffold(
                         selected = item.index == selectedIndex,
                         onClick = {
                             scope.launch { drawerState.close() }
-                            nav.navigate(item.route)
+                            nav.navigateTopLevel(item.route)
                         },
                         icon = { Icon(item.icon, item.label) },
                     )

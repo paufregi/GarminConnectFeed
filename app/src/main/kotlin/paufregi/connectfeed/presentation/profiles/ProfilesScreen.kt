@@ -34,10 +34,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.presentation.Navigation
+import paufregi.connectfeed.presentation.Navigator
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
@@ -47,7 +46,7 @@ import paufregi.connectfeed.presentation.ui.utils.iconFor
 @Composable
 @ExperimentalMaterial3Api
 internal fun ProfilesScreen(
-    nav: NavHostController = rememberNavController(),
+    nav: Navigator = Navigator(),
 ) {
     val viewModel = hiltViewModel<ProfilesViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -74,7 +73,7 @@ internal fun ProfilesScreen(
 internal fun ProfilesContent(
     @PreviewParameter(ProfilesStatePreview::class) state: ProfilesState,
     onAction: (ProfileAction) -> Unit = {},
-    nav: NavHostController = rememberNavController(),
+    nav: Navigator = Navigator(),
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     var profileToDelete by remember { mutableStateOf<Profile?>(null) }

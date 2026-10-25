@@ -26,10 +26,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.presentation.HomeNavigation
+import paufregi.connectfeed.presentation.Navigator
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.CustomSlider
 import paufregi.connectfeed.presentation.ui.components.Dropdown
@@ -53,7 +52,7 @@ import paufregi.connectfeed.presentation.ui.utils.launchStrava
 @Composable
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-internal fun QuickEditScreen(nav: NavHostController = rememberNavController()) {
+internal fun QuickEditScreen(nav: Navigator = Navigator()) {
     val viewModel = hiltViewModel<QuickEditViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -66,7 +65,7 @@ internal fun QuickEditScreen(nav: NavHostController = rememberNavController()) {
 internal fun QuickEditContent(
     @PreviewParameter(QuickEditStatePreview::class) state: QuickEditState,
     onAction: (QuickEditAction) -> Unit = {},
-    nav: NavHostController = rememberNavController()
+    nav: Navigator = Navigator()
 ) {
     val context = LocalContext.current
 

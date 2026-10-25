@@ -1,7 +1,5 @@
 package paufregi.connectfeed.presentation.profile
 
-import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.toRoute
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
@@ -10,13 +8,10 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
-import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.ActivityType
@@ -29,7 +24,6 @@ import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
 import paufregi.connectfeed.core.usecases.SaveProfile
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
@@ -41,7 +35,6 @@ class ProfileViewModelTest {
     private val getEventTypes = mockk<GetEventTypes>()
     private val getCourses = mockk<GetCourses>()
     private val saveProfile = mockk<SaveProfile>()
-    private val savedState = mockk<SavedStateHandle>()
 
     private lateinit var viewModel: ProfileViewModel
 
@@ -50,33 +43,25 @@ class ProfileViewModelTest {
     val eventTypes = listOf(EventType.Training, EventType.Recreation)
     val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
-    fun createViewModel() = ProfileViewModel(savedState, getProfile, getActivityTypesForProfile, getEventTypes, getCourses, saveProfile)
+    fun createViewModel(id: Long = 0L) = ProfileViewModel(id, getProfile, getActivityTypesForProfile, getEventTypes, getCourses, saveProfile)
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    @Before
-    fun setup(){
-        mockkStatic("androidx.navigation.SavedStateHandleKt")
-    }
-
     @After
     fun tearDown(){
-        confirmVerified(savedState, getProfile, getActivityTypesForProfile, getEventTypes, getCourses, saveProfile)
+        confirmVerified(getProfile, getActivityTypesForProfile, getEventTypes, getCourses, saveProfile)
         clearAllMocks()
-        unmockkStatic("androidx.navigation.SavedStateHandleKt")
     }
 
     @Test
     fun `Initial state - existing profile`() = runTest {
-
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(profile.id)
         coEvery { getProfile(any()) } returns profile
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
-        viewModel = createViewModel()
+        viewModel = createViewModel(profile.id)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -89,7 +74,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -101,7 +85,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Initial state - new profile`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -120,7 +103,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -132,7 +114,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Fails to load courses`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -152,7 +133,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -164,7 +144,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set name`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -185,7 +164,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -197,7 +175,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set activity type`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -218,7 +195,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -230,13 +206,12 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set activity type - with course`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns profile
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
-        viewModel = createViewModel()
+        viewModel = createViewModel(1)
 
         val expectedProfile = profile.copy(type = ActivityType.Running)
         viewModel.state.test {
@@ -252,7 +227,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -264,13 +238,12 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set activity type - unset course`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns profile
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
-        viewModel = createViewModel()
+        viewModel = createViewModel(1)
 
         val expectedProfile = profile.copy(type = ActivityType.Cycling, course = null)
         viewModel.state.test {
@@ -286,7 +259,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -298,7 +270,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set event type`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -319,7 +290,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -331,7 +301,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set course`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -353,7 +322,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -365,7 +333,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set water`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -386,7 +353,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -398,7 +364,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set rename`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -419,7 +384,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -431,7 +395,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set custom water`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -452,7 +415,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -464,7 +426,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set feel and effort`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -485,7 +446,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -497,7 +457,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set gear`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -518,7 +477,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -530,7 +488,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Set training effect`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -551,7 +508,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -563,7 +519,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Save profile`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -585,7 +540,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
@@ -598,7 +552,6 @@ class ProfileViewModelTest {
 
     @Test
     fun `Save profile - failure`() = runTest {
-        every { savedState.toRoute<Route.Profile>() } returns Route.Profile()
         coEvery { getProfile(any()) } returns null
         every { getActivityTypesForProfile() } returns types
         every { getEventTypes() } returns eventTypes
@@ -620,7 +573,6 @@ class ProfileViewModelTest {
         }
 
         verify{
-            savedState.toRoute<Route.Profile>()
             getActivityTypesForProfile()
             getEventTypes()
         }
