@@ -6,15 +6,18 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
-import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import paufregi.connectfeed.presentation.AuthRoute
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.edit.EditScreen
 import paufregi.connectfeed.presentation.gears.GearsScreen
@@ -22,6 +25,7 @@ import paufregi.connectfeed.presentation.login.LoginScreen
 import paufregi.connectfeed.presentation.profile.ProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
+import paufregi.connectfeed.presentation.rememberNavigator
 import paufregi.connectfeed.presentation.settings.SettingsScreen
 import paufregi.connectfeed.presentation.ui.theme.Theme
 
@@ -40,33 +44,63 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            val nav = rememberNavController()
             val state by viewModel.state.collectAsStateWithLifecycle()
 
-            state.loggedIn?.let {
+            state.loggedIn?.let { loggedIn ->
                 Theme {
-                    NavHost(
-                        navController = nav,
-                        startDestination = if (it) Route.App else Route.Auth
-                    ) {
-                        navigation<Route.Auth>(startDestination = Route.Login) {
-                            composable<Route.Login> { LoginScreen() }
-                        }
-                        navigation<Route.App>(startDestination = Route.Home) {
-                            navigation<Route.Home>(startDestination = Route.QuickEdit) {
-                                composable<Route.QuickEdit> { QuickEditScreen(nav = nav) }
-                                composable<Route.Edit> { EditScreen(nav = nav) }
-                            }
-                            navigation<Route.Profiles>(startDestination = Route.ProfileList) {
-                                composable<Route.ProfileList> { ProfilesScreen(nav = nav) }
-                                composable<Route.Profile> { ProfileScreen(nav = nav) }
-                            }
-                            composable<Route.Gears> { GearsScreen(nav = nav) }
-                            composable<Route.Settings> { SettingsScreen(nav = nav) }
-                        }
+                    // Two fully independent navigation hosts: when auth state flips the
+                    // previous host (and its back stack) leaves composition entirely, so
+                    // there is no way to navigate - or press back - between the two flows.
+                    when (loggedIn) {
+                        true -> AppNavigation()
+                        false -> AuthNavigation()
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+@ExperimentalMaterial3Api
+private fun AuthNavigation() {
+    val backStack = rememberNavBackStack(AuthRoute.Login)
+
+    NavDisplay(
+        backStack = backStack,
+        // Single-entry stack: back is never intercepted here, the system handles it.
+        onBack = {},
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator(),
+        ),
+        entryProvider = entryProvider {
+            entry<AuthRoute.Login> { LoginScreen() }
+        }
+    )
+}
+
+@Composable
+@ExperimentalMaterial3Api
+@ExperimentalCoroutinesApi
+private fun AppNavigation() {
+    val backStack = rememberNavBackStack(Route.QuickEdit)
+    val nav = rememberNavigator(backStack)
+
+    NavDisplay(
+        backStack = backStack,
+        onBack = { nav.navigateUp() },
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator(),
+        ),
+        entryProvider = entryProvider {
+            entry<Route.QuickEdit> { QuickEditScreen(nav = nav) }
+            entry<Route.Edit> { EditScreen(nav = nav) }
+            entry<Route.Profiles> { ProfilesScreen(nav = nav) }
+            entry<Route.Profile> { ProfileScreen(id = it.id, nav = nav) }
+            entry<Route.Gears> { GearsScreen(nav = nav) }
+            entry<Route.Settings> { SettingsScreen(nav = nav) }
+        }
+    )
 }
