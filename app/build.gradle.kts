@@ -94,12 +94,6 @@ android {
             }
         }
     }
-
-    // Hilt test modules shared between Robolectric unit tests and instrumented tests
-    sourceSets {
-        getByName("test") { kotlin.srcDir("src/sharedTest/kotlin") }
-        getByName("androidTest") { kotlin.srcDir("src/sharedTest/kotlin") }
-    }
 }
 
 dependencies {
@@ -150,6 +144,10 @@ dependencies {
 
     kspTest(libs.hilt.compiler)
     kspAndroidTest(libs.hilt.compiler)
+    kspTestFixtures(libs.hilt.compiler)
+    testFixturesApi(libs.hilt.testing)
+    testFixturesImplementation(libs.androidx.datastore.preferences)
+    testFixturesImplementation(libs.androidx.room.ktx)
     testFixturesApi(libs.kotlinx.coroutines.test)
     testFixturesApi(libs.turbine)
     testFixturesApi(libs.truth)
