@@ -38,9 +38,6 @@ import paufregi.connectfeed.presentation.ui.components.frame.SaveBar
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 import paufregi.connectfeed.presentation.ui.utils.add
 
-private fun title(state: ProfileState) =
-    if (state.isNew) "Create profile" else "Edit profile"
-
 @Composable
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
@@ -75,7 +72,7 @@ internal fun ProfileContent(
     onAction: (ProfileAction) -> Unit = {},
 ) {
     FormFrame(
-        title = title(state),
+        title = if (state.isNew) "Create profile" else "Edit profile",
         navBack = navBack,
         loading = state.loading,
         bottomBar = { SaveBar(state.canSave) { onAction(ProfileAction.Save) } },

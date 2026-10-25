@@ -146,6 +146,34 @@ class SyncWeightTest {
     }
 
     @Test
+    fun `Sync weight - fit writer IO failure`() = runTest {
+        every { isStravaConnected() } returns flowOf(false)
+        every { FitWriter.weights(any(), any()) } throws IOException("disk full")
+
+        val res = useCase(weights, today)
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin: disk full")
+
+        verify { FitWriter.weights(any(), weights) }
+        coVerify(exactly = 0) { garminRepo.uploadFile(any()) }
+    }
+
+    @Test
+    fun `Sync weight - fit writer encoding failure`() = runTest {
+        every { isStravaConnected() } returns flowOf(false)
+        every { FitWriter.weights(any(), any()) } throws FitRuntimeException("bad message")
+
+        val res = useCase(weights, today)
+
+        assertThat(res.isSuccess).isFalse()
+        assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't update Garmin: bad message")
+
+        verify { FitWriter.weights(any(), weights) }
+        coVerify(exactly = 0) { garminRepo.uploadFile(any()) }
+    }
+
+    @Test
     fun `Sync weight - strava failed`() = runTest {
         every { isStravaConnected() } returns flowOf(true)
         coEvery { garminRepo.uploadFile(any()) } returns Result.success(Unit)

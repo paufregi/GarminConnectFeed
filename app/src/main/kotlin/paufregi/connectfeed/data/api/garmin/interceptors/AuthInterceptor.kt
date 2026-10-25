@@ -12,7 +12,6 @@ import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
 import paufregi.connectfeed.data.api.utils.authRequest
 import paufregi.connectfeed.data.api.utils.failedAuthResponse
 import paufregi.connectfeed.data.repository.AuthRepository
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -27,7 +26,7 @@ class AuthInterceptor @Inject constructor(
     // the rest re-read the stored token once the lock is released.
     private val refreshMutex = Mutex()
 
-    override fun intercept(chain: Interceptor.Chain): Response  =
+    override fun intercept(chain: Interceptor.Chain): Response =
         runBlocking(Dispatchers.IO) {
             getOrRefreshToken().fold(
                 onSuccess = { chain.proceed(authRequest(chain.request(), it.accessToken)) },

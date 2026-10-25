@@ -35,6 +35,8 @@ class SyncWeight @Inject constructor(
                 garminRepo.uploadFile(file)
             } catch (e: IOException) {
                 Result.failure(e)
+            } catch (e: FitRuntimeException) {
+                Result.failure(e)
             } finally {
                 file.delete()
             }
