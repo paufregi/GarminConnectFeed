@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.api.strava.converters
+package paufregi.connectfeed.data.api.utils.serializers
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -9,7 +9,8 @@ import kotlinx.serialization.encoding.Encoder
 import kotlin.time.Instant
 
 object InstantSerializer : KSerializer<Instant> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Instant", PrimitiveKind.LONG)
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("Instant", PrimitiveKind.LONG)
 
     override fun serialize(encoder: Encoder, value: Instant) =
         encoder.encodeLong(value.toEpochMilliseconds())
