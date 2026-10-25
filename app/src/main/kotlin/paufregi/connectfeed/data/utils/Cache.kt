@@ -31,9 +31,11 @@ class Cache<T>(
             }
         }
 
-    fun invalidate() {
-        data = null
-        timestamp = null
+    suspend fun invalidate() {
+        mutex.withLock {
+            data = null
+            timestamp = null
+        }
     }
 }
 

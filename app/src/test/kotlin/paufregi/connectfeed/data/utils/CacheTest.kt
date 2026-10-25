@@ -4,6 +4,10 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -27,7 +31,6 @@ class CacheTest {
 
     @After
     fun tearDown() {
-        cache.invalidate()
         unmockkObject(Clock.System)
     }
 
@@ -78,6 +81,30 @@ class CacheTest {
 
         assertThat(result1).isEqualTo("fetched data")
         assertThat(result2).isEqualTo("new data")
+    }
+
+    @Test
+    fun `Invalidate waits for in-flight fetch`() = runTest {
+        every { Clock.System.now() } returns time1 andThen time2
+        val fetchStarted = CompletableDeferred<Unit>()
+        val finishFetch = CompletableDeferred<Unit>()
+        val fetch = async {
+            cache.get {
+                fetchStarted.complete(Unit)
+                finishFetch.await()
+                "stale data"
+            }
+        }
+        fetchStarted.await()
+
+        val invalidation = launch(start = CoroutineStart.UNDISPATCHED) {
+            cache.invalidate()
+        }
+        finishFetch.complete(Unit)
+        fetch.await()
+        invalidation.join()
+
+        assertThat(cache.get { "fresh data" }).isEqualTo("fresh data")
     }
 
     @Test
