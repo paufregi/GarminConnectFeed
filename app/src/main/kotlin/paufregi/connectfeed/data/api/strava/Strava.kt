@@ -3,10 +3,11 @@ package paufregi.connectfeed.data.api.strava
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
-import paufregi.connectfeed.data.api.strava.models.Activity
-import paufregi.connectfeed.data.api.strava.models.UpdateActivity
-import paufregi.connectfeed.data.api.strava.models.UpdateProfile
+import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor
+import paufregi.connectfeed.data.api.strava.models.ActivityDto
+import paufregi.connectfeed.data.api.strava.models.Athlete
+import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
+import paufregi.connectfeed.data.api.strava.models.UpdateAthlete
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -18,29 +19,32 @@ import retrofit2.http.Query
 
 interface Strava {
 
+    @GET("athlete")
+    suspend fun getAthlete(): Response<Athlete>
+
+    @PUT("athlete")
+    suspend fun updateAthlete(
+        @Body updateAthlete: UpdateAthlete,
+    ): Response<Unit>
+
     @GET("athlete/activities")
     suspend fun getActivities(
         @Query("before") before: Long? = null,
         @Query("after") after: Long? = null,
         @Query("page") page: Int? = 1,
         @Query("per_page") perPage: Int,
-    ): Response<List<Activity>>
+    ): Response<List<ActivityDto>>
 
     @PUT("activities/{id}")
     suspend fun updateActivity(
         @Path("id") id: Long,
-        @Body updateActivity: UpdateActivity,
-    ): Response<Unit>
-
-    @PUT("athlete")
-    suspend fun updateProfile(
-        @Body updateProfile: UpdateProfile,
+        @Body updateActivity: UpdateActivityDto,
     ): Response<Unit>
 
     companion object {
         const val BASE_URL = "https://www.strava.com/api/v3/"
 
-        fun client(authInterceptor: StravaAuthInterceptor, url: String): Strava {
+        fun client(authInterceptor: AuthInterceptor, url: String): Strava {
             val client = OkHttpClient.Builder().addInterceptor(authInterceptor)
 
             val json = Json {

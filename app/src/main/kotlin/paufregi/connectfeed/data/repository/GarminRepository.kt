@@ -1,103 +1,67 @@
 package paufregi.connectfeed.data.repository
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Gear
-import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.utils.andThen
-import paufregi.connectfeed.core.utils.toResult
+import paufregi.connectfeed.core.utils.apiCall
 import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.models.ActivityDto
+import paufregi.connectfeed.data.api.garmin.models.GearDto
 import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
-import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
-import paufregi.connectfeed.data.api.strava.Strava
-import paufregi.connectfeed.data.api.strava.models.UpdateProfile
-import paufregi.connectfeed.data.database.GarminDao
-import paufregi.connectfeed.data.database.coverters.toCore
-import paufregi.connectfeed.data.database.coverters.toEntity
-import paufregi.connectfeed.data.utils.Cache
-import paufregi.connectfeed.data.utils.withCache
+import paufregi.connectfeed.data.api.garmin.models.UpdateActivityDto
 import java.io.File
 import javax.inject.Inject
-import paufregi.connectfeed.data.api.garmin.models.EventType as DataEventType
-import paufregi.connectfeed.data.api.strava.models.UpdateActivity as UpdateStravaActivity
+import javax.inject.Singleton
 
+@Singleton
 class GarminRepository @Inject constructor(
-    private val garminDao: GarminDao,
-    private val garminConnect: GarminConnect,
-    private val strava: Strava,
+    private val garmin: GarminConnect,
 ) {
-    val activitiesCache: Cache<Result<List<Activity>>> = Cache()
-    val courseCache: Cache<Result<List<Course>>> = Cache()
-    val stravaActivityCache: Cache<Result<List<Activity>>> = Cache()
 
-    suspend fun fetchUser(): Result<User> =
-        garminConnect.getUserProfile()
-            .toResult()
-            .map { it.toCore() }
+    // Replaced atomically on each fetch so readers never observe a half-populated cache.
+    @Volatile
+    private var activities: Map<Long, ActivityDto> = emptyMap()
 
-    fun getAllProfiles(user: User): Flow<List<Profile>> =
-        garminDao.getAllProfiles(user.id).map { it.map { it.toCore() } }
+    suspend fun getUserProfile() =
+        apiCall { garmin.getUserProfile() }.map {
+            User(
+                id = it.id,
+                name = it.name,
+                profileImageUrl = it.avatarUrl
+            ) }
 
-    suspend fun getProfile(id: Long): Profile? =
-        garminDao.getProfile(id)?.toCore()
+    suspend fun getActivities(limit: Int): Result<List<ActivityDto>> =
+        apiCall(emptyList()) { garmin.getActivities(limit) }
+            .onSuccess { activities = it.associateBy { a -> a.id } }
 
-    suspend fun saveProfile(user: User, profile: Profile) =
-        garminDao.saveProfile(profile.toEntity(user.id))
+    suspend fun getActivity(id: Long): Result<ActivityDto> =
+        activities[id]?.let { Result.success(it) } ?: apiCall { garmin.getActivity(id) }
 
-    suspend fun deleteProfile(user: User, profile: Profile) =
-        garminDao.deleteProfile(profile.toEntity(user.id))
+    suspend fun getGears(): Result<List<GearDto>> =
+        apiCall(emptyList()) { garmin.getGears() }
 
-    fun getAllGears(user: User): Flow<List<Gear>> =
-        garminDao.getAllGears(user.id).map { it.map { it.toCore() } }
-
-    suspend fun getGear(id: String): Gear? =
-        garminDao.getGear(id)?.toCore()
-
-    suspend fun saveGear(user: User, gear: Gear) =
-        garminDao.saveGear(gear.toEntity(user.id))
-
-    suspend fun deleteGear(user: User, gear: Gear) =
-        garminDao.deleteGear(gear.toEntity(user.id))
-
-    suspend fun getActivities(limit: Int, force: Boolean = false): Result<List<Activity>> =
-        withCache(activitiesCache, force) {
-            garminConnect.getActivities(limit)
-                .toResult(emptyList())
-                .map { it.map { it.toCore() } }
-        }.onFailure { activitiesCache.invalidate() }
-
-    suspend fun getStravaActivities(limit: Int, force: Boolean = false): Result<List<Activity>> =
-        withCache(stravaActivityCache, force) {
-            strava.getActivities(perPage = limit)
-                .toResult(emptyList())
-                .map { it.map { it.toCore() } }
-        }.onFailure { stravaActivityCache.invalidate() }
-
-    suspend fun getCourses(force: Boolean = false): Result<List<Course>> =
-        withCache(courseCache, force) {
-            garminConnect.getCourses()
-                .toResult(emptyList())
-                .map { it.map { it.toCore() } }
-        }.onFailure { courseCache.invalidate() }
+    suspend fun getCourses(): Result<List<Course>> =
+        apiCall(emptyList()) { garmin.getCourses() }.map { r -> r.map {
+            Course(
+                id = it.id,
+                name = it.name,
+                distance = it.distance,
+                type = it.type.type,
+            ) } }
 
     suspend fun getWorkout(id: Long): Result<Workout> =
-        garminConnect.getWorkout(id)
-            .toResult()
-            .map {  it.toCore() }
-
-    suspend fun getGears(): Result<List<Gear>> =
-        garminConnect.getGears()
-            .toResult()
-            .map { r -> r.map { it.toCore() } }
-
+        apiCall { garmin.getWorkout(id) }.map {
+            Workout(
+                id = it.id,
+                name = it.name,
+            ) }
 
     suspend fun updateActivity(
         activity: Activity,
@@ -110,51 +74,26 @@ class GarminRepository @Inject constructor(
         effort: Float?,
         gear: Gear?,
     ): Result<Unit> {
-        val request = UpdateActivity(
+        val request = UpdateActivityDto(
             id = activity.id,
             name = name,
             description = description,
-            eventType = DataEventType(eventType?.id, eventType?.key),
+            eventType = eventType,
             metadata = Metadata(course?.id),
             summary = Summary(water, feel, effort)
         )
 
-        return garminConnect.updateActivity(activity.id, request).toResult()
-            .onSuccess { activitiesCache.invalidate() }
+        return apiCall { garmin.updateActivity(activity.id, request) }
             .andThen {
-                gear
-                    ?.let { garminConnect.associateGears(activity.id, listOf(it.id)).toResult() }
-                    ?: Result.success(Unit)
+                gear?.let {
+                    apiCall { garmin.associateGears(activity.id, listOf(it.id)) }
+                } ?: Result.success(Unit)
             }
-    }
-
-
-    suspend fun updateStravaActivity(
-        activity: Activity,
-        name: String?,
-        description: String?,
-        commute: Boolean?,
-    ): Result<Unit> {
-        val request = UpdateStravaActivity(
-            name = name,
-            description = description,
-            commute = commute
-        )
-        return strava.updateActivity(activity.id, request)
-            .toResult()
-            .onSuccess { stravaActivityCache.invalidate() }
-    }
-
-    suspend fun updateStravaProfile(
-        weight: Float
-    ): Result<Unit> {
-        val request = UpdateProfile(weight = weight)
-        return strava.updateProfile(request).toResult()
     }
 
     suspend fun uploadFile(file: File): Result<Unit> {
         val multipartBody =
             MultipartBody.Part.createFormData("fit", file.name, file.asRequestBody())
-        return garminConnect.uploadFile(multipartBody).toResult()
+        return apiCall { garmin.uploadFile(multipartBody) }
     }
 }

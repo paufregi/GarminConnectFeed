@@ -1,32 +1,59 @@
 package paufregi.connectfeed.core.usecases
 
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.firstOrNull
+import paufregi.connectfeed.core.models.GearType
+import paufregi.connectfeed.core.utils.andThen
+import paufregi.connectfeed.core.utils.runSuspendCatching
+import paufregi.connectfeed.data.api.strava.models.Athlete
+import paufregi.connectfeed.data.repository.AppRepository
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.StravaRepository
 import javax.inject.Inject
+import paufregi.connectfeed.core.models.Gear as CoreGear
 
 class SyncGear @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val garminRepository: GarminRepository
+    private val authRepo: AuthRepository,
+    private val isStravaConnected: IsStravaConnected,
+    private val garminRepo: GarminRepository,
+    private val stravaRepo: StravaRepository,
+    private val appRepo: AppRepository,
 ) {
-    suspend operator fun invoke(): Result<Unit> {
-        val user = authRepository.getUser().firstOrNull()
-            ?: return Result.failure(Exception("User must be logged in"))
+    suspend operator fun invoke(): Result<Unit> = coroutineScope {
+        val user = authRepo.getUser().firstOrNull()
+            ?: return@coroutineScope Result.failure(Exception("User must be logged in"))
 
-        val gears = garminRepository.getGears().getOrElse {
-            return Result.failure(it)
+        val garminDeferred = async { garminRepo.getGears() }
+        val stravaDeferred = async {
+            when (isStravaConnected().firstOrNull()) {
+                true -> stravaRepo.getAthlete()
+                else -> Result.success(Athlete(0))
+            }
         }
 
-        val currentGears = garminRepository.getAllGears(user).first()
-        val apiGearIds = gears.map { it.id }.toSet()
+        val garminResult = garminDeferred.await()
+        val stravaGears = stravaDeferred.await().getOrDefault(Athlete(0))
 
-        currentGears
-            .filterNot { it.id in apiGearIds }
-            .forEach { garminRepository.deleteGear(user, it) }
+        garminResult.map { garminGears ->
+            garminGears.map { garminGear ->
+                val matchedStravaId = when (garminGear.type) {
+                    GearType.Bike -> stravaGears.bikes.find { it.name.equals(garminGear.name, ignoreCase = true) || it.name.equals("${garminGear.brand} ${garminGear.model}", ignoreCase = true) }?.id
+                    GearType.Shoe -> stravaGears.shoes.find { it.name.equals(garminGear.name, ignoreCase = true) || it.name.equals("${garminGear.brand} ${garminGear.model}", ignoreCase = true) }?.id
+                    GearType.Unknown -> null
+                }
 
-        gears.forEach { garminRepository.saveGear(user, it) }
-
-        return Result.success(Unit)
+                CoreGear(
+                    id = garminGear.id,
+                    name = garminGear.name ?: "${garminGear.brand} ${garminGear.model}",
+                    type = garminGear.type,
+                    distance = garminGear.distance?.toInt(),
+                    stravaId = matchedStravaId,
+                )
+            }
+        }.andThen { gears ->
+            runSuspendCatching { appRepo.replaceGears(user, gears) }
+        }
     }
 }

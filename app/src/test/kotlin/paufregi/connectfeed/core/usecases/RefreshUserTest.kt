@@ -16,44 +16,42 @@ import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.user
 
 class RefreshUserTest{
-    private val garminRepo = mockk<GarminRepository>()
     private val authRepo = mockk<AuthRepository>()
+    private val repo = mockk<GarminRepository>()
     private lateinit var useCase: RefreshUser
 
     @Before
     fun setup(){
-        useCase = RefreshUser(garminRepo, authRepo)
+        useCase = RefreshUser(authRepo, repo)
     }
 
     @After
     fun tearDown(){
-        confirmVerified(garminRepo, authRepo)
+        confirmVerified(authRepo, repo)
         clearAllMocks()
     }
 
     @Test
-    fun `Refresh user - success`() = runTest {
-        coEvery { garminRepo.fetchUser() } returns Result.success(user)
+    fun `Refresh user`() = runTest {
+        coEvery { repo.getUserProfile() } returns Result.success(user)
         coEvery { authRepo.saveUser(any()) } returns Unit
 
         val res = useCase()
 
         assertThat(res.isSuccess).isTrue()
 
-        coVerify {
-            garminRepo.fetchUser()
-            authRepo.saveUser(user)
-        }
+        coVerify { repo.getUserProfile() }
+        coVerify { authRepo.saveUser(user) }
     }
 
     @Test
     fun `Refresh user - failure`() = runTest {
-        coEvery { garminRepo.fetchUser() } returns Result.failure("error")
+        coEvery { repo.getUserProfile() } returns Result.failure("error")
 
         val res = useCase()
 
         assertThat(res.isSuccess).isFalse()
 
-        coVerify { garminRepo.fetchUser() }
+        coVerify { repo.getUserProfile() }
     }
 }

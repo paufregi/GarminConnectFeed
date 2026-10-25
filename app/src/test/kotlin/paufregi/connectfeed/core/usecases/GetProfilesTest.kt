@@ -9,6 +9,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -18,13 +19,14 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.data.repository.AppRepository
 import paufregi.connectfeed.data.repository.AuthRepository
-import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.user
 
-class GetProfilesTest{
+@ExperimentalCoroutinesApi
+class GetProfilesTest {
     private val auth = mockk<AuthRepository>()
-    private val repo = mockk<GarminRepository>()
+    private val repo = mockk<AppRepository>()
     private lateinit var useCase: GetProfiles
 
     @Before

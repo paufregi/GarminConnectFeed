@@ -62,38 +62,6 @@ class VersionTest {
     }
 
     @Test
-    fun `Same versions`() {
-        val versionA = Version(1, 2, 3)
-        val versionB = Version(1, 2, 3)
-
-        assertThat(versionA.same(versionB)).isTrue()
-    }
-
-    @Test
-    fun `Same - different major`() {
-        val versionA = Version(1, 2, 3)
-        val versionB = Version(5, 2, 3)
-
-        assertThat(versionA.same(versionB)).isFalse()
-    }
-
-    @Test
-    fun `Same - different minor`() {
-        val versionA = Version(1, 2, 3)
-        val versionB = Version(1, 5, 3)
-
-        assertThat(versionA.same(versionB)).isFalse()
-    }
-
-    @Test
-    fun `Same - different patch`() {
-        val versionA = Version(1, 2, 3)
-        val versionB = Version(1, 2, 5)
-
-        assertThat(versionA.same(versionB)).isFalse()
-    }
-
-    @Test
     fun `IsLowerThan - same`() {
         val versionA = Version(1, 2, 3)
         val versionB = Version(1, 2, 3)

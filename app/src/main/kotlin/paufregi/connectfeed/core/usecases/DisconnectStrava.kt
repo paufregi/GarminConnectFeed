@@ -1,10 +1,10 @@
 package paufregi.connectfeed.core.usecases
 
-import paufregi.connectfeed.data.repository.StravaAuthRepository
+import paufregi.connectfeed.data.repository.AuthRepository
 import javax.inject.Inject
 
 class DisconnectStrava @Inject constructor(
-    private val authRepository: StravaAuthRepository
+    private val authRepo: AuthRepository
 ) {
-    suspend operator fun invoke() = authRepository.clear()
+    suspend operator fun invoke() = authRepo.clearStravaToken()
 }

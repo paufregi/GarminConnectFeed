@@ -11,224 +11,296 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.apache.commons.io.IOUtils
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.models.Weight
-import paufregi.connectfeed.core.usecases.SyncStravaWeight
+import paufregi.connectfeed.core.usecases.GetUser
 import paufregi.connectfeed.core.usecases.SyncWeight
 import paufregi.connectfeed.core.utils.RenphoReader
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.presentation.ui.models.ProcessState
+import paufregi.connectfeed.presentation.ui.models.Status
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
-import java.time.Instant
+import paufregi.connectfeed.user
+import java.io.ByteArrayInputStream
+import java.io.InputStream
 import java.util.Date
 
 @ExperimentalCoroutinesApi
 class SyncWeightViewModelTest {
 
+    private val getUser = mockk<GetUser>()
     private val syncWeight = mockk<SyncWeight>()
-    private val syncStravaWeight = mockk<SyncStravaWeight>()
+
+    private val inputStream = ByteArrayInputStream("weights".toByteArray())
+    private val weights = listOf(
+        Weight(
+            timestamp = Date(1_700_000_000_000),
+            weight = 70.5f,
+            bmi = 22.1f,
+            fat = 15.2f,
+            visceralFat = 5,
+            water = 60.3f,
+            muscle = 55.4f,
+            bone = 3.1f,
+            basalMet = 1650f,
+            metabolicAge = 30,
+        )
+    )
 
     private lateinit var viewModel: SyncWeightViewModel
+
+    fun createViewModel() = SyncWeightViewModel(getUser, syncWeight)
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     @Before
-    fun setup(){
+    fun setup() {
         mockkObject(RenphoReader)
-
-        viewModel = SyncWeightViewModel(syncWeight, syncStravaWeight)
     }
 
     @After
-    fun tearDown(){
-        confirmVerified(syncWeight, RenphoReader)
+    fun tearDown() {
+        confirmVerified(getUser, syncWeight, RenphoReader)
         clearAllMocks()
         unmockkObject(RenphoReader)
     }
 
     @Test
-    fun `Sync weight`() = runTest {
-        val csvText = """
-            Time of Measurement,Weight(kg),BMI,Body Fat(%),Fat-Free Mass(kg),Subcutaneous Fat(%),Visceral Fat,Body Water(%),Skeletal Muscle(%),Muscle Mass(kg),Bone Mass(kg),Protein(%),BMR(kcal),Metabolic Age,Optimal weight(kg),Target to optimal weight(kg),Target to optimal fat mass(kg),Target to optimal muscle mass(kg),Body Type,Remarks
-            2024-01-01 10:20:30,76.15,23.8,23.2,58.48,20.9,7.0,55.4,49.5,55.59,2.89,17.5,1618,35,,,,,,
-        """.trimIndent()
-        val inputStream = IOUtils.toInputStream(csvText, "UTF-8")
-        val weights = listOf(Weight(
-            timestamp = Date.from(Instant.parse("2024-01-01T10:20:30Z"),),
-            weight = 76.15f,
-            bmi = 23.8f,
-            fat = 23.2f,
-            visceralFat = 7,
-            water = 55.4f,
-            muscle = 55.59f,
-            bone = 2.89f,
-            basalMet = 1618f,
-            metabolicAge = 35,
-        ))
+    fun `Initial state`() = runTest {
+        every { getUser() } returns flowOf(user)
 
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+    }
+
+    @Test
+    fun `Initial user`() = runTest {
+        every { getUser() } returns flowOf(user)
+
+        viewModel = createViewModel()
+
+        viewModel.user.test {
+            assertThat(awaitItem()).isEqualTo(user)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+    }
+
+    @Test
+    fun `Initial user - no user`() = runTest {
+        every { getUser() } returns flowOf(null)
+
+        viewModel = createViewModel()
+
+        viewModel.user.test {
+            assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+    }
+
+    @Test
+    fun `Initial user - user updated`() = runTest {
+        val userFlow = MutableStateFlow<User?>(null)
+        every { getUser() } returns userFlow
+
+        viewModel = createViewModel()
+
+        viewModel.user.test {
+            assertThat(awaitItem()).isNull()
+
+            userFlow.value = user
+
+            assertThat(awaitItem()).isEqualTo(user)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+    }
+
+    @Test
+    fun `Sync weight - success`() = runTest {
+        val syncResult = CompletableDeferred<Result<Unit>>()
+        every { getUser() } returns flowOf(user)
         every { RenphoReader.read(any()) } returns Result.success(weights)
-        coEvery { syncWeight.invoke(any()) } returns Result.success(Unit)
-        coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.success(Unit)
+        coEvery { syncWeight(any(), any()) } coAnswers { syncResult.await() }
+
+        viewModel = createViewModel()
 
         viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            viewModel.injectState(Status.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("previous"))
+
             viewModel.updateWeight(inputStream)
-            skipItems(2)
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Success("Sync succeeded"))
+
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            syncResult.complete(Result.success(Unit))
+            assertThat(awaitItem()).isEqualTo(Status.Success("Sync succeeded"))
             cancelAndIgnoreRemainingEvents()
         }
-        coVerify {
-            syncWeight.invoke(weights)
-            syncStravaWeight.invoke(weights, any())
-        }
+
+        verify { getUser() }
         verify { RenphoReader.read(inputStream) }
+        coVerify { syncWeight(weights, any()) }
     }
 
     @Test
-    fun `Sync weight - failure no input stream`() = runTest {
-        viewModel.state.test {
-            viewModel.updateWeight(null)
-            skipItems(1)
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Failure("Nothing to sync"))
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
+    fun `Sync weight - already started`() = runTest {
+        val secondStream = mockk<InputStream>()
+        every { getUser() } returns flowOf(user)
+        every { RenphoReader.read(any()) } returns Result.success(weights)
+        coEvery { syncWeight(any(), any()) } returns Result.success(Unit)
+        every { secondStream.close() } returns Unit
 
-    @Test
-    fun `Sync weight - failure - empty file`() = runTest {
-        val inputStream = IOUtils.toInputStream("", "UTF-8")
-
-        every { RenphoReader.read(any()) } returns Result.success(emptyList())
+        viewModel = createViewModel()
 
         viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
             viewModel.updateWeight(inputStream)
-            skipItems(1)
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Failure("Nothing to sync"))
+            assertThat(awaitItem()).isEqualTo(Status.Success("Sync succeeded"))
+
+            viewModel.updateWeight(secondStream)
+
+            expectNoEvents()
+            assertThat(viewModel.state.value).isEqualTo(Status.Success("Sync succeeded"))
             cancelAndIgnoreRemainingEvents()
         }
-        verify { RenphoReader.read(inputStream) }
+
+        verify { getUser() }
+        verify(exactly = 1) { RenphoReader.read(inputStream) }
+        verify(exactly = 0) { RenphoReader.read(secondStream) }
+        coVerify(exactly = 1) { syncWeight(weights, any()) }
+        verify { secondStream.close() }
+        confirmVerified(secondStream)
     }
 
     @Test
     fun `Sync weight - failure`() = runTest {
-        val csvText = """
-            Time of Measurement,Weight(kg),BMI,Body Fat(%),Fat-Free Mass(kg),Subcutaneous Fat(%),Visceral Fat,Body Water(%),Skeletal Muscle(%),Muscle Mass(kg),Bone Mass(kg),Protein(%),BMR(kcal),Metabolic Age,Optimal weight(kg),Target to optimal weight(kg),Target to optimal fat mass(kg),Target to optimal muscle mass(kg),Body Type,Remarks
-            2024-01-01 10:20:30,76.15,23.8,23.2,58.48,20.9,7.0,55.4,49.5,55.59,2.89,17.5,1618,35,,,,,,
-        """.trimIndent()
-        val inputStream = IOUtils.toInputStream(csvText, "UTF-8")
-        val weights = listOf(Weight(
-            timestamp = Date.from(Instant.parse("2024-01-01T10:20:30Z"),),
-            weight = 76.15f,
-            bmi = 23.8f,
-            fat = 23.2f,
-            visceralFat = 7,
-            water = 55.4f,
-            muscle = 55.59f,
-            bone = 2.89f,
-            basalMet = 1618f,
-            metabolicAge = 35,
-        ))
-
+        val syncResult = CompletableDeferred<Result<Unit>>()
+        every { getUser() } returns flowOf(user)
         every { RenphoReader.read(any()) } returns Result.success(weights)
-        coEvery { syncWeight.invoke(any()) } returns Result.failure("error")
-        coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.success(Unit)
+        coEvery { syncWeight(any(), any()) } coAnswers { syncResult.await() }
+
+        viewModel = createViewModel()
 
         viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            viewModel.injectState(Status.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("previous"))
+
             viewModel.updateWeight(inputStream)
-            skipItems(2)
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Failure("Garmin sync failed"))
+
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            syncResult.complete(Result.failure("error"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
-        coVerify {
-            syncWeight.invoke(weights)
-            syncStravaWeight.invoke(weights, any())
+
+        verify { getUser() }
+        verify { RenphoReader.read(inputStream) }
+        coVerify { syncWeight(weights, any()) }
+    }
+
+    @Test
+    fun `Sync weight - failure without message`() = runTest {
+        val syncResult = CompletableDeferred<Result<Unit>>()
+        every { getUser() } returns flowOf(user)
+        every { RenphoReader.read(any()) } returns Result.success(weights)
+        coEvery { syncWeight(any(), any()) } coAnswers { syncResult.await() }
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            viewModel.injectState(Status.Failure("previous"))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("previous"))
+
+            viewModel.updateWeight(inputStream)
+
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+            syncResult.complete(Result.failure(Exception()))
+            assertThat(awaitItem()).isEqualTo(Status.Failure("Unknown error"))
+            cancelAndIgnoreRemainingEvents()
         }
+
+        verify { getUser() }
+        verify { RenphoReader.read(inputStream) }
+        coVerify { syncWeight(weights, any()) }
+    }
+
+    @Test
+    fun `Sync weight - no input stream`() = runTest {
+        every { getUser() } returns flowOf(user)
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+
+            viewModel.updateWeight(null)
+
+            assertThat(awaitItem()).isEqualTo(Status.Failure("nothing to sync"))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
+    }
+
+    @Test
+    fun `Sync weight - read error`() = runTest {
+        every { getUser() } returns flowOf(user)
+        every { RenphoReader.read(any()) } returns Result.failure("error")
+
+        viewModel = createViewModel()
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+
+            viewModel.updateWeight(inputStream)
+
+            assertThat(awaitItem()).isEqualTo(Status.Failure("failed to read file"))
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verify { getUser() }
         verify { RenphoReader.read(inputStream) }
     }
 
     @Test
-    fun `Sync weight - Strava failure`() = runTest {
-        val csvText = """
-            Time of Measurement,Weight(kg),BMI,Body Fat(%),Fat-Free Mass(kg),Subcutaneous Fat(%),Visceral Fat,Body Water(%),Skeletal Muscle(%),Muscle Mass(kg),Bone Mass(kg),Protein(%),BMR(kcal),Metabolic Age,Optimal weight(kg),Target to optimal weight(kg),Target to optimal fat mass(kg),Target to optimal muscle mass(kg),Body Type,Remarks
-            2024-01-01 10:20:30,76.15,23.8,23.2,58.48,20.9,7.0,55.4,49.5,55.59,2.89,17.5,1618,35,,,,,,
-        """.trimIndent()
-        val inputStream = IOUtils.toInputStream(csvText, "UTF-8")
-        val weights = listOf(Weight(
-            timestamp = Date.from(Instant.parse("2024-01-01T10:20:30Z"),),
-            weight = 76.15f,
-            bmi = 23.8f,
-            fat = 23.2f,
-            visceralFat = 7,
-            water = 55.4f,
-            muscle = 55.59f,
-            bone = 2.89f,
-            basalMet = 1618f,
-            metabolicAge = 35,
-        ))
+    fun `Sync weight - empty file`() = runTest {
+        every { getUser() } returns flowOf(user)
+        every { RenphoReader.read(any()) } returns Result.success(emptyList())
 
-        every { RenphoReader.read(any()) } returns Result.success(weights)
-        coEvery { syncWeight.invoke(any()) } returns Result.success(Unit)
-        coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.failure("error")
+        viewModel = createViewModel()
 
         viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(Status.Loading)
+
             viewModel.updateWeight(inputStream)
-            skipItems(2)
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Failure("Strava sync failed"))
+
+            assertThat(awaitItem()).isEqualTo(Status.Failure("nothing to sync"))
             cancelAndIgnoreRemainingEvents()
         }
-        coVerify {
-            syncWeight.invoke(weights)
-            syncStravaWeight.invoke(weights, any())
-        }
-        verify { RenphoReader.read(inputStream) }
-    }
 
-    @Test
-    fun `Sync weight - all failure`() = runTest {
-        val csvText = """
-            Time of Measurement,Weight(kg),BMI,Body Fat(%),Fat-Free Mass(kg),Subcutaneous Fat(%),Visceral Fat,Body Water(%),Skeletal Muscle(%),Muscle Mass(kg),Bone Mass(kg),Protein(%),BMR(kcal),Metabolic Age,Optimal weight(kg),Target to optimal weight(kg),Target to optimal fat mass(kg),Target to optimal muscle mass(kg),Body Type,Remarks
-            2024-01-01 10:20:30,76.15,23.8,23.2,58.48,20.9,7.0,55.4,49.5,55.59,2.89,17.5,1618,35,,,,,,
-        """.trimIndent()
-        val inputStream = IOUtils.toInputStream(csvText, "UTF-8")
-        val weights = listOf(Weight(
-            timestamp = Date.from(Instant.parse("2024-01-01T10:20:30Z"),),
-            weight = 76.15f,
-            bmi = 23.8f,
-            fat = 23.2f,
-            visceralFat = 7,
-            water = 55.4f,
-            muscle = 55.59f,
-            bone = 2.89f,
-            basalMet = 1618f,
-            metabolicAge = 35,
-        ))
-
-        every { RenphoReader.read(any()) } returns Result.success(weights)
-        coEvery { syncWeight.invoke(any()) } returns Result.failure("error")
-        coEvery { syncStravaWeight.invoke(any(), any()) } returns Result.failure("error")
-
-        viewModel.state.test {
-            viewModel.updateWeight(inputStream)
-            skipItems(2)
-            val state = awaitItem()
-            assertThat(state.process).isEqualTo(ProcessState.Failure("Garmin & Strava sync failed"))
-            cancelAndIgnoreRemainingEvents()
-        }
-        coVerify {
-            syncWeight.invoke(weights)
-            syncStravaWeight.invoke(weights, any())
-        }
+        verify { getUser() }
         verify { RenphoReader.read(inputStream) }
     }
 }

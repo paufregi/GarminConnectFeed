@@ -19,7 +19,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         >
         <activity
-            android:name=".presentation.main.MainActivity"
+            android:name=".presentation.app.AppActivity"
             android:theme="@android:style/Theme.NoTitleBar"
             android:exported="true">
             <intent-filter>
@@ -49,11 +49,6 @@
                 <data android:scheme="paufregi.connectfeed" android:host="strava" />
             </intent-filter>
         </activity>
-        <receiver android:name=".system.Installer" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
-            </intent-filter>
-        </receiver>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

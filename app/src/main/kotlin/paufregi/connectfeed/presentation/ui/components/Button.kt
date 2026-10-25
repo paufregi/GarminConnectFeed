@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Button as MaterialButton
@@ -45,13 +47,14 @@ fun Button(
     modifier: Modifier = Modifier,
     description: String? = "",
     onClick: () -> Unit = {},
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    tint: Color = LocalContentColor.current,
 ) {
     MaterialIconButton(
         modifier = modifier,
         onClick = onClick,
         enabled = enabled
     ) {
-        Icon(icon, description)
+        Icon(icon, description, tint = tint)
     }
 }

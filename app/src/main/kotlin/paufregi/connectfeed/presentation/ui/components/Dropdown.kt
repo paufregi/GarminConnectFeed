@@ -1,11 +1,8 @@
 package paufregi.connectfeed.presentation.ui.components
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -20,37 +17,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.utils.Formatter
-import paufregi.connectfeed.presentation.ui.icons.strava.Logo
-import paufregi.connectfeed.presentation.ui.icons.strava.Strava
 import paufregi.connectfeed.presentation.ui.utils.iconFor
 
 data class DropdownItem(
     val text: String,
     val icon: ImageVector? = null,
     val supportingText: String? = null,
-    val supportingIcon: ImageVector? = null,
     val onClick: () -> Unit = {}
-)
-
-@SuppressLint("DefaultLocale")
-@ExperimentalMaterial3Api
-fun Activity.toDropdownItem(onClick: () -> Unit = {}, stravaActivity: Activity? = null) = DropdownItem(
-    text = name,
-    icon = iconFor(this.type),
-    supportingText = distance?.takeIf { it > 0 }?.let { Formatter.distance(it) },
-    supportingIcon = stravaActivity?.let { Icons.Strava.Logo },
-    onClick = onClick
 )
 
 @ExperimentalMaterial3Api
@@ -63,6 +45,7 @@ fun ActivityType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 @ExperimentalMaterial3Api
 fun EventType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = name,
+    icon = iconFor(this),
     onClick = onClick
 )
 
@@ -114,15 +97,7 @@ fun Dropdown(
             label = label,
             value = selected?.text ?: "",
             supportingText = {
-                if (selected?.supportingText != null || selected?.supportingIcon != null) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = selected.supportingText ?: "", fontSize = 11.sp)
-                        selected.supportingIcon?.let { Icon(it, it.name, tint = Color.Unspecified, modifier = Modifier.size(16.dp)) }
-                    }
-                }
+                selected?.supportingText?.let { Text(text = it, fontSize = 11.sp) }
             },
             leadingIcon = { selected?.icon?.let { Icon(it, it.name, Modifier.size(24.dp)) } },
             onValueChange = {},

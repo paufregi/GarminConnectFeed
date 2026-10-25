@@ -10,6 +10,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.connectfeed.core.models.Release
+import paufregi.connectfeed.core.models.Version
 import paufregi.connectfeed.data.api.github.Github
 import paufregi.connectfeed.data.api.github.models.Asset
 import paufregi.connectfeed.githubRelease
@@ -21,12 +23,12 @@ class GithubRepositoryTest {
     private val github = mockk<Github>()
 
     @Before
-    fun setup(){
+    fun setup() {
         repo = GithubRepository(github)
     }
 
     @After
-    fun tearDown(){
+    fun tearDown() {
         confirmVerified(github)
         clearAllMocks()
     }
@@ -35,10 +37,15 @@ class GithubRepositoryTest {
     fun `Get Latest Release`() = runTest {
         coEvery { github.getLatestRelease() } returns Response.success(githubRelease)
 
+        val expected = Release(
+            version = Version(2, 2, 2,),
+            downloadUrl = "https://github.com/paufregi/GarminConnectFeed/releases/download/v2.2.2/ConnectFeed-v2.2.2.apk"
+        )
+
         val res =  repo.getLatestRelease()
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(githubRelease.toCore())
+        assertThat(res.getOrNull()).isEqualTo(expected)
 
         coVerify { github.getLatestRelease() }
     }
