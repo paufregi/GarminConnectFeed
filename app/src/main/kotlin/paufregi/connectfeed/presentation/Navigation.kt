@@ -17,10 +17,17 @@ import paufregi.connectfeed.presentation.ui.components.NavigationItem
 import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
 import paufregi.connectfeed.presentation.ui.icons.garmin.Shoe
 
-sealed interface Route : NavKey {
+/**
+ * Routes available before the user is signed in. Deliberately a separate hierarchy from [Route]
+ * so an auth screen can never be pushed onto the app back stack (or vice versa).
+ */
+sealed interface AuthRoute : NavKey {
     @Serializable
-    data object Login : Route
+    data object Login : AuthRoute
+}
 
+/** Routes available once the user is signed in. */
+sealed interface Route : NavKey {
     @Serializable
     data object QuickEdit : Route
 
