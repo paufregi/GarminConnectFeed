@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import paufregi.connectfeed.connectPort
+import paufregi.connectfeed.garminAuthPort
 import paufregi.connectfeed.garminSSOPort
 import javax.inject.Named
 import javax.inject.Singleton
@@ -18,13 +19,8 @@ object TestGarminModule {
 
     @Provides
     @Singleton
-    @Named("GarminConsumerKey")
-    fun provideGarminConsumerKey(): String = "00000000-0000-0000-0000-000000000000"
-
-    @Provides
-    @Singleton
-    @Named("GarminConsumerSecret")
-    fun provideGarminConsumerSecret(): String = "abcdefghijklmopqrstuvwxyz"
+    @Named("GarminClientId")
+    fun provideGarminClientId(): String = "GARMIN_CLIENT_ID"
 
     @Provides
     @Singleton
@@ -33,13 +29,8 @@ object TestGarminModule {
 
     @Provides
     @Singleton
-    @Named("GarminPreAuthUrl")
-    fun provideGarminPreAuthUrl(): String = "https://localhost:${connectPort}/"
-
-    @Provides
-    @Singleton
     @Named("GarminAuthUrl")
-    fun provideGarminAuthUrl(): String = "https://localhost:${connectPort}/"
+    fun provideGarminAuthUrl(): String = "https://localhost:${garminAuthPort}/"
 
     @Provides
     @Singleton

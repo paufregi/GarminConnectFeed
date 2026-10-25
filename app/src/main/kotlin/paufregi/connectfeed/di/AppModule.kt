@@ -3,38 +3,32 @@ package paufregi.connectfeed.di
 import android.app.DownloadManager
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.tink.AeadSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import paufregi.connectfeed.BuildConfig
 import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminConnect
-import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
-import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
-import paufregi.connectfeed.data.api.github.Github
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.StravaAuth
-import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
-import paufregi.connectfeed.data.database.GarminDao
-import paufregi.connectfeed.data.datastore.AuthStore
-import paufregi.connectfeed.data.datastore.StravaStore
-import paufregi.connectfeed.data.repository.AuthRepository
-import paufregi.connectfeed.data.repository.GarminRepository
-import paufregi.connectfeed.data.repository.GithubRepository
-import paufregi.connectfeed.data.repository.StravaAuthRepository
+import paufregi.connectfeed.data.datastore.models.Auth
+import paufregi.connectfeed.data.datastore.serializers.AuthSerializer
+import paufregi.connectfeed.data.utils.SecurityManager
 import paufregi.connectfeed.system.Downloader
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
-
-val Context.authStore: DataStore<Preferences> by preferencesDataStore(name = "authStore")
-val Context.stravaStore: DataStore<Preferences> by preferencesDataStore(name = "stravaStore")
+import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor as GarminAuthInterceptor
+import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor as StravaAuthInterceptor
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -42,73 +36,35 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthStore(
+    @Named("AppScope")
+    fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    @Provides
+    @Singleton
+    fun provideDataStore(
         @ApplicationContext context: Context,
-    ): AuthStore =
-        AuthStore(dataStore = context.authStore)
+        @Named("AppScope") scope: CoroutineScope,
+        @Named("MasterKey") masterKey: String,
+        @Named("DataStoreFileName") dataStoreFileName: String,
+        @Named("DataStoreDirectory") dataStoreDirectory: File,
+    ): DataStore<Auth> {
+        val aead = SecurityManager.getAead(context, masterKey)
 
-    @Provides
-    @Singleton
-    fun provideStravaStore(
-        @ApplicationContext context: Context,
-    ): StravaStore =
-        StravaStore(dataStore = context.stravaStore)
+        val encryptedSerializer = AeadSerializer(
+            aead = aead,
+            wrappedSerializer = AuthSerializer,
+            associatedData = dataStoreFileName.toByteArray(Charsets.UTF_8)
+        )
 
-    @Provides
-    @Singleton
-    fun provideAuthRepository(
-        garminSSO: GarminSSO,
-        authDatastore: AuthStore,
-        @Named("GarminConsumerKey") consumerKey: String,
-        @Named("GarminConsumerSecret") consumerSecret: String,
-        @Named("GarminPreAuthUrl") garminPreAuthUrl: String,
-        @Named("GarminAuthUrl") garminAuthUrl: String,
-    ): AuthRepository = AuthRepository(
-        garminSSO = garminSSO,
-        authStore = authDatastore,
-        preAuth = GarminPreAuth.client(consumerKey, consumerSecret, garminPreAuthUrl),
-        makeGarminAuth = { oauth: PreAuthToken ->
-            GarminAuth.client(consumerKey, consumerSecret, oauth, garminAuthUrl)
-        }
-    )
+        val file = File(dataStoreDirectory, dataStoreFileName)
+        return DataStoreFactory.create(
+            serializer = encryptedSerializer,
+            corruptionHandler = ReplaceFileCorruptionHandler { Auth() },
+            scope = scope,
+            produceFile = { file }
+        )
+    }
 
-    @Provides
-    @Singleton
-    fun provideStravaAuthRepository(
-        stravaStore: StravaStore,
-        stravaAuth: StravaAuth,
-    ): StravaAuthRepository = StravaAuthRepository(
-        stravaStore,
-        stravaAuth
-    )
-
-    @Provides
-    @Singleton
-    fun provideGarminRepository(
-        dao: GarminDao,
-        connect: GarminConnect,
-        strava: Strava,
-    ): GarminRepository = GarminRepository(dao, connect, strava)
-
-    @Provides
-    @Singleton
-    fun provideGithubRepository(
-        github: Github,
-    ): GithubRepository = GithubRepository(github)
-
-
-    @Provides
-    @Singleton
-    fun provideAuthInterceptor(
-        authRepository: AuthRepository
-    ): AuthInterceptor = AuthInterceptor(authRepository)
-
-    @Provides
-    @Singleton
-    fun provideGarminConnect(
-        authInterceptor: AuthInterceptor,
-        @Named("GarminConnectUrl") url: String
-    ): GarminConnect = GarminConnect.client(authInterceptor, url)
 
     @Provides
     @Singleton
@@ -118,17 +74,24 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideGarminAuth(
+        @Named("GarminAuthUrl") url: String
+    ): GarminAuth = GarminAuth.client(url)
+
+    @Provides
+    @Singleton
+    fun provideGarminConnect(
+        authInterceptor: GarminAuthInterceptor,
+        @Named("GarminConnectUrl") url: String
+    ): GarminConnect = GarminConnect.client(authInterceptor, url)
+
+
+    @Provides
+    @Singleton
     fun provideStravaAuth(
         @Named("StravaAuthUrl") url: String
     ): StravaAuth = StravaAuth.client(url)
 
-    @Provides
-    @Singleton
-    fun provideStravaAuthInterceptor(
-        authRepo: StravaAuthRepository,
-        @Named("StravaClientId") clientId: String,
-        @Named("StravaClientSecret") clientSecret: String,
-    ): StravaAuthInterceptor = StravaAuthInterceptor(authRepo, clientId, clientSecret)
 
     @Provides
     @Singleton
@@ -136,12 +99,6 @@ object AppModule {
         authInterceptor: StravaAuthInterceptor,
         @Named("StravaUrl") url: String,
     ): Strava = Strava.client(authInterceptor, url)
-
-    @Provides
-    @Singleton
-    fun provideGithub(
-        @Named("GithubUrl") url: String,
-    ): Github = Github.client(url)
 
     @Provides
     @Singleton
@@ -157,9 +114,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    @Named("downloader")
     fun provideDownloader(@ApplicationContext context: Context): Downloader =
-        context.getSystemService(DownloadManager::class.java).let { Downloader(context, it) }
-
-
+        Downloader(context, context.getSystemService(DownloadManager::class.java))
 }
