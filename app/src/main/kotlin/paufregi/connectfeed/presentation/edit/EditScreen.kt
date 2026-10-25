@@ -29,10 +29,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.presentation.HomeNavigation
+import paufregi.connectfeed.presentation.Navigator
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.CustomSlider
 import paufregi.connectfeed.presentation.ui.components.Dropdown
@@ -56,7 +55,7 @@ import paufregi.connectfeed.presentation.ui.utils.launchStrava
 @Composable
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-internal fun EditScreen(nav: NavHostController = rememberNavController()) {
+internal fun EditScreen(nav: Navigator = Navigator()) {
     val viewModel = hiltViewModel<EditViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -69,7 +68,7 @@ internal fun EditScreen(nav: NavHostController = rememberNavController()) {
 internal fun EditContent(
     @PreviewParameter(EditStatePreview::class) state: EditState,
     onAction: (EditAction) -> Unit = {},
-    nav: NavHostController = rememberNavController()
+    nav: Navigator = Navigator()
 ) {
     val context = LocalContext.current
 
@@ -227,5 +226,3 @@ internal fun EditContent(
         }
     }
 }
-
-

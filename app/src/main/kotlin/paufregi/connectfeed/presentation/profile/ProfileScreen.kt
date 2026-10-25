@@ -23,10 +23,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.Navigation
+import paufregi.connectfeed.presentation.Navigator
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Dropdown
 import paufregi.connectfeed.presentation.ui.components.Screen
@@ -37,9 +36,12 @@ import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 @Composable
 @ExperimentalMaterial3Api
 internal fun ProfileScreen(
-    nav: NavHostController = rememberNavController()
+    id: Long = 0L,
+    nav: Navigator = Navigator()
 ) {
-    val viewModel = hiltViewModel<ProfileViewModel>()
+    val viewModel = hiltViewModel<ProfileViewModel, ProfileViewModel.Factory>(
+        creationCallback = { it.create(id) }
+    )
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ProfileContent(state, viewModel::onAction, nav)
@@ -51,7 +53,7 @@ internal fun ProfileScreen(
 internal fun ProfileContent(
     @PreviewParameter(ProfileStatePreview::class) state: ProfileState,
     onAction: (ProfileAction) -> Unit = {},
-    nav: NavHostController = rememberNavController(),
+    nav: Navigator = Navigator(),
 ) {
     Screen(
         tagName = "profile_screen",
