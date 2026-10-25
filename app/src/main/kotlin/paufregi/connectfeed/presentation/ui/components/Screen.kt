@@ -15,10 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.presentation.HomeNavigation
 import paufregi.connectfeed.presentation.Navigation
+import paufregi.connectfeed.presentation.Navigator
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
@@ -55,7 +54,7 @@ fun Screen(
 fun Screen(
     tagName: String = "screen",
     navigationIndex: Int = 0,
-    nav: NavHostController = rememberNavController(),
+    nav: Navigator = Navigator(),
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     state: ProcessState,
@@ -101,7 +100,7 @@ fun Screen(
 fun Screen(
     tagName: String = "screen",
     location: HomeNavigation,
-    nav: NavHostController = rememberNavController(),
+    nav: Navigator = Navigator(),
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     state: ProcessState,
