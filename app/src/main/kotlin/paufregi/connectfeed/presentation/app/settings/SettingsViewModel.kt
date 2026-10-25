@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 import paufregi.connectfeed.core.models.Version
 import paufregi.connectfeed.core.usecases.DisconnectStrava
 import paufregi.connectfeed.core.usecases.GetLatestRelease

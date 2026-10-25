@@ -15,7 +15,7 @@ behavior and explicit task requirements take precedence over stylistic cleanup.
   - Use cases expose application operations and orchestrate domain behavior.
   - Repositories coordinate remote and local data, authentication, and mapping.
   - APIs, persistence, and platform services handle their respective boundaries.
-- ViewModels use use cases instead of calling APIs, DAOs, or stores directly.
+- ViewModels use use-cases instead of calling APIs, DAOs, or stores directly.
   Keep domain models and business rules independent of Compose and Android UI.
 - Keep platform-dependent work in the platform/infrastructure layer and inject it
   where needed. Preserve existing platform integrations rather than hiding them

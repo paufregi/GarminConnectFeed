@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StravaViewModel @Inject constructor(
-    private val getUser: GetUser,
+    getUser: GetUser,
     private val enableStrava: ConnectStrava
 ) : ViewModel() {
 

@@ -32,7 +32,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.GET
-import java.io.IOException
+import kotlin.time.Duration.Companion.milliseconds
 
 class AuthInterceptorTest {
 
@@ -111,7 +111,7 @@ class AuthInterceptorTest {
 
         every { authRepo.getGarminToken() } returns storedToken
         coEvery { authRepo.refreshGarminToken(any(), any()) } coAnswers {
-            delay(200)
+            delay(200.milliseconds)
             Result.success(validToken)
         }
         coEvery { authRepo.saveGarminToken(any()) } answers { storedToken.value = firstArg() }

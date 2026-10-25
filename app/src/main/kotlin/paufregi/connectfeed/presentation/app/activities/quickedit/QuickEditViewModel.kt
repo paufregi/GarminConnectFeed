@@ -27,9 +27,9 @@ import paufregi.connectfeed.presentation.ui.models.Status
 @ExperimentalCoroutinesApi
 @HiltViewModel(assistedFactory = QuickEditViewModel.Factory::class)
 class QuickEditViewModel @AssistedInject constructor(
-    private val getActivity: GetActivity,
     getProfiles: GetProfiles,
-    private val getGears: GetGears,
+    getGears: GetGears,
+    private val getActivity: GetActivity,
     private val getWorkout: GetWorkout,
     private val updateActivity: QuickUpdateActivity,
     private val notification: NotificationManager,
@@ -55,8 +55,8 @@ class QuickEditViewModel @AssistedInject constructor(
 
         getActivity(id, stravaId)
             .onSuccess { activity -> _state.update { it.copy(activity = activity) } }
-            .onFailure {
-                notification.show("Failed to load activity: ${it.message}")
+            .onFailure { error ->
+                notification.show("Failed to load activity: ${error.message}")
                 _state.update { it.copy(notFound = true) }
             }
             .finally { _state.update { it.copy(status = null) } }

@@ -3,13 +3,11 @@ package paufregi.connectfeed.presentation.syncweight
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import paufregi.connectfeed.core.usecases.GetUser
 import paufregi.connectfeed.core.usecases.SyncWeight
 import paufregi.connectfeed.core.utils.RenphoReader
@@ -19,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SyncWeightViewModel @Inject constructor(
-    private val getUser: GetUser,
+    getUser: GetUser,
     private val syncWeight: SyncWeight,
 ) : ViewModel() {
     private val _state = MutableStateFlow<Status>(Status.Loading)

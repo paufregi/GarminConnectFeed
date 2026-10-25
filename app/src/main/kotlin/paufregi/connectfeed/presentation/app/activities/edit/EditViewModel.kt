@@ -28,10 +28,10 @@ import paufregi.connectfeed.presentation.ui.models.Status
 @ExperimentalCoroutinesApi
 @HiltViewModel(assistedFactory = EditViewModel.Factory::class)
 class EditViewModel @AssistedInject constructor(
-    private val getActivity: GetActivity,
     getEventTypes: GetEventTypes,
+    getGears: GetGears,
+    private val getActivity: GetActivity,
     private val getCourses: GetCourses,
-    private val getGears: GetGears,
     private val getWorkout: GetWorkout,
     private val updateActivity: UpdateActivity,
     private val notification: NotificationManager,

@@ -29,6 +29,7 @@ import paufregi.connectfeed.core.usecases.SaveProfile
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.presentation.ui.components.notification.NotificationManager
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
+import kotlin.time.Duration.Companion.milliseconds
 
 @ExperimentalCoroutinesApi
 class ProfileViewModelTest {
@@ -159,7 +160,7 @@ class ProfileViewModelTest {
             assertThat(awaitItem().profile).isEqualTo(edited)
             cancelAndIgnoreRemainingEvents()
         }
-        advanceTimeBy(1001L)
+        advanceTimeBy(1001L.milliseconds)
 
         viewModel.state.test {
             assertThat(awaitItem().profile).isEqualTo(edited)

@@ -15,11 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import paufregi.connectfeed.BuildConfig
-import paufregi.connectfeed.data.api.garmin.GarminAuth
-import paufregi.connectfeed.data.api.garmin.GarminConnect
-import paufregi.connectfeed.data.api.garmin.GarminSSO
-import paufregi.connectfeed.data.api.strava.Strava
-import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.datastore.models.Auth
 import paufregi.connectfeed.data.datastore.serializers.AuthSerializer
 import paufregi.connectfeed.data.utils.SecurityManager
@@ -27,8 +22,6 @@ import paufregi.connectfeed.system.Downloader
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
-import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor as GarminAuthInterceptor
-import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor as StravaAuthInterceptor
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -41,6 +34,21 @@ object AppModule {
 
     @Provides
     @Singleton
+    @Named("currentVersion")
+    fun provideCurrentVersion(): String = BuildConfig.VERSION_NAME
+
+    @Provides
+    @Singleton
+    @Named("tempFolder")
+    fun provideTempFolder(@ApplicationContext context: Context): File = context.cacheDir
+
+    @Provides
+    @Singleton
+    fun provideDownloader(@ApplicationContext context: Context): Downloader =
+        Downloader(context, context.getSystemService(DownloadManager::class.java))
+
+    @Provides
+    @Singleton
     fun provideDataStore(
         @ApplicationContext context: Context,
         @Named("AppScope") scope: CoroutineScope,
@@ -48,72 +56,17 @@ object AppModule {
         @Named("DataStoreFileName") dataStoreFileName: String,
         @Named("DataStoreDirectory") dataStoreDirectory: File,
     ): DataStore<Auth> {
-        val aead = SecurityManager.getAead(context, masterKey)
-
         val encryptedSerializer = AeadSerializer(
-            aead = aead,
+            aead = SecurityManager.getAead(context, masterKey),
             wrappedSerializer = AuthSerializer,
-            associatedData = dataStoreFileName.toByteArray(Charsets.UTF_8)
+            associatedData = dataStoreFileName.toByteArray(Charsets.UTF_8),
         )
-
-        val file = File(dataStoreDirectory, dataStoreFileName)
         return DataStoreFactory.create(
             serializer = encryptedSerializer,
             corruptionHandler = ReplaceFileCorruptionHandler { Auth() },
             scope = scope,
-            produceFile = { file }
+            produceFile = { File(dataStoreDirectory, dataStoreFileName) },
         )
     }
-
-
-    @Provides
-    @Singleton
-    fun provideGarminSSO(
-        @Named("GarminSSOUrl") url: String
-    ): GarminSSO = GarminSSO.client(url)
-
-    @Provides
-    @Singleton
-    fun provideGarminAuth(
-        @Named("GarminAuthUrl") url: String
-    ): GarminAuth = GarminAuth.client(url)
-
-    @Provides
-    @Singleton
-    fun provideGarminConnect(
-        authInterceptor: GarminAuthInterceptor,
-        @Named("GarminConnectUrl") url: String
-    ): GarminConnect = GarminConnect.client(authInterceptor, url)
-
-
-    @Provides
-    @Singleton
-    fun provideStravaAuth(
-        @Named("StravaAuthUrl") url: String
-    ): StravaAuth = StravaAuth.client(url)
-
-
-    @Provides
-    @Singleton
-    fun provideStrava(
-        authInterceptor: StravaAuthInterceptor,
-        @Named("StravaUrl") url: String,
-    ): Strava = Strava.client(authInterceptor, url)
-
-    @Provides
-    @Singleton
-    @Named("tempFolder")
-    fun provideTempFolder(@ApplicationContext context: Context): File =
-        context.cacheDir
-
-    @Provides
-    @Singleton
-    @Named("currentVersion")
-    fun provideCurrentVersion(): String =
-        BuildConfig.VERSION_NAME
-
-    @Provides
-    @Singleton
-    fun provideDownloader(@ApplicationContext context: Context): Downloader =
-        Downloader(context, context.getSystemService(DownloadManager::class.java))
 }
+
