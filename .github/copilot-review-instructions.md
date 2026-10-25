@@ -1,169 +1,78 @@
-# Copilot Code Review Instructions — ConnectFeed
+# Code Review Guidelines
 
-These guidelines are used by the Copilot code-review agent to give context-aware,
-project-tailored feedback on pull requests in this repository.
+Apply [the coding guidelines](copilot-instructions.md) and
+[the testing guidelines](copilot-testing-instructions.md) to changed behavior.
+Review for concrete defects and regressions, not opportunities to redesign the app.
 
----
+## Review Approach
 
-## Project at a Glance
+- Read the changed implementation and relevant callers, data mappings, and tests.
+  Explain a finding with the affected behavior, triggering conditions, and impact.
+- Distinguish correctness requirements from local stylistic preferences.
+  Do not enforce an abstraction merely because another feature uses it.
+- Prioritize reproducible logic errors, broken contracts, missing integration,
+  data loss, lifecycle mistakes, and security issues. Avoid speculative findings.
+- Do not request unrelated cleanup or turn pre-existing inconsistencies into
+  mandatory refactors. Check whether a change introduces or worsens the issue.
 
-| Aspect | Detail                                                                   |
-|---|--------------------------------------------------------------------------|
-| Language | Kotlin (JVM 17, `kotlinPlugin 2.4.10`)                                   |
-| UI | Jetpack Compose + Material 3                                             |
-| DI | Hilt 2.60.1                                                              |
-| Local storage | Room 2.8.4 (`GarminDatabase`, `GarminDao`, `ProfileEntity`)              |
-| Network | Retrofit 3 / OkHttp 5 (Garmin OAuth1, Strava OAuth2)                     |
-| State | `StateFlow` + `stateIn(SharingStarted.WhileSubscribed)`                  |
-| Navigation | Compose Navigation, sealed `Route` objects                               |
-| UI process state | `ProcessState` sealed class (`Idle`, `Processing`, `Success`, `Failure`) |
-| Tests (unit) | JUnit4 + MockK + Turbine + Truth (`./gradlew test`)                      |
-| Tests (UI/instrumented) | `@HiltAndroidTest` Compose tests (`./gradlew pixel10Check`)           |
+## Architecture and Style
 
----
+- Check feature-local organization and separation of presentation, use-case,
+  repository, and data/platform responsibilities.
+- ViewModels should not call APIs, DAOs, or stores directly. Simple input guards
+  and UI-derived state belong in presentation; shared domain rules should be reused.
+- Do not demand interface-per-repository, dedicated mapper classes, separate
+  Gradle modules, or identical feature templates where the design does not need them.
+- Check immutable value/state updates, explicit dependencies, null safety, and
+  readable control flow. Prefer established helpers over duplicate implementations.
+- Hilt ViewModels may use ordinary injected constructors or assisted factories.
+  Check providers, qualifiers, and lifetimes where construction requires them;
+  do not demand module providers for every injectable class.
 
-## Architecture Rules — Flag Violations
+## UI, State, and Concurrency
 
-### Layer boundaries
-- **Presentation** (`presentation/<feature>/`) must not import from `data/` directly.
-  Use cases (`core/usecases/`) are the only bridge between presentation and data.
-- **Use cases** (`core/usecases/`) contain business logic only; they must not depend
-  on Android framework classes or Compose types.
-- **Repositories** (`data/repository/`) are the only classes that talk to APIs
-  (`data/api/`) or the Room DAO (`data/database/`).
-- **DataStore** (`data/datastore/`) is accessed exclusively through repositories,
-  never directly from ViewModels or use cases.
+- Check lifecycle-aware collection, subscription-driven flow behavior, initial
+  loading, action handling, and terminal success/failure states.
+- Verify nullable/default state semantics, compatibility guards, and derived
+  selections. A deliberate no-op must preserve the user's existing selection.
+- Check that transient effects are not replayed as persistent state, and that
+  notifications/navigation occur only on the intended paths.
+- Confirm structured coroutine ownership, cancellation behavior, and cleanup.
+  Flag blocking main-thread work and swallowed failures or cancellation.
+- Check Compose effect keys, state hoisting, callbacks, and shared theme/component
+  usage. Do not prescribe a fixed composable length or require every screen to
+  expose the same action/status structure.
+- Preserve typed Navigation 3 keys, route arguments, back-stack behavior, and
+  assisted ViewModel inputs.
 
-### Feature structure — each feature folder must have:
-```
-presentation/<feature>/
-  ├── <Feature>Screen.kt      (Compose UI)
-  ├── <Feature>ViewModel.kt   (state + actions, no business logic)
-  ├── <Feature>State.kt       (immutable data class)
-  └── <Feature>Action.kt      (sealed class / event type)
-```
-Flag any ViewModel that reaches out to APIs/DAOs directly or contains decision logic
-that belongs in a use case.
+## Data and Security
 
----
+- Verify correct request/result mapping, nullable values, serialization, caching,
+  and early exits. Do not assume all repository outputs have the same model shape.
+- Check user scoping on reads and writes, schema migration coverage, exported schema
+  updates, and converters when persisted representations change.
+- Follow field/type additions through affected domain rules, editors, filters,
+  mappings, persistence, and integrations.
+- Preserve authenticated request signing and token-refresh behavior. Check
+  configuration, encrypted credential persistence, and network boundary handling.
+- Flag hardcoded secrets, sensitive logging, unsafe credential storage, and
+  bypassed authentication. Use synthetic credentials in tests.
+- Check dependency catalog usage, substitutions, duplicate dependencies, and
+  release-shrinking impact for new reflective or serialized behavior.
 
-## Kotlin / Compose Patterns — Flag Anti-Patterns
+## Tests and Validation
 
-### Kotlin
-- Prefer `data class` with immutable `val` fields for state/model objects.
-- Use `sealed class` / `sealed interface` for result/state hierarchies (not `enum`
-  when variants carry data).
-- Avoid `!!` (non-null assertion); use safe calls, `requireNotNull`, or `?.let`.
-- Avoid mutable shared state; all mutations go through `MutableStateFlow` inside a
-  `ViewModel`.
-- Suspend functions should be called from `viewModelScope` or test coroutine scopes,
-  not from `GlobalScope`.
-
-### Jetpack Compose
-- Composables should be stateless; lift state to the `ViewModel` or a parent
-  composable.
-- Large composables (> ~100 lines) should be split into smaller `@Composable` helpers.
-- `LaunchedEffect` and `SideEffect` should have correct keys to avoid unintended
-  recompositions.
-- Color/typography must come from `MaterialTheme`; hard-coded `Color(0xFF…)` values
-  in UI code should use the existing theme tokens instead.
-- Preview composables (`@Preview`) should use the app theme wrapper so they render
-  with the correct tokens.
-
-### Hilt
-- New injectable classes must be wired in an appropriate module inside `di/`.
-- Do not use `@Inject` on `ViewModel` constructors directly — use `@HiltViewModel`.
-- Avoid `@Singleton` on objects that hold mutable UI state.
-
----
-
-## Room / Database — Always Check
-
-- **Every schema change to `ProfileEntity` (or any `@Entity`) requires a Room
-  migration.** Verify a corresponding migration exists in the database class and that
-  the schema JSON in `app/schemas/` has been updated.
-- TypeConverters must be registered on `@Database`; flag any new custom type that
-  lacks a converter.
-- DAO methods returning `Flow` must be in the Room DAO, not faked in the repository.
-- Avoid `@Query("SELECT *")` without a `WHERE` clause on large tables; prefer
-  targeted queries.
-
----
-
-## Security — Always Flag
-
-- **No secrets, API keys, or tokens in source code.** All credentials must be loaded
-  from `local.properties` via `buildConfigField` in `app/build.gradle.kts`.
-- OAuth tokens must be persisted through `AuthStore` / `StravaStore` (DataStore),
-  not in SharedPreferences or plain files.
-- Do not log sensitive fields (tokens, user credentials, body-composition values).
-- Retrofit clients that call external APIs should use HTTPS endpoints only.
-
----
-
-## Testing — Coverage Expectations
-
-- **New use cases** must have unit tests covering happy path + at least one failure path.
-- **New ViewModel actions** should have unit tests using `Turbine` to assert state
-  transitions.
-- **New Compose screens** should have at least a smoke test (`@HiltAndroidTest`) that
-  verifies the screen renders without crashing.
-- Tests should use `MockK` for mocking, not Mockito; check that existing `mockk {}`
-  patterns are followed.
-- Instrumented tests use a custom `TestRunner` (`paufregi.connectfeed.TestRunner`);
-  new tests must be compatible with this runner.
-- Flag any PR that deletes tests without a clear justification.
-
----
-
-## Dependencies — Always Check
-
-- New libraries must be added to `gradle/libs.versions.toml` using the version
-  catalog pattern (`[versions]`, `[libraries]`, `[plugins]`).
-- Do **not** hardcode version strings in `app/build.gradle.kts` when a catalog alias
-  exists.
-- Check for duplicate dependencies already provided transitively (OkHttp, Kotlin
-  stdlib, etc.).
-- The project uses `dependencySubstitution` in `build.gradle.kts`; new dependencies
-  that conflict with substituted versions should be flagged.
-
----
-
-## Activity Types & Profiles — Domain-Specific Checks
-
-- Changes to `ActivityType` (in `core/models/ActivityType.kt`) ripple through
-  compatibility logic. Verify that all `when` expressions that `ActivityType` are
-  exhaustive after any addition.
-- Profile field additions must update: `ProfileEntity`, the profile UI/ViewModel, the
-  quick-edit UI/ViewModel, and include a Room migration.
-- The `ProfileEntity` `userId` field links profiles to a specific Garmin user; new
-  profile operations must respect this scoping.
-
----
-
-## API / Network Clients
-
-- **Garmin API** uses OAuth 1.0a (OkHttp Signpost); any new endpoint must respect
-  the signed request pipeline.
-- **Strava API** uses OAuth 2.0 with token refresh; new Strava calls must go through
-  the authenticated `StravaApi` Retrofit interface.
-- **GitHub API** is used for update checks; it is unauthenticated and rate-limited —
-  do not add calls in hot paths.
-- Retrofit interfaces should use `suspend` functions; callback-based approaches are
-  not consistent with the codebase.
-
----
-
-## General Quality Checks
-
-- Public functions and classes should have KDoc comments when their purpose is not
-  immediately obvious from naming.
-- Avoid deeply nested lambdas; prefer named functions or `run`/`let` blocks with
-  clear intent.
-- PRs touching `Navigation.kt` must keep the sealed `Route` pattern; do not
-  introduce string-literal routes.
-- Avoid `Thread.sleep()` or blocking calls on the main thread; use coroutine delays
-  or `Dispatchers.IO` appropriately.
-- Release builds use ProGuard (`proguard-rules.pro`); new reflection-based or
-  serialization classes may need `-keep` rules.
-
+- Require tests for changed behavior at the appropriate layer, not an automatic
+  use-case/ViewModel/UI test trio for every change.
+- Apply the detailed testing standards without duplicating them here. In particular,
+  check isolated actions, deterministic state seeding, inline assertions, strict
+  mock teardown, and one mocked function call per verification block.
+- Keep pure model tests lightweight; do not impose ViewModel factories or mock
+  lifecycle on synchronous logic tests.
+- Check positive/negative cases, relevant boundaries, asynchronous transitions,
+  notifications/effects, and non-calls on guarded paths.
+- Ensure tests assert behavior rather than only setup interactions or self-derived
+  expectations. Do not accept deleted coverage without a clear justification.
+- Check applicable build, unit, integration, and lint results. State unavailable
+  validation plainly; do not claim a failure without evidence or request behavior
+  changes solely to silence a stale expectation.
