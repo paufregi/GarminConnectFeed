@@ -21,7 +21,7 @@ to Garmin Connect, and lets users edit Garmin/Strava activities via custom profi
 | Network | Retrofit 3 + OkHttp 5 |
 | State | `StateFlow` + `stateIn(SharingStarted.WhileSubscribed)` |
 | UI process state | `ProcessState` sealed class (`Idle`, `Processing`, `Success`, `Failure`) |
-| Navigation | Compose Navigation, sealed `Route` objects |
+| Navigation | Navigation 3 (`NavDisplay` + `rememberNavBackStack`), `@Serializable` sealed `Route : NavKey` objects, `Navigator` wrapper |
 | Auth | Garmin OAuth 1.0a (OkHttp Signpost), Strava OAuth 2.0 |
 | Tests (unit) | JUnit4 + MockK + Turbine + Truth |
 | Tests (instrumented) | `@HiltAndroidTest` Compose tests, custom runner `paufregi.connectfeed.TestRunner` |
@@ -82,7 +82,8 @@ Tests live in `app/src/test/` (unit) and `app/src/androidTest/` (instrumented).
 ### Always do
 - Add a **Room migration** and update the schema JSON in `app/schemas/` when changing any `@Entity`.
 - Use `ProcessState` for result-carrying UI state.
-- Keep navigation changes in `Navigation.kt` using sealed `Route` objects — no string-literal routes.
+- Keep navigation changes in `Navigation.kt` using `@Serializable` sealed `Route : NavKey` objects — no string-literal routes. Screens receive a `Navigator` (never a raw back stack).
+- Keep the auth flow (`AuthRoute`) and the signed-in flow (`Route`) as separate sealed hierarchies hosted in separate `NavDisplay`s (`AuthNavigation` / `AppNavigation` in `MainActivity.kt`). Never add an auth screen to `Route` or an app screen to `AuthRoute`; switching between flows happens only via `MainViewModel.state.loggedIn`.
 - Wire new injectable classes in a Hilt module under `di/`; use `@HiltViewModel` for ViewModels.
 - Add or update tests for every behaviour change (use case unit test + ViewModel state test + screen smoke test).
 - Use `MockK` for mocking in tests, not Mockito.
@@ -105,8 +106,8 @@ Tests live in `app/src/test/` (unit) and `app/src/androidTest/` (instrumented).
 
 ### Add a new Screen
 1. Create `presentation/<feature>/` with `Screen.kt`, `ViewModel.kt`, `State.kt`, `Action.kt`.
-2. Add a `Route` object in `Navigation.kt`.
-3. Register the composable in the `NavHost` inside `Navigation.kt`.
+2. Add a `@Serializable` `Route` object/data class in `Navigation.kt` (it must implement `NavKey`).
+3. Register it with `entry<Route.X> { … }` in the `entryProvider` inside `MainActivity.kt`. Pass route arguments to the screen as plain parameters (Navigation 3 does not populate `SavedStateHandle`); use Hilt assisted injection (`@HiltViewModel(assistedFactory = …)` + `hiltViewModel(creationCallback = …)`) when a ViewModel needs them — see `ProfileViewModel`.
 4. Wire the ViewModel with `@HiltViewModel`; add new use cases to the appropriate `di/` module.
 5. Add a `@HiltAndroidTest` smoke test in `app/src/androidTest/`.
 
