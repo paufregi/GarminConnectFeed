@@ -1,47 +1,51 @@
 package paufregi.connectfeed.data.datastore
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
+import org.junit.runner.RunWith
+import paufregi.connectfeed.FakeAndroidKeyStore
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
-@HiltAndroidTest
 @ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
 class AuthStoreTest {
 
     @get:Rule
-    var instantExecutorRule = InstantTaskExecutorRule()
+    val tempFolder = TemporaryFolder()
 
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    lateinit var dataStore: AuthStore
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private lateinit var dataStore: AuthStore
 
     @Before
     fun setup() {
-        hiltRule.inject()
+        FakeAndroidKeyStore.install()
+        dataStore = AuthStore(
+            PreferenceDataStoreFactory.create(scope = scope) {
+                tempFolder.newFile("authStore.preferences_pb")
+            }
+        )
     }
 
     @After
     fun tearDown() {
-        runBlocking(Dispatchers.IO) { dataStore.dataStore.edit { it.clear() } }
+        scope.cancel()
     }
 
     @Test
