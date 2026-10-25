@@ -1,9 +1,10 @@
 package paufregi.connectfeed.presentation.profile
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,13 +18,11 @@ import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
 import paufregi.connectfeed.core.usecases.SaveProfile
-import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.models.ProcessState
-import javax.inject.Inject
 
-@HiltViewModel
-class ProfileViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = ProfileViewModel.Factory::class)
+class ProfileViewModel @AssistedInject constructor(
+    @Assisted private val profileId: Long,
     val getProfile: GetProfile,
     val getActivityTypesForProfile: GetActivityTypesForProfile,
     val getEventTypes: GetEventTypes,
@@ -31,7 +30,10 @@ class ProfileViewModel @Inject constructor(
     val saveProfile: SaveProfile,
 ) : ViewModel() {
 
-    private val profileId: Long = savedStateHandle.toRoute<Route.Profile>().id
+    @AssistedFactory
+    interface Factory {
+        fun create(profileId: Long): ProfileViewModel
+    }
 
     private val _state = MutableStateFlow(ProfileState())
 
