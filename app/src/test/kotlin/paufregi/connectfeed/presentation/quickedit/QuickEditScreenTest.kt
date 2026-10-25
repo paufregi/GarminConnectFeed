@@ -12,7 +12,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Activity
@@ -20,9 +19,8 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
-@HiltAndroidTest
 @ExperimentalMaterial3Api
-@OptIn(ExperimentalTestApi::class)
+@ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class QuickEditScreenTest {
 

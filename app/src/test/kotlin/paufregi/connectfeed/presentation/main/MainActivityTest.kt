@@ -1,5 +1,8 @@
 package paufregi.connectfeed.presentation.main
 
+import android.app.Application
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
@@ -14,20 +17,22 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
 import androidx.compose.ui.test.v2.runAndroidComposeUiTest
-import androidx.datastore.preferences.core.edit
-import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.testing.HiltTestApplication
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.withContext
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
+import paufregi.connectfeed.FakeAndroidKeyStore
 import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.TestTrustStore
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
@@ -49,12 +54,14 @@ import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
 import paufregi.connectfeed.user
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-@OptIn(ExperimentalTestApi::class)
+@ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
+@Config(application = HiltTestApplication::class)
 class MainActivityTest {
 
     @get:Rule(order = 0)
@@ -72,24 +79,20 @@ class MainActivityTest {
     @Inject
     lateinit var dao: GarminDao
 
-    @JvmField @Rule val connectServer = MockWebServerRule(connectPort, sslSocketFactory, connectDispatcher)
-    @JvmField @Rule val garminSSOServer = MockWebServerRule(garminSSOPort, sslSocketFactory, garminSSODispatcher)
-    @JvmField @Rule val strava = MockWebServerRule(stravaPort, sslSocketFactory, stravaDispatcher)
-    @JvmField @Rule val github = MockWebServerRule(githubPort, sslSocketFactory, githubDispatcher)
+    @Inject
+    @Named("StravaAuthUri")
+    lateinit var stravaAuthUri: Uri
+
+    @JvmField @Rule(order = 1) val connectServer = MockWebServerRule(connectPort, sslSocketFactory, connectDispatcher)
+    @JvmField @Rule(order = 1) val garminSSOServer = MockWebServerRule(garminSSOPort, sslSocketFactory, garminSSODispatcher)
+    @JvmField @Rule(order = 1) val strava = MockWebServerRule(stravaPort, sslSocketFactory, stravaDispatcher)
+    @JvmField @Rule(order = 1) val github = MockWebServerRule(githubPort, sslSocketFactory, githubDispatcher)
 
     @Before
-    fun setup() = runAndroidComposeUiTest<MainActivity> {
+    fun setup() {
+        FakeAndroidKeyStore.install()
+        TestTrustStore.install()
         hiltRule.inject()
-    }
-
-    @After
-    fun tearDown() = runAndroidComposeUiTest<MainActivity> {
-        database.close()
-        withContext(Dispatchers.IO){
-            authStore.dataStore.edit { it.clear() }
-            stravaStore.dataStore.edit { it.clear() }
-        }
-
     }
 
     @Test
@@ -130,7 +133,12 @@ class MainActivityTest {
         onNodeWithText("Settings").performClick()
         waitUntil(conditionDescription = "settings_screen") { onNodeWithTag("settings_screen").isDisplayed() }
         onNodeWithText("Connect").performClick()
-        waitUntil(conditionDescription = "strava linked") { onNodeWithText("Strava linked").isDisplayed() }
+
+        // No browser under Robolectric: verify the OAuth intent was fired.
+        // The deep-link callback is covered end-to-end by StravaActivityTest.
+        val intent = shadowOf(ApplicationProvider.getApplicationContext<Application>()).nextStartedActivity
+        assertThat(intent.action).isEqualTo(Intent.ACTION_VIEW)
+        assertThat(intent.data).isEqualTo(stravaAuthUri)
     }
 
     @Test
@@ -231,7 +239,6 @@ class MainActivityTest {
         authStore.saveAuthToken(authToken)
         dao.saveProfile(ProfileEntity(id = 10, userId = user.id, name = "Profile 1", type = ActivityType.Running, eventType = EventType.Race))
 
-        ActivityScenario.launch(MainActivity::class.java)
         awaitIdle()
         waitUntil(conditionDescription = "quick_edit_screen") { onNodeWithTag("quick_edit_screen").isDisplayed() }
         onNodeWithTag("menu").performClick()
@@ -252,7 +259,6 @@ class MainActivityTest {
         authStore.saveAuthToken(authToken)
         dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", type = ActivityType.Cycling, eventType = EventType.Race))
 
-        ActivityScenario.launch(MainActivity::class.java)
         awaitIdle()
         waitUntil(conditionDescription = "quick_edit_screen") { onNodeWithTag("quick_edit_screen").isDisplayed() }
         onNodeWithText("Activity").performClick()
@@ -272,7 +278,6 @@ class MainActivityTest {
         stravaStore.saveToken(stravaAuthToken)
         dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", type = ActivityType.Cycling, eventType = EventType.Race))
 
-        ActivityScenario.launch(MainActivity::class.java)
         awaitIdle()
         waitUntil(conditionDescription = "quick_edit_screen") { onNodeWithTag("quick_edit_screen").isDisplayed() }
         onNodeWithText("Activity").performClick()
@@ -290,7 +295,6 @@ class MainActivityTest {
         authStore.savePreAuthToken(preAuthToken)
         authStore.saveAuthToken(authToken)
 
-        ActivityScenario.launch(MainActivity::class.java)
         awaitIdle()
         waitUntil(conditionDescription = "quick_edit_screen") { onNodeWithTag("quick_edit_screen").isDisplayed() }
         onNodeWithText("Edit").performClick()
@@ -315,7 +319,6 @@ class MainActivityTest {
         authStore.saveAuthToken(authToken)
         stravaStore.saveToken(stravaAuthToken)
 
-        ActivityScenario.launch(MainActivity::class.java)
         awaitIdle()
         waitUntil(conditionDescription = "quick_edit_screen") { onNodeWithTag("quick_edit_screen").isDisplayed() }
         onNodeWithText("Edit").performClick()

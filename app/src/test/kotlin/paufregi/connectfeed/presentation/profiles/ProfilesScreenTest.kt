@@ -7,15 +7,13 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Profile
 
-@HiltAndroidTest
 @ExperimentalMaterial3Api
-@OptIn(ExperimentalTestApi::class)
+@ExperimentalTestApi
 @RunWith(AndroidJUnit4::class)
 class ProfilesScreenTest {
 
