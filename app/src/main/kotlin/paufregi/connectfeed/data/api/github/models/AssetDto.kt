@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Asset(
+data class AssetDto(
     @SerialName("content_type")
     val contentType: String,
     @SerialName("browser_download_url")

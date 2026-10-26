@@ -11,7 +11,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.data.api.github.Github
-import paufregi.connectfeed.data.api.github.models.Asset
+import paufregi.connectfeed.data.api.github.models.AssetDto
 import paufregi.connectfeed.githubRelease
 import retrofit2.Response
 
@@ -70,7 +70,7 @@ class GithubRepositoryTest {
     fun `Get Latest Release - invalid url`() = runTest {
 
         coEvery { github.getLatestRelease() } returns Response.success(githubRelease.copy(assets = listOf(
-            Asset("application/vnd.android.package-archive",  "invalid"))))
+            AssetDto("application/vnd.android.package-archive",  "invalid"))))
 
         val res =  repo.getLatestRelease()
 
@@ -83,7 +83,7 @@ class GithubRepositoryTest {
     fun `Get Latest Release - invalid contentType`() = runTest {
 
         coEvery { github.getLatestRelease() } returns Response.success(githubRelease.copy(assets = listOf(
-            Asset("invalid",  "http://example.com/app.apk"))))
+            AssetDto("invalid",  "http://example.com/app.apk"))))
 
         val res =  repo.getLatestRelease()
 
