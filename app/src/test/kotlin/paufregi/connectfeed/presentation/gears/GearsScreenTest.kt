@@ -7,15 +7,13 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
 
-@HiltAndroidTest
+@ExperimentalTestApi
 @ExperimentalMaterial3Api
-@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class GearsScreenTest {
 
@@ -45,4 +43,3 @@ class GearsScreenTest {
         onNodeWithText("25 km").assertIsDisplayed()
     }
 }
-

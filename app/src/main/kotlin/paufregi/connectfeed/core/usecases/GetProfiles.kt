@@ -13,7 +13,7 @@ class GetProfiles @Inject constructor(
     private val authRepository: AuthRepository,
     private val garminRepository: GarminRepository
 ) {
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @ExperimentalCoroutinesApi
     operator fun invoke(): Flow<List<Profile>> =
         authRepository.getUser().flatMapMerge { user ->
             user?.let { garminRepository.getAllProfiles(it) } ?: flowOf(emptyList())

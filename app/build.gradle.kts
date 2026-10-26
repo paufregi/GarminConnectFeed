@@ -81,6 +81,9 @@ android {
 
     testOptions {
         animationsDisabled = true
+        unitTests {
+            isIncludeAndroidResources = true
+        }
         managedDevices {
             allDevices {
                 register("pixel10", ManagedVirtualDevice::class) {
@@ -128,15 +131,23 @@ dependencies {
     testImplementation(testFixtures(project(":app")))
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.junit)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.hilt.testing)
 
     androidTestImplementation(testFixtures(project(":app")))
-    androidTestImplementation(libs.android.core.testing)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.testing)
 
+    kspTest(libs.hilt.compiler)
     kspAndroidTest(libs.hilt.compiler)
+    kspTestFixtures(libs.hilt.compiler)
+    testFixturesApi(libs.hilt.testing)
+    testFixturesImplementation(libs.androidx.datastore.preferences)
+    testFixturesImplementation(libs.androidx.room.ktx)
     testFixturesApi(libs.kotlinx.coroutines.test)
     testFixturesApi(libs.turbine)
     testFixturesApi(libs.truth)

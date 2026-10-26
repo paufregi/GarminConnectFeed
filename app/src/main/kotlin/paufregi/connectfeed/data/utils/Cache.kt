@@ -1,7 +1,7 @@
 package paufregi.connectfeed.data.utils
 
-import paufregi.connectfeed.core.utils.withPermit
-import java.util.concurrent.Semaphore
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -12,24 +12,31 @@ class Cache<T>(
 ) {
     private var data: T? = null
     private var timestamp: Instant? = null
-    private val semaphore = Semaphore(1)
+    // A suspending lock: a blocking Semaphore held across `fetch()` would deadlock
+    // concurrent callers sharing a single-threaded dispatcher (e.g. Dispatchers.Main).
+    private val mutex = Mutex()
 
     suspend fun get(force: Boolean = false, fetch: suspend () -> T): T =
-        semaphore.withPermit {
+        mutex.withLock {
             val now = Clock.System.now()
-            if (force || data == null || this.timestamp == null || (now - this.timestamp!!) > ttl) {
-                data = fetch()
-                timestamp = now
+            val current = data
+            val stamp = timestamp
+            if (force || current == null || stamp == null || (now - stamp) > ttl) {
+                fetch().also {
+                    data = it
+                    timestamp = now
+                }
+            } else {
+                current
             }
-
-            return data!!
         }
 
-    fun invalidate() =
-        semaphore.withPermit {
+    suspend fun invalidate() {
+        mutex.withLock {
             data = null
             timestamp = null
         }
+    }
 }
 
 suspend fun <T> withCache(cache: Cache<T>, force: Boolean = false, action: suspend () -> T): T = cache.get(force) { action() }

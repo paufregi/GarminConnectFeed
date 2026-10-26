@@ -1,43 +1,37 @@
 package paufregi.connectfeed.data.database
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.data.database.entities.GearEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
-import javax.inject.Inject
 
-@HiltAndroidTest
 @ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
 class GarminDaoTest {
 
-    @get:Rule
-    var instantExecutorRule = InstantTaskExecutorRule()
-
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    lateinit var db: GarminDatabase
-
-    @Inject
-    lateinit var dao: GarminDao
+    private lateinit var db: GarminDatabase
+    private lateinit var dao: GarminDao
 
     @Before
     fun setup() {
-        hiltRule.inject()
+        db = Room.inMemoryDatabaseBuilder(
+            ApplicationProvider.getApplicationContext(),
+            GarminDatabase::class.java
+        ).allowMainThreadQueries().build()
+        dao = db.garminDao()
     }
 
     @After

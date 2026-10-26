@@ -13,7 +13,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.ActivityType
@@ -22,9 +21,8 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
-@HiltAndroidTest
+@ExperimentalTestApi
 @ExperimentalMaterial3Api
-@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class ProfileScreenTest {
 

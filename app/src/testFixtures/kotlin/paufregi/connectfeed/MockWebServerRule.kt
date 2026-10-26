@@ -6,6 +6,7 @@ import mockwebserver3.MockWebServer
 import okhttp3.Headers.Companion.toHeaders
 import org.junit.rules.ExternalResource
 import java.io.IOException
+import java.net.InetSocketAddress
 import javax.net.ssl.SSLSocketFactory
 
 class MockWebServerRule(
@@ -31,7 +32,8 @@ class MockWebServerRule(
     override fun before() {
         try {
             sslSocketFactory?.let { server.useHttps(it) }
-            server.start(port)
+            // Bind on the wildcard address so "localhost" works whether it resolves to 127.0.0.1 or ::1
+            server.start(InetSocketAddress(port).address, port)
             dispatcher?.let { server.dispatcher = it }
         } catch (e: IOException) {
             throw RuntimeException(e)

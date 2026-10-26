@@ -1,45 +1,49 @@
 package paufregi.connectfeed.data.datastore
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
+import org.junit.runner.RunWith
+import paufregi.connectfeed.FakeAndroidKeyStore
 import paufregi.connectfeed.data.api.strava.models.AuthToken
 import paufregi.connectfeed.today
 import paufregi.connectfeed.tomorrow
-import javax.inject.Inject
 
-@HiltAndroidTest
 @ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
 class StravaStoreTest {
 
     @get:Rule
-    var instantExecutorRule = InstantTaskExecutorRule()
+    val tempFolder = TemporaryFolder()
 
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    lateinit var dataStore: StravaStore
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private lateinit var dataStore: StravaStore
 
     @Before
     fun setup() {
-        hiltRule.inject()
+        FakeAndroidKeyStore.install()
+        dataStore = StravaStore(
+            PreferenceDataStoreFactory.create(scope = scope) {
+                tempFolder.newFile("stravaStore.preferences_pb")
+            }
+        )
     }
 
     @After
     fun tearDown() {
-        runBlocking(Dispatchers.IO) { dataStore.dataStore.edit { it.clear() } }
+        scope.cancel()
     }
 
     @Test
