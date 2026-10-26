@@ -2,29 +2,40 @@ package paufregi.connectfeed.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.core.utils.mapFailure
+import paufregi.connectfeed.core.utils.andThen
 import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.garmin.GarminAuth
-import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
-import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
-import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
+import paufregi.connectfeed.data.api.garmin.models.Ticket
+import paufregi.connectfeed.data.api.strava.StravaAuth
 import paufregi.connectfeed.data.datastore.AuthStore
 import javax.inject.Inject
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto as GarminAuthToken
 
 class AuthRepository @Inject constructor(
     private val garminSSO: GarminSSO,
+    private val garminAuth: GarminAuth,
+    private val stravaAuth: StravaAuth,
     private val authStore: AuthStore,
-    private val preAuth: GarminPreAuth,
-    private val makeGarminAuth: (oauth: PreAuthTokenDto) -> GarminAuth,
 ) {
-    fun getPreAuth() = authStore.getPreAuthToken()
+    suspend fun garminLogin(
+        username: String,
+        password: String
+    ): Result<Ticket> =
+        garminSSO.getCSRF().toResult()
+            .andThen { garminSSO.login(username, password, it).toResult() }
 
-    suspend fun savePreAuth(token: PreAuthTokenDto) = authStore.savePreAuthToken(token)
+    suspend fun exchangeGarminToken(
+        ticket: Ticket,
+        clientId: String
+    ): Result<GarminAuthToken> =
+        garminAuth.exchange(GarminAuth.buildBasicAuth(clientId), clientId, ticket.value).toResult()
 
-    fun getAuthToken() = authStore.getAuthToken()
-
-    suspend fun saveAuthToken(token: AuthTokenDto) = authStore.saveAuthToken(token)
+    suspend fun refreshGarminToken(
+        refreshToken: String,
+        clientId: String
+    ): Result<GarminAuthToken> =
+        garminAuth.refresh(GarminAuth.buildBasicAuth(clientId), clientId, refreshToken).toResult()
 
     fun getUser(): Flow<User?> =
         authStore.getUser()
@@ -33,39 +44,4 @@ class AuthRepository @Inject constructor(
         authStore.saveUser(user)
 
     suspend fun clear() = authStore.clear()
-
-    suspend fun authorize(
-        username: String,
-        password: String,
-    ): Result<PreAuthTokenDto> {
-        val csrf = garminSSO.getCSRF()
-            .toResult()
-            .getOrNull()
-            ?: return Result.failure(Exception("Problem with the login page"))
-
-        val ticket = garminSSO.login(username = username, password = password, csrf = csrf)
-            .toResult()
-            .getOrNull()
-            ?: return Result.failure(Exception("Couldn't login"))
-
-        return preAuth.preauthorize(ticket)
-            .toResult()
-            .mapFailure { Exception("Couldn't get PreAuth token") }
-    }
-
-    suspend fun exchange(token: PreAuthTokenDto): Result<AuthTokenDto> {
-        val garminAuth = makeGarminAuth(token)
-        return garminAuth.exchange()
-            .toResult()
-            .onSuccess { authStore.saveAuthToken(it) }
-            .mapFailure { Exception("Couldn't get Auth token") }
-    }
-
-    suspend fun refresh(preAuthToken: PreAuthTokenDto, refreshToken: String): Result<AuthTokenDto> {
-        val garminAuth = makeGarminAuth(preAuthToken)
-        return garminAuth.refresh(refreshToken)
-            .toResult()
-            .onSuccess { authStore.saveAuthToken(it) }
-            .mapFailure { Exception("Couldn't refresh Auth token") }
-    }
 }
