@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.quickedit
 
-import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
@@ -10,7 +9,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.v2.runAndroidComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -72,7 +71,7 @@ class QuickEditScreenTest {
     )
 
     @Test
-    fun `Base screen`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Base screen`() = runComposeUiTest {
         setContent {
             QuickEditContent(
                 state = QuickEditState(
@@ -94,7 +93,7 @@ class QuickEditScreenTest {
     }
 
     @Test
-    fun `Activity selected`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Activity selected`() = runComposeUiTest {
         setContent {
             QuickEditContent(
                 state = QuickEditState(
@@ -114,7 +113,7 @@ class QuickEditScreenTest {
     }
 
     @Test
-    fun `Activity and profile selected`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Activity and profile selected`() = runComposeUiTest {
         setContent {
             QuickEditContent(
                 state = QuickEditState(
@@ -138,7 +137,7 @@ class QuickEditScreenTest {
     }
 
     @Test
-    fun `Activity and profile selected - with full profile flags`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Activity and profile selected - with full profile flags`() = runComposeUiTest {
         setContent {
             QuickEditContent(
                 state = QuickEditState(
@@ -167,7 +166,7 @@ class QuickEditScreenTest {
     }
 
     @Test
-    fun `Activity and profile selected - no compatible gears`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Activity and profile selected - no compatible gears`() = runComposeUiTest {
         setContent {
             QuickEditContent(
                 state = QuickEditState(
@@ -190,7 +189,7 @@ class QuickEditScreenTest {
     }
 
     @Test
-    fun `Activity and profile selected - with Strava`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Activity and profile selected - with Strava`() = runComposeUiTest {
         setContent {
             QuickEditContent(
                 state = QuickEditState(
@@ -212,7 +211,7 @@ class QuickEditScreenTest {
     }
 
     @Test
-    fun `Loading spinner`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Loading spinner`() = runComposeUiTest {
         setContent {
             QuickEditContent(
                 state = QuickEditState(
@@ -225,7 +224,7 @@ class QuickEditScreenTest {
     }
 
     @Test
-    fun `Update success`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Update success`() = runComposeUiTest {
         setContent {
             QuickEditContent(
                 state = QuickEditState(
@@ -239,7 +238,7 @@ class QuickEditScreenTest {
     }
 
     @Test
-    fun `Update failure`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Update failure`() = runComposeUiTest {
         setContent {
             QuickEditContent(
                 state = QuickEditState(

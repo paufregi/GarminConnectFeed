@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.settings
 
-import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
@@ -8,7 +7,7 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.v2.runAndroidComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,7 +25,7 @@ class SettingsScreenTest {
     val version = Version(1, 2, 3)
     
     @Test
-    fun `Default screen`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Default screen`() = runComposeUiTest {
         setContent {
             SettingsContent(state = SettingsState(user = user, currentVersion = version, latestRelease = Release(version, "url")))
         }
@@ -38,7 +37,7 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun `Default screen - Strava connected`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Default screen - Strava connected`() = runComposeUiTest {
         setContent {
             SettingsContent(state = SettingsState(user = user, hasStrava = true, currentVersion = version, latestRelease = Release(version, "url")))
         }
@@ -50,7 +49,7 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun `Default screen - Update available`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Default screen - Update available`() = runComposeUiTest {
         setContent {
             SettingsContent(state = SettingsState(user = user, currentVersion = version, latestRelease = Release(Version(2,0,0), "url")))
         }
@@ -62,7 +61,7 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun `Updating bar`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Updating bar`() = runComposeUiTest {
         setContent {
             SettingsContent(state = SettingsState(updating = true, currentVersion = version, latestRelease = Release(Version(2,0,0), "url")))
         }
@@ -72,7 +71,7 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun `Loading spinner`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Loading spinner`() = runComposeUiTest {
         setContent {
             SettingsContent(state = SettingsState(process = ProcessState.Processing))
         }
@@ -80,7 +79,7 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun `Success process`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Success process`() = runComposeUiTest {
         setContent {
             SettingsContent(state = SettingsState(process = ProcessState.Success("message")))
         }
@@ -89,7 +88,7 @@ class SettingsScreenTest {
     }
 
     @Test
-    fun `Failed process`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Failed process`() = runComposeUiTest {
         setContent {
             SettingsContent(state = SettingsState(process = ProcessState.Failure("error")))
         }

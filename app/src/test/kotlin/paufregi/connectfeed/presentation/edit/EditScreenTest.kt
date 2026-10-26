@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.edit
 
-import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
@@ -11,7 +10,7 @@ import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.v2.runAndroidComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -80,7 +79,7 @@ class EditScreenTest {
     )
     
     @Test
-    fun `Base screen`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Base screen`() = runComposeUiTest {
         setContent {
             EditContent(
                 state = EditState(
@@ -107,7 +106,7 @@ class EditScreenTest {
     }
 
     @Test
-    fun `Activity selected`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Activity selected`() = runComposeUiTest {
         setContent {
             EditContent(
                 state = EditState(
@@ -143,7 +142,7 @@ class EditScreenTest {
     }
 
     @Test
-    fun `Activity selected - with Strava`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Activity selected - with Strava`() = runComposeUiTest {
         setContent {
             EditContent(
                 state = EditState(
@@ -173,7 +172,7 @@ class EditScreenTest {
     }
 
     @Test
-    fun `Activity selected - no gears available`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Activity selected - no gears available`() = runComposeUiTest {
         setContent {
             EditContent(
                 state = EditState(
@@ -196,7 +195,7 @@ class EditScreenTest {
     }
 
     @Test
-    fun `Loading spinner`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Loading spinner`() = runComposeUiTest {
         setContent {
             EditContent(
                 state = EditState(
@@ -209,7 +208,7 @@ class EditScreenTest {
     }
 
     @Test
-    fun `Update success`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Update success`() = runComposeUiTest {
         setContent {
             EditContent(
                 state = EditState(
@@ -223,7 +222,7 @@ class EditScreenTest {
     }
 
     @Test
-    fun `Update failure`() = runAndroidComposeUiTest<ComponentActivity> {
+    fun `Update failure`() = runComposeUiTest {
         setContent {
             EditContent(
                 state = EditState(
