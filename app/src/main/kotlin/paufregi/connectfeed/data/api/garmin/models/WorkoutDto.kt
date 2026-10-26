@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import paufregi.connectfeed.core.models.Workout as CoreWorkout
 
 @Serializable
-data class Workout(
+data class WorkoutDto(
     @SerialName("workoutId")
     val id: Long,
     @SerialName("workoutName")

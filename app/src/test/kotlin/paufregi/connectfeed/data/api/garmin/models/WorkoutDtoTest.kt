@@ -4,14 +4,14 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import paufregi.connectfeed.core.models.Workout as CoreWorkout
 
-class WorkoutTest {
+class WorkoutDtoTest {
 
     @Test
     fun `To Core workout`() {
-        val workout = Workout(id = 1, name = "name",)
+        val workoutDto = WorkoutDto(id = 1, name = "name",)
 
         val coreWorkout = CoreWorkout(id = 1, name = "name")
 
-        assertThat(workout.toCore()).isEqualTo(coreWorkout)
+        assertThat(workoutDto.toCore()).isEqualTo(coreWorkout)
     }
 }

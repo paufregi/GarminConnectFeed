@@ -14,9 +14,9 @@ import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.utils.andThen
 import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.garmin.GarminConnect
-import paufregi.connectfeed.data.api.garmin.models.Metadata
-import paufregi.connectfeed.data.api.garmin.models.Summary
-import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
+import paufregi.connectfeed.data.api.garmin.models.MetadataDto
+import paufregi.connectfeed.data.api.garmin.models.SummaryDto
+import paufregi.connectfeed.data.api.garmin.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.models.UpdateProfileDto
 import paufregi.connectfeed.data.database.GarminDao
@@ -26,7 +26,7 @@ import paufregi.connectfeed.data.utils.Cache
 import paufregi.connectfeed.data.utils.withCache
 import java.io.File
 import javax.inject.Inject
-import paufregi.connectfeed.data.api.garmin.models.EventType as DataEventType
+import paufregi.connectfeed.data.api.garmin.models.EventTypeDto as DataEventType
 import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto as UpdateStravaActivity
 
 class GarminRepository @Inject constructor(
@@ -110,13 +110,13 @@ class GarminRepository @Inject constructor(
         effort: Float?,
         gear: Gear?,
     ): Result<Unit> {
-        val request = UpdateActivity(
+        val request = UpdateActivityDto(
             id = activity.id,
             name = name,
             description = description,
             eventType = DataEventType(eventType?.id, eventType?.key),
-            metadata = Metadata(course?.id),
-            summary = Summary(water, feel, effort)
+            metadata = MetadataDto(course?.id),
+            summary = SummaryDto(water, feel, effort)
         )
 
         return garminConnect.updateActivity(activity.id, request).toResult()

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UpdateActivity(
+data class UpdateActivityDto(
     @SerialName("activityId")
     val id: Long,
     @SerialName("activityName")
@@ -12,9 +12,9 @@ data class UpdateActivity(
     @SerialName("description")
     val description: String?,
     @SerialName("eventTypeDTO")
-    val eventType: EventType,
+    val eventType: EventTypeDto,
     @SerialName("metadataDTO")
-    val metadata: Metadata?,
+    val metadata: MetadataDto?,
     @SerialName("summaryDTO")
-    val summary: Summary?
+    val summary: SummaryDto?
 )

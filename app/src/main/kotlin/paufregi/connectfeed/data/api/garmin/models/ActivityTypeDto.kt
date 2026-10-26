@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 
 @Serializable
-data class ActivityType(
+data class ActivityTypeDto(
     @SerialName("typeId")
     val id: Long,
     @SerialName("typeKey")

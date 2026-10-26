@@ -5,7 +5,7 @@ import com.appstractive.jwt.jwt
 import com.google.common.truth.Truth.assertThat
 import kotlinx.serialization.json.Json
 import org.junit.Test
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
@@ -17,7 +17,7 @@ class AuthTokenSerializerTest {
     private val accessToken = jwt { claims { issuedAt(issuedTime) } }.toString()
 
     private val jsonToken = """{"access_token":"$accessToken","refresh_token":"REFRESH_TOKEN","expires_in":10000,"refresh_token_expires_in":30000}""".trimIndent()
-    private val authToken = AuthToken(
+    private val authTokenDto = AuthTokenDto(
         accessToken = accessToken,
         refreshToken = "REFRESH_TOKEN",
         expiresAt = issuedTime + 10.seconds,
@@ -26,15 +26,15 @@ class AuthTokenSerializerTest {
 
     @Test
     fun `Serialize AuthToken to JSON`() {
-        val res = json.encodeToString(AuthToken.serializer(), authToken)
+        val res = json.encodeToString(AuthTokenDto.serializer(), authTokenDto)
 
         assertThat(res).isEqualTo(jsonToken)
     }
 
     @Test
     fun `Deserialize JSON to AuthToken`() {
-        val res = json.decodeFromString(AuthToken.serializer(), jsonToken)
+        val res = json.decodeFromString(AuthTokenDto.serializer(), jsonToken)
 
-        assertThat(res).isEqualTo(authToken)
+        assertThat(res).isEqualTo(authTokenDto)
     }
 }

@@ -9,7 +9,7 @@ import org.junit.Test
 import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.authTokenJson
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
 
 class GarminAuthTest {
     @JvmField @Rule val server = MockWebServerRule()
@@ -17,7 +17,7 @@ class GarminAuthTest {
     private lateinit var api: GarminAuth
     private val consumerKey = "CONSUMER_KEY"
     private val consumerSecret = "CONSUMER_SECRET"
-    private val oauth = PreAuthToken("TOKEN", "SECRET")
+    private val oauth = PreAuthTokenDto("TOKEN", "SECRET")
 
     @Before
     fun setup() {

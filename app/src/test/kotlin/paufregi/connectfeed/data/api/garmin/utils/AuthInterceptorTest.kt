@@ -23,7 +23,7 @@ import paufregi.connectfeed.authToken
 import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.createAuthToken
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.preAuthToken
 import paufregi.connectfeed.today
@@ -133,7 +133,7 @@ class AuthInterceptorTest {
 
     @Test
     fun `Success - refresh`() = runTest {
-        val expiredToken = AuthToken(
+        val expiredToken = AuthTokenDto(
             accessToken = jwt { claims { issuedAt(today - 10.seconds) } }.toString(),
             refreshToken = "REFRESH_TOKEN",
             expiresAt = today - 10.seconds,
@@ -163,7 +163,7 @@ class AuthInterceptorTest {
 
     @Test
     fun `Success - refresh & exchange`() = runTest {
-        val expiredToken = AuthToken(
+        val expiredToken = AuthTokenDto(
             accessToken = jwt { claims { issuedAt(today - 10.seconds) } }.toString(),
             refreshToken = "REFRESH_TOKEN",
             expiresAt = today - 10.seconds,
@@ -229,7 +229,7 @@ class AuthInterceptorTest {
 
     @Test
     fun `Failure - refresh`() = runTest {
-        val expiredToken = AuthToken(
+        val expiredToken = AuthTokenDto(
             accessToken = jwt { claims { issuedAt(today - 10.seconds) } }.toString(),
             refreshToken = "REFRESH_TOKEN",
             expiresAt = today - 10.seconds,

@@ -3,8 +3,8 @@ package paufregi.connectfeed.data.api.garmin
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
+import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -22,19 +22,19 @@ interface GarminAuth {
         "User-Agent: com.garmin.android.apps.connectmobile",
         "Content-Type: application/x-www-form-urlencoded"
     )
-    suspend fun exchange(): Response<AuthToken>
+    suspend fun exchange(): Response<AuthTokenDto>
 
     @FormUrlEncoded
     @POST("/oauth-service/oauth/exchange/user/2.0")
     @Headers("Content-Type: application/x-www-form-urlencoded")
     suspend fun refresh(
         @Field("refresh_token") refreshToken: String,
-    ): Response<AuthToken>
+    ): Response<AuthTokenDto>
 
     companion object {
         const val BASE_URL = "https://connectapi.garmin.com"
 
-        fun client(consumerKey: String, consumerSecret: String, token: PreAuthToken, url: String): GarminAuth {
+        fun client(consumerKey: String, consumerSecret: String, token: PreAuthTokenDto, url: String): GarminAuth {
             val consumer = OkHttpOAuthConsumer(consumerKey, consumerSecret)
             consumer.setTokenWithSecret(token.token, token.secret)
 

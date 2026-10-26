@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 
 @Serializable
-data class EventType(
+data class EventTypeDto(
     @SerialName("typeId")
     val id: Long?,
     @SerialName("typeKey")

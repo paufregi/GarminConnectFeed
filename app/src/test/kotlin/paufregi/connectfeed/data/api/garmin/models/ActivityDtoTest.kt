@@ -7,16 +7,16 @@ import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 
-class ActivityTest {
+class ActivityDtoTest {
 
     @Test
     fun `To Core activity`() {
-        val activity = Activity(
+        val activityDto = ActivityDto(
             id = 1,
             name = "name",
             distance = 15007.59,
-            type = ActivityType(id = 1, key = "running"),
-            eventType = EventType(id = 4, key = "training"),
+            type = ActivityTypeDto(id = 1, key = "running"),
+            eventType = EventTypeDto(id = 4, key = "training"),
             trainingEffectLabel = "TEMPO",
             beginTimestamp = 1735693200000,
             workoutId = 2
@@ -33,6 +33,6 @@ class ActivityTest {
             workoutId = 2
         )
 
-        assertThat(activity.toCore()).isEqualTo(coreActivity)
+        assertThat(activityDto.toCore()).isEqualTo(coreActivity)
     }
 }
