@@ -126,7 +126,6 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     debugImplementation(libs.androidx.ui.tooling)
-    testRuntimeOnly(libs.androidx.ui.test.manifest)
 
     testImplementation(testFixtures(project(":app")))
     testImplementation(libs.junit)
@@ -135,6 +134,7 @@ dependencies {
     testImplementation(libs.androidx.junit)
     testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(libs.hilt.testing)
+    testImplementation(libs.androidx.ui.test.manifest)
 
     androidTestImplementation(testFixtures(project(":app")))
     androidTestImplementation(libs.androidx.junit)
