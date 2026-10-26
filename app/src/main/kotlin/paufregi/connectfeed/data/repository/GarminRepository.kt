@@ -18,7 +18,7 @@ import paufregi.connectfeed.data.api.garmin.models.Metadata
 import paufregi.connectfeed.data.api.garmin.models.Summary
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
 import paufregi.connectfeed.data.api.strava.Strava
-import paufregi.connectfeed.data.api.strava.models.UpdateProfile
+import paufregi.connectfeed.data.api.strava.models.UpdateProfileDto
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
@@ -27,7 +27,7 @@ import paufregi.connectfeed.data.utils.withCache
 import java.io.File
 import javax.inject.Inject
 import paufregi.connectfeed.data.api.garmin.models.EventType as DataEventType
-import paufregi.connectfeed.data.api.strava.models.UpdateActivity as UpdateStravaActivity
+import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto as UpdateStravaActivity
 
 class GarminRepository @Inject constructor(
     private val garminDao: GarminDao,
@@ -148,7 +148,7 @@ class GarminRepository @Inject constructor(
     suspend fun updateStravaProfile(
         weight: Float
     ): Result<Unit> {
-        val request = UpdateProfile(weight = weight)
+        val request = UpdateProfileDto(weight = weight)
         return strava.updateProfile(request).toResult()
     }
 

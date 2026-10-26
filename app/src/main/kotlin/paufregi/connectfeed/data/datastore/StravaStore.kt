@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.byteArrayPreferencesKey
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
-import paufregi.connectfeed.data.api.strava.models.AuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthTokenDto
 import paufregi.connectfeed.data.utils.Crypto
 
 class StravaStore(val dataStore: DataStore<Preferences>) {
@@ -18,14 +18,14 @@ class StravaStore(val dataStore: DataStore<Preferences>) {
     fun getToken() = dataStore.data.map {
         it[AUTH_TOKEN]?.let { data ->
             Crypto.decrypt(data).let {
-                Json.decodeFromString<AuthToken>(it)
+                Json.decodeFromString<AuthTokenDto>(it)
             }
         }
     }
 
-    suspend fun saveToken(authToken: AuthToken) {
+    suspend fun saveToken(authTokenDto: AuthTokenDto) {
         dataStore.edit {
-            it[AUTH_TOKEN] = Crypto.encrypt(Json.encodeToString(authToken))
+            it[AUTH_TOKEN] = Crypto.encrypt(Json.encodeToString(authTokenDto))
         }
     }
 

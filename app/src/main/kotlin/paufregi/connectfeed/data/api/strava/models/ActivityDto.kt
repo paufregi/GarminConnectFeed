@@ -8,7 +8,7 @@ import kotlin.time.Instant
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 
 @Serializable
-data class Activity(
+data class ActivityDto(
     @SerialName("id")
     val id: Long,
     @SerialName("name")

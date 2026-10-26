@@ -6,11 +6,11 @@ import kotlin.time.Instant
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 
-class ActivityTest {
+class ActivityDtoTest {
 
     @Test
     fun `To Core activity`() {
-        val activity = Activity(
+        val activityDto = ActivityDto(
             id = 1,
             name = "name",
             distance = 15007.59123,
@@ -26,6 +26,6 @@ class ActivityTest {
             date = Instant.parse("2024-01-01T01:00:00Z")
         )
 
-        assertThat(activity.toCore()).isEqualTo(coreActivity)
+        assertThat(activityDto.toCore()).isEqualTo(coreActivity)
     }
 }

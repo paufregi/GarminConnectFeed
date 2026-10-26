@@ -18,7 +18,7 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
-import paufregi.connectfeed.data.api.strava.models.AuthToken as StravaAuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthTokenDto as StravaAuthToken
 
 fun createAuthToken(issuedTime: Instant) = AuthToken(
     accessToken = jwt { claims { issuedAt(issuedTime) } }.toString(),

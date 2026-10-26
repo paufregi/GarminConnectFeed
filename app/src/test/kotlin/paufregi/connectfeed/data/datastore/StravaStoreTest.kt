@@ -17,7 +17,7 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import paufregi.connectfeed.FakeAndroidKeyStore
-import paufregi.connectfeed.data.api.strava.models.AuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthTokenDto
 import paufregi.connectfeed.today
 import paufregi.connectfeed.tomorrow
 
@@ -48,15 +48,15 @@ class StravaStoreTest {
 
     @Test
     fun `Save retrieve and delete Token`() = runTest {
-        val authToken1 = AuthToken("ACCESS_TOKEN_1", "REFRESH_TOKEN_1", today)
-        val authToken2 = AuthToken("ACCESS_TOKEN_2", "REFRESH_TOKEN_2", tomorrow)
+        val authTokenDto1 = AuthTokenDto("ACCESS_TOKEN_1", "REFRESH_TOKEN_1", today)
+        val authTokenDto2 = AuthTokenDto("ACCESS_TOKEN_2", "REFRESH_TOKEN_2", tomorrow)
 
         dataStore.getToken().test {
             assertThat(awaitItem()).isNull()
-            dataStore.saveToken(authToken1)
-            assertThat(awaitItem()).isEqualTo(authToken1)
-            dataStore.saveToken(authToken2)
-            assertThat(awaitItem()).isEqualTo(authToken2)
+            dataStore.saveToken(authTokenDto1)
+            assertThat(awaitItem()).isEqualTo(authTokenDto1)
+            dataStore.saveToken(authTokenDto2)
+            assertThat(awaitItem()).isEqualTo(authTokenDto2)
             dataStore.clear()
             assertThat(awaitItem()).isNull()
             cancelAndIgnoreRemainingEvents()

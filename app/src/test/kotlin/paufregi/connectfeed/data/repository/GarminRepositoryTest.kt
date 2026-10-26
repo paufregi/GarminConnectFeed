@@ -40,9 +40,9 @@ import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Gear as CoreGear
-import paufregi.connectfeed.data.api.strava.models.Activity as StravaActivity
-import paufregi.connectfeed.data.api.strava.models.UpdateActivity as StravaUpdateActivity
-import paufregi.connectfeed.data.api.strava.models.UpdateProfile as StravaUpdateProfile
+import paufregi.connectfeed.data.api.strava.models.ActivityDto as StravaActivity
+import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto as StravaUpdateActivity
+import paufregi.connectfeed.data.api.strava.models.UpdateProfileDto as StravaUpdateProfile
 
 class GarminRepositoryTest {
 

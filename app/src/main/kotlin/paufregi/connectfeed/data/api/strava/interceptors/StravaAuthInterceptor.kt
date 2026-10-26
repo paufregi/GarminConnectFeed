@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.data.api.strava.models.AuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthTokenDto
 import paufregi.connectfeed.data.api.utils.authRequest
 import paufregi.connectfeed.data.api.utils.failedAuthResponse
 import paufregi.connectfeed.data.repository.StravaAuthRepository
@@ -27,10 +27,9 @@ class StravaAuthInterceptor @Inject constructor(
             )
         }
 
-    private suspend fun getOrRefreshToken(): Result<AuthToken> {
-        val token = stravaRepo.getToken().firstOrNull()
+    private suspend fun getOrRefreshToken(): Result<AuthTokenDto> {
+        val token = stravaRepo.getToken().firstOrNull() ?: return Result.failure("No token found")
 
-        if (token == null) return Result.failure("No token found")
         if (!token.isExpired()) return Result.success(token)
 
         return stravaRepo.refresh(clientId, clientSecret, token.refreshToken)
