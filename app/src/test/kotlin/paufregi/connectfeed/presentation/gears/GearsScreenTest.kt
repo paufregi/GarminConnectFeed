@@ -1,23 +1,24 @@
 package paufregi.connectfeed.presentation.gears
 
+import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
 
-@ExperimentalMaterial3Api
 @ExperimentalTestApi
+@ExperimentalMaterial3Api
 @RunWith(AndroidJUnit4::class)
 class GearsScreenTest {
 
     @Test
-    fun `Default values`() = runComposeUiTest {
+    fun `Default values`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             GearsContent(state = GearsState())
         }
@@ -25,7 +26,7 @@ class GearsScreenTest {
     }
 
     @Test
-    fun `Gear list`() = runComposeUiTest {
+    fun `Gear list`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             GearsContent(
                 state = GearsState(

@@ -1,23 +1,24 @@
 package paufregi.connectfeed.presentation.syncweight
 
+import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
-@ExperimentalMaterial3Api
 @ExperimentalTestApi
+@ExperimentalMaterial3Api
 @RunWith(AndroidJUnit4::class)
 class SyncWeightScreenTest {
     
     @Test
-    fun `Status idle`() = runComposeUiTest {
+    fun `Status idle`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             SyncWeightScreen(state = SyncWeightState(ProcessState.Idle))
         }
@@ -25,7 +26,7 @@ class SyncWeightScreenTest {
     }
 
     @Test
-    fun `Status uploading`() = runComposeUiTest {
+    fun `Status uploading`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             SyncWeightScreen(state = SyncWeightState(ProcessState.Processing))
         }
@@ -33,7 +34,7 @@ class SyncWeightScreenTest {
     }
 
     @Test
-    fun `Status success`() = runComposeUiTest {
+    fun `Status success`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             SyncWeightScreen(state = SyncWeightState(ProcessState.Success("Sync succeeded")))
         }
@@ -41,7 +42,7 @@ class SyncWeightScreenTest {
     }
 
     @Test
-    fun `Status failure`() = runComposeUiTest {
+    fun `Status failure`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             SyncWeightScreen(state = SyncWeightState(ProcessState.Failure("Sync failed")))
         }

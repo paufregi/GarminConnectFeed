@@ -1,5 +1,6 @@
 package paufregi.connectfeed.presentation.profile
 
+import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
@@ -10,7 +11,7 @@ import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.compose.ui.test.v2.runAndroidComposeUiTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,13 +21,13 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
-@ExperimentalMaterial3Api
 @ExperimentalTestApi
+@ExperimentalMaterial3Api
 @RunWith(AndroidJUnit4::class)
 class ProfileScreenTest {
 
     @Test
-    fun `Default values`() = runComposeUiTest {
+    fun `Default values`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Idle,
@@ -51,7 +52,7 @@ class ProfileScreenTest {
     }
 
     @Test
-    fun `Loading spinner`() = runComposeUiTest {
+    fun `Loading spinner`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Processing
@@ -61,7 +62,7 @@ class ProfileScreenTest {
     }
 
     @Test
-    fun `Edit profile`() = runComposeUiTest {
+    fun `Edit profile`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Idle,
@@ -94,7 +95,7 @@ class ProfileScreenTest {
     }
 
     @Test
-    fun `Invalid profile - no name`() = runComposeUiTest {
+    fun `Invalid profile - no name`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Idle,
@@ -111,7 +112,7 @@ class ProfileScreenTest {
     }
 
     @Test
-    fun `Invalid profile - no event type`() = runComposeUiTest {
+    fun `Invalid profile - no event type`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Idle,
@@ -126,7 +127,7 @@ class ProfileScreenTest {
     }
 
     @Test
-    fun `No course - type any`() = runComposeUiTest {
+    fun `No course - type any`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Idle,
@@ -142,7 +143,7 @@ class ProfileScreenTest {
     }
 
     @Test
-    fun `No course - type strength`() = runComposeUiTest {
+    fun `No course - type strength`() = runAndroidComposeUiTest<ComponentActivity> {
         setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Idle,
