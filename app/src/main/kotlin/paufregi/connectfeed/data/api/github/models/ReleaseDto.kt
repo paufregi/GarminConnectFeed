@@ -6,11 +6,11 @@ import paufregi.connectfeed.core.models.Version
 import paufregi.connectfeed.core.models.Release as CoreRelease
 
 @Serializable
-data class Release(
+data class ReleaseDto(
     @SerialName("tag_name")
     val tagName: String,
     @SerialName("assets")
-    val assets: List<Asset>,
+    val assets: List<AssetDto>,
 ) {
     fun toCore(): CoreRelease? {
         val version = Version.parse(this.tagName)
