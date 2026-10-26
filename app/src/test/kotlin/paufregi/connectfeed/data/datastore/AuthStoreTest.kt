@@ -19,7 +19,7 @@ import org.junit.runner.RunWith
 import paufregi.connectfeed.FakeAndroidKeyStore
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.createAuthToken
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
@@ -50,8 +50,8 @@ class AuthStoreTest {
 
     @Test
     fun `Save retrieve and delete PreAuthToken`() = runTest {
-        val token1 = PreAuthToken(token = "TOKEN_1", secret = "SECRET_2")
-        val token2 = PreAuthToken(token = "TOKEN_2", secret = "SECRET_2")
+        val token1 = PreAuthTokenDto(token = "TOKEN_1", secret = "SECRET_2")
+        val token2 = PreAuthTokenDto(token = "TOKEN_2", secret = "SECRET_2")
 
         dataStore.getPreAuthToken().test {
             assertThat(awaitItem()).isNull()

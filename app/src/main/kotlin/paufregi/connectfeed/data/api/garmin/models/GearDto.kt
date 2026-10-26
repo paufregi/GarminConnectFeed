@@ -7,7 +7,7 @@ import kotlin.math.roundToInt
 import paufregi.connectfeed.core.models.Gear as CoreGear
 
 @Serializable
-data class Gear(
+data class GearDto(
     @SerialName("uuid")
     val id: String,
 

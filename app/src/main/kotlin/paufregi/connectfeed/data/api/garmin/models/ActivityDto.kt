@@ -8,15 +8,15 @@ import kotlin.time.Instant
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 
 @Serializable
-data class Activity(
+data class ActivityDto(
     @SerialName("activityId")
     val id: Long,
     @SerialName("activityName")
     val name: String,
     @SerialName("activityType")
-    val type: ActivityType,
+    val type: ActivityTypeDto,
     @SerialName("eventType")
-    val eventType: EventType?,
+    val eventType: EventTypeDto?,
     @SerialName("distance")
     val distance: Double,
     @SerialName("trainingEffectLabel")

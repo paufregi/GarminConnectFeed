@@ -18,16 +18,16 @@ import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.GarminConnect
-import paufregi.connectfeed.data.api.garmin.models.Activity
-import paufregi.connectfeed.data.api.garmin.models.ActivityType
-import paufregi.connectfeed.data.api.garmin.models.Course
-import paufregi.connectfeed.data.api.garmin.models.EventType
-import paufregi.connectfeed.data.api.garmin.models.Gear
-import paufregi.connectfeed.data.api.garmin.models.Metadata
-import paufregi.connectfeed.data.api.garmin.models.Summary
-import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
-import paufregi.connectfeed.data.api.garmin.models.UserProfile
-import paufregi.connectfeed.data.api.garmin.models.Workout
+import paufregi.connectfeed.data.api.garmin.models.ActivityDto
+import paufregi.connectfeed.data.api.garmin.models.ActivityTypeDto
+import paufregi.connectfeed.data.api.garmin.models.CourseDto
+import paufregi.connectfeed.data.api.garmin.models.EventTypeDto
+import paufregi.connectfeed.data.api.garmin.models.GearDto
+import paufregi.connectfeed.data.api.garmin.models.MetadataDto
+import paufregi.connectfeed.data.api.garmin.models.SummaryDto
+import paufregi.connectfeed.data.api.garmin.models.UpdateActivityDto
+import paufregi.connectfeed.data.api.garmin.models.UserProfileDto
+import paufregi.connectfeed.data.api.garmin.models.WorkoutDto
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.GearEntity
@@ -64,7 +64,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Fetch user`() = runTest {
-        val userProfile = UserProfile(1, "user", "url")
+        val userProfile = UserProfileDto(1, "user", "url")
         val user = User(1, "user", "url")
         coEvery { connect.getUserProfile() } returns Response.success(userProfile)
 
@@ -374,23 +374,23 @@ class GarminRepositoryTest {
     @Test
     fun `Get activities`() = runTest {
         val activities = listOf(
-            Activity(
+            ActivityDto(
                 id = 1,
                 name = "activity_1",
                 distance = 10234.00,
                 trainingEffectLabel = "recovery",
-                type = ActivityType(id = 1, key = "running"),
-                eventType = EventType(id = 4, key = "training"),
+                type = ActivityTypeDto(id = 1, key = "running"),
+                eventType = EventTypeDto(id = 4, key = "training"),
                 beginTimestamp = 1729754100000,
                 workoutId = 1
             ),
-            Activity(
+            ActivityDto(
                 id = 2,
                 name = "activity_2",
                 distance = 17759.00,
                 trainingEffectLabel = "recovery",
-                type = ActivityType(id = 10, key = "road_biking"),
-                eventType = EventType(id = 4, key = "training"),
+                type = ActivityTypeDto(id = 10, key = "road_biking"),
+                eventType = EventTypeDto(id = 4, key = "training"),
                 beginTimestamp = 1729705968000,
                 workoutId = 2
             )
@@ -409,23 +409,23 @@ class GarminRepositoryTest {
     @Test
     fun `Get activities - cached`() = runTest {
         val activities = listOf(
-            Activity(
+            ActivityDto(
                 id = 1,
                 name = "activity_1",
                 distance = 10234.00,
                 trainingEffectLabel = "recovery",
-                type = ActivityType(id = 1, key = "running"),
-                eventType = EventType(id = 4, key = "training"),
+                type = ActivityTypeDto(id = 1, key = "running"),
+                eventType = EventTypeDto(id = 4, key = "training"),
                 beginTimestamp = 1729754100000,
                 workoutId = 1
             ),
-            Activity(
+            ActivityDto(
                 id = 2,
                 name = "activity_2",
                 distance = 17759.00,
                 trainingEffectLabel = "recovery",
-                type = ActivityType(id = 10, key = "road_biking"),
-                eventType = EventType(id = 4, key = "training"),
+                type = ActivityTypeDto(id = 10, key = "road_biking"),
+                eventType = EventTypeDto(id = 4, key = "training"),
                 beginTimestamp = 1729705968000,
                 workoutId = 2
             )
@@ -447,23 +447,23 @@ class GarminRepositoryTest {
     @Test
     fun `Get activities - force refresh`() = runTest {
         val activities = listOf(
-            Activity(
+            ActivityDto(
                 id = 1,
                 name = "activity_1",
                 distance = 10234.00,
                 trainingEffectLabel = "recovery",
-                type = ActivityType(id = 1, key = "running"),
-                eventType = EventType(id = 4, key = "training"),
+                type = ActivityTypeDto(id = 1, key = "running"),
+                eventType = EventTypeDto(id = 4, key = "training"),
                 beginTimestamp = 1729754100000,
                 workoutId = 1
             ),
-            Activity(
+            ActivityDto(
                 id = 2,
                 name = "activity_2",
                 distance = 17759.00,
                 trainingEffectLabel = "recovery",
-                type = ActivityType(id = 10, key = "road_biking"),
-                eventType = EventType(id = 4, key = "training"),
+                type = ActivityTypeDto(id = 10, key = "road_biking"),
+                eventType = EventTypeDto(id = 4, key = "training"),
                 beginTimestamp = 1729705968000,
                 workoutId = 2
             )
@@ -484,7 +484,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get activities - empty list`() = runTest {
-        coEvery { connect.getActivities(any()) } returns Response.success(emptyList<Activity>())
+        coEvery { connect.getActivities(any()) } returns Response.success(emptyList<ActivityDto>())
 
         val res = repo.getActivities(limit = 5)
 
@@ -665,11 +665,11 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get courses`() = runTest {
-        val courses = listOf(
-            Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType(id = 1, key = "running")),
-            Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType(id = 10, key = "road_biking"))
+        val cours = listOf(
+            CourseDto(id = 1, name = "course 1", distance = 10234.00, type = ActivityTypeDto(id = 1, key = "running")),
+            CourseDto(id = 2, name = "course 2", distance = 15007.00, type = ActivityTypeDto(id = 10, key = "road_biking"))
         )
-        coEvery { connect.getCourses() } returns Response.success(courses)
+        coEvery { connect.getCourses() } returns Response.success(cours)
 
         val expected = listOf(
             CoreCourse(id = 1, name = "course 1", distance = 10234.00, type = CoreActivityType.Running),
@@ -685,13 +685,13 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get courses - cache`() = runTest {
-        val courses = listOf(
-            Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType(id = 1, key = "running")),
-            Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType(id = 10, key = "road_biking"))
+        val cours = listOf(
+            CourseDto(id = 1, name = "course 1", distance = 10234.00, type = ActivityTypeDto(id = 1, key = "running")),
+            CourseDto(id = 2, name = "course 2", distance = 15007.00, type = ActivityTypeDto(id = 10, key = "road_biking"))
         )
-        coEvery { connect.getCourses() } returns Response.success(courses)
+        coEvery { connect.getCourses() } returns Response.success(cours)
 
-        val expected = courses.map { it.toCore() }
+        val expected = cours.map { it.toCore() }
 
         val res = repo.getCourses()
         val res2 = repo.getCourses()
@@ -705,13 +705,13 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get courses - force refresh`() = runTest {
-        val courses = listOf(
-            Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType(id = 1, key = "running")),
-            Course(id = 2, name = "course 2", distance = 15007.00, type = ActivityType(id = 10, key = "road_biking"))
+        val cours = listOf(
+            CourseDto(id = 1, name = "course 1", distance = 10234.00, type = ActivityTypeDto(id = 1, key = "running")),
+            CourseDto(id = 2, name = "course 2", distance = 15007.00, type = ActivityTypeDto(id = 10, key = "road_biking"))
         )
-        coEvery { connect.getCourses() } returns Response.success(courses)
+        coEvery { connect.getCourses() } returns Response.success(cours)
 
-        val expected = courses.map { it.toCore() }
+        val expected = cours.map { it.toCore() }
 
         val res = repo.getCourses()
         val res2 = repo.getCourses(true)
@@ -769,7 +769,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get workout`() = runTest {
-        val workout = Workout(1, "workout")
+        val workout = WorkoutDto(1, "workout")
         coEvery { connect.getWorkout(any()) } returns Response.success(workout)
 
         val expected = workout.toCore()
@@ -794,8 +794,8 @@ class GarminRepositoryTest {
     @Test
     fun `Get gears`() = runTest {
         val gears = listOf(
-            Gear(id = "1", brand = "Mizuno", model = "Neo Vista", name = null, type = "SHOE"),
-            Gear(id = "2", brand = "Giant", model = "Contend AR", name = "Nova", type = "BIKE")
+            GearDto(id = "1", brand = "Mizuno", model = "Neo Vista", name = null, type = "SHOE"),
+            GearDto(id = "2", brand = "Giant", model = "Contend AR", name = "Nova", type = "BIKE")
         )
         coEvery { connect.getGears() } returns Response.success(gears)
 
@@ -851,13 +851,13 @@ class GarminRepositoryTest {
         val feel = 80f
         val gear = CoreGear(id = "gear-1", name = "gear 1", type = GearType.Bike, distance = 1000)
 
-        val expectedUpdateRequest = UpdateActivity(
+        val expectedUpdateRequest = UpdateActivityDto(
             id = 1,
             name = name,
             description = description,
-            eventType = EventType(id = eventType.id, key = eventType.key),
-            metadata = Metadata(courseId = course.id),
-            summary = Summary(water = water, feel = feel, effort = effort),
+            eventType = EventTypeDto(id = eventType.id, key = eventType.key),
+            metadata = MetadataDto(courseId = course.id),
+            summary = SummaryDto(water = water, feel = feel, effort = effort),
         )
 
         val res = repo.updateActivity(
@@ -888,13 +888,13 @@ class GarminRepositoryTest {
             type = CoreActivityType.Cycling
         )
 
-        val expectedRequest = UpdateActivity(
+        val expectedRequest = UpdateActivityDto(
             id = 1,
             name = "newName",
             description = "newDescription",
-            eventType = EventType(id = CoreEventType.Training.id, key = CoreEventType.Training.key),
-            metadata = Metadata(courseId = 1),
-            summary = Summary(water = 2, feel = 80f, effort = 50f)
+            eventType = EventTypeDto(id = CoreEventType.Training.id, key = CoreEventType.Training.key),
+            metadata = MetadataDto(courseId = 1),
+            summary = SummaryDto(water = 2, feel = 80f, effort = 50f)
         )
 
         val res = repo.updateActivity(
@@ -928,13 +928,13 @@ class GarminRepositoryTest {
         val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
         val water = 2
 
-        val expectedRequest = UpdateActivity(
+        val expectedRequest = UpdateActivityDto(
             id = 1,
             name = name,
             description = description,
-            eventType = EventType(id = eventType.id, key = eventType.key),
-            metadata = Metadata(courseId = 1),
-            summary = Summary(water = 2, feel = null, effort = null)
+            eventType = EventTypeDto(id = eventType.id, key = eventType.key),
+            metadata = MetadataDto(courseId = 1),
+            summary = SummaryDto(water = 2, feel = null, effort = null)
         )
 
         val res = repo.updateActivity(

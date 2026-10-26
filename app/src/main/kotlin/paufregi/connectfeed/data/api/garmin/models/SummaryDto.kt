@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Summary(
+data class SummaryDto(
     @SerialName("waterConsumed")
     val water: Int?,
     @SerialName("directWorkoutFeel")

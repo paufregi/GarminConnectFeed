@@ -3,7 +3,7 @@ package paufregi.connectfeed.data.api.garmin.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PreAuthToken(
+data class PreAuthTokenDto(
     val token: String,
     val secret: String,
 ) {

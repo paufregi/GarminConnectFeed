@@ -5,7 +5,7 @@ import io.mockk.mockk
 
 import org.junit.Test
 import paufregi.connectfeed.data.api.garmin.models.CSRF
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import retrofit2.Retrofit
 
@@ -54,7 +54,7 @@ class GarminConverterFactoryTest {
     @Test
     fun `PreAuthToken extractor responseBody converter`() {
         val result = GarminConverterFactory()
-            .responseBodyConverter(PreAuthToken::class.java, arrayOf(), mockk<Retrofit>() )
+            .responseBodyConverter(PreAuthTokenDto::class.java, arrayOf(), mockk<Retrofit>() )
 
         assertThat(result).isInstanceOf(PreAuthTokenExtractor::class.java)
     }

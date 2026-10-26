@@ -15,10 +15,10 @@ import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
 import kotlin.time.Duration.Companion.milliseconds
 
-object AuthTokenSerializer : KSerializer<AuthToken> {
+object AuthTokenSerializer : KSerializer<AuthTokenDto> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("AuthToken") {
         element<String>("access_token")
         element<String>("refresh_token")
@@ -26,7 +26,7 @@ object AuthTokenSerializer : KSerializer<AuthToken> {
         element<Long>("refresh_token_expires_in")
     }
 
-    override fun deserialize(decoder: Decoder): AuthToken {
+    override fun deserialize(decoder: Decoder): AuthTokenDto {
         if (decoder !is JsonDecoder) {
             throw SerializationException("This serializer only works with JSON")
         }
@@ -44,7 +44,7 @@ object AuthTokenSerializer : KSerializer<AuthToken> {
         val issuedAt = JWT.from(accessToken).issuedAt
             ?: throw SerializationException("Missing issuedAt")
 
-        return AuthToken(
+        return AuthTokenDto(
             accessToken = accessToken,
             refreshToken = refreshToken,
             expiresAt = issuedAt + expiresAtOffset.milliseconds,
@@ -52,7 +52,7 @@ object AuthTokenSerializer : KSerializer<AuthToken> {
         )
     }
 
-    override fun serialize(encoder: Encoder, value: AuthToken) {
+    override fun serialize(encoder: Encoder, value: AuthTokenDto) {
         val issuedAt = JWT.from(value.accessToken).issuedAt
             ?: throw SerializationException("Missing issuedAt")
 

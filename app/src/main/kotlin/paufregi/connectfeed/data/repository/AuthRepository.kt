@@ -7,8 +7,8 @@ import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.garmin.GarminAuth
 import paufregi.connectfeed.data.api.garmin.GarminPreAuth
 import paufregi.connectfeed.data.api.garmin.GarminSSO
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
+import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
 import paufregi.connectfeed.data.datastore.AuthStore
 import javax.inject.Inject
 
@@ -16,15 +16,15 @@ class AuthRepository @Inject constructor(
     private val garminSSO: GarminSSO,
     private val authStore: AuthStore,
     private val preAuth: GarminPreAuth,
-    private val makeGarminAuth: (oauth: PreAuthToken) -> GarminAuth,
+    private val makeGarminAuth: (oauth: PreAuthTokenDto) -> GarminAuth,
 ) {
     fun getPreAuth() = authStore.getPreAuthToken()
 
-    suspend fun savePreAuth(token: PreAuthToken) = authStore.savePreAuthToken(token)
+    suspend fun savePreAuth(token: PreAuthTokenDto) = authStore.savePreAuthToken(token)
 
     fun getAuthToken() = authStore.getAuthToken()
 
-    suspend fun saveAuthToken(token: AuthToken) = authStore.saveAuthToken(token)
+    suspend fun saveAuthToken(token: AuthTokenDto) = authStore.saveAuthToken(token)
 
     fun getUser(): Flow<User?> =
         authStore.getUser()
@@ -37,7 +37,7 @@ class AuthRepository @Inject constructor(
     suspend fun authorize(
         username: String,
         password: String,
-    ): Result<PreAuthToken> {
+    ): Result<PreAuthTokenDto> {
         val csrf = garminSSO.getCSRF()
             .toResult()
             .getOrNull()
@@ -53,7 +53,7 @@ class AuthRepository @Inject constructor(
             .mapFailure { Exception("Couldn't get PreAuth token") }
     }
 
-    suspend fun exchange(token: PreAuthToken): Result<AuthToken> {
+    suspend fun exchange(token: PreAuthTokenDto): Result<AuthTokenDto> {
         val garminAuth = makeGarminAuth(token)
         return garminAuth.exchange()
             .toResult()
@@ -61,7 +61,7 @@ class AuthRepository @Inject constructor(
             .mapFailure { Exception("Couldn't get Auth token") }
     }
 
-    suspend fun refresh(preAuthToken: PreAuthToken, refreshToken: String): Result<AuthToken> {
+    suspend fun refresh(preAuthToken: PreAuthTokenDto, refreshToken: String): Result<AuthTokenDto> {
         val garminAuth = makeGarminAuth(preAuthToken)
         return garminAuth.refresh(refreshToken)
             .toResult()

@@ -6,7 +6,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
 
 import org.junit.Test
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
 
 class PreAuthTokenExtractorTest {
 
@@ -21,7 +21,7 @@ class PreAuthTokenExtractorTest {
 
         val result = converter.convert(responseBody)
 
-        assertThat(result).isEqualTo(PreAuthToken("TEST_TOKEN", "TEST_TOKEN_SECRET"))
+        assertThat(result).isEqualTo(PreAuthTokenDto("TEST_TOKEN", "TEST_TOKEN_SECRET"))
     }
 
     @Test
@@ -30,6 +30,6 @@ class PreAuthTokenExtractorTest {
 
         val result = converter.convert(responseBody)
 
-        assertThat(result).isEqualTo(PreAuthToken("", ""))
+        assertThat(result).isEqualTo(PreAuthTokenDto("", ""))
     }
 }

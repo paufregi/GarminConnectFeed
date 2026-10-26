@@ -9,8 +9,8 @@ import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.utils.truncatedToSecond
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
+import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
 import paufregi.connectfeed.data.api.github.models.Asset
 import paufregi.connectfeed.data.api.github.models.Release
 import java.net.URLDecoder
@@ -20,7 +20,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import paufregi.connectfeed.data.api.strava.models.AuthTokenDto as StravaAuthToken
 
-fun createAuthToken(issuedTime: Instant) = AuthToken(
+fun createAuthToken(issuedTime: Instant) = AuthTokenDto(
     accessToken = jwt { claims { issuedAt(issuedTime) } }.toString(),
     refreshToken = "REFRESH_TOKEN",
     expiresAt = issuedTime + 10.seconds,
@@ -38,7 +38,7 @@ val tomorrow: Instant = today + 1.days
 val yesterday: Instant = today - 1.days
 
 val user = User(id= 1, name = "Paul", profileImageUrl = "https://profile.image.com/large.jpg")
-val preAuthToken = PreAuthToken("TOKEN", "SECRET")
+val preAuthToken = PreAuthTokenDto("TOKEN", "SECRET")
 val authToken = createAuthToken(tomorrow)
 
 val stravaAuthToken = createStravaToken(today)

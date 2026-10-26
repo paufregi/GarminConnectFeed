@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
 import paufregi.connectfeed.data.api.utils.authRequest
 import paufregi.connectfeed.data.api.utils.failedAuthResponse
 import paufregi.connectfeed.data.repository.AuthRepository
@@ -24,7 +24,7 @@ class AuthInterceptor @Inject constructor(
             )
         }
 
-    private suspend fun obtainAuthToken(): Result<AuthToken> {
+    private suspend fun obtainAuthToken(): Result<AuthTokenDto> {
         val token = authRepository.getAuthToken().firstOrNull()
         if (token != null && !token.isExpired()) return Result.success(token)
 

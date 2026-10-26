@@ -6,7 +6,7 @@ import kotlin.math.round
 import paufregi.connectfeed.core.models.Course as CoreCourse
 
 @Serializable
-data class Course(
+data class CourseDto(
     @SerialName("courseId")
     val id: Long,
     @SerialName("courseName")
@@ -14,7 +14,7 @@ data class Course(
     @SerialName("distanceInMeters")
     val distance: Double,
     @SerialName("activityType")
-    val type: ActivityType
+    val type: ActivityTypeDto
 ) {
     fun toCore(): CoreCourse =
         CoreCourse(

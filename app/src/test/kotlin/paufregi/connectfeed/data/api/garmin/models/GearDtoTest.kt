@@ -5,11 +5,11 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Gear as CoreGear
 import paufregi.connectfeed.core.models.GearType as CoreGearType
 
-class GearTest {
+class GearDtoTest {
 
     @Test
     fun `To Core gear - name`() {
-        val gear = Gear(
+        val gearDto = GearDto(
             id = "123",
             brand = "brand",
             model = "model",
@@ -25,12 +25,12 @@ class GearTest {
             distance = 12346
         )
 
-        assertThat(gear.toCore()).isEqualTo(coreGear)
+        assertThat(gearDto.toCore()).isEqualTo(coreGear)
     }
 
     @Test
     fun `To Core gear - brand model`() {
-        val gear = Gear(
+        val gearDto = GearDto(
             id = "123",
             brand = "brand",
             model = "model",
@@ -46,12 +46,12 @@ class GearTest {
             distance = 1000
         )
 
-        assertThat(gear.toCore()).isEqualTo(coreGear)
+        assertThat(gearDto.toCore()).isEqualTo(coreGear)
     }
 
     @Test
     fun `To Core gear - unknown type`() {
-        val gear = Gear(
+        val gearDto = GearDto(
             id = "123",
             brand = "brand",
             model = "model",
@@ -67,6 +67,6 @@ class GearTest {
             distance = null
         )
 
-        assertThat(gear.toCore()).isEqualTo(coreGear)
+        assertThat(gearDto.toCore()).isEqualTo(coreGear)
     }
 }

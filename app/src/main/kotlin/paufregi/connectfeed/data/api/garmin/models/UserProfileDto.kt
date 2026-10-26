@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import paufregi.connectfeed.core.models.User as CoreUserProfile
 
 @Serializable
-data class UserProfile(
+data class UserProfileDto(
     @SerialName("id")
     val id: Long,
     @SerialName("fullName")

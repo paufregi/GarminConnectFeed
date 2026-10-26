@@ -1,11 +1,11 @@
 package paufregi.connectfeed.data.api.garmin.converters
 
 import okhttp3.ResponseBody
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
 import retrofit2.Converter
 
-class PreAuthTokenExtractor : Converter<ResponseBody, PreAuthToken> {
-    override fun convert(value: ResponseBody): PreAuthToken {
+class PreAuthTokenExtractor : Converter<ResponseBody, PreAuthTokenDto> {
+    override fun convert(value: ResponseBody): PreAuthTokenDto {
         val queryMap = value.string().split('&').associate {
             val parts = it.split('=')
             val k = parts.firstOrNull()
@@ -13,7 +13,7 @@ class PreAuthTokenExtractor : Converter<ResponseBody, PreAuthToken> {
             Pair(k, v)
         }
 
-        return PreAuthToken(
+        return PreAuthTokenDto(
             queryMap["oauth_token"].orEmpty(),
             queryMap["oauth_token_secret"].orEmpty()
         )

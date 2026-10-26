@@ -2,7 +2,7 @@ package paufregi.connectfeed.data.api.garmin
 
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.garmin.converters.GarminConverterFactory
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
 import paufregi.connectfeed.data.api.garmin.models.Ticket
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -21,7 +21,7 @@ interface GarminPreAuth {
     suspend fun preauthorize(
         @Query("ticket") ticket: Ticket,
         @Query("login-url") loginUrl: String = "https://sso.garmin.com/sso/embed"
-    ): Response<PreAuthToken>
+    ): Response<PreAuthTokenDto>
 
     companion object {
         const val BASE_URL = "https://connectapi.garmin.com"

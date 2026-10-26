@@ -8,8 +8,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.garmin.models.AuthToken
-import paufregi.connectfeed.data.api.garmin.models.PreAuthToken
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
+import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
 import paufregi.connectfeed.data.utils.Crypto
 
 class AuthStore(val dataStore: DataStore<Preferences>) {
@@ -23,12 +23,12 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
     fun getPreAuthToken() = dataStore.data.map {
         it[PRE_AUTH_TOKEN]?.let { tokenBytes ->
             Crypto.decrypt(tokenBytes).let {
-                Json.decodeFromString<PreAuthToken>(it)
+                Json.decodeFromString<PreAuthTokenDto>(it)
             }
         }
     }
 
-    suspend fun savePreAuthToken(token: PreAuthToken) {
+    suspend fun savePreAuthToken(token: PreAuthTokenDto) {
         dataStore.edit { preferences ->
             preferences[PRE_AUTH_TOKEN] = Crypto.encrypt(Json.encodeToString(token))
         }
@@ -37,12 +37,12 @@ class AuthStore(val dataStore: DataStore<Preferences>) {
     fun getAuthToken() = dataStore.data.map {
         it[AUTH_TOKEN]?.let { tokenBytes  ->
             Crypto.decrypt(tokenBytes).let {
-                Json.decodeFromString<AuthToken>(it)
+                Json.decodeFromString<AuthTokenDto>(it)
             }
         }
     }
 
-    suspend fun saveAuthToken(token: AuthToken) {
+    suspend fun saveAuthToken(token: AuthTokenDto) {
         dataStore.edit { preferences ->
             preferences[AUTH_TOKEN] = Crypto.encrypt(Json.encodeToString(token))
         }
