@@ -15,9 +15,9 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.MockWebServerRule
 import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
-import paufregi.connectfeed.data.api.strava.models.Activity
-import paufregi.connectfeed.data.api.strava.models.UpdateActivity
-import paufregi.connectfeed.data.api.strava.models.UpdateProfile
+import paufregi.connectfeed.data.api.strava.models.ActivityDto
+import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
+import paufregi.connectfeed.data.api.strava.models.UpdateProfileDto
 import paufregi.connectfeed.stravaActivitiesJson
 import paufregi.connectfeed.stravaDetailedAthlete
 
@@ -52,14 +52,14 @@ class StravaTest {
         val res = api.getActivities(perPage = 3)
 
         val expected = listOf(
-            Activity(
+            ActivityDto(
                 id = 1,
                 name = "Happy Friday",
                 distance = 7803.6,
                 sportType = "Run",
                 startDate = "2018-05-02T12:15:09Z"
             ),
-            Activity(
+            ActivityDto(
                 id = 2,
                 name = "Bondcliff",
                 distance = 23676.5,
@@ -80,7 +80,7 @@ class StravaTest {
         val res = api.getActivities(perPage = 3)
 
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(emptyList<Activity>())
+        assertThat(res.body()).isEqualTo(emptyList<ActivityDto>())
         verify { authInterceptor.intercept(any()) }
     }
 
@@ -97,12 +97,12 @@ class StravaTest {
     @Test
     fun `Update activity`() = runTest {
         server.enqueue(200)
-        val updateActivity = UpdateActivity(
+        val updateActivityDto = UpdateActivityDto(
             name = "newName",
             description = "newDescription",
             commute = true,
         )
-        val res = api.updateActivity(id = 1, updateActivity = updateActivity)
+        val res = api.updateActivity(id = 1, updateActivity = updateActivityDto)
 
         assertThat(res.isSuccessful).isTrue()
         verify { authInterceptor.intercept(any()) }
@@ -111,12 +111,12 @@ class StravaTest {
     @Test
     fun `Update activity - failure`() = runTest {
         server.enqueue(400)
-        val updateActivity = UpdateActivity(
+        val updateActivityDto = UpdateActivityDto(
             name = "newName",
             description = "newDescription",
             commute = true,
         )
-        val res = api.updateActivity(id = 1, updateActivity = updateActivity)
+        val res = api.updateActivity(id = 1, updateActivity = updateActivityDto)
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }
@@ -125,8 +125,8 @@ class StravaTest {
     @Test
     fun `Update profile`() = runTest {
         server.enqueue(code = 200, body = stravaDetailedAthlete)
-        val updateProfile = UpdateProfile(weight = 75.5f)
-        val res = api.updateProfile(updateProfile = updateProfile)
+        val updateProfileDto = UpdateProfileDto(weight = 75.5f)
+        val res = api.updateProfile(updateProfile = updateProfileDto)
 
         assertThat(res.isSuccessful).isTrue()
         verify { authInterceptor.intercept(any()) }
@@ -135,8 +135,8 @@ class StravaTest {
     @Test
     fun `Update profile - failure`() = runTest {
         server.enqueue(400)
-        val updateProfile = UpdateProfile(weight = 75.5f)
-        val res = api.updateProfile(updateProfile = updateProfile)
+        val updateProfileDto = UpdateProfileDto(weight = 75.5f)
+        val res = api.updateProfile(updateProfile = updateProfileDto)
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }

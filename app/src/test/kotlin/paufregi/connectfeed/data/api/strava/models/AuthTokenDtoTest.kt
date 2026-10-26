@@ -6,7 +6,7 @@ import paufregi.connectfeed.createStravaToken
 import paufregi.connectfeed.today
 import kotlin.time.Duration.Companion.seconds
 
-class AuthTokenTest {
+class AuthTokenDtoTest {
 
     private val token = createStravaToken(today)
 
