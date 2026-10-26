@@ -1,20 +1,31 @@
 package paufregi.connectfeed.data.api.garmin.models
 
+import com.appstractive.jwt.JWT
+import com.appstractive.jwt.from
+import com.appstractive.jwt.issuedAt
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import paufregi.connectfeed.data.api.garmin.converters.AuthTokenSerializer
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
-@Serializable(with = AuthTokenSerializer::class)
+@Serializable
 data class AuthTokenDto(
+    @SerialName("access_token")
     val accessToken: String,
+    @SerialName("expires_in")
+    val expiresIn: Int,
+    @SerialName("refresh_token")
     val refreshToken: String,
-    val expiresAt: Instant,
-    val refreshExpiresAt: Instant
+    @SerialName("refresh_token_expires_in")
+    val refreshTokenExpiresIn: Int,
 ) {
-    fun isExpired(now: Instant = Clock.System.now()): Boolean =
-        expiresAt < now
+    val issuedAt: Instant
+        get() = JWT.from(accessToken).issuedAt ?: Clock.System.now()
 
-    fun isRefreshExpired(now: Instant = Clock.System.now()): Boolean =
-        refreshExpiresAt < now
+    fun isExpired(now: Instant = Clock.System.now()): Boolean =
+        issuedAt + expiresIn.seconds <= now
+
+    fun isRefreshTokenExpired(now: Instant = Clock.System.now()): Boolean =
+        issuedAt + refreshTokenExpiresIn.seconds <= now
 }
