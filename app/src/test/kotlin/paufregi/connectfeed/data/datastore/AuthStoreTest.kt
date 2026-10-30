@@ -1,93 +1,55 @@
 package paufregi.connectfeed.data.datastore
 
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.HiltTestApplication
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
-import paufregi.connectfeed.FakeAndroidKeyStore
+import org.robolectric.annotation.Config
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.createAuthToken
-import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
-import kotlin.time.Duration.Companion.seconds
+import javax.inject.Inject
 import kotlin.time.Instant
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto as GarminAuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthTokenDto as StravaAuthToken
 
+@HiltAndroidTest
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
+@Config(application = HiltTestApplication::class)
 class AuthStoreTest {
 
     @get:Rule
-    val tempFolder = TemporaryFolder()
+    val hiltRule = HiltAndroidRule(this)
 
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private lateinit var dataStore: AuthStore
+    @Inject
+    lateinit var dataStore: AuthStore
 
     @Before
     fun setup() {
-        FakeAndroidKeyStore.install()
-        dataStore = AuthStore(
-            PreferenceDataStoreFactory.create(scope = scope) {
-                tempFolder.newFile("authStore.preferences_pb")
-            }
-        )
+        hiltRule.inject()
     }
 
     @After
-    fun tearDown() {
-        scope.cancel()
+    fun tearDown(): Unit = runBlocking {
+        dataStore.clear()
     }
 
     @Test
-    fun `Save retrieve and delete PreAuthToken`() = runTest {
-        val token1 = PreAuthTokenDto(token = "TOKEN_1", secret = "SECRET_2")
-        val token2 = PreAuthTokenDto(token = "TOKEN_2", secret = "SECRET_2")
+    fun `Save retrieve and clear User`() = runTest {
+        val user1 = User(1, "Paul", "url_1")
+        val user2 = User(2, "Francis", "url_2")
 
-        dataStore.getPreAuthToken().test {
-            assertThat(awaitItem()).isNull()
-            dataStore.savePreAuthToken(token1)
-            assertThat(awaitItem()).isEqualTo(token1)
-            dataStore.savePreAuthToken(token2)
-            assertThat(awaitItem()).isEqualTo(token2)
-            dataStore.clear()
-            assertThat(awaitItem()).isNull()
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `Save retrieve and delete AuthToken`() = runTest {
-        val date = Instant.parse("2025-01-01T01:00:00Z")
-        val token1 = createAuthToken(date)
-        val token2 = createAuthToken(date + 60.seconds)
-
-        dataStore.getAuthToken().test {
-            assertThat(awaitItem()).isNull()
-            dataStore.saveAuthToken(token1)
-            assertThat(awaitItem()).isEqualTo(token1)
-            dataStore.saveAuthToken(token2)
-            assertThat(awaitItem()).isEqualTo(token2)
-            dataStore.clear()
-            assertThat(awaitItem()).isNull()
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `Save retrieve and delete User`() = runTest {
-        val user1 = User(1, "user_1", "avatar_1")
-        val user2 = User(2, "user_2", "avatar_2")
-        dataStore.getUser().test {
+        dataStore.user.test {
             assertThat(awaitItem()).isNull()
             dataStore.saveUser(user1)
             assertThat(awaitItem()).isEqualTo(user1)
@@ -97,5 +59,107 @@ class AuthStoreTest {
             assertThat(awaitItem()).isNull()
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    @Test
+    fun `Save retrieve and clear Garmin token`() = runTest {
+        val token1 = GarminAuthToken(
+            accessToken = "GARMIN_ACCESS_1",
+            expiresIn = 3600,
+            refreshToken = "GARMIN_REFRESH_1",
+            refreshTokenExpiresIn = 7200,
+        )
+        val token2 = GarminAuthToken(
+            accessToken = "GARMIN_ACCESS_2",
+            expiresIn = 3601,
+            refreshToken = "GARMIN_REFRESH_2",
+            refreshTokenExpiresIn = 7201,
+        )
+
+        dataStore.garminToken.test {
+            assertThat(awaitItem()).isNull()
+            dataStore.saveGarminToken(token1)
+            assertThat(awaitItem()).isEqualTo(token1)
+            dataStore.saveGarminToken(token2)
+            assertThat(awaitItem()).isEqualTo(token2)
+            dataStore.clear()
+            assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Save retrieve and clear Strava token`() = runTest {
+        val token1 = StravaAuthToken(
+            accessToken = "STRAVA_ACCESS_1",
+            refreshToken = "STRAVA_REFRESH_1",
+            expiresAt = Instant.parse("2025-01-01T01:00:00Z")
+        )
+        val token2 = StravaAuthToken(
+            accessToken = "STRAVA_ACCESS_2",
+            refreshToken = "STRAVA_REFRESH_2",
+            expiresAt = Instant.parse("2025-01-02T01:00:00Z")
+        )
+
+        dataStore.stravaToken.test {
+            assertThat(awaitItem()).isNull()
+            dataStore.saveStravaToken(token1)
+            assertThat(awaitItem()).isEqualTo(token1)
+            dataStore.saveStravaToken(token2)
+            assertThat(awaitItem()).isEqualTo(token2)
+            dataStore.clearStravaToken()
+            assertThat(awaitItem()).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Clear all`() = runTest {
+        val user = User(1, "Paul", "url")
+        val garminToken = GarminAuthToken(
+            accessToken = "GARMIN_ACCESS",
+            expiresIn = 3600,
+            refreshToken = "GARMIN_REFRESH",
+            refreshTokenExpiresIn = 7200,
+        )
+        val stravaToken = StravaAuthToken(
+            accessToken = "STRAVA_ACCESS",
+            refreshToken = "STRAVA_REFRESH",
+            expiresAt = Instant.parse("2025-01-03T01:00:00Z")
+        )
+
+        dataStore.saveUser(user)
+        dataStore.saveGarminToken(garminToken)
+        dataStore.saveStravaToken(stravaToken)
+        dataStore.clear()
+
+        assertThat(dataStore.user.first()).isNull()
+        assertThat(dataStore.garminToken.first()).isNull()
+        assertThat(dataStore.stravaToken.first()).isNull()
+    }
+
+    @Test
+    fun `Clear strava only`() = runTest {
+        val user = User(1, "Paul", "url")
+        val garminToken = GarminAuthToken(
+            accessToken = "GARMIN_ACCESS",
+            expiresIn = 3600,
+            refreshToken = "GARMIN_REFRESH",
+            refreshTokenExpiresIn = 7200,
+        )
+        val stravaToken = StravaAuthToken(
+            accessToken = "STRAVA_ACCESS",
+            refreshToken = "STRAVA_REFRESH",
+            expiresAt = Instant.parse("2025-01-03T01:00:00Z")
+        )
+
+        dataStore.saveUser(user)
+        dataStore.saveGarminToken(garminToken)
+        dataStore.saveStravaToken(stravaToken)
+        dataStore.clearStravaToken()
+
+        assertThat(dataStore.user.first()).isEqualTo(user)
+        assertThat(dataStore.garminToken.first()).isEqualTo(garminToken)
+        assertThat(dataStore.stravaToken.first()).isNull()
     }
 }

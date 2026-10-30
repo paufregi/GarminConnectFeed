@@ -1,68 +1,93 @@
 package paufregi.connectfeed.data.datastore
 
+import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.byteArrayPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.tink.AeadSerializer
+import com.google.crypto.tink.Aead
+import com.google.crypto.tink.KeyTemplates
+import com.google.crypto.tink.RegistryConfiguration
+import com.google.crypto.tink.aead.AeadConfig
+import com.google.crypto.tink.integration.android.AndroidKeysetManager
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.Json
 import paufregi.connectfeed.core.models.User
-import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto
-import paufregi.connectfeed.data.api.garmin.models.PreAuthTokenDto
-import paufregi.connectfeed.data.utils.Crypto
+import paufregi.connectfeed.data.datastore.models.Auth
+import paufregi.connectfeed.data.datastore.serializers.AuthSerializer
+import java.io.File
+import javax.inject.Inject
+import paufregi.connectfeed.data.api.garmin.models.AuthTokenDto as GarminAuthToken
+import paufregi.connectfeed.data.api.strava.models.AuthTokenDto as StravaAuthToken
 
-class AuthStore(val dataStore: DataStore<Preferences>) {
+class AuthStore @Inject constructor(private val store: DataStore<Auth>) {
 
-    companion object {
-        private val PRE_AUTH_TOKEN = byteArrayPreferencesKey("preAuthToken")
-        private val AUTH_TOKEN = byteArrayPreferencesKey("authToken")
-        private val USER = stringPreferencesKey("user")
-    }
-
-    fun getPreAuthToken() = dataStore.data.map {
-        it[PRE_AUTH_TOKEN]?.let { tokenBytes ->
-            Crypto.decrypt(tokenBytes).let {
-                Json.decodeFromString<PreAuthTokenDto>(it)
-            }
-        }
-    }
-
-    suspend fun savePreAuthToken(token: PreAuthTokenDto) {
-        dataStore.edit { preferences ->
-            preferences[PRE_AUTH_TOKEN] = Crypto.encrypt(Json.encodeToString(token))
-        }
-    }
-
-    fun getAuthToken() = dataStore.data.map {
-        it[AUTH_TOKEN]?.let { tokenBytes  ->
-            Crypto.decrypt(tokenBytes).let {
-                Json.decodeFromString<AuthTokenDto>(it)
-            }
-        }
-    }
-
-    suspend fun saveAuthToken(token: AuthTokenDto) {
-        dataStore.edit { preferences ->
-            preferences[AUTH_TOKEN] = Crypto.encrypt(Json.encodeToString(token))
-        }
-    }
-
-    fun getUser() = dataStore.data.map {
-        it[USER]?.let { data ->
-            Json.decodeFromString<User>(data)
-        }
-    }
+    val user = store.data.map { it.user }
+    val garminToken = store.data.map { it.garminToken }
+    val stravaToken = store.data.map { it.stravaToken }
 
     suspend fun saveUser(user: User) {
-        dataStore.edit { preferences ->
-            preferences[USER] = Json.encodeToString(user)
+        store.updateData {
+            it.copy(user = user)
+        }
+    }
+
+    suspend fun saveGarminToken(token: GarminAuthToken) {
+        store.updateData {
+            it.copy(garminToken = token)
+        }
+    }
+
+    suspend fun saveStravaToken(token: StravaAuthToken) {
+        store.updateData {
+            it.copy(stravaToken = token)
+        }
+    }
+
+    suspend fun clearStravaToken() {
+        store.updateData {
+            it.copy(stravaToken = null)
         }
     }
 
     suspend fun clear() {
-        dataStore.edit {
-            it.clear()
+        store.updateData { Auth() }
+    }
+
+    companion object {
+        fun create(
+            context: Context,
+            masterKey: String,
+            scope: CoroutineScope,
+            dataStoreFileName: String,
+            dataStoreDirectory: File,
+        ): DataStore<Auth> {
+            AeadConfig.register()
+
+            val keysetHandle = AndroidKeysetManager.Builder()
+                .withSharedPref(context, "${masterKey}_keyset", "${masterKey}_pref")
+                .withKeyTemplate(KeyTemplates.get("AES256_GCM"))
+                .withMasterKeyUri("android-keystore://$masterKey")
+                .build()
+                .keysetHandle
+
+            val aead = keysetHandle.getPrimitive(
+                RegistryConfiguration.get(),
+                Aead::class.java
+            )
+
+            val encryptedSerializer = AeadSerializer(
+                aead = aead,
+                wrappedSerializer = AuthSerializer,
+                associatedData = dataStoreFileName.toByteArray(Charsets.UTF_8),
+            )
+
+            return DataStoreFactory.create(
+                serializer = encryptedSerializer,
+                corruptionHandler = ReplaceFileCorruptionHandler { Auth() },
+                scope = scope,
+                produceFile = { File(dataStoreDirectory, dataStoreFileName) },
+            )
         }
     }
 }
