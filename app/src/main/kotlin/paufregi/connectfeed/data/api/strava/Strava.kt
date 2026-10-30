@@ -3,7 +3,7 @@ package paufregi.connectfeed.data.api.strava
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import paufregi.connectfeed.data.api.strava.interceptors.StravaAuthInterceptor
+import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.ActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateProfileDto
@@ -40,7 +40,7 @@ interface Strava {
     companion object {
         const val BASE_URL = "https://www.strava.com/api/v3/"
 
-        fun client(authInterceptor: StravaAuthInterceptor, url: String): Strava {
+        fun client(authInterceptor: AuthInterceptor, url: String): Strava {
             val client = OkHttpClient.Builder().addInterceptor(authInterceptor)
 
             val json = Json {

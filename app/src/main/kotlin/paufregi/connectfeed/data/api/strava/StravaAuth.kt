@@ -26,7 +26,7 @@ interface StravaAuth {
     @FormUrlEncoded
     @POST("api/v3/oauth/token")
     @Headers("Content-Type: application/x-www-form-urlencoded")
-    suspend fun refreshAccessToken(
+    suspend fun refresh(
         @Field("client_id") clientId: String,
         @Field("client_secret") clientSecret: String,
         @Field("refresh_token") refreshToken: String,
