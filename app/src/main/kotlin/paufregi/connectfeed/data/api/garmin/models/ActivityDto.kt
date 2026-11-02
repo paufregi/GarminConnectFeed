@@ -2,10 +2,6 @@ package paufregi.connectfeed.data.api.garmin.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import paufregi.connectfeed.data.api.garmin.converters.TrainingEffectConverter
-import kotlin.math.round
-import kotlin.time.Instant
-import paufregi.connectfeed.core.models.Activity as CoreActivity
 
 @Serializable
 data class ActivityDto(
@@ -25,16 +21,4 @@ data class ActivityDto(
     val beginTimestamp: Long?,
     @SerialName("workoutId")
     val workoutId: Long?,
-) {
-    fun toCore(): CoreActivity =
-        CoreActivity(
-            id = this.id,
-            name = this.name,
-            type = this.type.toCore(),
-            eventType = this.eventType?.toCore(),
-            distance = round(this.distance),
-            trainingEffect = TrainingEffectConverter.convert(this.trainingEffectLabel),
-            date = this.beginTimestamp?.let { Instant.fromEpochMilliseconds(it) },
-            workoutId = this.workoutId
-        )
-}
+)

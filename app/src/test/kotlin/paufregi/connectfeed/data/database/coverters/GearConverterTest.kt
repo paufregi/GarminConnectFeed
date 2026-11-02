@@ -5,6 +5,8 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.data.database.entities.GearEntity
+import paufregi.connectfeed.data.repository.converters.toCore
+import paufregi.connectfeed.data.repository.converters.toEntity
 import paufregi.connectfeed.user
 
 class GearConverterTest {

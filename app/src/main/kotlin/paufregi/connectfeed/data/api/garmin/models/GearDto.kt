@@ -2,9 +2,6 @@ package paufregi.connectfeed.data.api.garmin.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import paufregi.connectfeed.core.models.GearType
-import kotlin.math.roundToInt
-import paufregi.connectfeed.core.models.Gear as CoreGear
 
 @Serializable
 data class GearDto(
@@ -25,18 +22,4 @@ data class GearDto(
 
     @SerialName("distanceUsedMeters")
     val distance: Double? = null,
-) {
-    fun toCore(): CoreGear =
-        CoreGear(
-            id = id,
-            name = name ?: "$brand $model",
-            type = toCoreGearType(),
-            distance = distance?.roundToInt()
-        )
-
-    private fun toCoreGearType(): GearType = when (type) {
-        "BIKE" -> GearType.Bike
-        "SHOES" -> GearType.Shoe
-        else -> GearType.Unknown
-    }
-}
+)

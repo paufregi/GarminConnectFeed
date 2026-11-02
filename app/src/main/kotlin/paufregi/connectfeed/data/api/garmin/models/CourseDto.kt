@@ -2,8 +2,6 @@ package paufregi.connectfeed.data.api.garmin.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.math.round
-import paufregi.connectfeed.core.models.Course as CoreCourse
 
 @Serializable
 data class CourseDto(
@@ -15,12 +13,4 @@ data class CourseDto(
     val distance: Double,
     @SerialName("activityType")
     val type: ActivityTypeDto
-) {
-    fun toCore(): CoreCourse =
-        CoreCourse(
-            id = this.id,
-            name = this.name,
-            distance = round(this.distance),
-            type = this.type.toCore()
-        )
-}
+)
