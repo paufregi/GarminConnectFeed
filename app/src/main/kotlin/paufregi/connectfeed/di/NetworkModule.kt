@@ -57,4 +57,3 @@ object NetworkModule {
         @Named("GithubUrl") url: String,
     ): Github = Github.client(url)
 }
-
