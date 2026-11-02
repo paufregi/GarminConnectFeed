@@ -12,11 +12,11 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.data.repository.StravaAuthRepository
+import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.stravaAuthToken
 
 class IsStravaLoggedInTest{
-    private val repo = mockk<StravaAuthRepository>()
+    private val repo = mockk<AuthRepository>()
     private lateinit var useCase: IsStravaLoggedIn
 
     @Before
@@ -32,25 +32,25 @@ class IsStravaLoggedInTest{
 
     @Test
     fun `Logged In`() = runTest {
-        every { repo.getToken() } returns flowOf(stravaAuthToken)
+        every { repo.getStravaToken() } returns flowOf(stravaAuthToken)
         val res = useCase()
 
         res.test {
             assertThat(awaitItem()).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
-        verify { repo.getToken() }
+        verify { repo.getStravaToken() }
     }
 
     @Test
     fun `Not logged In - no code`() = runTest {
-        every { repo.getToken() } returns flowOf(null)
+        every { repo.getStravaToken() } returns flowOf(null)
         val res = useCase()
 
         res.test {
             assertThat(awaitItem()).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
-        verify { repo.getToken() }
+        verify { repo.getStravaToken() }
     }
 }
