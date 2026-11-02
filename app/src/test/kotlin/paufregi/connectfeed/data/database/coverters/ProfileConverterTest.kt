@@ -7,6 +7,7 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.data.database.entities.ProfileEntity
+import paufregi.connectfeed.data.repository.converters.toEntity
 import paufregi.connectfeed.user
 
 class ProfileConverterTest {
