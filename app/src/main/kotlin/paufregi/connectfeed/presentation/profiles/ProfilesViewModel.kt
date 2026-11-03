@@ -3,6 +3,7 @@ package paufregi.connectfeed.presentation.profiles
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -12,6 +13,7 @@ import paufregi.connectfeed.core.usecases.GetProfiles
 import javax.inject.Inject
 
 @HiltViewModel
+@ExperimentalCoroutinesApi
 class ProfilesViewModel @Inject constructor(
     getProfiles: GetProfiles,
     val deleteProfile: DeleteProfile
