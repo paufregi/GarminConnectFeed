@@ -147,8 +147,8 @@ val authTokenJson = """
 val refreshedAuthTokenJson = """
     {
         "access_token": "${refreshedToken.accessToken}",
-        "expires_in": 3600
-        "refresh_token": "${refreshedToken.refreshToken}"
+        "expires_in": 3600,
+        "refresh_token": "${refreshedToken.refreshToken}",
         "refresh_token_expires_in": 86400
     }
     """.trimIndent()
