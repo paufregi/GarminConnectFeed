@@ -6,7 +6,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.stravaAuthToken
 import paufregi.connectfeed.stravaAuthTokenJson
 import paufregi.connectfeed.stravaDeauthorizationJson
@@ -15,7 +15,7 @@ import paufregi.connectfeed.stravaRefreshedAuthToken
 
 class StravaAuthTest {
 
-    @JvmField @Rule val server = MockWebServerRule()
+    @JvmField @Rule val server = MockServer()
     private lateinit var api: StravaAuth
 
     @Before

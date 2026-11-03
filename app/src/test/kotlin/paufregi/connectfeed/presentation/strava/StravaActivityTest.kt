@@ -11,11 +11,11 @@ import androidx.compose.ui.test.v2.runEmptyComposeUiTest
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import mockwebserver3.Dispatcher
 import mockwebserver3.MockResponse
@@ -26,11 +26,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import paufregi.connectfeed.FakeAndroidKeyStore
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.TestTrustStore
-import paufregi.connectfeed.data.datastore.StravaStore
+import paufregi.connectfeed.data.datastore.AuthStore
 import paufregi.connectfeed.getFields
-import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaAuthToken
 import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
@@ -46,10 +45,10 @@ class StravaActivityTest {
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
-    @JvmField @Rule(order = 1) val stravaServer = MockWebServerRule(stravaPort, sslSocketFactory, stravaDispatcher)
+    @JvmField @Rule(order = 1) val stravaServer = MockServer.createSecure(stravaPort, stravaDispatcher)
 
     @Inject
-    lateinit var stravaStore: StravaStore
+    lateinit var authStore: AuthStore
 
     private val context: Context get() = ApplicationProvider.getApplicationContext()
 
@@ -78,7 +77,12 @@ class StravaActivityTest {
         assertThat(request.getFields()["code"]).isEqualTo("123456")
         assertThat(request.getFields()["grant_type"]).isEqualTo("authorization_code")
 
-        assertThat(runBlocking { stravaStore.getToken().first() }).isEqualTo(stravaAuthToken)
+        runBlocking {
+            authStore.stravaToken.test {
+                assertThat(awaitItem()).isEqualTo(stravaAuthToken)
+
+            }
+        }
     }
 
     @Test
@@ -91,7 +95,12 @@ class StravaActivityTest {
             waitUntil(timeoutMillis = 10_000) { onNodeWithText("Link failed").isDisplayed() }
         }
 
-        assertThat(runBlocking { stravaStore.getToken().first() }).isNull()
+        runBlocking {
+            authStore.stravaToken.test {
+                assertThat(awaitItem()).isNull()
+
+            }
+        }
     }
 
     @Test

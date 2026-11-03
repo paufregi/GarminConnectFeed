@@ -132,8 +132,8 @@ that belongs in a use case.
 
 ## Activity Types & Profiles — Domain-Specific Checks
 
-- Changes to `ActivityType` (in `core/models/ActivityType.kt`) ripple through
-  compatibility logic. Verify that all `when` expressions that `ActivityType` are
+- Changes to `ActivityTypeDto` (in `core/models/ActivityType.kt`) ripple through
+  compatibility logic. Verify that all `when` expressions that `ActivityTypeDto` are
   exhaustive after any addition.
 - Profile field additions must update: `ProfileEntity`, the profile UI/ViewModel, the
   quick-edit UI/ViewModel, and include a Room migration.

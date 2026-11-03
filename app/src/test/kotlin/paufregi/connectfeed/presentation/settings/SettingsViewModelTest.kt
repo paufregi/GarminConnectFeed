@@ -39,7 +39,7 @@ class SettingsViewModelTest {
     private val signOut = mockk<SignOut>()
     private val isStravaLoggedIn = mockk<IsStravaLoggedIn>()
     private val disconnectStrava = mockk<DisconnectStrava>()
-    private val stravaUri = mockk<Uri>()
+    private val stravaAuthUri = mockk<Uri>()
     private val getLatestRelease = mockk<GetLatestRelease>()
     private val downloader = mockk<Downloader>()
 
@@ -53,7 +53,7 @@ class SettingsViewModelTest {
     private lateinit var viewModel: SettingsViewModel
 
     fun createViewModel() =
-        SettingsViewModel(getUser, isStravaLoggedIn, getLatestRelease, refreshUser, signOut, disconnectStrava, currentVersion, downloader, stravaUri)
+        SettingsViewModel(getUser, isStravaLoggedIn, getLatestRelease, refreshUser, signOut, disconnectStrava, downloader, currentVersion, stravaAuthUri)
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
@@ -69,7 +69,7 @@ class SettingsViewModelTest {
             getUser()
             isStravaLoggedIn()
         }
-        confirmVerified(getUser, refreshUser, signOut, isStravaLoggedIn, disconnectStrava, stravaUri, getLatestRelease, downloader)
+        confirmVerified(getUser, refreshUser, signOut, isStravaLoggedIn, disconnectStrava, stravaAuthUri, getLatestRelease, downloader)
         clearAllMocks()
     }
 

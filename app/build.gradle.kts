@@ -44,9 +44,7 @@ android {
             properties.load(localPropertiesFile.inputStream())
         }
 
-        buildConfigField("String", "GARMIN_CONSUMER_KEY", "\"${properties.getProperty("garmin.consumer_key", "GARMIN_CONSUMER_KEY")}\"")
-        buildConfigField("String", "GARMIN_CONSUMER_SECRET", "\"${properties.getProperty("garmin.consumer_secret", "GARMIN_CONSUMER_SECRET")}\"")
-
+        buildConfigField("String", "GARMIN_CLIENT_ID", "\"${properties.getProperty("garmin.client_id", "GARMIN_CLIENT_ID")}\"")
         buildConfigField("String", "STRAVA_CLIENT_ID", "\"${properties.getProperty("strava.client_id", "STRAVA_CLIENT_ID")}\"")
         buildConfigField("String", "STRAVA_CLIENT_SECRET", "\"${properties.getProperty("strava.client_secret", "STRAVA_CLIENT_SECRET")}\"")
     }
@@ -102,7 +100,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.datastore.tink)
+    implementation(libs.tink.android)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.androidx.material3)
@@ -146,7 +146,6 @@ dependencies {
     kspAndroidTest(libs.hilt.compiler)
     kspTestFixtures(libs.hilt.compiler)
     testFixturesApi(libs.hilt.testing)
-    testFixturesImplementation(libs.androidx.datastore.preferences)
     testFixturesImplementation(libs.androidx.room.ktx)
     testFixturesApi(libs.kotlinx.coroutines.test)
     testFixturesApi(libs.turbine)

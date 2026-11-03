@@ -14,21 +14,23 @@ import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.utils.andThen
 import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.garmin.GarminConnect
-import paufregi.connectfeed.data.api.garmin.models.Metadata
-import paufregi.connectfeed.data.api.garmin.models.Summary
-import paufregi.connectfeed.data.api.garmin.models.UpdateActivity
+import paufregi.connectfeed.data.api.garmin.models.MetadataDto
+import paufregi.connectfeed.data.api.garmin.models.SummaryDto
+import paufregi.connectfeed.data.api.garmin.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.strava.Strava
-import paufregi.connectfeed.data.api.strava.models.UpdateProfile
+import paufregi.connectfeed.data.api.strava.models.UpdateProfileDto
 import paufregi.connectfeed.data.database.GarminDao
-import paufregi.connectfeed.data.database.coverters.toCore
-import paufregi.connectfeed.data.database.coverters.toEntity
+import paufregi.connectfeed.data.repository.converters.toCore
+import paufregi.connectfeed.data.repository.converters.toEntity
 import paufregi.connectfeed.data.utils.Cache
 import paufregi.connectfeed.data.utils.withCache
 import java.io.File
 import javax.inject.Inject
-import paufregi.connectfeed.data.api.garmin.models.EventType as DataEventType
-import paufregi.connectfeed.data.api.strava.models.UpdateActivity as UpdateStravaActivity
+import javax.inject.Singleton
+import paufregi.connectfeed.data.api.garmin.models.EventTypeDto as DataEventType
+import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto as UpdateStravaActivity
 
+@Singleton
 class GarminRepository @Inject constructor(
     private val garminDao: GarminDao,
     private val garminConnect: GarminConnect,
@@ -44,7 +46,10 @@ class GarminRepository @Inject constructor(
             .map { it.toCore() }
 
     fun getAllProfiles(user: User): Flow<List<Profile>> =
-        garminDao.getAllProfiles(user.id).map { it.map { it.toCore() } }
+        garminDao.getAllProfiles(user.id)
+            .map { profiles -> profiles
+                .map { it.toCore() }
+            }
 
     suspend fun getProfile(id: Long): Profile? =
         garminDao.getProfile(id)?.toCore()
@@ -110,13 +115,13 @@ class GarminRepository @Inject constructor(
         effort: Float?,
         gear: Gear?,
     ): Result<Unit> {
-        val request = UpdateActivity(
+        val request = UpdateActivityDto(
             id = activity.id,
             name = name,
             description = description,
             eventType = DataEventType(eventType?.id, eventType?.key),
-            metadata = Metadata(course?.id),
-            summary = Summary(water, feel, effort)
+            metadata = MetadataDto(course?.id),
+            summary = SummaryDto(water, feel, effort)
         )
 
         return garminConnect.updateActivity(activity.id, request).toResult()
@@ -148,7 +153,7 @@ class GarminRepository @Inject constructor(
     suspend fun updateStravaProfile(
         weight: Float
     ): Result<Unit> {
-        val request = UpdateProfile(weight = weight)
+        val request = UpdateProfileDto(weight = weight)
         return strava.updateProfile(request).toResult()
     }
 

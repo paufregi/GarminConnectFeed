@@ -9,11 +9,11 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.data.repository.StravaAuthRepository
+import paufregi.connectfeed.data.repository.AuthRepository
 
 class DisconnectStravaTest {
 
-    private val repo = mockk<StravaAuthRepository>()
+    private val repo = mockk<AuthRepository>()
     private lateinit var useCase: DisconnectStrava
 
     @Before
@@ -29,8 +29,8 @@ class DisconnectStravaTest {
 
     @Test
     fun `Disconnect strava`() = runTest {
-        coEvery { repo.clear() } returns Unit
+        coEvery { repo.clearStravaToken() } returns Unit
         useCase()
-        coVerify { repo.clear() }
+        coVerify { repo.clearStravaToken() }
     }
 }

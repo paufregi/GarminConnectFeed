@@ -34,4 +34,6 @@ interface GarminDao {
 
     @Query("SELECT * FROM gears WHERE ID = :id")
     suspend fun getGear(id: String): GearEntity?
+
+
 }

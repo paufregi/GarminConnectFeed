@@ -31,8 +31,8 @@ class SettingsViewModel @Inject constructor(
     val refreshUser: RefreshUser,
     val signOut: SignOut,
     val disconnectStrava: DisconnectStrava,
+    val downloader: Downloader,
     @param:Named("currentVersion") val version: String,
-    @param:Named("downloader") val downloader: Downloader,
     @param:Named("StravaAuthUri") val stravaAuthUri: Uri
 ) : ViewModel() {
 

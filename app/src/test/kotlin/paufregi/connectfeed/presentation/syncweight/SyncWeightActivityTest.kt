@@ -26,15 +26,12 @@ import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import paufregi.connectfeed.FakeAndroidKeyStore
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.TestTrustStore
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.data.datastore.AuthStore
-import paufregi.connectfeed.data.datastore.StravaStore
-import paufregi.connectfeed.preAuthToken
-import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaAuthToken
 import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
@@ -54,14 +51,11 @@ class SyncWeightActivityTest {
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
-    @JvmField @Rule(order = 1) val connectServer = MockWebServerRule(connectPort, sslSocketFactory, connectDispatcher)
-    @JvmField @Rule(order = 1) val stravaServer = MockWebServerRule(stravaPort, sslSocketFactory, stravaDispatcher)
+    @JvmField @Rule(order = 1) val connectServer = MockServer.createSecure(connectPort, connectDispatcher)
+    @JvmField @Rule(order = 1) val stravaServer = MockServer.createSecure(stravaPort, stravaDispatcher)
 
     @Inject
     lateinit var authStore: AuthStore
-
-    @Inject
-    lateinit var stravaStore: StravaStore
 
     private val context: Context get() = ApplicationProvider.getApplicationContext()
 
@@ -72,11 +66,11 @@ class SyncWeightActivityTest {
         "BMR(kcal),Metabolic Age,WHR (Waist-to-Hip Ratio),Optimal Weight(kg),Weight Level,Body Type," +
         "Target to optimal weight(kg),Target to optimal muscle mass(kg),Target to optimal fat mass(kg),Remarks,"
 
-    private fun csvRow(date: String, time: String) =
-        "1,$date,$time,74.15,23.1,14.1,10.46,81.6,60.51,55.5,41.15,4.3,3.18,19.6,14.53,62.0,45.97,63.69,12.3,6,1743,36,--,--,--,--,--,--,--,,"
+    private fun csvRow(date: String) =
+        "1,$date,07:59:46,74.15,23.1,14.1,10.46,81.6,60.51,55.5,41.15,4.3,3.18,19.6,14.53,62.0,45.97,63.69,12.3,6,1743,36,--,--,--,--,--,--,--,,"
 
     private fun csvFor(date: Date) =
-        "$csvHeader\n${csvRow(SimpleDateFormat("yyyy.MM.dd", Locale.ENGLISH).format(date), "07:59:46")}"
+        "$csvHeader\n${csvRow(SimpleDateFormat("yyyy.MM.dd", Locale.ENGLISH).format(date))}"
 
     @Before
     fun setup() {
@@ -86,8 +80,7 @@ class SyncWeightActivityTest {
         hiltRule.inject()
         runBlocking {
             authStore.saveUser(user)
-            authStore.savePreAuthToken(preAuthToken)
-            authStore.saveAuthToken(authToken)
+            authStore.saveGarminToken(authToken)
         }
     }
 
@@ -114,7 +107,7 @@ class SyncWeightActivityTest {
 
     @Test
     fun `Sync weight - with Strava`() = runEmptyComposeUiTest {
-        runBlocking { stravaStore.saveToken(stravaAuthToken) }
+        runBlocking { authStore.saveStravaToken(stravaAuthToken) }
 
         ActivityScenario.launch<SyncWeightActivity>(shareIntent(csvFor(Date()))).use {
             waitUntil(timeoutMillis = 10_000) { onNodeWithText("Sync succeeded").isDisplayed() }
@@ -137,7 +130,7 @@ class SyncWeightActivityTest {
 
     @Test
     fun `Sync weight - Strava failure`() = runEmptyComposeUiTest {
-        runBlocking { stravaStore.saveToken(stravaAuthToken) }
+        runBlocking { authStore.saveStravaToken(stravaAuthToken) }
         stravaServer.server.dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest) = MockResponse(500)
         }
