@@ -28,6 +28,8 @@ import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.data.datastore.AuthStore
+import paufregi.connectfeed.garminAuthDispatcher
+import paufregi.connectfeed.garminAuthPort
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.githubDispatcher
@@ -65,6 +67,7 @@ class MainActivitySmokeTest {
 
     @JvmField @Rule(order = 1) val connectServer = MockServer.createSecure(connectPort, connectDispatcher)
     @JvmField @Rule(order = 1) val garminSSOServer = MockServer.createSecure(garminSSOPort, garminSSODispatcher)
+    @JvmField @Rule(order = 1) val garminAuth = MockServer.createSecure(garminAuthPort, garminAuthDispatcher)
     @JvmField @Rule(order = 1) val strava = MockServer.createSecure(stravaPort, stravaDispatcher)
     @JvmField @Rule(order = 1) val github = MockServer.createSecure(githubPort, githubDispatcher)
 
