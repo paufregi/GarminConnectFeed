@@ -11,7 +11,16 @@ fun ActivityDto.toCore() = Activity(
     type = type.toCore(),
     eventType = eventType?.toCore(),
     distance = round(distance),
-    trainingEffect = trainingEffectLabel,
+    trainingEffect = when (trainingEffectLabel) {
+        "SPEED" -> "sprint"
+        "ANAEROBIC_CAPACITY" -> "anaerobic capacity"
+        "VO2MAX" -> "VO₂ max"
+        "LACTATE_THRESHOLD" -> "threshold"
+        "TEMPO" -> "tempo"
+        "AEROBIC_BASE" -> "base"
+        "RECOVERY" -> "recovery"
+        else -> null
+    },
     date = beginTimestamp?.let { Instant.fromEpochMilliseconds(it) },
     workoutId = workoutId
 )
