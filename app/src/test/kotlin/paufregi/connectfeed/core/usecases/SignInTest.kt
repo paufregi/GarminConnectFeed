@@ -43,6 +43,7 @@ class SignInTest{
         coEvery { authRepo.garminLogin(any(), any()) } returns Result.success(ticket)
         coEvery { authRepo.exchangeGarminToken(any(), any()) } returns Result.success(authToken)
         coEvery { authRepo.saveGarminToken(any()) } returns Unit
+        coEvery { authRepo.saveUser(any()) } returns Unit
         coEvery { repo.fetchUser() } returns Result.success(user)
 
         val res = useCase(username, password)
@@ -53,6 +54,7 @@ class SignInTest{
             authRepo.garminLogin(username, password)
             authRepo.exchangeGarminToken(ticket, clientId)
             authRepo.saveGarminToken(authToken)
+            authRepo.saveUser(user)
             repo.fetchUser()
         }
     }
@@ -81,12 +83,14 @@ class SignInTest{
     @Test
     fun `Failure - failed login`() = runTest {
         coEvery { authRepo.garminLogin(any(), any()) } returns Result.failure("Couldn't login")
+        coEvery { authRepo.clear() } returns Unit
 
         val res = useCase(username, password)
         assertThat(res.isSuccess).isFalse()
         assertThat(res.exceptionOrNull()?.message).isEqualTo("Couldn't login")
 
         coVerify { authRepo.garminLogin(username, password) }
+        coVerify { authRepo.clear() }
     }
 
     @Test
