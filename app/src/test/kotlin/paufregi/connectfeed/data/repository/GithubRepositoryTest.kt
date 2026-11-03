@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.data.api.github.Github
 import paufregi.connectfeed.data.api.github.models.AssetDto
+import paufregi.connectfeed.data.repository.converters.toCore
 import paufregi.connectfeed.githubRelease
 import retrofit2.Response
 

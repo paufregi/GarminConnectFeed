@@ -1,15 +1,16 @@
-package paufregi.connectfeed.data.api.garmin.models
+package paufregi.connectfeed.data.repository.converters
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import paufregi.connectfeed.core.models.Gear as CoreGear
-import paufregi.connectfeed.core.models.GearType as CoreGearType
+import paufregi.connectfeed.data.api.garmin.models.GearDto
+import paufregi.connectfeed.core.models.Gear
+import paufregi.connectfeed.core.models.GearType
 
-class GearDtoTest {
+class GearConverterTest {
 
     @Test
-    fun `To Core gear - name`() {
-        val gearDto = GearDto(
+    fun `DTO to core - name`() {
+        val dto = GearDto(
             id = "123",
             brand = "brand",
             model = "model",
@@ -18,19 +19,19 @@ class GearDtoTest {
             distance = 12345.6
         )
 
-        val coreGear = CoreGear(
+        val coreGear = Gear(
             id = "123",
             name = "name",
-            type = CoreGearType.Bike,
+            type = GearType.Bike,
             distance = 12346
         )
 
-        assertThat(gearDto.toCore()).isEqualTo(coreGear)
+        assertThat(dto.toCore()).isEqualTo(coreGear)
     }
 
     @Test
-    fun `To Core gear - brand model`() {
-        val gearDto = GearDto(
+    fun `DTO to core - brand model`() {
+        val dto = GearDto(
             id = "123",
             brand = "brand",
             model = "model",
@@ -39,19 +40,19 @@ class GearDtoTest {
             distance = 1000.0
         )
 
-        val coreGear = CoreGear(
+        val coreGear = Gear(
             id = "123",
             name = "brand model",
-            type = CoreGearType.Shoe,
+            type = GearType.Shoe,
             distance = 1000
         )
 
-        assertThat(gearDto.toCore()).isEqualTo(coreGear)
+        assertThat(dto.toCore()).isEqualTo(coreGear)
     }
 
     @Test
-    fun `To Core gear - unknown type`() {
-        val gearDto = GearDto(
+    fun `DTO to core - unknown type`() {
+        val dto = GearDto(
             id = "123",
             brand = "brand",
             model = "model",
@@ -60,13 +61,13 @@ class GearDtoTest {
             distance = null
         )
 
-        val coreGear = CoreGear(
+        val coreGear = Gear(
             id = "123",
             name = "name",
-            type = CoreGearType.Unknown,
+            type = GearType.Unknown,
             distance = null
         )
 
-        assertThat(gearDto.toCore()).isEqualTo(coreGear)
+        assertThat(dto.toCore()).isEqualTo(coreGear)
     }
 }
