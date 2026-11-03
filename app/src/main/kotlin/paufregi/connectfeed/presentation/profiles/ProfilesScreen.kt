@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.Navigator
@@ -45,6 +46,7 @@ import paufregi.connectfeed.presentation.ui.utils.iconFor
 
 @Composable
 @ExperimentalMaterial3Api
+@ExperimentalCoroutinesApi
 internal fun ProfilesScreen(
     nav: Navigator = Navigator(),
 ) {

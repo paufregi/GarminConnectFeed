@@ -7,6 +7,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -18,6 +19,7 @@ import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.user
 
+@ExperimentalCoroutinesApi
 class GetGearsTest {
     private val auth = mockk<AuthRepository>()
     private val repo = mockk<GarminRepository>()

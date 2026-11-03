@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.profile
 
-import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
@@ -9,12 +8,13 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.v2.runAndroidComposeUiTest
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
@@ -23,47 +23,50 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @ExperimentalTestApi
 @ExperimentalMaterial3Api
-@RunWith(AndroidJUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class ProfileScreenTest {
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     @Test
-    fun `Default values`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `Default values`() {
+        composeTestRule.setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Idle,
             ))
         }
-        onNodeWithText("Name").assertIsDisplayed()
-        onNodeWithText("Type").assertIsDisplayed()
-        onNodeWithText("Event type").assertIsDisplayed()
-        onNodeWithText("Water").assertIsDisplayed()
-        onNodeWithText("Rename activity").assertIsDisplayed()
-        onNodeWithTag("rename_checkbox").assertIsOn()
-        onNodeWithText("Customizable water").assertIsDisplayed()
-        onNodeWithTag("custom_water_checkbox").assertIsOff()
-        onNodeWithText("Feel & Effort").assertIsDisplayed()
-        onNodeWithTag("feel_and_effort_checkbox").assertIsOff()
-        onNodeWithText("Set gear").assertIsDisplayed()
-        onNodeWithTag("gear_checkbox").assertIsOff()
-        onNodeWithText("Training effect").assertIsDisplayed()
-        onNodeWithTag("training_effect_checkbox").assertIsOff()
-        onNodeWithText("Cancel").assertIsDisplayed()
-        onNodeWithText("Save").assertIsNotEnabled()
+        composeTestRule.onNodeWithText("Name").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Type").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Event type").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Water").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Rename activity").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("rename_checkbox").assertIsOn()
+        composeTestRule.onNodeWithText("Customizable water").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("custom_water_checkbox").assertIsOff()
+        composeTestRule.onNodeWithText("Feel & Effort").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("feel_and_effort_checkbox").assertIsOff()
+        composeTestRule.onNodeWithText("Set gear").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("gear_checkbox").assertIsOff()
+        composeTestRule.onNodeWithText("Training effect").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("training_effect_checkbox").assertIsOff()
+        composeTestRule.onNodeWithText("Cancel").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
 
     @Test
-    fun `Loading spinner`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `Loading spinner`() {
+        composeTestRule.setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Processing
             ))
         }
-        onNodeWithTag("loading").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
-    fun `Edit profile`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `Edit profile`() {
+        composeTestRule.setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Idle,
                 profile = Profile(
@@ -80,23 +83,23 @@ class ProfileScreenTest {
                 ))
             )
         }
-        onNodeWithText("Name").assertTextContains("Profile 1")
-        onNodeWithText("Type").assertTextContains("Running")
-        onNodeWithText("Event type").assertTextContains(EventType.Training.name)
-        onNodeWithText("Course").assertTextContains("Course 1")
-        onNodeWithText("Water").assertTextContains("10")
-        onNodeWithTag("rename_checkbox").assertIsOn()
-        onNodeWithTag("custom_water_checkbox").assertIsOn()
-        onNodeWithTag("gear_checkbox").assertIsOn()
-        onNodeWithTag("feel_and_effort_checkbox").assertIsOn()
-        onNodeWithTag("training_effect_checkbox").assertIsOn()
-        onNodeWithText("Cancel").assertIsDisplayed()
-        onNodeWithText("Save").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Name").assertTextContains("Profile 1")
+        composeTestRule.onNodeWithText("Type").assertTextContains("Running")
+        composeTestRule.onNodeWithText("Event type").assertTextContains(EventType.Training.name)
+        composeTestRule.onNodeWithText("Course").assertTextContains("Course 1")
+        composeTestRule.onNodeWithText("Water").assertTextContains("10")
+        composeTestRule.onNodeWithTag("rename_checkbox").assertIsOn()
+        composeTestRule.onNodeWithTag("custom_water_checkbox").assertIsOn()
+        composeTestRule.onNodeWithTag("gear_checkbox").assertIsOn()
+        composeTestRule.onNodeWithTag("feel_and_effort_checkbox").assertIsOn()
+        composeTestRule.onNodeWithTag("training_effect_checkbox").assertIsOn()
+        composeTestRule.onNodeWithText("Cancel").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Save").assertIsDisplayed()
     }
 
     @Test
-    fun `Invalid profile - no name`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `Invalid profile - no name`() {
+        composeTestRule.setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Idle,
                 profile = Profile(
@@ -107,13 +110,13 @@ class ProfileScreenTest {
                 )
             ))
         }
-        onNodeWithText("Name").assertTextContains("")
-        onNodeWithText("Save").assertIsNotEnabled()
+        composeTestRule.onNodeWithText("Name").assertTextContains("")
+        composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
 
     @Test
-    fun `Invalid profile - no event type`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `Invalid profile - no event type`() {
+        composeTestRule.setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Idle,
                 profile = Profile(
@@ -122,13 +125,13 @@ class ProfileScreenTest {
                 )
             ))
         }
-        onNodeWithText("Event type").assertTextContains("")
-        onNodeWithText("Save").assertIsNotEnabled()
+        composeTestRule.onNodeWithText("Event type").assertTextContains("")
+        composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
 
     @Test
-    fun `No course - type any`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `No course - type any`() {
+        composeTestRule.setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Idle,
                 profile = Profile(
@@ -138,13 +141,13 @@ class ProfileScreenTest {
                 )
             ))
         }
-        onNodeWithText("Course").assertIsNotDisplayed()
-        onNodeWithText("Save").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Course").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("Save").assertIsDisplayed()
     }
 
     @Test
-    fun `No course - type strength`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `No course - type strength`() {
+        composeTestRule.setContent {
             ProfileContent(state = ProfileState(
                 process = ProcessState.Idle,
                 profile = Profile(
@@ -154,7 +157,7 @@ class ProfileScreenTest {
                 )
             ))
         }
-        onNodeWithText("Course").assertIsNotDisplayed()
-        onNodeWithText("Save").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Course").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("Save").assertIsDisplayed()
     }
 }

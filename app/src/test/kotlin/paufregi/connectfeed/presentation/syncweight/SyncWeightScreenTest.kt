@@ -1,51 +1,54 @@
 package paufregi.connectfeed.presentation.syncweight
 
-import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.v2.runAndroidComposeUiTest
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @ExperimentalTestApi
 @ExperimentalMaterial3Api
-@RunWith(AndroidJUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class SyncWeightScreenTest {
-    
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     @Test
-    fun `Status idle`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `Status idle`() {
+        composeTestRule.setContent {
             SyncWeightScreen(state = SyncWeightState(ProcessState.Idle))
         }
-        onNodeWithText("Don't know what to do").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Don't know what to do").assertIsDisplayed()
     }
 
     @Test
-    fun `Status uploading`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `Status uploading`() {
+        composeTestRule.setContent {
             SyncWeightScreen(state = SyncWeightState(ProcessState.Processing))
         }
-        onNodeWithTag("loading").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
     }
 
     @Test
-    fun `Status success`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `Status success`() {
+        composeTestRule.setContent {
             SyncWeightScreen(state = SyncWeightState(ProcessState.Success("Sync succeeded")))
         }
-        onNodeWithText("Sync succeeded").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sync succeeded").assertIsDisplayed()
     }
 
     @Test
-    fun `Status failure`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `Status failure`() {
+        composeTestRule.setContent {
             SyncWeightScreen(state = SyncWeightState(ProcessState.Failure("Sync failed")))
         }
-        onNodeWithText("Sync failed").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Sync failed").assertIsDisplayed()
     }
 }

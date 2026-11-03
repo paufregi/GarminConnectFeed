@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.Navigator
@@ -35,6 +36,7 @@ import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 
 @Composable
 @ExperimentalMaterial3Api
+@ExperimentalCoroutinesApi
 internal fun ProfileScreen(
     id: Long = 0L,
     nav: Navigator = Navigator()
