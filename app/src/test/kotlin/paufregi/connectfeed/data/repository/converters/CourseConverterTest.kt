@@ -21,7 +21,7 @@ class CourseConverterTest {
         val course = Course(
             id = 1,
             name = "course",
-            distance = 1234.5,
+            distance = 1234.0,
             type = ActivityType.Running
         )
 

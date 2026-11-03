@@ -32,6 +32,7 @@ import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.GearEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
+import paufregi.connectfeed.data.repository.converters.toCore
 import paufregi.connectfeed.user
 import retrofit2.Response
 import java.io.File

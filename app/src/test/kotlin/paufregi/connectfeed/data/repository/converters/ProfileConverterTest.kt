@@ -1,4 +1,4 @@
-package paufregi.connectfeed.data.database.coverters
+package paufregi.connectfeed.data.repository.converters
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
@@ -7,7 +7,6 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.data.database.entities.ProfileEntity
-import paufregi.connectfeed.data.repository.converters.toEntity
 import paufregi.connectfeed.user
 
 class ProfileConverterTest {
@@ -49,7 +48,7 @@ class ProfileConverterTest {
     }
 
     @Test
-    fun `Entity profile to profile`() {
+    fun `Entity to profile`() {
         val result = entityProfile.toCore()
 
         assertThat(result).isEqualTo(profile)

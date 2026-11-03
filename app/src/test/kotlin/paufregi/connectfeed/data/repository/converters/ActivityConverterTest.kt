@@ -31,7 +31,7 @@ class ActivityConverterTest {
             type = ActivityType.Running,
             eventType = EventType.Training,
             distance = 15008.00,
-            trainingEffect = "tempo",
+            trainingEffect = "TEMPO",
             date = Instant.fromEpochMilliseconds(1735693200000),
             workoutId = 2
         )
