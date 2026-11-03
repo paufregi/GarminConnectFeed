@@ -18,7 +18,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import paufregi.connectfeed.MockWebServerRule
+import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.authToken
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
@@ -28,27 +28,16 @@ import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.data.datastore.AuthStore
-import paufregi.connectfeed.data.datastore.StravaStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.githubDispatcher
 import paufregi.connectfeed.githubPort
-import paufregi.connectfeed.preAuthToken
-import paufregi.connectfeed.sslSocketFactory
 import paufregi.connectfeed.stravaAuthToken
 import paufregi.connectfeed.stravaDispatcher
 import paufregi.connectfeed.stravaPort
 import paufregi.connectfeed.user
 import javax.inject.Inject
 
-/**
- * On-device end-to-end smoke tests.
- *
- * Only the critical journeys run here; the complete flow suite (profiles, settings,
- * Strava disconnect, etc.) lives in the Robolectric `MainActivityTest` under `src/test`.
- * "Connect Strava" stays on-device because it depends on the system browser following
- * the OAuth redirect back into the app via deep link.
- */
 @HiltAndroidTest
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
@@ -67,8 +56,6 @@ class MainActivitySmokeTest {
     @Inject
     lateinit var authStore: AuthStore
 
-    @Inject
-    lateinit var stravaStore: StravaStore
 
     @Inject
     lateinit var database: GarminDatabase
@@ -76,10 +63,10 @@ class MainActivitySmokeTest {
     @Inject
     lateinit var dao: GarminDao
 
-    @JvmField @Rule(order = 1) val connectServer = MockWebServerRule(connectPort, sslSocketFactory, connectDispatcher)
-    @JvmField @Rule(order = 1) val garminSSOServer = MockWebServerRule(garminSSOPort, sslSocketFactory, garminSSODispatcher)
-    @JvmField @Rule(order = 1) val strava = MockWebServerRule(stravaPort, sslSocketFactory, stravaDispatcher)
-    @JvmField @Rule(order = 1) val github = MockWebServerRule(githubPort, sslSocketFactory, githubDispatcher)
+    @JvmField @Rule(order = 1) val connectServer = MockServer.createSecure(connectPort, connectDispatcher)
+    @JvmField @Rule(order = 1) val garminSSOServer = MockServer.createSecure(garminSSOPort, garminSSODispatcher)
+    @JvmField @Rule(order = 1) val strava = MockServer.createSecure(stravaPort, stravaDispatcher)
+    @JvmField @Rule(order = 1) val github = MockServer.createSecure(githubPort, githubDispatcher)
 
     @Before
     fun setup() {
@@ -104,8 +91,7 @@ class MainActivitySmokeTest {
     @Test
     fun `Connect Strava`() = runAndroidComposeUiTest<MainActivity> {
         authStore.saveUser(user)
-        authStore.savePreAuthToken(preAuthToken)
-        authStore.saveAuthToken(authToken)
+        authStore.saveGarminToken(authToken)
 
         awaitIdle()
         waitUntil(conditionDescription = "quick_edit_screen", timeoutMillis = TIMEOUT) { onNodeWithTag("quick_edit_screen").isDisplayed() }
@@ -119,9 +105,8 @@ class MainActivitySmokeTest {
     @Test
     fun `Quick edit activity - with Strava`() = runAndroidComposeUiTest<MainActivity> {
         authStore.saveUser(user)
-        authStore.savePreAuthToken(preAuthToken)
-        authStore.saveAuthToken(authToken)
-        stravaStore.saveToken(stravaAuthToken)
+        authStore.saveGarminToken(authToken)
+        authStore.saveStravaToken(stravaAuthToken)
         dao.saveProfile(ProfileEntity(userId = user.id, name = "Profile 1", type = ActivityType.Cycling, eventType = EventType.Race))
 
         awaitIdle()
@@ -138,8 +123,7 @@ class MainActivitySmokeTest {
     @Test
     fun `Edit activity`() = runAndroidComposeUiTest<MainActivity> {
         authStore.saveUser(user)
-        authStore.savePreAuthToken(preAuthToken)
-        authStore.saveAuthToken(authToken)
+        authStore.saveGarminToken(authToken)
 
         awaitIdle()
         waitUntil(conditionDescription = "quick_edit_screen", timeoutMillis = TIMEOUT) { onNodeWithTag("quick_edit_screen").isDisplayed() }
