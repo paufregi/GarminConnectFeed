@@ -5,7 +5,9 @@ import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.github.Github
 import paufregi.connectfeed.data.repository.converters.toCore
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class GithubRepository @Inject constructor(
     private val github: Github
 ) {

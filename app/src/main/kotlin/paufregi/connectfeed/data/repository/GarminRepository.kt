@@ -26,9 +26,11 @@ import paufregi.connectfeed.data.utils.Cache
 import paufregi.connectfeed.data.utils.withCache
 import java.io.File
 import javax.inject.Inject
+import javax.inject.Singleton
 import paufregi.connectfeed.data.api.garmin.models.EventTypeDto as DataEventType
 import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto as UpdateStravaActivity
 
+@Singleton
 class GarminRepository @Inject constructor(
     private val garminDao: GarminDao,
     private val garminConnect: GarminConnect,

@@ -9,7 +9,9 @@ import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.repository.converters.toCore
 import paufregi.connectfeed.data.repository.converters.toEntity
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AppRepository @Inject constructor(
     private val garminDao: GarminDao,
 ) {
