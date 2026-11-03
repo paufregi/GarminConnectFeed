@@ -39,6 +39,14 @@ subprojects {
                 .using(module("org.bouncycastle:bcprov-jdk18on:1.85"))
             substitute(module("org.bouncycastle:bcpkix-jdk18on:1.80.2"))
                 .using(module("org.bouncycastle:bcpkix-jdk18on:1.85"))
+
+
+            listOf("33.4.0-jre", "33.6.0-jre").forEach { version ->
+                substitute(module("com.google.guava:guava:$version"))
+                    .using(module("com.google.guava:guava:33.7.2-jre"))
+            }
+            substitute(module("com.google.guava:guava:33.4.3-android"))
+                .using(module("com.google.guava:guava:33.7.2-android"))
         }
     }
 }
