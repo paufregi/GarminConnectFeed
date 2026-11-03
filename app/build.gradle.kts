@@ -1,5 +1,4 @@
 import com.android.build.api.dsl.ManagedVirtualDevice
-import com.android.build.api.variant.HostTestBuilder
 import java.util.Properties
 
 plugins {
@@ -95,12 +94,6 @@ android {
     }
 }
 
-androidComponents {
-    beforeVariants(selector().withBuildType("release")) {
-        it.hostTests.getValue(HostTestBuilder.UNIT_TEST_TYPE).enable = true
-    }
-}
-
 dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)
@@ -133,7 +126,7 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     debugImplementation(libs.androidx.ui.tooling)
-    debugRuntimeOnly(libs.androidx.ui.test.manifest)
+    debugImplementation(libs.androidx.ui.test.manifest)
 
     testImplementation(testFixtures(project(":app")))
     testImplementation(libs.junit)
