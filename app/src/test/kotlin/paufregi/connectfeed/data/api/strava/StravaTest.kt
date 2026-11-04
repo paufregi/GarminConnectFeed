@@ -17,7 +17,7 @@ import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.ActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
-import paufregi.connectfeed.data.api.strava.models.UpdateProfileDto
+import paufregi.connectfeed.data.api.strava.models.UpdateAthleteDto
 import paufregi.connectfeed.stravaActivitiesJson
 import paufregi.connectfeed.stravaDetailedAthlete
 
@@ -125,8 +125,8 @@ class StravaTest {
     @Test
     fun `Update profile`() = runTest {
         server.enqueue(code = 200, body = stravaDetailedAthlete)
-        val updateProfileDto = UpdateProfileDto(weight = 75.5f)
-        val res = api.updateProfile(updateProfile = updateProfileDto)
+        val updateAthleteDto = UpdateAthleteDto(weight = 75.5f)
+        val res = api.updateAthlete(updateAthleteDto)
 
         assertThat(res.isSuccessful).isTrue()
         verify { authInterceptor.intercept(any()) }
@@ -135,8 +135,8 @@ class StravaTest {
     @Test
     fun `Update profile - failure`() = runTest {
         server.enqueue(400)
-        val updateProfileDto = UpdateProfileDto(weight = 75.5f)
-        val res = api.updateProfile(updateProfile = updateProfileDto)
+        val updateAthleteDto = UpdateAthleteDto(weight = 75.5f)
+        val res = api.updateAthlete(updateAthleteDto)
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }

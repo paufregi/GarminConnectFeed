@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UpdateProfileDto(
+data class UpdateAthleteDto(
     @SerialName("weight")
     val weight: Float,
 )
