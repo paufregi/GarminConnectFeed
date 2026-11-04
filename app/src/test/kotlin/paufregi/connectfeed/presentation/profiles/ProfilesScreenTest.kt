@@ -1,33 +1,38 @@
 package paufregi.connectfeed.presentation.profiles
 
-import androidx.activity.ComponentActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.v2.runAndroidComposeUiTest
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Profile
 
 @ExperimentalTestApi
 @ExperimentalMaterial3Api
-@RunWith(AndroidJUnit4::class)
+@ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner  ::class)
 class ProfilesScreenTest {
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     @Test
-    fun `Default values`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `Default values`() {
+        composeTestRule.setContent {
             ProfilesContent(state = ProfilesState())
         }
-        onNodeWithText("No profile").assertIsDisplayed()
+        composeTestRule.onNodeWithText("No profile").assertIsDisplayed()
     }
 
     @Test
-    fun `Profile list`() = runAndroidComposeUiTest<ComponentActivity> {
-        setContent {
+    fun `Profile list`() {
+        composeTestRule.setContent {
             ProfilesContent(state = ProfilesState(
                 profiles = listOf(
                     Profile(name = "Profile 1", type = ActivityType.Running),
@@ -36,9 +41,9 @@ class ProfilesScreenTest {
                 )
             ))
         }
-        onNodeWithText("Profile 1").assertIsDisplayed()
-        onNodeWithText("Profile 2").assertIsDisplayed()
-        onNodeWithText("Profile 3").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Profile 1").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Profile 2").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Profile 3").assertIsDisplayed()
     }
 
 }
