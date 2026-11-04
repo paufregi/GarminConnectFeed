@@ -5,6 +5,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.ActivityDto
+import paufregi.connectfeed.data.api.strava.models.AthleteDto
 import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateAthleteDto
 import retrofit2.Response
@@ -17,6 +18,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface Strava {
+
+    @GET("athlete")
+    suspend fun getAthlete(): Response<AthleteDto>
 
     @PUT("athlete")
     suspend fun updateAthlete(
