@@ -16,9 +16,12 @@ import org.junit.Test
 import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.ActivityDto
+import paufregi.connectfeed.data.api.strava.models.AthleteDto
+import paufregi.connectfeed.data.api.strava.models.SummaryGearDto
 import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateAthleteDto
 import paufregi.connectfeed.stravaActivitiesJson
+import paufregi.connectfeed.stravaAthlete
 import paufregi.connectfeed.stravaDetailedAthlete
 
 class StravaTest {
@@ -43,6 +46,43 @@ class StravaTest {
     fun tearDown() {
         confirmVerified(authInterceptor)
         clearAllMocks()
+    }
+
+    @Test
+    fun `Get athlete`() = runTest {
+        server.enqueue(code = 200, body = stravaAthlete)
+
+        val res = api.getAthlete()
+
+        val expected = AthleteDto(
+            id = 1,
+            bikes = listOf(
+                SummaryGearDto(
+                    id = "b12345678987655",
+                    name = "Giant Contend",
+                )
+            ),
+            shoes = listOf(
+                SummaryGearDto(
+                    id = "g12345678987655",
+                    name = "Mizuno Neo Vista",
+                )
+            )
+        )
+
+        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.body()).isEqualTo(expected)
+        verify { authInterceptor.intercept(any()) }
+    }
+
+    @Test
+    fun `Get athlete - failure`() = runTest {
+        server.enqueue(400)
+
+        val res = api.getAthlete()
+
+        assertThat(res.isSuccessful).isFalse()
+        verify { authInterceptor.intercept(any()) }
     }
 
     @Test
