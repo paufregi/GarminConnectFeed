@@ -1,6 +1,8 @@
 package paufregi.connectfeed.core.utils
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import retrofit2.Response
 import java.util.Calendar
@@ -45,7 +47,13 @@ fun <T> Result<T>.mapFailure(transform: (exception: Throwable) -> Throwable): Re
         else -> Result.failure<T>(transform(exception))
     }
 
-fun <R, T> Result<T>.mapOrFailure(transform: (value: T) -> R?): Result<R> {
+inline fun <T, R> Result<List<T>>.mapList(transform: (value: T) -> R): Result<List<R>> =
+    map { list -> list.map { transform(it) } }
+
+inline fun <T, R> Flow<List<T>>.mapList(crossinline transform: suspend (value: T) -> R): Flow<List<R>> =
+    map { list -> list.map { transform(it) } }
+
+fun <T, R> Result<T>.mapOrFailure(transform: (value: T) -> R?): Result<R> {
     val res = this.map(transform).getOrNull()
     return when {
         res != null -> Result.success(res)

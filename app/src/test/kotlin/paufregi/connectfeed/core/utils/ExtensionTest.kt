@@ -1,9 +1,11 @@
 package paufregi.connectfeed.core.utils
 
+import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Test
@@ -147,6 +149,33 @@ class ExtensionTest {
 
         assertThat(result.isSuccess).isFalse()
         assertThat(result.exceptionOrNull()?.message).isEqualTo("new error")
+    }
+
+    @Test
+    fun `Result - mapList`() {
+        val result = Result.success(listOf(1, 2, 3))
+            .mapList { it + 10 }
+
+        assertThat(result.getOrNull()).isEqualTo(listOf(11, 12, 13))
+    }
+
+    @Test
+    fun `Result - mapList - preserves failure`() {
+        val result = Result.failure<List<Int>>(Exception("source error"))
+            .mapList { it.toString() }
+
+        assertThat(result.isSuccess).isFalse()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("source error")
+    }
+
+    @Test
+    fun `Flow - mapList`() = runTest {
+        flowOf(listOf(1, 2), listOf(3, 4))
+            .mapList { it + 10 }.test {
+                assertThat(awaitItem()).isEqualTo(listOf(listOf(11, 12)))
+                assertThat(awaitItem()).isEqualTo(listOf(listOf(13, 14)))
+                cancelAndIgnoreRemainingEvents()
+            }
     }
 
     @Test
