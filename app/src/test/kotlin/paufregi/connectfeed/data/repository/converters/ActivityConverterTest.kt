@@ -5,16 +5,17 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.data.api.garmin.models.ActivityDto
 import paufregi.connectfeed.data.api.garmin.models.ActivityTypeDto
 import paufregi.connectfeed.data.api.garmin.models.EventTypeDto
 import kotlin.time.Instant
+import paufregi.connectfeed.data.api.garmin.models.ActivityDto as GarminActivity
+import paufregi.connectfeed.data.api.strava.models.ActivityDto as StravaActivity
 
 class ActivityConverterTest {
 
     @Test
-    fun `DTO to core`() {
-        val dto = ActivityDto(
+    fun `GarminDTO to core`() {
+        val dto = GarminActivity(
             id = 1,
             name = "name",
             distance = 15007.59,
@@ -37,5 +38,26 @@ class ActivityConverterTest {
         )
 
         assertThat(dto.toCore()).isEqualTo(activity)
+    }
+
+    @Test
+    fun `StravaDTO to core`() {
+        val activityDto = StravaActivity(
+            id = 1,
+            name = "name",
+            distance = 15007.59123,
+            sportType = "Run",
+            startDate = "2024-01-01T01:00:00Z",
+        )
+
+        val coreActivity = Activity(
+            id = 1,
+            name = "name",
+            distance = 15008.00,
+            type = ActivityType.StravaRunning,
+            date = Instant.parse("2024-01-01T01:00:00Z")
+        )
+
+        assertThat(activityDto.toCore()).isEqualTo(coreActivity)
     }
 }
