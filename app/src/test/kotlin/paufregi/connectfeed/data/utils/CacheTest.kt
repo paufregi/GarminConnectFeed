@@ -106,24 +106,4 @@ class CacheTest {
 
         assertThat(cache.get { "fresh data" }).isEqualTo("fresh data")
     }
-
-    @Test
-    fun `withCache utility`() = runTest {
-        every { Clock.System.now() } returns time1 andThen time2
-        val result1 = withCache(cache) { "fetched data" }
-        val result2 = withCache(cache) { "new data" }
-
-        assertThat(result1).isEqualTo("fetched data")
-        assertThat(result2).isEqualTo("fetched data")
-    }
-
-    @Test
-    fun `withCache utility - force refresh`() = runTest {
-        every { Clock.System.now() } returns time1 andThen time2
-        val result1 = withCache(cache) { "fetched data" }
-        val result2 = withCache(cache, true) { "new data" }
-
-        assertThat(result1).isEqualTo("fetched data")
-        assertThat(result2).isEqualTo("new data")
-    }
 }
