@@ -1,13 +1,11 @@
 package paufregi.connectfeed.data.repository
 
-import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -15,7 +13,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.GearType
-import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.GarminConnect
 import paufregi.connectfeed.data.api.garmin.models.ActivityDto
@@ -28,12 +25,7 @@ import paufregi.connectfeed.data.api.garmin.models.SummaryDto
 import paufregi.connectfeed.data.api.garmin.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.garmin.models.UserProfileDto
 import paufregi.connectfeed.data.api.garmin.models.WorkoutDto
-import paufregi.connectfeed.data.api.strava.Strava
-import paufregi.connectfeed.data.database.GarminDao
-import paufregi.connectfeed.data.database.entities.GearEntity
-import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.data.repository.converters.toCore
-import paufregi.connectfeed.user
 import retrofit2.Response
 import java.io.File
 import paufregi.connectfeed.core.models.Activity as CoreActivity
@@ -41,35 +33,30 @@ import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Gear as CoreGear
-import paufregi.connectfeed.data.api.strava.models.ActivityDto as StravaActivity
-import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto as StravaUpdateActivity
-import paufregi.connectfeed.data.api.strava.models.UpdateAthleteDto as StravaUpdateProfile
 
 class GarminRepositoryTest {
 
     private lateinit var repo: GarminRepository
-    private val dao = mockk<GarminDao>()
     private val connect = mockk<GarminConnect>()
-    private val strava = mockk<Strava>()
 
     @Before
     fun setup(){
-        repo = GarminRepository(dao, connect, strava)
+        repo = GarminRepository(connect)
     }
 
     @After
     fun tearDown(){
-        confirmVerified(dao, connect, strava)
+        confirmVerified(connect)
         clearAllMocks()
     }
 
     @Test
-    fun `Fetch user`() = runTest {
+    fun `Get user`() = runTest {
         val userProfile = UserProfileDto(1, "user", "url")
         val user = User(1, "user", "url")
         coEvery { connect.getUserProfile() } returns Response.success(userProfile)
 
-        val res = repo.fetchUser()
+        val res = repo.getUser()
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(user)
@@ -78,298 +65,14 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Fetch user - failure`() = runTest {
+    fun `Get user - failure`() = runTest {
         coEvery { connect.getUserProfile() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val res = repo.fetchUser()
+        val res = repo.getUser()
 
         assertThat(res.isSuccess).isFalse()
 
         coVerify { connect.getUserProfile() }
-    }
-
-    @Test
-    fun `Get all profile - no result`() = runTest {
-        coEvery { dao.getProfile(any()) } returns null
-
-        val res = repo.getProfile(1)
-
-        assertThat(res).isNull()
-
-        coVerify { dao.getProfile(1) }
-    }
-
-    @Test
-    fun `Get all profiles`() = runTest {
-        val profiles = listOf(
-            Profile(
-                id = 1,
-                name = "profile 1",
-                eventType = CoreEventType.Training,
-                type = CoreActivityType.Cycling,
-                course = CoreCourse(1, "course 1", 10234.00, CoreActivityType.Cycling),
-                water = 2
-            ),
-            Profile(
-                id = 2,
-                name = "profile 2",
-                eventType = CoreEventType.Recreation,
-                type = CoreActivityType.Running,
-                course = CoreCourse(2, "course 2", 15007.00, CoreActivityType.Running),
-            )
-        )
-        val profileEntities = listOf(
-            ProfileEntity(
-                id = 1,
-                userId = user.id,
-                name = "profile 1",
-                eventType = CoreEventType.Training,
-                type = CoreActivityType.Cycling,
-                course = CoreCourse(1, "course 1", 10234.00, CoreActivityType.Cycling),
-                water = 2
-            ),
-            ProfileEntity(
-                id = 2,
-                userId = user.id,
-                name = "profile 2",
-                eventType = CoreEventType.Recreation,
-                type = CoreActivityType.Running,
-                course = CoreCourse(2, "course 2", 15007.00, CoreActivityType.Running),
-            )
-        )
-
-        coEvery { dao.getAllProfiles(any()) } returns flowOf(profileEntities)
-
-        val res = repo.getAllProfiles(user)
-
-        res.test {
-            assertThat(awaitItem()).isEqualTo(profiles)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify { dao.getAllProfiles(user.id) }
-    }
-
-    @Test
-    fun `Get all profiles - empty list`() = runTest {
-        coEvery { dao.getAllProfiles(any()) } returns flowOf(emptyList<ProfileEntity>())
-
-        val res = repo.getAllProfiles(user)
-
-        res.test {
-            assertThat(awaitItem()).isEqualTo(emptyList<Profile>())
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify { dao.getAllProfiles(user.id) }
-    }
-
-    @Test
-    fun `Get profile`() = runTest {
-        val profile = Profile(
-            id = 1,
-            name = "profile",
-            eventType = CoreEventType.Training,
-            type = CoreActivityType.Cycling,
-            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
-            water = 2
-        )
-        val profileEntity = ProfileEntity(
-            id = 1,
-            userId = user.id,
-            name = "profile",
-            eventType = CoreEventType.Training,
-            type = CoreActivityType.Cycling,
-            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
-            water = 2
-        )
-
-        coEvery { dao.getProfile(any()) } returns profileEntity
-
-        val res = repo.getProfile(1)
-
-        assertThat(res).isEqualTo(profile)
-
-        coVerify { dao.getProfile(1) }
-    }
-
-    @Test
-    fun `Save profile`() = runTest {
-        val profile = Profile(
-            name = "profile",
-            eventType = CoreEventType.Training,
-            type = CoreActivityType.Cycling,
-            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
-            water = 2
-        )
-
-        val profileEntity  = ProfileEntity(
-            name = "profile",
-            userId = user.id,
-            eventType = CoreEventType.Training,
-            type = CoreActivityType.Cycling,
-            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
-            water = 2
-        )
-
-        coEvery { dao.saveProfile(any()) } returns Unit
-
-        repo.saveProfile(user, profile)
-
-        coVerify { dao.saveProfile(profileEntity) }
-    }
-
-    @Test
-    fun `Delete profile`() = runTest {
-        val profile = Profile(
-            id = 1,
-            name = "profile",
-            eventType = CoreEventType.Training,
-            type = CoreActivityType.Cycling,
-            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
-        )
-
-        val profileEntity  = ProfileEntity(
-            id = 1,
-            userId = user.id,
-            name = "profile",
-            eventType = CoreEventType.Training,
-            type = CoreActivityType.Cycling,
-            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
-        )
-
-        coEvery { dao.deleteProfile(any()) } returns Unit
-
-        repo.deleteProfile(user, profile)
-
-        coVerify { dao.deleteProfile(profileEntity) }
-    }
-
-    @Test
-    fun `Get all gears`() = runTest {
-        val gears = listOf(
-            CoreGear(
-                id = "gear-1",
-                name = "gear 1",
-                type = GearType.Shoe,
-                distance = 1000
-            ),
-            CoreGear(
-                id = "gear-2",
-                name = "gear 2",
-                type = GearType.Bike,
-                distance = 2000
-            )
-        )
-        val gearEntities = listOf(
-            GearEntity(
-                id = "gear-1",
-                userId = user.id,
-                name = "gear 1",
-                type = GearType.Shoe,
-                distance = 1000
-            ),
-            GearEntity(
-                id = "gear-2",
-                userId = user.id,
-                name = "gear 2",
-                type = GearType.Bike,
-                distance = 2000
-            )
-        )
-
-        coEvery { dao.getAllGears(any()) } returns flowOf(gearEntities)
-
-        val res = repo.getAllGears(user)
-
-        res.test {
-            assertThat(awaitItem()).isEqualTo(gears)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        coVerify { dao.getAllGears(user.id) }
-    }
-
-    @Test
-    fun `Get gear`() = runTest {
-        val gear = CoreGear(
-            id = "gear-1",
-            name = "gear",
-            type = GearType.Shoe,
-            distance = 1000
-        )
-        val gearEntity = GearEntity(
-            id = "gear-1",
-            userId = user.id,
-            name = "gear",
-            type = GearType.Shoe,
-            distance = 1000
-        )
-
-        coEvery { dao.getGear(any()) } returns gearEntity
-
-        val res = repo.getGear("gear-1")
-
-        assertThat(res).isEqualTo(gear)
-
-        coVerify { dao.getGear("gear-1") }
-    }
-
-    @Test
-    fun `Get gear - no result`() = runTest {
-        coEvery { dao.getGear(any()) } returns null
-
-        val res = repo.getGear("gear-1")
-
-        assertThat(res).isNull()
-
-        coVerify { dao.getGear("gear-1") }
-    }
-
-    @Test
-    fun `Save gear`() = runTest {
-        val gear = CoreGear(
-            id = "gear-1",
-            name = "gear",
-            type = GearType.Shoe,
-            distance = 1000
-        )
-        val gearEntity = GearEntity(
-            id = "gear-1",
-            userId = user.id,
-            name = "gear",
-            type = GearType.Shoe,
-            distance = 1000
-        )
-
-        coEvery { dao.saveGear(any()) } returns Unit
-
-        repo.saveGear(user, gear)
-
-        coVerify { dao.saveGear(gearEntity) }
-    }
-
-    @Test
-    fun `Delete gear`() = runTest {
-        val gear = CoreGear(
-            id = "gear-1",
-            name = "gear",
-            type = GearType.Shoe,
-            distance = 1000
-        )
-        val gearEntity = GearEntity(
-            id = "gear-1",
-            userId = user.id,
-            name = "gear",
-            type = GearType.Shoe,
-            distance = 1000
-        )
-
-        coEvery { dao.deleteGear(any()) } returns Unit
-
-        repo.deleteGear(user, gear)
-
-        coVerify { dao.deleteGear(gearEntity) }
     }
 
     @Test
@@ -528,143 +231,6 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Get Strava activities`() = runTest {
-        val activities = listOf(
-            StravaActivity(
-                id = 1,
-                name = "activity_1",
-                distance = 10234.00,
-                sportType = "Run",
-                startDate = "2018-05-02T12:15:09Z"
-            ),
-            StravaActivity(
-                id = 2,
-                name = "activity_2",
-                distance = 17759.00,
-                sportType = "Ride",
-                startDate = "2018-04-30T12:35:51Z"
-            )
-        )
-        coEvery { strava.getActivities(perPage = any()) } returns Response.success(activities)
-
-        val expected = activities.map { it.toCore() }
-
-        val res = repo.getStravaActivities(limit = 5)
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(expected)
-        coVerify { strava.getActivities(perPage = 5) }
-    }
-
-    @Test
-    fun `Get Strava activities - cached`() = runTest {
-        val activities = listOf(
-            StravaActivity(
-                id = 1,
-                name = "activity_1",
-                distance = 10234.00,
-                sportType = "Run",
-                startDate = "2018-05-02T12:15:09Z"
-            ),
-            StravaActivity(
-                id = 2,
-                name = "activity_2",
-                distance = 17759.00,
-                sportType = "Ride",
-                startDate = "2018-04-30T12:35:51Z"
-            )
-        )
-        coEvery { strava.getActivities(perPage = any()) } returns Response.success(activities)
-
-        val expected = activities.map { it.toCore() }
-
-        val res = repo.getStravaActivities(limit = 5)
-        val res2 = repo.getStravaActivities(limit = 5)
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(expected)
-        assertThat(res2.isSuccess).isTrue()
-        assertThat(res2.getOrNull()).isEqualTo(expected)
-        coVerify(exactly = 1) { strava.getActivities(perPage = 5) }
-    }
-
-    @Test
-    fun `Get Strava activities - force refresh`() = runTest {
-        val activities = listOf(
-            StravaActivity(
-                id = 1,
-                name = "activity_1",
-                distance = 10234.00,
-                sportType = "Run",
-                startDate = "2018-05-02T12:15:09Z"
-            ),
-            StravaActivity(
-                id = 2,
-                name = "activity_2",
-                distance = 17759.00,
-                sportType = "Ride",
-                startDate = "2018-04-30T12:35:51Z"
-            )
-        )
-        coEvery { strava.getActivities(perPage = any()) } returns Response.success(activities)
-
-        val expected = activities.map { it.toCore() }
-
-        val res = repo.getStravaActivities(limit = 5)
-        val res2 = repo.getStravaActivities(limit = 5, force = true)
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(expected)
-        assertThat(res2.isSuccess).isTrue()
-        assertThat(res2.getOrNull()).isEqualTo(expected)
-        coVerify(exactly = 2) { strava.getActivities(perPage = 5) }
-    }
-
-    @Test
-    fun `Get Strava activities - empty list`() = runTest {
-        coEvery { strava.getActivities(perPage = any()) } returns Response.success(emptyList<StravaActivity>())
-
-        val res = repo.getStravaActivities(limit = 5)
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
-        coVerify { strava.getActivities(perPage = 5) }
-    }
-
-    @Test
-    fun `Get Strava activities - null`() = runTest {
-        coEvery { strava.getActivities(perPage = any()) } returns Response.success(null)
-
-        val res = repo.getStravaActivities(limit = 5)
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
-        coVerify { strava.getActivities(perPage = 5) }
-    }
-
-    @Test
-    fun `Get Strava activities - failure`() = runTest {
-        coEvery { strava.getActivities(perPage = any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val res = repo.getStravaActivities(limit = 5)
-
-        assertThat(res.isSuccess).isFalse()
-        coVerify { strava.getActivities(perPage = 5) }
-    }
-
-    @Test
-    fun `Get Strava activities - failure cache`() = runTest {
-        coEvery { strava.getActivities(perPage = any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val res = repo.getStravaActivities(limit = 5)
-        val res2 = repo.getStravaActivities(limit = 5)
-
-        assertThat(res.isSuccess).isFalse()
-        assertThat(res2.isSuccess).isFalse()
-        coVerify(exactly = 2) { strava.getActivities(perPage = 5) }
-    }
-
-    @Test
     fun `Get courses`() = runTest {
         val cours = listOf(
             CourseDto(id = 1, name = "course 1", distance = 10234.00, type = ActivityTypeDto(id = 1, key = "running")),
@@ -686,13 +252,13 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get courses - cache`() = runTest {
-        val cours = listOf(
+        val courses = listOf(
             CourseDto(id = 1, name = "course 1", distance = 10234.00, type = ActivityTypeDto(id = 1, key = "running")),
             CourseDto(id = 2, name = "course 2", distance = 15007.00, type = ActivityTypeDto(id = 10, key = "road_biking"))
         )
-        coEvery { connect.getCourses() } returns Response.success(cours)
+        coEvery { connect.getCourses() } returns Response.success(courses)
 
-        val expected = cours.map { it.toCore() }
+        val expected = courses.map { it.toCore() }
 
         val res = repo.getCourses()
         val res2 = repo.getCourses()
@@ -706,13 +272,13 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get courses - force refresh`() = runTest {
-        val cours = listOf(
+        val courses = listOf(
             CourseDto(id = 1, name = "course 1", distance = 10234.00, type = ActivityTypeDto(id = 1, key = "running")),
             CourseDto(id = 2, name = "course 2", distance = 15007.00, type = ActivityTypeDto(id = 10, key = "road_biking"))
         )
-        coEvery { connect.getCourses() } returns Response.success(cours)
+        coEvery { connect.getCourses() } returns Response.success(courses)
 
-        val expected = cours.map { it.toCore() }
+        val expected = courses.map { it.toCore() }
 
         val res = repo.getCourses()
         val res2 = repo.getCourses(true)
@@ -754,18 +320,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccess).isFalse()
         coVerify { connect.getCourses() }
-    }
-
-    @Test
-    fun `Get courses - failure cache`() = runTest {
-        coEvery { connect.getCourses() } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val res = repo.getCourses()
-        val res2 = repo.getCourses()
-
-        assertThat(res.isSuccess).isFalse()
-        assertThat(res2.isSuccess).isFalse()
-        coVerify(exactly = 2) { connect.getCourses() }
     }
 
     @Test
@@ -983,92 +537,6 @@ class GarminRepositoryTest {
         assertThat(res.isSuccess).isFalse()
         coVerify { connect.updateActivity(any(), any()) }
         coVerify { connect.associateGears(activity.id, listOf("gear-1")) }
-    }
-
-    @Test
-    fun `Update strava activity`() = runTest {
-        coEvery { strava.updateActivity(any(), any()) } returns Response.success(Unit)
-
-        val activity = CoreActivity(
-            id = 1,
-            name = "activity",
-            distance = 17803.00,
-            type = CoreActivityType.Cycling
-        )
-        val name = "newName"
-        val description = "newDescription"
-        val commute = true
-
-        val expectedRequest = StravaUpdateActivity(
-            name = name,
-            description = description,
-            commute = commute
-        )
-
-        val res = repo.updateStravaActivity(
-            activity = activity,
-            name = name,
-            description = description,
-            commute = commute
-        )
-
-        assertThat(res.isSuccess).isTrue()
-        coVerify { strava.updateActivity(activity.id, expectedRequest) }
-    }
-
-    @Test
-    fun `Update strava activity - failure`() = runTest {
-        coEvery { strava.updateActivity(any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val activity = CoreActivity(
-            id = 1,
-            name = "activity",
-            distance = 17803.00,
-            type = CoreActivityType.Cycling
-        )
-        val name = "newName"
-        val description = "newDescription"
-        val commute = true
-
-        val expectedRequest = StravaUpdateActivity(
-            name = name,
-            description = description,
-            commute = commute
-        )
-
-        val res = repo.updateStravaActivity(
-            activity = activity,
-            name = name,
-            description = description,
-            commute = commute
-        )
-
-        assertThat(res.isSuccess).isFalse()
-        coVerify { strava.updateActivity(activity.id, expectedRequest) }
-    }
-
-    @Test
-    fun `Update strava profile`() = runTest {
-        coEvery { strava.updateAthlete(any()) } returns Response.success(Unit)
-
-        val expectedRequest = StravaUpdateProfile(weight = 75.9f)
-
-        val res = repo.updateStravaProfile(weight = 75.9f)
-
-        assertThat(res.isSuccess).isTrue()
-        coVerify { strava.updateAthlete(expectedRequest) }
-    }
-
-    @Test
-    fun `Update strava profile - failure`() = runTest {
-        coEvery { strava.updateAthlete(any(), ) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val expectedRequest = StravaUpdateProfile(weight = 75.9f)
-
-        val res = repo.updateStravaProfile(weight = 75.9f)
-
-        assertThat(res.isSuccess).isFalse()
-        coVerify { strava.updateAthlete(expectedRequest) }
     }
 
     @Test
