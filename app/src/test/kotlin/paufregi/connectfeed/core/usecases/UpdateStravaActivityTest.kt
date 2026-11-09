@@ -14,10 +14,10 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Workout
-import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.StravaRepository
 
 class UpdateStravaActivityTest{
-    private val repo = mockk<GarminRepository>()
+    private val repo = mockk<StravaRepository>()
     private lateinit var useCase: UpdateStravaActivity
 
     val activity = Activity(
@@ -46,47 +46,47 @@ class UpdateStravaActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
 
         val expectedDescription = "$description\n\nWorkout: VO₂ max\nBenefit: $trainingEffect"
         val res = useCase(activity, name, description, eventType, trainingEffect, trainingEffectFlag, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
+        coVerify { repo.updateActivity(activity, name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - no training effect`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nWorkout: VO₂ max"
         val res = useCase(activity, name, description, eventType, null, trainingEffectFlag, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
+        coVerify { repo.updateActivity(activity, name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - training effect flag false`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nWorkout: VO₂ max"
         val res = useCase(activity, name, description, eventType, trainingEffect, false, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
+        coVerify { repo.updateActivity(activity, name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - no workout`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any(),) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nBenefit: $trainingEffect"
         val res = useCase(activity, name, description, eventType, trainingEffect, trainingEffectFlag, null)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(activity, name, expectedDescription, true) }
+        coVerify { repo.updateActivity(activity, name, expectedDescription, true) }
     }
 
 

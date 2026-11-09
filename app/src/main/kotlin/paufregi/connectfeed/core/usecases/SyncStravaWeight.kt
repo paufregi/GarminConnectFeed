@@ -3,12 +3,12 @@ package paufregi.connectfeed.core.usecases
 import kotlinx.coroutines.flow.first
 import paufregi.connectfeed.core.models.Weight
 import paufregi.connectfeed.core.utils.sameDay
-import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.StravaRepository
 import java.util.Date
 import javax.inject.Inject
 
 class SyncStravaWeight @Inject constructor(
-    private val garminRepository: GarminRepository,
+    private val stravaRepo: StravaRepository,
     private val isStravaLoggedIn: IsStravaLoggedIn
 ) {
     suspend operator fun invoke(
@@ -21,6 +21,6 @@ class SyncStravaWeight @Inject constructor(
 
         if (weight == null || !weight.timestamp.sameDay(today)) return Result.success(Unit)
 
-        return garminRepository.updateStravaProfile(weight.weight)
+        return stravaRepo.updateAthlete(weight.weight)
     }
 }

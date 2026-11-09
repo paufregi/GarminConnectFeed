@@ -159,7 +159,7 @@ class EditViewModelTest {
     @Test
     fun `Initial state`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(emptyList())
+        coEvery { getStravaActivities() } returns Result.success(emptyList())
         coEvery { getCourses(any()) } returns Result.success(courses)
 
         viewModel = createViewModel()
@@ -189,7 +189,7 @@ class EditViewModelTest {
 
         coVerify {
             getActivities(false)
-            getStravaActivities(false)
+            getStravaActivities()
             getCourses(false)
         }
     }
@@ -197,7 +197,7 @@ class EditViewModelTest {
     @Test
     fun `Initial state - with Strava`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         coEvery { getCourses(any()) } returns Result.success(courses)
 
         viewModel = createViewModel()
@@ -227,7 +227,7 @@ class EditViewModelTest {
 
         coVerify {
             getActivities(false)
-            getStravaActivities(false)
+            getStravaActivities()
             getCourses(false)
         }
     }
@@ -235,7 +235,7 @@ class EditViewModelTest {
     @Test
     fun `Fails to load activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.failure("error")
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         coEvery { getCourses(any()) } returns Result.success(courses)
 
         viewModel = createViewModel()
@@ -251,7 +251,7 @@ class EditViewModelTest {
 
         coVerify {
             getActivities(false)
-            getStravaActivities(false)
+            getStravaActivities()
             getCourses(false)
         }
     }
@@ -259,7 +259,7 @@ class EditViewModelTest {
     @Test
     fun `Fails to load Strava activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.failure("error")
+        coEvery { getStravaActivities() } returns Result.failure("error")
         coEvery { getCourses(any()) } returns Result.success(courses)
 
         viewModel = createViewModel()
@@ -275,7 +275,7 @@ class EditViewModelTest {
 
         coVerify {
             getActivities(false)
-            getStravaActivities(false)
+            getStravaActivities()
             getCourses(false)
         }
     }
@@ -283,7 +283,7 @@ class EditViewModelTest {
     @Test
     fun `Fails to load courses`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         coEvery { getCourses(any()) } returns Result.failure("error")
 
         viewModel = createViewModel()
@@ -299,7 +299,7 @@ class EditViewModelTest {
 
         coVerify {
             getActivities(false)
-            getStravaActivities(false)
+            getStravaActivities()
             getCourses(false)
         }
     }
@@ -307,7 +307,7 @@ class EditViewModelTest {
     @Test
     fun `Fails to load all data`() = runTest {
         coEvery { getActivities(any()) } returns Result.failure("error")
-        coEvery { getStravaActivities(any()) } returns Result.failure("error")
+        coEvery { getStravaActivities() } returns Result.failure("error")
         coEvery { getCourses(any()) } returns Result.failure("error")
 
         viewModel = createViewModel()
@@ -323,7 +323,7 @@ class EditViewModelTest {
 
         coVerify {
             getActivities(false)
-            getStravaActivities(false)
+            getStravaActivities()
             getCourses(false)
         }
     }
@@ -1017,7 +1017,7 @@ class EditViewModelTest {
     @Test
     fun `Restart action`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         coEvery { getCourses(any()) } returns Result.success(courses)
 
         val initState = initialState.copy(
@@ -1052,7 +1052,7 @@ class EditViewModelTest {
 
         coVerify {
             getActivities(true)
-            getStravaActivities(true)
+            getStravaActivities()
             getCourses(true)
         }
     }
@@ -1060,7 +1060,7 @@ class EditViewModelTest {
     @Test
     fun `Restart action - fails to reload activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.failure("error")
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         coEvery { getCourses(any()) } returns Result.success(courses)
 
         viewModel = createViewModel()
@@ -1098,7 +1098,7 @@ class EditViewModelTest {
 
         coVerify {
             getActivities(true)
-            getStravaActivities(true)
+            getStravaActivities()
             getCourses(true)
         }
     }
@@ -1106,7 +1106,7 @@ class EditViewModelTest {
     @Test
     fun `Restart action - fails to reload strava activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.failure("error")
+        coEvery { getStravaActivities() } returns Result.failure("error")
         coEvery { getCourses(any()) } returns Result.success(courses)
 
         viewModel = createViewModel()
@@ -1144,7 +1144,7 @@ class EditViewModelTest {
 
         coVerify {
             getActivities(true)
-            getStravaActivities(true)
+            getStravaActivities()
             getCourses(true)
         }
     }
@@ -1152,7 +1152,7 @@ class EditViewModelTest {
     @Test
     fun `Restart action - fails to reload all activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.failure("error")
-        coEvery { getStravaActivities(any()) } returns Result.failure("error")
+        coEvery { getStravaActivities() } returns Result.failure("error")
         coEvery { getCourses(any()) } returns Result.success(courses)
 
         viewModel = createViewModel()
@@ -1189,7 +1189,7 @@ class EditViewModelTest {
 
         coVerify {
             getActivities(true)
-            getStravaActivities(true)
+            getStravaActivities()
             getCourses(true)
         }
     }
@@ -1197,7 +1197,7 @@ class EditViewModelTest {
     @Test
     fun `Restart action - fails to reload courses`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
         coEvery { getCourses(any()) } returns Result.failure("error")
 
         viewModel = createViewModel()
@@ -1235,7 +1235,7 @@ class EditViewModelTest {
 
         coVerify {
             getActivities(true)
-            getStravaActivities(true)
+            getStravaActivities()
             getCourses(true)
         }
     }

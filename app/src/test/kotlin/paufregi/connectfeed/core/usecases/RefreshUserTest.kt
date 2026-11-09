@@ -22,7 +22,7 @@ class RefreshUserTest{
 
     @Before
     fun setup(){
-        useCase = RefreshUser(garminRepo, authRepo)
+        useCase = RefreshUser(authRepo, garminRepo)
     }
 
     @After
@@ -33,7 +33,7 @@ class RefreshUserTest{
 
     @Test
     fun `Refresh user - success`() = runTest {
-        coEvery { garminRepo.fetchUser() } returns Result.success(user)
+        coEvery { garminRepo.getUser() } returns Result.success(user)
         coEvery { authRepo.saveUser(any()) } returns Unit
 
         val res = useCase()
@@ -41,19 +41,19 @@ class RefreshUserTest{
         assertThat(res.isSuccess).isTrue()
 
         coVerify {
-            garminRepo.fetchUser()
+            garminRepo.getUser()
             authRepo.saveUser(user)
         }
     }
 
     @Test
     fun `Refresh user - failure`() = runTest {
-        coEvery { garminRepo.fetchUser() } returns Result.failure("error")
+        coEvery { garminRepo.getUser() } returns Result.failure("error")
 
         val res = useCase()
 
         assertThat(res.isSuccess).isFalse()
 
-        coVerify { garminRepo.fetchUser() }
+        coVerify { garminRepo.getUser() }
     }
 }

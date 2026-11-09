@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.quickedit
 
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -60,7 +59,7 @@ class QuickEditViewModel @Inject constructor(
 
         coroutineScope {
             val asyncGetActivities = async { getActivities(force) }
-            val asyncGetStravaActivities = async { getStravaActivities(force) }
+            val asyncGetStravaActivities = async { getStravaActivities() }
 
             runCatchingResult { asyncGetActivities.await() }
                 .onSuccess { data -> _state.update { it.copy(activities = data) } }

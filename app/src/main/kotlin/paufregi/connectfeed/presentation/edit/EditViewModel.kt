@@ -66,7 +66,7 @@ class EditViewModel @Inject constructor(
 
         coroutineScope {
             val asyncGetActivities = async { getActivities(force) }
-            val asyncGetStravaActivities = async { getStravaActivities(force) }
+            val asyncGetStravaActivities = async { getStravaActivities() }
             val asyncGetCourses = async { getCourses(force) }
 
             runCatchingResult { asyncGetActivities.await() }

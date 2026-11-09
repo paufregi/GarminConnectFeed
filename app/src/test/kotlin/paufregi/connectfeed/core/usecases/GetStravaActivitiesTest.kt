@@ -16,10 +16,10 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.StravaRepository
 
 class GetStravaActivitiesTest{
-    private val repo = mockk<GarminRepository>()
+    private val repo = mockk<StravaRepository>()
     private val strava = mockk<IsStravaLoggedIn>()
     private lateinit var useCase: GetStravaActivities
 
@@ -40,26 +40,26 @@ class GetStravaActivitiesTest{
             Activity(id = 1, name = "name", distance = 10234.00, type = ActivityType.Running)
         )
         every { strava() } returns flowOf(true)
-        coEvery { repo.getStravaActivities(any(), any()) } returns Result.success(activities)
-        val res = useCase(true)
+        coEvery { repo.getActivities(any()) } returns Result.success(activities)
+        val res = useCase()
 
         assertThat(res.isSuccess).isTrue()
         assertThat(res.getOrNull()).isEqualTo(activities)
 
         verify { strava() }
-        coVerify { repo.getStravaActivities(5, true) }
+        coVerify { repo.getActivities(5) }
     }
 
     @Test
     fun `Get activities - failed`() = runTest {
         every { strava() } returns flowOf(true)
-        coEvery { repo.getStravaActivities(any(), any()) } returns Result.failure("Failed")
+        coEvery { repo.getActivities(any()) } returns Result.failure("Failed")
         val res = useCase()
 
         assertThat(res.isSuccess).isFalse()
 
         verify { strava() }
-        coVerify { repo.getStravaActivities(5, false) }
+        coVerify { repo.getActivities(5) }
     }
 
     @Test

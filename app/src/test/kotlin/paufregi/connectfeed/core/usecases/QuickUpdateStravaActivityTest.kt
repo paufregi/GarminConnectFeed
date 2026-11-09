@@ -16,10 +16,10 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Workout
-import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.StravaRepository
 
 class QuickUpdateStravaActivityTest{
-    private val repo = mockk<GarminRepository>()
+    private val repo = mockk<StravaRepository>()
     private lateinit var useCase: QuickUpdateStravaActivity
 
     val activity = Activity(
@@ -60,18 +60,18 @@ class QuickUpdateStravaActivityTest{
 
     @Test
     fun `Update activity`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val expectedDescription = "$description\n\nWorkout: VO₂ max\nBenefit: ${activity.trainingEffect}"
         val res = useCase(activity, stravaActivity, profile, description, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true) }
+        coVerify { repo.updateActivity(stravaActivity, profile.name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - no rename`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val profile = Profile(
             name = "newName",
@@ -86,12 +86,12 @@ class QuickUpdateStravaActivityTest{
         val res = useCase(activity, stravaActivity, profile, description, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(stravaActivity, activity.name, expectedDescription, true) }
+        coVerify { repo.updateActivity(stravaActivity, activity.name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - no training effect`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val activity = Activity(
             id = 1,
@@ -106,12 +106,12 @@ class QuickUpdateStravaActivityTest{
         val res = useCase(activity, stravaActivity, profile, description, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true) }
+        coVerify { repo.updateActivity(stravaActivity, profile.name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - training effect flag false`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val profile = Profile(
             name = "newName",
@@ -126,12 +126,12 @@ class QuickUpdateStravaActivityTest{
         val res = useCase(activity, stravaActivity, profile, description, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true) }
+        coVerify { repo.updateActivity(stravaActivity, profile.name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - no workout`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val activity = Activity(
             id = 1,
@@ -144,12 +144,12 @@ class QuickUpdateStravaActivityTest{
         val res = useCase(activity, stravaActivity, profile, description, null)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, true) }
+        coVerify { repo.updateActivity(stravaActivity, profile.name, expectedDescription, true) }
     }
 
     @Test
     fun `Update activity - no commute`() = runTest {
-        coEvery { repo.updateStravaActivity(any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { repo.updateActivity(any(), any(), any(), any()) } returns Result.success(Unit)
 
         val profile = Profile(
             name = "newName",
@@ -164,7 +164,7 @@ class QuickUpdateStravaActivityTest{
         val res = useCase(activity, stravaActivity, profile, description, workout)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateStravaActivity(stravaActivity, profile.name, expectedDescription, false) }
+        coVerify { repo.updateActivity(stravaActivity, profile.name, expectedDescription, false) }
     }
 
     @Test

@@ -5,12 +5,12 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class StravaCodeExchange @Inject constructor(
-    private val repo: AuthRepository,
+    private val authRepo: AuthRepository,
     @param:Named("StravaClientId") val clientId: String,
     @param:Named("StravaClientSecret") val clientSecret: String,
 ) {
     suspend operator fun invoke(code: String): Result<Unit> =
-        repo.exchangeStravaToken(clientId, clientSecret, code)
-            .onSuccess { repo.saveStravaToken(it) }
+        authRepo.exchangeStravaToken(clientId, clientSecret, code)
+            .onSuccess { authRepo.saveStravaToken(it) }
             .map { }
 }

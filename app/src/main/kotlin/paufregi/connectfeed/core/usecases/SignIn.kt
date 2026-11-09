@@ -9,19 +9,19 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class SignIn @Inject constructor(
-    private val garminRepository: GarminRepository,
-    private val authRepository: AuthRepository,
+    private val authRepo: AuthRepository,
+    private val garminRepo: GarminRepository,
     @param:Named("GarminClientId") val garminClientId: String
 ) {
     suspend operator fun invoke(username: String, password: String): Result<User> {
         if (username.isBlank() || password.isBlank()) return Result.failure("Validation error")
 
-        return authRepository.garminLogin(username, password)
-            .andThen { authRepository.exchangeGarminToken(it, garminClientId) }
-            .onSuccess { authRepository.saveGarminToken(it) }
-            .andThen { garminRepository.fetchUser() }
-            .onFailure { authRepository.clear() }
-            .onSuccess { authRepository.saveUser(it) }
+        return authRepo.garminLogin(username, password)
+            .andThen { authRepo.exchangeGarminToken(it, garminClientId) }
+            .onSuccess { authRepo.saveGarminToken(it) }
+            .andThen { garminRepo.getUser() }
+            .onFailure { authRepo.clear() }
+            .onSuccess { authRepo.saveUser(it) }
     }
 }
 

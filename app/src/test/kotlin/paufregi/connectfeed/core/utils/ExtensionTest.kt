@@ -172,8 +172,8 @@ class ExtensionTest {
     fun `Flow - mapList`() = runTest {
         flowOf(listOf(1, 2), listOf(3, 4))
             .mapList { it + 10 }.test {
-                assertThat(awaitItem()).isEqualTo(listOf(listOf(11, 12)))
-                assertThat(awaitItem()).isEqualTo(listOf(listOf(13, 14)))
+                assertThat(awaitItem()).isEqualTo(listOf(11, 12))
+                assertThat(awaitItem()).isEqualTo(listOf(13, 14))
                 cancelAndIgnoreRemainingEvents()
             }
     }

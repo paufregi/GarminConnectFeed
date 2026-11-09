@@ -12,7 +12,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class SyncWeight @Inject constructor(
-    private val garminRepository: GarminRepository,
+    private val garminRepo: GarminRepository,
     @param:Named("tempFolder") val folder: File
 ) {
     suspend operator fun invoke(weights: List<Weight>): Result<Unit> {
@@ -20,7 +20,7 @@ class SyncWeight @Inject constructor(
         val filename = "ws_${dateFormatter.format(Instant.now())}.fit"
         val file = File(folder, filename)
         FitWriter.weights(file, weights)
-        val res = garminRepository.uploadFile(file)
+        val res = garminRepo.uploadFile(file)
         file.delete()
 
         return res.mapFailure { Exception("Failed to upload file") }

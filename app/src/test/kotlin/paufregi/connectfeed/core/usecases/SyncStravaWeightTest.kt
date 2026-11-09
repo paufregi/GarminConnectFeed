@@ -17,7 +17,7 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import paufregi.connectfeed.core.models.Weight
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.StravaRepository
 import java.time.Instant
 import java.util.Date
 
@@ -26,7 +26,7 @@ class SyncStravaWeightTest {
     @JvmField
     var folder: TemporaryFolder = TemporaryFolder()
 
-    private val repo = mockk<GarminRepository>()
+    private val repo = mockk<StravaRepository>()
     private val isStravaLoggedIn = mockk<IsStravaLoggedIn>()
     private lateinit var useCase: SyncStravaWeight
 
@@ -75,14 +75,14 @@ class SyncStravaWeightTest {
             )
         )
 
-        coEvery { repo.updateStravaProfile(any()) } returns Result.success(Unit)
+        coEvery { repo.updateAthlete(any()) } returns Result.success(Unit)
 
         val res = useCase(weights, date)
 
         assertThat(res.isSuccess).isTrue()
 
         verify { isStravaLoggedIn.invoke() }
-        coVerify { repo.updateStravaProfile(any()) }
+        coVerify { repo.updateAthlete(any()) }
     }
 
     @Test
@@ -145,7 +145,7 @@ class SyncStravaWeightTest {
             metabolicAge = 35,
         ))
 
-        coEvery { repo.updateStravaProfile(any()) } returns Result.success(Unit)
+        coEvery { repo.updateAthlete(any()) } returns Result.success(Unit)
 
         val res = useCase(weights, date)
 
@@ -185,13 +185,13 @@ class SyncStravaWeightTest {
             )
         )
 
-        coEvery { repo.updateStravaProfile(any()) } returns Result.failure("error")
+        coEvery { repo.updateAthlete(any()) } returns Result.failure("error")
 
         val res = useCase(weights, date)
 
         assertThat(res.isSuccess).isFalse()
 
-        coVerify { repo.updateStravaProfile(any()) }
+        coVerify { repo.updateAthlete(any()) }
         verify { isStravaLoggedIn.invoke() }
     }
 }

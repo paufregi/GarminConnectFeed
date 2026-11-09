@@ -15,6 +15,7 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
+import paufregi.connectfeed.data.repository.AppRepository
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.user
@@ -22,17 +23,18 @@ import paufregi.connectfeed.user
 class SyncGearTest {
 
     private val auth = mockk<AuthRepository>()
-    private val repo = mockk<GarminRepository>()
+    private val appRepo = mockk<AppRepository>()
+    private val garminRepo = mockk<GarminRepository>()
     private lateinit var useCase: SyncGear
 
     @Before
     fun setup() {
-        useCase = SyncGear(auth, repo)
+        useCase = SyncGear(auth, appRepo, garminRepo)
     }
 
     @After
     fun tearDown() {
-        confirmVerified(auth, repo)
+        confirmVerified(auth, appRepo, garminRepo)
         clearAllMocks()
     }
 
@@ -68,22 +70,22 @@ class SyncGearTest {
         )
 
         every { auth.getUser() } returns flowOf(user)
-        coEvery { repo.getGears() } returns Result.success(apiGears)
-        every { repo.getAllGears(user) } returns flowOf(dbGears)
-        coEvery { repo.saveGear(any(), any()) } returns Unit
-        coEvery { repo.deleteGear(any(), any()) } returns Unit
+        coEvery { garminRepo.getGears() } returns Result.success(apiGears)
+        every { appRepo.getAllGears(user) } returns flowOf(dbGears)
+        coEvery { appRepo.saveGear(any(), any()) } returns Unit
+        coEvery { appRepo.deleteGear(any(), any()) } returns Unit
 
         val res = useCase()
 
         assertThat(res.isSuccess).isTrue()
 
         verify { auth.getUser() }
-        coVerify { repo.getGears() }
-        verify { repo.getAllGears(user) }
+        coVerify { garminRepo.getGears() }
+        verify { appRepo.getAllGears(user) }
         coVerify {
-            repo.deleteGear(user, dbGears[1])
-            repo.saveGear(user, apiGears[0])
-            repo.saveGear(user, apiGears[1])
+            appRepo.deleteGear(user, dbGears[1])
+            appRepo.saveGear(user, apiGears[0])
+            appRepo.saveGear(user, apiGears[1])
         }
     }
 
@@ -95,20 +97,19 @@ class SyncGearTest {
         )
 
         every { auth.getUser() } returns flowOf(user)
-        coEvery { repo.getGears() } returns Result.success(emptyList())
-        every { repo.getAllGears(user) } returns flowOf(dbGears)
-        coEvery { repo.saveGear(any(), any()) } returns Unit
-        coEvery { repo.deleteGear(any(), any()) } returns Unit
+        coEvery { garminRepo.getGears() } returns Result.success(emptyList())
+        every { appRepo.getAllGears(user) } returns flowOf(dbGears)
+        coEvery { appRepo.saveGear(any(), any()) } returns Unit
+        coEvery { appRepo.deleteGear(any(), any()) } returns Unit
 
         val res = useCase()
 
         assertThat(res.isSuccess).isTrue()
 
         verify { auth.getUser() }
-        coVerify { repo.getGears() }
-        coVerify(exactly = 2) { repo.deleteGear(user, any()) }
-        coVerify(exactly = 0) { repo.saveGear(any(), any()) }
-        verify { repo.getAllGears(user) }
+        coVerify { garminRepo.getGears() }
+        coVerify(exactly = 2) { appRepo.deleteGear(user, any()) }
+        verify { appRepo.getAllGears(user) }
     }
 
     @Test
@@ -126,7 +127,7 @@ class SyncGearTest {
     @Test
     fun `Sync gears - api failure`() = runTest {
         every { auth.getUser() } returns flowOf(user)
-        coEvery { repo.getGears() } returns Result.failure(Exception("error"))
+        coEvery { garminRepo.getGears() } returns Result.failure(Exception("error"))
 
         val res = useCase()
 
@@ -134,6 +135,6 @@ class SyncGearTest {
         assertThat(res.exceptionOrNull()?.message).isEqualTo("error")
 
         verify { auth.getUser() }
-        coVerify { repo.getGears() }
+        coVerify { garminRepo.getGears() }
     }
 }

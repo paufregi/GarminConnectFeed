@@ -111,44 +111,6 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Get activities - cached`() = runTest {
-        val activities = listOf(
-            ActivityDto(
-                id = 1,
-                name = "activity_1",
-                distance = 10234.00,
-                trainingEffectLabel = "recovery",
-                type = ActivityTypeDto(id = 1, key = "running"),
-                eventType = EventTypeDto(id = 4, key = "training"),
-                beginTimestamp = 1729754100000,
-                workoutId = 1
-            ),
-            ActivityDto(
-                id = 2,
-                name = "activity_2",
-                distance = 17759.00,
-                trainingEffectLabel = "recovery",
-                type = ActivityTypeDto(id = 10, key = "road_biking"),
-                eventType = EventTypeDto(id = 4, key = "training"),
-                beginTimestamp = 1729705968000,
-                workoutId = 2
-            )
-        )
-        coEvery { connect.getActivities(any()) } returns Response.success(activities)
-
-        val expected = activities.map { it.toCore() }
-
-        val res = repo.getActivities(limit = 5)
-        val res2 = repo.getActivities(limit = 5)
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(expected)
-        assertThat(res2.isSuccess).isTrue()
-        assertThat(res2.getOrNull()).isEqualTo(expected)
-        coVerify(exactly = 1) { connect.getActivities(5) }
-    }
-
-    @Test
     fun `Get activities - force refresh`() = runTest {
         val activities = listOf(
             ActivityDto(

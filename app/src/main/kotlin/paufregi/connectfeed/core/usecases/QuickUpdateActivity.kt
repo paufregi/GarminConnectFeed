@@ -9,7 +9,7 @@ import paufregi.connectfeed.core.utils.failure
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
-class QuickUpdateActivity @Inject constructor(private val garminRepository: GarminRepository) {
+class QuickUpdateActivity @Inject constructor(private val garminRepo: GarminRepository) {
     suspend operator fun invoke(
         activity: Activity?,
         profile: Profile?,
@@ -21,7 +21,7 @@ class QuickUpdateActivity @Inject constructor(private val garminRepository: Garm
     ): Result<Unit> {
         if (activity == null || profile == null) return Result.failure("Validation error")
 
-        return garminRepository.updateActivity(
+        return garminRepo.updateActivity(
             activity = activity,
             name = if (profile.rename) profile.name else null,
             description = Formatter.workout(workout?.name),

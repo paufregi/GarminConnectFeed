@@ -47,13 +47,12 @@ class GarminRepository @Inject constructor(private val garminConnect: GarminConn
     suspend fun getWorkout(id: Long): Result<Workout> =
         garminConnect.getWorkout(id)
             .toResult()
-            .map {  it.toCore() }
+            .map { it.toCore() }
 
     suspend fun getGears(): Result<List<Gear>> =
         garminConnect.getGears()
             .toResult()
             .mapList { it.toCore() }
-
 
     suspend fun updateActivity(
         activity: Activity,

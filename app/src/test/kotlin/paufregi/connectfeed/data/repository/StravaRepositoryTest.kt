@@ -19,6 +19,7 @@ import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.models.ActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateAthleteDto
+import paufregi.connectfeed.data.repository.converters.toCore
 import retrofit2.Response
 
 class StravaRepositoryTest {
@@ -93,7 +94,7 @@ class StravaRepositoryTest {
         val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<ActivityDto>())
+        assertThat(res.getOrNull()).isEqualTo(emptyList<Activity>())
         coVerify { strava.getActivities(perPage = 5) }
     }
 
