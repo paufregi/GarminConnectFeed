@@ -17,6 +17,7 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.activitiesJson
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.coursesJson
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.ActivityDto
@@ -266,7 +267,7 @@ class GarminConnectTest {
                 brand = "Mizuno",
                 model = "Neo Vista",
                 name = null,
-                type = "SHOES",
+                type = GearType.Shoe,
                 distance = 51955.4501953125
             ),
             GearDto(
@@ -274,7 +275,7 @@ class GarminConnectTest {
                 brand = "Giant",
                 model = "Contend AR",
                 name = "Nova",
-                type = "BIKE",
+                type = GearType.Bike,
                 distance = 17226955.28363037
             ),
         )
