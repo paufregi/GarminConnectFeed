@@ -43,7 +43,7 @@ class GarminRepository @Inject constructor(private val garminConnect: GarminConn
             garminConnect.getCourses()
                 .toResult(emptyList())
                 .mapList { it.toCore() }
-        }
+        }.onFailure { courseCache.invalidate() }
 
     suspend fun getWorkout(id: Long): Result<Workout> =
         garminConnect.getWorkout(id)

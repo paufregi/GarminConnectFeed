@@ -56,12 +56,12 @@ fun GearCard(
                 modifier = Modifier.padding(1.dp)
             ) {
                 Row{
-                    Text(text = gear.name)
-                    Spacer(modifier = Modifier.weight(1f).basicMarquee())
+                    Text(text = gear.name, maxLines = 1, modifier = Modifier.basicMarquee())
+                    Spacer(modifier = Modifier.weight(1f))
                     gear.stravaId?.let {
                         Icon(
                             imageVector = Icons.Strava.Logo,
-                            contentDescription = gear.stravaId,
+                            contentDescription = "Linked to Strava",
                             tint = Color.Unspecified,
                             modifier = Modifier.size(20.dp),
                         )
