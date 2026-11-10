@@ -8,12 +8,14 @@ fun Gear.toEntity(userId: Long) = GearEntity(
     userId = userId,
     name = name,
     type = type,
-    distance = distance
+    distance = distance,
+    stravaId = stravaId
 )
 
 fun GearEntity.toCore() = Gear(
     id = id,
     name = name,
     type = type,
-    distance = distance
+    distance = distance,
+    stravaId = stravaId
 )

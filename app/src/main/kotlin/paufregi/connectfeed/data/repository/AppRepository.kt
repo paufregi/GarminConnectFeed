@@ -38,4 +38,3 @@ class AppRepository @Inject constructor(
     suspend fun deleteGear(user: User, gear: Gear) =
         garminDao.deleteGear(gear.toEntity(user.id))
 }
-

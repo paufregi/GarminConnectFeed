@@ -14,6 +14,7 @@ class GearConverterTest {
         name = "gear",
         type = GearType.Shoe,
         distance = 1,
+        stravaId = "strava_id"
     )
 
     val entityGear = GearEntity(
@@ -22,6 +23,7 @@ class GearConverterTest {
         name = "gear",
         type = GearType.Shoe,
         distance = 1,
+        stravaId = "strava_id"
     )
 
     @Test
