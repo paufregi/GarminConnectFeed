@@ -311,17 +311,15 @@ class GarminRepositoryTest {
     @Test
     fun `Get gears`() = runTest {
         val gears = listOf(
-            GearDto(id = "1", brand = "Mizuno", model = "Neo Vista", name = null, type = "SHOE"),
-            GearDto(id = "2", brand = "Giant", model = "Contend AR", name = "Nova", type = "BIKE")
+            GearDto(id = "1", brand = "Mizuno", model = "Neo Vista", name = null, type = GearType.Shoe),
+            GearDto(id = "2", brand = "Giant", model = "Contend AR", name = "Nova", type = GearType.Bike)
         )
         coEvery { connect.getGears() } returns Response.success(gears)
-
-        val expected = gears.map { it.toCore() }
 
         val res = repo.getGears()
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(expected)
+        assertThat(res.getOrNull()).isEqualTo(gears)
         coVerify { connect.getGears() }
     }
 
