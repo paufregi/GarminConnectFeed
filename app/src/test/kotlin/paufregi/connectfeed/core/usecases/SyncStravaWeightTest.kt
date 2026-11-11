@@ -27,23 +27,23 @@ class SyncStravaWeightTest {
     var folder: TemporaryFolder = TemporaryFolder()
 
     private val repo = mockk<StravaRepository>()
-    private val isStravaLoggedIn = mockk<IsStravaLoggedIn>()
+    private val isStravaConnected = mockk<IsStravaConnected>()
     private lateinit var useCase: SyncStravaWeight
 
     @Before
     fun setup(){
-        useCase = SyncStravaWeight(repo, isStravaLoggedIn)
+        useCase = SyncStravaWeight(repo, isStravaConnected)
     }
 
     @After
     fun tearDown(){
-        confirmVerified(repo, isStravaLoggedIn)
+        confirmVerified(repo, isStravaConnected)
         clearAllMocks()
     }
 
     @Test
     fun `Sync weight`() = runTest {
-        every { isStravaLoggedIn.invoke() } returns flowOf(true)
+        every { isStravaConnected.invoke() } returns flowOf(true)
 
         val date = Date.from(Instant.parse("2024-01-02T10:20:30Z"))
         val previousDate = Date.from(Instant.parse("2024-01-01T10:20:30Z"))
@@ -81,13 +81,13 @@ class SyncStravaWeightTest {
 
         assertThat(res.isSuccess).isTrue()
 
-        verify { isStravaLoggedIn.invoke() }
+        verify { isStravaConnected.invoke() }
         coVerify { repo.updateAthlete(any()) }
     }
 
     @Test
     fun `Sync weight - no Strava`() = runTest {
-        every { isStravaLoggedIn.invoke() } returns flowOf(false)
+        every { isStravaConnected.invoke() } returns flowOf(false)
 
         val date = Date.from(Instant.parse("2024-01-02T10:20:30Z"))
         val previousDate = Date.from(Instant.parse("2024-01-01T10:20:30Z"))
@@ -123,12 +123,12 @@ class SyncStravaWeightTest {
 
         assertThat(res.isSuccess).isTrue()
 
-        verify { isStravaLoggedIn.invoke() }
+        verify { isStravaConnected.invoke() }
     }
 
     @Test
     fun `Sync weight - past date`() = runTest {
-        every { isStravaLoggedIn.invoke() } returns flowOf(true)
+        every { isStravaConnected.invoke() } returns flowOf(true)
         val date = Date.from(Instant.parse("2024-01-02T10:20:30Z"))
         val previousDate = Date.from(Instant.parse("2024-01-01T10:20:30Z"))
 
@@ -151,23 +151,23 @@ class SyncStravaWeightTest {
 
         assertThat(res.isSuccess).isTrue()
 
-        verify { isStravaLoggedIn.invoke() }
+        verify { isStravaConnected.invoke() }
     }
 
     @Test
     fun `Sync weight - empty list`() = runTest {
-        every { isStravaLoggedIn.invoke() } returns flowOf(true)
+        every { isStravaConnected.invoke() } returns flowOf(true)
         val date = Date.from(Instant.parse("2024-01-02T10:20:30Z"))
 
         val res = useCase(emptyList<Weight>(), date)
 
         assertThat(res.isSuccess).isTrue()
-        verify { isStravaLoggedIn.invoke() }
+        verify { isStravaConnected.invoke() }
     }
 
     @Test
     fun `Sync weight - failure`() = runTest {
-        every { isStravaLoggedIn.invoke() } returns flowOf(true)
+        every { isStravaConnected.invoke() } returns flowOf(true)
         val date = Date.from(Instant.parse("2024-01-02T10:20:30Z"))
 
         val weights = listOf(
@@ -192,6 +192,6 @@ class SyncStravaWeightTest {
         assertThat(res.isSuccess).isFalse()
 
         coVerify { repo.updateAthlete(any()) }
-        verify { isStravaLoggedIn.invoke() }
+        verify { isStravaConnected.invoke() }
     }
 }

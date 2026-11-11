@@ -7,10 +7,10 @@ import javax.inject.Inject
 
 class GetStravaActivities @Inject constructor(
     private val stravaRepo: StravaRepository,
-    private val isStravaLoggedIn: IsStravaLoggedIn,
+    private val isStravaConnected: IsStravaConnected,
 ) {
     suspend operator fun invoke(): Result<List<Activity>> =
-        when (isStravaLoggedIn().first()) {
+        when (isStravaConnected().first()) {
             true -> stravaRepo.getActivities(5)
             false -> Result.success(emptyList())
         }
