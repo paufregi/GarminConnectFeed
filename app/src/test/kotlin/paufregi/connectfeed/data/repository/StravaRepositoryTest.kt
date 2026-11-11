@@ -149,7 +149,8 @@ class StravaRepositoryTest {
         val expectedRequest = UpdateActivityDto(
             name = name,
             description = description,
-            commute = commute
+            commute = commute,
+            gearId = null
         )
 
         val res = repo.updateActivity(
@@ -180,7 +181,8 @@ class StravaRepositoryTest {
         val expectedRequest = UpdateActivityDto(
             name = name,
             description = description,
-            commute = commute
+            commute = commute,
+            gearId = null
         )
 
         val res = repo.updateActivity(

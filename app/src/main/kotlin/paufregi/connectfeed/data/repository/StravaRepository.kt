@@ -34,7 +34,8 @@ class StravaRepository @Inject constructor(
         val request = UpdateActivityDto(
             name = name,
             description = description,
-            commute = commute
+            commute = commute,
+            gearId = null,
         )
         return strava.updateActivity(activity.id, request)
             .toResult()

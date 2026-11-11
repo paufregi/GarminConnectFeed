@@ -161,6 +161,7 @@ class StravaTest {
             name = "newName",
             description = "newDescription",
             commute = true,
+            gearId = "gear-id"
         )
         val res = api.updateActivity(id = 1, updateActivity = updateActivityDto)
 
@@ -175,6 +176,7 @@ class StravaTest {
             name = "newName",
             description = "newDescription",
             commute = true,
+            gearId = "gear-id"
         )
         val res = api.updateActivity(id = 1, updateActivity = updateActivityDto)
 
