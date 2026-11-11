@@ -5,10 +5,10 @@ import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.core.utils.failure
-import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.StravaRepository
 import javax.inject.Inject
 
-class QuickUpdateStravaActivity @Inject constructor(private val garminRepository: GarminRepository) {
+class QuickUpdateStravaActivity @Inject constructor(private val stravaRepo: StravaRepository) {
     suspend operator fun invoke(
         activity: Activity?,
         stravaActivity: Activity?,
@@ -18,7 +18,7 @@ class QuickUpdateStravaActivity @Inject constructor(private val garminRepository
     ): Result<Unit> {
         if (stravaActivity == null || profile == null) return Result.failure("Validation error")
 
-        return garminRepository.updateStravaActivity(
+        return stravaRepo.updateActivity(
             activity = stravaActivity,
             name = if (profile.rename) profile.name else activity?.name,
             description = Formatter.description(description, activity?.trainingEffect, profile.trainingEffect, workout?.name),

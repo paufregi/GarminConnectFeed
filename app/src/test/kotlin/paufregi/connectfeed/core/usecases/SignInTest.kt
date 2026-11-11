@@ -29,7 +29,7 @@ class SignInTest{
 
     @Before
     fun setup(){
-        useCase = SignIn(repo, authRepo, clientId)
+        useCase = SignIn(authRepo, repo, clientId)
     }
 
     @After
@@ -44,7 +44,7 @@ class SignInTest{
         coEvery { authRepo.exchangeGarminToken(any(), any()) } returns Result.success(authToken)
         coEvery { authRepo.saveGarminToken(any()) } returns Unit
         coEvery { authRepo.saveUser(any()) } returns Unit
-        coEvery { repo.fetchUser() } returns Result.success(user)
+        coEvery { repo.getUser() } returns Result.success(user)
 
         val res = useCase(username, password)
         assertThat(res.isSuccess).isTrue()
@@ -55,7 +55,7 @@ class SignInTest{
             authRepo.exchangeGarminToken(ticket, clientId)
             authRepo.saveGarminToken(authToken)
             authRepo.saveUser(user)
-            repo.fetchUser()
+            repo.getUser()
         }
     }
 
@@ -113,7 +113,7 @@ class SignInTest{
         coEvery { authRepo.garminLogin(any(), any()) } returns Result.success(ticket)
         coEvery { authRepo.exchangeGarminToken(any(), any()) } returns Result.success(authToken)
         coEvery { authRepo.saveGarminToken(any()) } returns Unit
-        coEvery { repo.fetchUser() } returns Result.failure("Couldn't fetch user")
+        coEvery { repo.getUser() } returns Result.failure("Couldn't fetch user")
         coEvery { authRepo.clear() } returns Unit
 
         val res = useCase(username, password)
@@ -123,7 +123,7 @@ class SignInTest{
         coVerify { authRepo.garminLogin(username, password) }
         coVerify { authRepo.exchangeGarminToken(ticket, clientId) }
         coVerify { authRepo.saveGarminToken(authToken) }
-        coVerify { repo.fetchUser() }
+        coVerify { repo.getUser() }
         coVerify { authRepo.clear() }
     }
 }

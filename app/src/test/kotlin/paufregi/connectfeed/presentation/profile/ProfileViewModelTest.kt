@@ -18,7 +18,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.core.usecases.GetActivityTypesForProfile
+import paufregi.connectfeed.core.usecases.GetActivityTypes
 import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
@@ -31,7 +31,7 @@ import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 class ProfileViewModelTest {
 
     private val getProfile = mockk<GetProfile>()
-    private val getActivityTypesForProfile = mockk<GetActivityTypesForProfile>()
+    private val getActivityTypes = mockk<GetActivityTypes>()
     private val getEventTypes = mockk<GetEventTypes>()
     private val getCourses = mockk<GetCourses>()
     private val saveProfile = mockk<SaveProfile>()
@@ -43,21 +43,21 @@ class ProfileViewModelTest {
     val eventTypes = listOf(EventType.Training, EventType.Recreation)
     val courses = listOf(Course(id = 1, name = "course", distance = 10234.00, type = ActivityType.Running))
 
-    fun createViewModel(id: Long = 0L) = ProfileViewModel(id, getProfile, getActivityTypesForProfile, getEventTypes, getCourses, saveProfile)
+    fun createViewModel(id: Long = 0L) = ProfileViewModel(id, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     @After
     fun tearDown(){
-        confirmVerified(getProfile, getActivityTypesForProfile, getEventTypes, getCourses, saveProfile)
+        confirmVerified(getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
         clearAllMocks()
     }
 
     @Test
     fun `Initial state - existing profile`() = runTest {
         coEvery { getProfile(any()) } returns profile
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -74,7 +74,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -86,7 +86,7 @@ class ProfileViewModelTest {
     @Test
     fun `Initial state - new profile`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -103,7 +103,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -115,7 +115,7 @@ class ProfileViewModelTest {
     @Test
     fun `Fails to load courses`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.failure("error")
 
@@ -133,7 +133,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -145,7 +145,7 @@ class ProfileViewModelTest {
     @Test
     fun `Set name`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -164,7 +164,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -176,7 +176,7 @@ class ProfileViewModelTest {
     @Test
     fun `Set activity type`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -195,7 +195,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -207,7 +207,7 @@ class ProfileViewModelTest {
     @Test
     fun `Set activity type - with course`() = runTest {
         coEvery { getProfile(any()) } returns profile
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -227,7 +227,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -239,7 +239,7 @@ class ProfileViewModelTest {
     @Test
     fun `Set activity type - unset course`() = runTest {
         coEvery { getProfile(any()) } returns profile
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -259,7 +259,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -271,7 +271,7 @@ class ProfileViewModelTest {
     @Test
     fun `Set event type`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -290,7 +290,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -302,7 +302,7 @@ class ProfileViewModelTest {
     @Test
     fun `Set course`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -322,7 +322,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -334,7 +334,7 @@ class ProfileViewModelTest {
     @Test
     fun `Set water`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -353,7 +353,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -365,7 +365,7 @@ class ProfileViewModelTest {
     @Test
     fun `Set rename`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -384,7 +384,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -396,7 +396,7 @@ class ProfileViewModelTest {
     @Test
     fun `Set custom water`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -415,7 +415,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -427,7 +427,7 @@ class ProfileViewModelTest {
     @Test
     fun `Set feel and effort`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -446,7 +446,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -458,7 +458,7 @@ class ProfileViewModelTest {
     @Test
     fun `Set gear`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -477,7 +477,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -489,7 +489,7 @@ class ProfileViewModelTest {
     @Test
     fun `Set training effect`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
 
@@ -508,7 +508,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -520,7 +520,7 @@ class ProfileViewModelTest {
     @Test
     fun `Save profile`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
         coEvery { saveProfile(any()) } returns Result.success(Unit)
@@ -540,7 +540,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {
@@ -553,7 +553,7 @@ class ProfileViewModelTest {
     @Test
     fun `Save profile - failure`() = runTest {
         coEvery { getProfile(any()) } returns null
-        every { getActivityTypesForProfile() } returns types
+        every { getActivityTypes() } returns types
         every { getEventTypes() } returns eventTypes
         coEvery { getCourses() } returns Result.success(courses)
         coEvery { saveProfile(any()) } returns Result.failure("error")
@@ -573,7 +573,7 @@ class ProfileViewModelTest {
         }
 
         verify{
-            getActivityTypesForProfile()
+            getActivityTypes()
             getEventTypes()
         }
         coVerify {

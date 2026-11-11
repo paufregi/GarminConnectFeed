@@ -7,13 +7,13 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.ActivityType
 
-class GetActivityTypesForProfileTest {
+class GetActivityTypesTest {
 
-    private lateinit var useCase: GetActivityTypesForProfile
+    private lateinit var useCase: GetActivityTypes
 
     @Before
     fun setup(){
-        useCase = GetActivityTypesForProfile()
+        useCase = GetActivityTypes()
     }
 
     @After

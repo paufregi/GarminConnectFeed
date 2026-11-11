@@ -4,7 +4,7 @@ import paufregi.connectfeed.data.repository.AuthRepository
 import javax.inject.Inject
 
 class SignOut @Inject constructor(
-    private val authRepository: AuthRepository,
+    private val authRepo: AuthRepository,
 ) {
-    suspend operator fun invoke() = authRepository.clear()
+    suspend operator fun invoke() = authRepo.clear()
 }

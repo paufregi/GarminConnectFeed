@@ -155,7 +155,7 @@ class QuickEditViewModelTest {
     @Test
     fun `Initial state`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(emptyList())
+        coEvery { getStravaActivities() } returns Result.success(emptyList())
 
         viewModel = createViewModel()
 
@@ -180,14 +180,14 @@ class QuickEditViewModelTest {
 
         coVerify{
             getActivities(false)
-            getStravaActivities(false)
+            getStravaActivities()
         }
     }
 
     @Test
     fun `Initial state - with Strava`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
         viewModel = createViewModel()
 
@@ -212,14 +212,14 @@ class QuickEditViewModelTest {
 
         coVerify{
             getActivities(false)
-            getStravaActivities(false)
+            getStravaActivities()
         }
     }
 
     @Test
     fun `Fails to load activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.failure("error")
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
         viewModel = createViewModel()
 
@@ -235,14 +235,14 @@ class QuickEditViewModelTest {
 
         coVerify{
             getActivities(false)
-            getStravaActivities(false)
+            getStravaActivities()
         }
     }
 
     @Test
     fun `Fails to load strava activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.failure("error")
+        coEvery { getStravaActivities() } returns Result.failure("error")
 
         viewModel = createViewModel()
 
@@ -258,14 +258,14 @@ class QuickEditViewModelTest {
 
         coVerify{
             getActivities(false)
-            getStravaActivities(false)
+            getStravaActivities()
         }
     }
 
     @Test
     fun `Fails to load all activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.failure("error")
-        coEvery { getStravaActivities(any()) } returns Result.failure("error")
+        coEvery { getStravaActivities() } returns Result.failure("error")
 
         viewModel = createViewModel()
 
@@ -281,7 +281,7 @@ class QuickEditViewModelTest {
 
         coVerify{
             getActivities(false)
-            getStravaActivities(false)
+            getStravaActivities()
         }
     }
 
@@ -922,7 +922,7 @@ class QuickEditViewModelTest {
     @Test
     fun `Restart action`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -951,14 +951,14 @@ class QuickEditViewModelTest {
 
         coVerify {
             getActivities(true)
-            getStravaActivities(true)
+            getStravaActivities()
         }
     }
 
     @Test
     fun `Restart - fails to reload activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.failure("error")
-        coEvery { getStravaActivities(any()) } returns Result.success(stravaActivities)
+        coEvery { getStravaActivities() } returns Result.success(stravaActivities)
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -983,14 +983,14 @@ class QuickEditViewModelTest {
 
         coVerify {
             getActivities(true)
-            getStravaActivities(true)
+            getStravaActivities()
         }
     }
 
     @Test
     fun `Restart - fails to reload strava activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.success(activities)
-        coEvery { getStravaActivities(any()) } returns Result.failure("error")
+        coEvery { getStravaActivities() } returns Result.failure("error")
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -1015,14 +1015,14 @@ class QuickEditViewModelTest {
 
         coVerify {
             getActivities(true)
-            getStravaActivities(true)
+            getStravaActivities()
         }
     }
 
     @Test
     fun `Restart - to load all activities`() = runTest {
         coEvery { getActivities(any()) } returns Result.failure("error")
-        coEvery { getStravaActivities(any()) } returns Result.failure("error")
+        coEvery { getStravaActivities() } returns Result.failure("error")
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -1046,7 +1046,7 @@ class QuickEditViewModelTest {
 
         coVerify {
             getActivities(true)
-            getStravaActivities(true)
+            getStravaActivities()
         }
     }
 

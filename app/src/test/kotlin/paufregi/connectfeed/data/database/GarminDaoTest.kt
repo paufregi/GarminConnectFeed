@@ -99,7 +99,8 @@ class GarminDaoTest {
             userId = 2,
             name = "gear2",
             type = GearType.Bike,
-            distance = 2000
+            distance = 2000,
+            stravaId = "strava-id"
         )
 
         dao.saveGear(gear)

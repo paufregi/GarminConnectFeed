@@ -1,20 +1,15 @@
 package paufregi.connectfeed.presentation.gears
 
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -28,20 +23,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.Navigator
+import paufregi.connectfeed.presentation.ui.components.GearCard
 import paufregi.connectfeed.presentation.ui.components.Loading
 import paufregi.connectfeed.presentation.ui.components.NavigationScaffold
 import paufregi.connectfeed.presentation.ui.components.SimpleScaffold
 import paufregi.connectfeed.presentation.ui.components.failureInfo
 import paufregi.connectfeed.presentation.ui.components.successInfo
 import paufregi.connectfeed.presentation.ui.models.ProcessState
-import paufregi.connectfeed.presentation.ui.utils.iconFor
 
 @Composable
 @ExperimentalMaterial3Api
@@ -101,26 +94,10 @@ internal fun GearsContent(
             item { Text("No gears") }
         } else {
             items(state.gears, key = { it.id }) { gear ->
-                Card(modifier = Modifier
-                    .height(50.dp)
-                    .fillMaxWidth()
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                    ) {
-                        iconFor(gear.type).let { i -> Icon(i, i.name, Modifier.size(24.dp)) }
-                        Text(
-                            text = gear.name,
-                            modifier = Modifier.weight(1f).basicMarquee(),
-                            maxLines = 1,
-                        )
-                        gear.distance?.let { Text("${Formatter.distance(it)} km", fontSize = 11.sp) }
-                    }
-                }
+                GearCard(
+                    gear = gear,
+                    modifier = Modifier.testTag("gear_${gear.id}")
+                )
             }
             item { Spacer(modifier = Modifier.height(80.dp)) }
         }

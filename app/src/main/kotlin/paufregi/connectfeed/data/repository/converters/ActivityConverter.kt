@@ -1,11 +1,12 @@
 package paufregi.connectfeed.data.repository.converters
 
 import paufregi.connectfeed.core.models.Activity
-import paufregi.connectfeed.data.api.garmin.models.ActivityDto
 import kotlin.math.round
 import kotlin.time.Instant
+import paufregi.connectfeed.data.api.garmin.models.ActivityDto as GarminActivity
+import paufregi.connectfeed.data.api.strava.models.ActivityDto as StravaActivity
 
-fun ActivityDto.toCore() = Activity(
+fun GarminActivity.toCore() = Activity(
     id = id,
     name = name,
     type = type.toCore(),
@@ -23,4 +24,12 @@ fun ActivityDto.toCore() = Activity(
     },
     date = beginTimestamp?.let { Instant.fromEpochMilliseconds(it) },
     workoutId = workoutId
+)
+
+fun StravaActivity.toCore() = Activity(
+    id = id,
+    name = name,
+    distance = round(this.distance),
+    type = sportType.toActivityType(),
+    date = this.startDate?.let { Instant.parse(it) }
 )

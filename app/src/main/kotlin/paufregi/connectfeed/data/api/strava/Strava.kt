@@ -5,8 +5,9 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.strava.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.strava.models.ActivityDto
+import paufregi.connectfeed.data.api.strava.models.AthleteDto
 import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
-import paufregi.connectfeed.data.api.strava.models.UpdateProfileDto
+import paufregi.connectfeed.data.api.strava.models.UpdateAthleteDto
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -17,6 +18,14 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface Strava {
+
+    @GET("athlete")
+    suspend fun getAthlete(): Response<AthleteDto>
+
+    @PUT("athlete")
+    suspend fun updateAthlete(
+        @Body updateAthlete: UpdateAthleteDto,
+    ): Response<Unit>
 
     @GET("athlete/activities")
     suspend fun getActivities(
@@ -30,11 +39,6 @@ interface Strava {
     suspend fun updateActivity(
         @Path("id") id: Long,
         @Body updateActivity: UpdateActivityDto,
-    ): Response<Unit>
-
-    @PUT("athlete")
-    suspend fun updateProfile(
-        @Body updateProfile: UpdateProfileDto,
     ): Response<Unit>
 
     companion object {

@@ -20,6 +20,7 @@ class GearsStatePreview : PreviewParameterProvider<GearsState> {
                     name = "Weekend bike",
                     type = GearType.Bike,
                     distance = 123456,
+                    stravaId = "strava-id"
                 ),
             )
         )
