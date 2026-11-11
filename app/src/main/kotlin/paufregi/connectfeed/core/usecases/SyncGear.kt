@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.utils.andThen
+import paufregi.connectfeed.core.utils.equalsAny
 import paufregi.connectfeed.core.utils.mapList
 import paufregi.connectfeed.data.api.strava.models.AthleteDto
 import paufregi.connectfeed.data.repository.AppRepository
@@ -38,15 +39,20 @@ class SyncGear @Inject constructor(
         val stravaGears = stravaDeferred.await().getOrDefault(AthleteDto(0))
 
         gears.mapList { gear ->
+            val alias = "${gear.brand} ${gear.model}"
             val stravaId = when (gear.type) {
-                GearType.Bike -> stravaGears.bikes.find { it.name.equals(gear.name, ignoreCase = true) || it.name.equals("${gear.brand} ${gear.model}", ignoreCase = true) }?.id
-                GearType.Shoe -> stravaGears.shoes.find { it.name.equals(gear.name, ignoreCase = true) || it.name.equals("${gear.brand} ${gear.model}", ignoreCase = true) }?.id
+                GearType.Bike -> stravaGears.bikes.find {
+                    it.name != null && it.name.equalsAny(gear.name, alias, ignoreCase = true)
+                }?.id
+                GearType.Shoe -> stravaGears.shoes.find {
+                    it.name != null && it.name.equalsAny(gear.name, alias, ignoreCase = true)
+                }?.id
                 GearType.Unknown -> null
             }
 
             Gear(
                 id = gear.id,
-                name = gear.name ?: "${gear.brand} ${gear.model}",
+                name = gear.name ?: alias,
                 type = gear.type,
                 distance = gear.distance?.toInt(),
                 stravaId = stravaId,
