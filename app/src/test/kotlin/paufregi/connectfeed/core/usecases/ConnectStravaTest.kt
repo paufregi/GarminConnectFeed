@@ -15,13 +15,13 @@ import paufregi.connectfeed.createStravaToken
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.tomorrow
 
-class StravaCodeExchangeTest{
+class ConnectStravaTest{
     private val repo = mockk<AuthRepository>()
-    private lateinit var useCase: StravaCodeExchange
+    private lateinit var useCase: ConnectStrava
 
     @Before
     fun setup(){
-        useCase = StravaCodeExchange(repo, "CLIENT_ID", "CLIENT_SECRET")
+        useCase = ConnectStrava(repo, "CLIENT_ID", "CLIENT_SECRET")
     }
 
     @After
