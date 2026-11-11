@@ -17,6 +17,34 @@ import java.time.Instant as JInstant
 
 class ExtensionTest {
     @Test
+    fun `String - equalsAny - matches first value`() {
+        val result = "Garmin".equalsAny("Garmin", "Strava")
+
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `String - equalsAny - matches later value`() {
+        val result = "Garmin".equalsAny("Strava", "Renpho", "Garmin")
+
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `String - equalsAny - matches ignores case`() {
+        val result = "Garmin".equalsAny("Strava", "gArMiN", ignoreCase = true)
+
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `String - equalsAny - no match`() {
+        val result = "Garmin".equalsAny("garmin", "Strava")
+
+        assertThat(result).isFalse()
+    }
+
+    @Test
     fun `Instant - truncatedToSecond`() {
         val instant = Instant.parse("2025-01-01T10:20:30.456Z")
         val expected = Instant.parse("2025-01-01T10:20:30Z")

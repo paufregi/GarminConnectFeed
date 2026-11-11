@@ -13,6 +13,9 @@ import kotlin.time.Instant
 private val VO2MAX_REGEX = Regex("vo[2₂]\\s*max", RegexOption.IGNORE_CASE)
 fun String.vo2max(): String = this.replace(VO2MAX_REGEX, "VO₂ max")
 
+fun String.equalsAny(vararg values: String?, ignoreCase: Boolean = false): Boolean =
+    values.any { equals(it, ignoreCase = ignoreCase) }
+
 fun Instant.truncatedToSecond(): Instant =
     Instant.fromEpochSeconds(this.epochSeconds)
 
