@@ -169,7 +169,7 @@ class QuickUpdateStravaActivityTest{
             course = Course(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
             rename = true,
             gear = false,
-            trainingEffect = false,
+            trainingEffect = true,
         )
 
         val expectedDescription = "$description\n\nWorkout: VO₂ max\nBenefit: ${activity.trainingEffect}"

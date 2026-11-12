@@ -23,14 +23,14 @@ class QuickUpdateActivity @Inject constructor(private val garminRepo: GarminRepo
 
         return garminRepo.updateActivity(
             activity = activity,
-            name = if (profile.rename) profile.name else null,
+            name = profile.name.takeIf { profile.rename },
             description = Formatter.workout(workout?.name),
             eventType = profile.eventType,
             course = profile.course,
             water = water,
             feel = feel,
             effort = effort,
-            gear = gear,
+            gear = gear.takeIf { it?.id != null },
         )
     }
 }

@@ -25,7 +25,7 @@ class QuickUpdateStravaActivity @Inject constructor(private val stravaRepo: Stra
             name = if (profile.rename) profile.name else activity?.name,
             description = Formatter.description(description, activity?.trainingEffect, profile.trainingEffect, workout?.name),
             commute = profile.eventType?.commute,
-            gear = gear
+            gear = gear.takeIf { profile.gear }
         )
     }
 }

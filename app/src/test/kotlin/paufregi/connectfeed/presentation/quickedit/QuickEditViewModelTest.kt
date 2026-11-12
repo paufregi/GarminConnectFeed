@@ -728,7 +728,7 @@ class QuickEditViewModelTest {
     fun `Save activity`() = runTest {
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
-        coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -755,7 +755,7 @@ class QuickEditViewModelTest {
         coVerify {
             getWorkout(workout.id)
             quickUpdateActivity(activities[0], profiles[0], 750, 80f, 50f, workout, gears[0])
-            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "Tempo day", workout)
+            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "Tempo day", workout, gears[0])
         }
     }
 
@@ -763,7 +763,7 @@ class QuickEditViewModelTest {
     fun `Save activity - workout failure`() = runTest {
         coEvery { getWorkout(any()) } returns Result.failure("no workout")
         coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
-        coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -790,7 +790,7 @@ class QuickEditViewModelTest {
         coVerify {
             getWorkout(workout.id)
             quickUpdateActivity(activities[0], profiles[0], 750, 80f, 50f, null, gears[0])
-            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "Tempo day", null)
+            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "Tempo day", null, gears[0])
         }
     }
 
@@ -830,7 +830,7 @@ class QuickEditViewModelTest {
     fun `Save action - Garmin failure`() = runTest {
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
-        coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -853,7 +853,7 @@ class QuickEditViewModelTest {
         coVerify {
             getWorkout(workout.id)
             quickUpdateActivity(activities[0], profiles[0], null, null, null, workout, null)
-            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "Tempo day", workout)
+            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "Tempo day", workout, null)
         }
     }
 
@@ -861,7 +861,7 @@ class QuickEditViewModelTest {
     fun `Save action - Strava failure`() = runTest {
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
-        coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any()) } returns Result.failure("error")
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -884,7 +884,7 @@ class QuickEditViewModelTest {
         coVerify {
             getWorkout(workout.id)
             quickUpdateActivity(activities[0], profiles[0], null, null, null, workout, null)
-            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "Tempo day", workout)
+            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "Tempo day", workout, null)
         }
     }
 
@@ -892,7 +892,7 @@ class QuickEditViewModelTest {
     fun `Save action - Garmin and Strava failure`() = runTest {
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { quickUpdateActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
-        coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any()) } returns Result.failure("error")
+        coEvery { quickUpdateStravaActivity(any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -915,7 +915,7 @@ class QuickEditViewModelTest {
         coVerify {
             getWorkout(workout.id)
             quickUpdateActivity(activities[0], profiles[0], null, null, null, workout, null)
-            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "Tempo day", workout)
+            quickUpdateStravaActivity(activities[0], stravaActivities[0], profiles[0], "Tempo day", workout, null)
         }
     }
 
