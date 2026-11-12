@@ -15,6 +15,8 @@ import org.junit.Test
 import paufregi.connectfeed.athlete
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.Gear
+import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.models.ActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
@@ -142,6 +144,45 @@ class StravaRepositoryTest {
             distance = 17803.00,
             type = ActivityType.Cycling
         )
+        val gear = Gear(
+            id = "gear-id",
+            stravaId = "strava-gear-id",
+            name = "activity",
+            type = GearType.Bike,
+        )
+        val name = "newName"
+        val description = "newDescription"
+        val commute = true
+
+        val expectedRequest = UpdateActivityDto(
+            name = name,
+            description = description,
+            commute = commute,
+            gearId = "strava-gear-id"
+        )
+
+        val res = repo.updateActivity(
+            activity = activity,
+            name = name,
+            description = description,
+            commute = commute,
+            gear = gear
+        )
+
+        assertThat(res.isSuccess).isTrue()
+        coVerify { strava.updateActivity(activity.id, expectedRequest) }
+    }
+
+    @Test
+    fun `Update strava activity - without gear`() = runTest {
+        coEvery { strava.updateActivity(any(), any()) } returns Response.success(Unit)
+
+        val activity = Activity(
+            id = 1,
+            name = "activity",
+            distance = 17803.00,
+            type = ActivityType.Cycling
+        )
         val name = "newName"
         val description = "newDescription"
         val commute = true
@@ -157,7 +198,8 @@ class StravaRepositoryTest {
             activity = activity,
             name = name,
             description = description,
-            commute = commute
+            commute = commute,
+            gear = null
         )
 
         assertThat(res.isSuccess).isTrue()
@@ -189,7 +231,8 @@ class StravaRepositoryTest {
             activity = activity,
             name = name,
             description = description,
-            commute = commute
+            commute = commute,
+            gear = null
         )
 
         assertThat(res.isSuccess).isFalse()

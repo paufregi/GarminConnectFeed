@@ -1,6 +1,7 @@
 package paufregi.connectfeed.data.repository
 
 import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.utils.mapList
 import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.strava.Strava
@@ -30,12 +31,13 @@ class StravaRepository @Inject constructor(
         name: String?,
         description: String?,
         commute: Boolean?,
+        gear: Gear?,
     ): Result<Unit> {
         val request = UpdateActivityDto(
             name = name,
             description = description,
             commute = commute,
-            gearId = null,
+            gearId = gear?.stravaId,
         )
         return strava.updateActivity(activity.id, request)
             .toResult()
