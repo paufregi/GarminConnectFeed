@@ -30,17 +30,17 @@ class SyncGearTest {
     private val appRepo = mockk<AppRepository>()
     private val garminRepo = mockk<GarminRepository>()
     private val stravaRepo = mockk<StravaRepository>()
-    private val isStravaLoggedIn = mockk<IsStravaLoggedIn>()
+    private val isStravaConnected = mockk<IsStravaConnected>()
     private lateinit var useCase: SyncGear
 
     @Before
     fun setup() {
-        useCase = SyncGear(auth, appRepo, garminRepo, stravaRepo, isStravaLoggedIn)
+        useCase = SyncGear(auth, appRepo, garminRepo, stravaRepo, isStravaConnected)
     }
 
     @After
     fun tearDown() {
-        confirmVerified(auth, appRepo, garminRepo, stravaRepo, isStravaLoggedIn)
+        confirmVerified(auth, appRepo, garminRepo, stravaRepo, isStravaConnected)
         clearAllMocks()
     }
 
@@ -84,7 +84,7 @@ class SyncGearTest {
         )
 
         every { auth.getUser() } returns flowOf(user)
-        every { isStravaLoggedIn.invoke() } returns flowOf(false)
+        every { isStravaConnected.invoke() } returns flowOf(false)
         coEvery { garminRepo.getGears() } returns Result.success(apiGears)
         every { appRepo.getAllGears(user) } returns flowOf(dbGears)
         coEvery { appRepo.saveGear(any(), any()) } returns Unit
@@ -96,7 +96,7 @@ class SyncGearTest {
 
         verify { auth.getUser() }
         coVerify { garminRepo.getGears() }
-        verify { isStravaLoggedIn.invoke() }
+        verify { isStravaConnected.invoke() }
         verify { appRepo.getAllGears(user) }
         coVerify {
             appRepo.deleteGear(user, dbGears[1])
@@ -136,7 +136,7 @@ class SyncGearTest {
         )
 
         every { auth.getUser() } returns flowOf(user)
-        every { isStravaLoggedIn.invoke() } returns flowOf(true)
+        every { isStravaConnected.invoke() } returns flowOf(true)
         coEvery { garminRepo.getGears() } returns Result.success(apiGears)
         coEvery { stravaRepo.getAthlete() } returns Result.success(stravaAthlete)
         every { appRepo.getAllGears(user) } returns flowOf(emptyList())
@@ -148,7 +148,7 @@ class SyncGearTest {
         assertThat(res.isSuccess).isTrue()
 
         verify { auth.getUser() }
-        verify { isStravaLoggedIn.invoke() }
+        verify { isStravaConnected.invoke() }
         coVerify { garminRepo.getGears() }
         coVerify { stravaRepo.getAthlete() }
         verify { appRepo.getAllGears(user) }
@@ -166,7 +166,7 @@ class SyncGearTest {
         )
 
         every { auth.getUser() } returns flowOf(user)
-        every { isStravaLoggedIn.invoke() } returns flowOf(false)
+        every { isStravaConnected.invoke() } returns flowOf(false)
         coEvery { garminRepo.getGears() } returns Result.success(emptyList())
         every { appRepo.getAllGears(user) } returns flowOf(dbGears)
         coEvery { appRepo.saveGear(any(), any()) } returns Unit
@@ -177,7 +177,7 @@ class SyncGearTest {
         assertThat(res.isSuccess).isTrue()
 
         verify { auth.getUser() }
-        verify { isStravaLoggedIn.invoke() }
+        verify { isStravaConnected.invoke() }
         coVerify { garminRepo.getGears() }
         coVerify(exactly = 2) { appRepo.deleteGear(user, any()) }
         verify { appRepo.getAllGears(user) }
@@ -201,7 +201,7 @@ class SyncGearTest {
         )
 
         every { auth.getUser() } returns flowOf(user)
-        every { isStravaLoggedIn.invoke() } returns flowOf(true)
+        every { isStravaConnected.invoke() } returns flowOf(true)
         coEvery { garminRepo.getGears() } returns Result.success(listOf(apiGear))
         coEvery { stravaRepo.getAthlete() } returns Result.success(AthleteDto(id = 1))
         every { appRepo.getAllGears(user) } returns flowOf(emptyList())
@@ -212,7 +212,7 @@ class SyncGearTest {
         assertThat(res.isSuccess).isTrue()
 
         verify { auth.getUser() }
-        verify { isStravaLoggedIn.invoke() }
+        verify { isStravaConnected.invoke() }
         coVerify { garminRepo.getGears() }
         coVerify { stravaRepo.getAthlete() }
         verify { appRepo.getAllGears(user) }
@@ -234,7 +234,7 @@ class SyncGearTest {
     @Test
     fun `Sync gears - garmin failure`() = runTest {
         every { auth.getUser() } returns flowOf(user)
-        every { isStravaLoggedIn.invoke() } returns flowOf(false)
+        every { isStravaConnected.invoke() } returns flowOf(false)
         coEvery { garminRepo.getGears() } returns Result.failure(Exception("error"))
 
         val res = useCase()
@@ -243,7 +243,7 @@ class SyncGearTest {
         assertThat(res.exceptionOrNull()?.message).isEqualTo("error")
 
         verify { auth.getUser() }
-        verify { isStravaLoggedIn.invoke() }
+        verify { isStravaConnected.invoke() }
         coVerify { garminRepo.getGears() }
     }
 
@@ -265,7 +265,7 @@ class SyncGearTest {
         )
 
         every { auth.getUser() } returns flowOf(user)
-        every { isStravaLoggedIn.invoke() } returns flowOf(true)
+        every { isStravaConnected.invoke() } returns flowOf(true)
         coEvery { garminRepo.getGears() } returns Result.success(listOf(apiGear))
         coEvery { stravaRepo.getAthlete() } returns Result.failure(Exception("error"))
         every { appRepo.getAllGears(user) } returns flowOf(emptyList())
@@ -276,7 +276,7 @@ class SyncGearTest {
         assertThat(res.isSuccess).isTrue()
 
         verify { auth.getUser() }
-        verify { isStravaLoggedIn.invoke() }
+        verify { isStravaConnected.invoke() }
         coVerify { garminRepo.getGears() }
         coVerify { stravaRepo.getAthlete() }
         verify { appRepo.getAllGears(user) }

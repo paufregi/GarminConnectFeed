@@ -2,6 +2,7 @@ package paufregi.connectfeed.core.usecases
 
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Gear
 import paufregi.connectfeed.core.models.Workout
 import paufregi.connectfeed.core.utils.Formatter
 import paufregi.connectfeed.core.utils.failure
@@ -17,6 +18,7 @@ class UpdateStravaActivity @Inject constructor(private val stravaRepository: Str
         trainingEffect: String?,
         trainingEffectFlag: Boolean,
         workout: Workout?,
+        gear: Gear?,
     ): Result<Unit> {
         if (stravaActivity == null || name == null)
             return Result.failure("Validation error")
@@ -30,7 +32,8 @@ class UpdateStravaActivity @Inject constructor(private val stravaRepository: Str
                 trainingEffectFlag = trainingEffectFlag,
                 workout = workout?.name,
             ),
-            commute = eventType?.commute
+            commute = eventType?.commute,
+            gear = gear
         )
     }
 }

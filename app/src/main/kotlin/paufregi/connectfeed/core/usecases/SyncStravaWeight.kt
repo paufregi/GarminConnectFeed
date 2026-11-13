@@ -9,13 +9,13 @@ import javax.inject.Inject
 
 class SyncStravaWeight @Inject constructor(
     private val stravaRepo: StravaRepository,
-    private val isStravaLoggedIn: IsStravaLoggedIn
+    private val isStravaConnected: IsStravaConnected
 ) {
     suspend operator fun invoke(
         weights: List<Weight>,
         today: Date = Date()
     ): Result<Unit> {
-        if (!isStravaLoggedIn().first()) return Result.success(Unit)
+        if (!isStravaConnected().first()) return Result.success(Unit)
 
         val weight = weights.maxByOrNull { it.timestamp }
 

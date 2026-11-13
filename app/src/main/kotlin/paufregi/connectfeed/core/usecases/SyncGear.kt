@@ -21,7 +21,7 @@ class SyncGear @Inject constructor(
     private val appRepo: AppRepository,
     private val garminRepo: GarminRepository,
     private val stravaRepo: StravaRepository,
-    private val isStravaLoggedIn: IsStravaLoggedIn,
+    private val isStravaConnected: IsStravaConnected,
 ) {
     suspend operator fun invoke(): Result<Unit> = coroutineScope {
         val user = authRepo.getUser().firstOrNull()
@@ -29,7 +29,7 @@ class SyncGear @Inject constructor(
 
         val garminDeferred = async { garminRepo.getGears() }
         val stravaDeferred = async {
-            when (isStravaLoggedIn().firstOrNull()) {
+            when (isStravaConnected().firstOrNull()) {
                 true -> stravaRepo.getAthlete()
                 else -> Result.success(AthleteDto(0))
             }

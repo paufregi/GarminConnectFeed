@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.map
 import paufregi.connectfeed.data.repository.AuthRepository
 import javax.inject.Inject
 
-class IsStravaLoggedIn @Inject constructor(private val authRepo: AuthRepository) {
+class IsStravaConnected @Inject constructor(private val authRepo: AuthRepository) {
     operator fun invoke(): Flow<Boolean> = authRepo.getStravaToken().map { it != null }
 }

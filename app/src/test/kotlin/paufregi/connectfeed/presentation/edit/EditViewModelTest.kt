@@ -713,7 +713,7 @@ class EditViewModelTest {
     fun `Save activity`() = runTest {
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
-        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -761,6 +761,7 @@ class EditViewModelTest {
                 "recovery",
                 true,
                 workout,
+                gears[1]
             )
         }
     }
@@ -814,7 +815,7 @@ class EditViewModelTest {
     fun `Save activity - workout failure`() = runTest {
         coEvery { getWorkout(any()) } returns Result.failure("No workout")
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
-        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -823,6 +824,7 @@ class EditViewModelTest {
             eventType = EventType.Training,
             course = courses[0],
             description = "description",
+            gear = gears[1]
         )
 
         viewModel = createViewModel()
@@ -847,7 +849,7 @@ class EditViewModelTest {
                 null,
                 null,
                 null,
-                null,
+                gears[1],
             )
             updateStravaActivity(
                 stravaActivities[0],
@@ -857,6 +859,7 @@ class EditViewModelTest {
                 "recovery",
                 false,
                 null,
+                gears[1],
             )
         }
     }
@@ -865,7 +868,7 @@ class EditViewModelTest {
     fun `Save activity - Garmin failure`() = runTest {
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
-        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
+        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -874,6 +877,7 @@ class EditViewModelTest {
             eventType = EventType.Training,
             course = courses[0],
             description = "description",
+            gear = gears[1]
         )
 
         viewModel = createViewModel()
@@ -898,7 +902,7 @@ class EditViewModelTest {
                 null,
                 null,
                 workout,
-                null,
+                gears[1],
             )
             updateStravaActivity(
                 stravaActivities[0],
@@ -908,6 +912,7 @@ class EditViewModelTest {
                 "recovery",
                 false,
                 workout,
+                gears[1]
             )
         }
     }
@@ -916,7 +921,7 @@ class EditViewModelTest {
     fun `Save activity - Strava failure`() = runTest {
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.success(Unit)
-        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
+        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -924,6 +929,7 @@ class EditViewModelTest {
             name = "Name",
             eventType = EventType.Training,
             course = courses[0],
+            gear = gears[1],
             description = "description",
         )
 
@@ -949,7 +955,7 @@ class EditViewModelTest {
                 null,
                 null,
                 workout,
-                null,
+                gears[1],
             )
             updateStravaActivity(
                 stravaActivities[0],
@@ -959,6 +965,7 @@ class EditViewModelTest {
                 "recovery",
                 false,
                 workout,
+                gears[1],
             )
         }
     }
@@ -967,7 +974,7 @@ class EditViewModelTest {
     fun `Save activity - Garmin and Strava failure`() = runTest {
         coEvery { getWorkout(any()) } returns Result.success(workout)
         coEvery { updateActivity(any(), any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
-        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
+        coEvery { updateStravaActivity(any(), any(), any(), any(), any(), any(), any(), any()) } returns Result.failure("error")
 
         val initState = initialState.copy(
             activity = activities[0],
@@ -975,6 +982,7 @@ class EditViewModelTest {
             name = "Name",
             eventType = EventType.Training,
             course = courses[0],
+            gear = gears[1],
             description = "description",
         )
 
@@ -1000,7 +1008,7 @@ class EditViewModelTest {
                 null,
                 null,
                 workout,
-                null,
+                gears[1],
             )
             updateStravaActivity(
                 stravaActivities[0],
@@ -1010,6 +1018,7 @@ class EditViewModelTest {
                 "recovery",
                 false,
                 workout,
+                gears[1]
             )
         }
     }

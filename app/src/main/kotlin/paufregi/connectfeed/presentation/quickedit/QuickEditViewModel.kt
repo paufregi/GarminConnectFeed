@@ -136,7 +136,8 @@ class QuickEditViewModel @Inject constructor(
                         stravaActivity = it,
                         profile = state.value.profile,
                         description = state.value.description,
-                        workout = workout
+                        workout = workout,
+                        gear = state.value.gear
                     )
                 } ?:  Result.success(Unit)
             }

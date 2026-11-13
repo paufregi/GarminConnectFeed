@@ -15,13 +15,13 @@ import org.junit.Test
 import paufregi.connectfeed.data.repository.AuthRepository
 import paufregi.connectfeed.stravaAuthToken
 
-class IsStravaLoggedInTest{
+class IsStravaConnectedTest{
     private val repo = mockk<AuthRepository>()
-    private lateinit var useCase: IsStravaLoggedIn
+    private lateinit var useCase: IsStravaConnected
 
     @Before
     fun setup(){
-        useCase = IsStravaLoggedIn(repo)
+        useCase = IsStravaConnected(repo)
     }
 
     @After

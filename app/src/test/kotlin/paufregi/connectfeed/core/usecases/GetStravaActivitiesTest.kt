@@ -20,7 +20,7 @@ import paufregi.connectfeed.data.repository.StravaRepository
 
 class GetStravaActivitiesTest{
     private val repo = mockk<StravaRepository>()
-    private val strava = mockk<IsStravaLoggedIn>()
+    private val strava = mockk<IsStravaConnected>()
     private lateinit var useCase: GetStravaActivities
 
     @Before
