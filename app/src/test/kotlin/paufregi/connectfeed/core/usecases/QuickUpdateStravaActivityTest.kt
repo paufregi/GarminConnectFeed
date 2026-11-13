@@ -173,10 +173,10 @@ class QuickUpdateStravaActivityTest{
         )
 
         val expectedDescription = "$description\n\nWorkout: VO₂ max\nBenefit: ${activity.trainingEffect}"
-        val res = useCase(activity, stravaActivity, profile, description, workout, null)
+        val res = useCase(activity, stravaActivity, profile, description, workout, gear)
 
         assertThat(res.isSuccess).isTrue()
-        coVerify { repo.updateActivity(stravaActivity, profile.name, expectedDescription, true, gear) }
+        coVerify { repo.updateActivity(stravaActivity, profile.name, expectedDescription, true, null) }
     }
 
     @Test
