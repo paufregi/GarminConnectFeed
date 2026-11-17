@@ -165,6 +165,26 @@ class ExtensionTest {
     }
 
     @Test
+    fun `Result - finally success`() {
+        var finallyCalled = false
+        val result = Result.success("ok").finally { finallyCalled = true }
+
+        assertThat(finallyCalled).isTrue()
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo("ok")
+    }
+
+    @Test
+    fun `Result - finally failure`() {
+        var finallyCalled = false
+        val result = Result.failure<String>("source error").finally { finallyCalled = true }
+
+        assertThat(finallyCalled).isTrue()
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("source error")
+    }
+
+    @Test
     fun `Result - mapFailure - success`() {
         val result = Result.success("ok").mapFailure { Exception("new error") }
         assertThat(result.isSuccess).isTrue()
