@@ -3,15 +3,12 @@ package paufregi.connectfeed.presentation.edit
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -33,22 +30,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.presentation.HomeNavigation
 import paufregi.connectfeed.presentation.Navigator
 import paufregi.connectfeed.presentation.ui.components.Button
-import paufregi.connectfeed.presentation.ui.components.CustomSlider
 import paufregi.connectfeed.presentation.ui.components.Dropdown
-import paufregi.connectfeed.presentation.ui.components.IconRadioGroup
-import paufregi.connectfeed.presentation.ui.components.IconRadioItem
+import paufregi.connectfeed.presentation.ui.components.EffortSlider
+import paufregi.connectfeed.presentation.ui.components.FeelSelector
 import paufregi.connectfeed.presentation.ui.components.Screen
-import paufregi.connectfeed.presentation.ui.components.TextEffort
-import paufregi.connectfeed.presentation.ui.components.TextFeel
 import paufregi.connectfeed.presentation.ui.components.failureInfo
 import paufregi.connectfeed.presentation.ui.components.successActivityUpdate
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
-import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
-import paufregi.connectfeed.presentation.ui.icons.garmin.FaceHappy
-import paufregi.connectfeed.presentation.ui.icons.garmin.FaceNormal
-import paufregi.connectfeed.presentation.ui.icons.garmin.FaceSad
-import paufregi.connectfeed.presentation.ui.icons.garmin.FaceVeryHappy
-import paufregi.connectfeed.presentation.ui.icons.garmin.FaceVerySad
 import paufregi.connectfeed.presentation.ui.utils.launchGarmin
 import paufregi.connectfeed.presentation.ui.utils.launchStrava
 
@@ -148,44 +136,14 @@ internal fun EditContent(
                 onValueChange = { onAction(EditAction.SetWater(it.toIntOrNull())) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
-            Column {
-                IconRadioGroup(
-                    options = listOf(
-                        IconRadioItem(0f, Icons.Connect.FaceVerySad),
-                        IconRadioItem(25f, Icons.Connect.FaceSad),
-                        IconRadioItem(50f, Icons.Connect.FaceNormal),
-                        IconRadioItem(75f, Icons.Connect.FaceHappy),
-                        IconRadioItem(100f, Icons.Connect.FaceVeryHappy),
-                    ),
-                    selected = state.feel,
-                    onClick = { onAction(EditAction.SetFeel(it)) }
-                )
-                TextFeel(
-                    state.feel,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(vertical = 10.dp)
-                        .testTag("feel_text")
-                )
-            }
-            Column {
-                Slider(
-                    value = state.effort ?: 0f,
-                    onValueChange = { onAction(EditAction.SetEffort(it.toInt().toFloat())) },
-                    valueRange = 0f..100f,
-                    steps = 9,
-                    interactionSource = interactionSource,
-                    track = CustomSlider.track,
-                    thumb = CustomSlider.thumb(interactionSource),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                TextEffort(
-                    state.effort ?: 0f,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .testTag("effort_text")
-                )
-            }
+            FeelSelector(
+                value = state.feel,
+                onChange = { onAction(EditAction.SetFeel(it)) }
+            )
+            EffortSlider(
+                value = state.effort,
+                onChange = { onAction(EditAction.SetEffort(it)) }
+            )
             if (state.stravaActivity != null) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),

@@ -2,20 +2,16 @@ package paufregi.connectfeed.presentation.quickedit
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -30,22 +26,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import paufregi.connectfeed.presentation.HomeNavigation
 import paufregi.connectfeed.presentation.Navigator
 import paufregi.connectfeed.presentation.ui.components.Button
-import paufregi.connectfeed.presentation.ui.components.CustomSlider
 import paufregi.connectfeed.presentation.ui.components.Dropdown
-import paufregi.connectfeed.presentation.ui.components.IconRadioGroup
-import paufregi.connectfeed.presentation.ui.components.IconRadioItem
+import paufregi.connectfeed.presentation.ui.components.EffortSlider
+import paufregi.connectfeed.presentation.ui.components.FeelSelector
 import paufregi.connectfeed.presentation.ui.components.Screen
-import paufregi.connectfeed.presentation.ui.components.TextEffort
-import paufregi.connectfeed.presentation.ui.components.TextFeel
 import paufregi.connectfeed.presentation.ui.components.failureInfo
 import paufregi.connectfeed.presentation.ui.components.successActivityUpdate
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
-import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
-import paufregi.connectfeed.presentation.ui.icons.garmin.FaceHappy
-import paufregi.connectfeed.presentation.ui.icons.garmin.FaceNormal
-import paufregi.connectfeed.presentation.ui.icons.garmin.FaceSad
-import paufregi.connectfeed.presentation.ui.icons.garmin.FaceVeryHappy
-import paufregi.connectfeed.presentation.ui.icons.garmin.FaceVerySad
 import paufregi.connectfeed.presentation.ui.utils.launchGarmin
 import paufregi.connectfeed.presentation.ui.utils.launchStrava
 
@@ -141,41 +128,14 @@ internal fun QuickEditContent(
                 }
 
                 if (state.profile.feelAndEffort) {
-                    Column {
-                        IconRadioGroup(
-                            options = listOf(
-                                IconRadioItem(0f, Icons.Connect.FaceVerySad),
-                                IconRadioItem(25f, Icons.Connect.FaceSad),
-                                IconRadioItem(50f, Icons.Connect.FaceNormal),
-                                IconRadioItem(75f, Icons.Connect.FaceHappy),
-                                IconRadioItem(100f, Icons.Connect.FaceVeryHappy),
-                            ),
-                            selected = state.feel,
-                            onClick = { onAction(QuickEditAction.SetFeel(it)) }
-                        )
-                        TextFeel(
-                            state.feel,
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(vertical = 10.dp)
-                        )
-                    }
-                    Column {
-                        Slider(
-                            value = state.effort ?: 0f,
-                            onValueChange = { onAction(QuickEditAction.SetEffort(it.toInt().toFloat())) },
-                            valueRange = 0f..100f,
-                            steps = 9,
-                            interactionSource = interactionSource,
-                            track = CustomSlider.track,
-                            thumb = CustomSlider.thumb(interactionSource),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        TextEffort(
-                            state.effort ?: 0f,
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
-                    }
+                    FeelSelector(
+                        value = state.feel,
+                        onChange = { onAction(QuickEditAction.SetFeel(it)) }
+                    )
+                    EffortSlider(
+                        value = state.effort,
+                        onChange = { onAction(QuickEditAction.SetEffort(it)) }
+                    )
                 }
             }
         }
