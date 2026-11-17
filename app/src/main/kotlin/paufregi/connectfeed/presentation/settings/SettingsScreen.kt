@@ -2,6 +2,7 @@ package paufregi.connectfeed.presentation.settings
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,7 +43,6 @@ import paufregi.connectfeed.presentation.Navigator
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
 import paufregi.connectfeed.presentation.ui.components.Screen
-import paufregi.connectfeed.presentation.ui.components.TextIcon
 import paufregi.connectfeed.presentation.ui.components.failureInfo
 import paufregi.connectfeed.presentation.ui.components.successInfo
 import paufregi.connectfeed.presentation.ui.icons.garmin.Connect
@@ -112,7 +112,13 @@ internal fun SettingsContent(
         Text(text = state.user?.name ?: "", fontSize = 24.sp)
         HorizontalDivider()
         Row(verticalAlignment = Alignment.CenterVertically){
-            TextIcon(Icons.Connect.Logo, "Garmin", true)
+            Icon(
+                imageVector = Icons.Connect.Logo,
+                contentDescription = "Garmin",
+                modifier = Modifier.size(24.dp).padding(end = 5.dp),
+                tint = Color.Unspecified
+            )
+            Text("Garmin")
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 text = "Refresh",
@@ -120,7 +126,13 @@ internal fun SettingsContent(
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextIcon(Icons.Strava.Logo, "Strava", state.hasStrava)
+            Icon(
+                imageVector = Icons.Strava.Logo,
+                contentDescription = "Strava",
+                modifier = Modifier.size(24.dp).padding(end = 5.dp),
+                tint = Color.Unspecified.takeIf { state.hasStrava == true } ?: Color.LightGray
+            )
+            Text("Strava")
             Spacer(modifier = Modifier.weight(1f))
             if (state.hasStrava == true) {
                 Button(
@@ -156,7 +168,12 @@ internal fun SettingsContent(
                 )
             } else {
                 Text(text = "Version: ${state.currentVersion ?: "Unknown"}")
-                Icon(Icons.Default.CheckCircle, "latest version", Modifier.size(32.dp).padding(start = 5.dp), Color.Green)
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "latest version",
+                    modifier = Modifier.size(32.dp).padding(start = 5.dp),
+                    tint = Color.Green
+                )
                 Spacer(modifier = Modifier.weight(1f))
             }
         }
