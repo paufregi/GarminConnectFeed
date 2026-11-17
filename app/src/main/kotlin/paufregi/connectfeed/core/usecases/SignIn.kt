@@ -17,11 +17,10 @@ class SignIn @Inject constructor(
         if (username.isBlank() || password.isBlank()) return Result.failure("Validation error")
 
         return authRepo.garminLogin(username, password)
-            .andThen { authRepo.exchangeGarminToken(it, garminClientId) }
+            .andThen { ticket -> authRepo.exchangeGarminToken(ticket, garminClientId) }
             .onSuccess { authRepo.saveGarminToken(it) }
             .andThen { garminRepo.getUser() }
             .onFailure { authRepo.clear() }
-            .onSuccess { authRepo.saveUser(it) }
     }
 }
 
