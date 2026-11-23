@@ -21,8 +21,8 @@ import paufregi.connectfeed.data.api.strava.Strava
 import paufregi.connectfeed.data.api.strava.models.ActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateActivityDto
 import paufregi.connectfeed.data.api.strava.models.UpdateAthleteDto
-import paufregi.connectfeed.data.repository.converters.toCore
 import retrofit2.Response
+import java.time.LocalDateTime
 
 class StravaRepositoryTest {
 
@@ -80,12 +80,10 @@ class StravaRepositoryTest {
         )
         coEvery { strava.getActivities(perPage = any()) } returns Response.success(activities)
 
-        val expected = activities.map { it.toCore() }
-
         val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(expected)
+        assertThat(res.getOrNull()).isEqualTo(activities)
         coVerify { strava.getActivities(perPage = 5) }
     }
 
@@ -96,7 +94,7 @@ class StravaRepositoryTest {
         val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<Activity>())
+        assertThat(res.getOrNull()).isEmpty()
         coVerify { strava.getActivities(perPage = 5) }
     }
 
@@ -142,7 +140,8 @@ class StravaRepositoryTest {
             id = 1,
             name = "activity",
             distance = 17803.00,
-            type = ActivityType.Cycling
+            type = ActivityType.Cycling,
+            date = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
         )
         val gear = Gear(
             id = "gear-id",
@@ -181,7 +180,8 @@ class StravaRepositoryTest {
             id = 1,
             name = "activity",
             distance = 17803.00,
-            type = ActivityType.Cycling
+            type = ActivityType.Cycling,
+            date = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
         )
         val name = "newName"
         val description = "newDescription"
@@ -214,7 +214,8 @@ class StravaRepositoryTest {
             id = 1,
             name = "activity",
             distance = 17803.00,
-            type = ActivityType.Cycling
+            type = ActivityType.Cycling,
+            date = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
         )
         val name = "newName"
         val description = "newDescription"
