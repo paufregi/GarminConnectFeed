@@ -12,6 +12,8 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.garmin.GarminConnect
@@ -28,8 +30,7 @@ import paufregi.connectfeed.data.api.garmin.models.WorkoutDto
 import paufregi.connectfeed.data.repository.converters.toCore
 import retrofit2.Response
 import java.io.File
-import paufregi.connectfeed.core.models.Activity as CoreActivity
-import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
+import java.time.LocalDateTime
 import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Gear as CoreGear
@@ -101,61 +102,21 @@ class GarminRepositoryTest {
         )
         coEvery { connect.getActivities(any()) } returns Response.success(activities)
 
-        val expected = activities.map { it.toCore() }
-
         val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(expected)
+        assertThat(res.getOrNull()).isEqualTo(activities)
         coVerify { connect.getActivities(5) }
     }
 
     @Test
-    fun `Get activities - force refresh`() = runTest {
-        val activities = listOf(
-            ActivityDto(
-                id = 1,
-                name = "activity_1",
-                distance = 10234.00,
-                trainingEffectLabel = "recovery",
-                type = ActivityTypeDto(id = 1, key = "running"),
-                eventType = EventTypeDto(id = 4, key = "training"),
-                beginTimestamp = 1729754100000,
-                workoutId = 1
-            ),
-            ActivityDto(
-                id = 2,
-                name = "activity_2",
-                distance = 17759.00,
-                trainingEffectLabel = "recovery",
-                type = ActivityTypeDto(id = 10, key = "road_biking"),
-                eventType = EventTypeDto(id = 4, key = "training"),
-                beginTimestamp = 1729705968000,
-                workoutId = 2
-            )
-        )
-        coEvery { connect.getActivities(any()) } returns Response.success(activities)
-
-        val expected = activities.map { it.toCore() }
-
-        val res = repo.getActivities(limit = 5)
-        val res2 = repo.getActivities(limit = 5, force = true)
-
-        assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(expected)
-        assertThat(res2.isSuccess).isTrue()
-        assertThat(res2.getOrNull()).isEqualTo(expected)
-        coVerify(exactly = 2) { connect.getActivities(5) }
-    }
-
-    @Test
     fun `Get activities - empty list`() = runTest {
-        coEvery { connect.getActivities(any()) } returns Response.success(emptyList<ActivityDto>())
+        coEvery { connect.getActivities(any()) } returns Response.success(emptyList())
 
         val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
+        assertThat(res.getOrNull()).isEmpty()
         coVerify { connect.getActivities(5) }
     }
 
@@ -166,7 +127,7 @@ class GarminRepositoryTest {
         val res = repo.getActivities(limit = 5)
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreActivity>())
+        assertThat(res.getOrNull()).isEmpty()
         coVerify { connect.getActivities(5) }
     }
 
@@ -181,18 +142,6 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Get activities - failure cache`() = runTest {
-        coEvery { connect.getActivities(any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-
-        val res = repo.getActivities(limit = 5)
-        val res2 = repo.getActivities(limit = 5)
-
-        assertThat(res.isSuccess).isFalse()
-        assertThat(res2.isSuccess).isFalse()
-        coVerify(exactly = 2) { connect.getActivities(5) }
-    }
-
-    @Test
     fun `Get courses`() = runTest {
         val cours = listOf(
             CourseDto(id = 1, name = "course 1", distance = 10234.00, type = ActivityTypeDto(id = 1, key = "running")),
@@ -201,8 +150,8 @@ class GarminRepositoryTest {
         coEvery { connect.getCourses() } returns Response.success(cours)
 
         val expected = listOf(
-            CoreCourse(id = 1, name = "course 1", distance = 10234.00, type = CoreActivityType.Running),
-            CoreCourse(id = 2, name = "course 2", distance = 15007.00, type = CoreActivityType.RoadBiking),
+            CoreCourse(id = 1, name = "course 1", distance = 10234.00, type = ActivityType.Running),
+            CoreCourse(id = 2, name = "course 2", distance = 15007.00, type = ActivityType.RoadBiking),
         )
 
         val res = repo.getCourses()
@@ -259,7 +208,7 @@ class GarminRepositoryTest {
         val res = repo.getCourses()
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreCourse>())
+        assertThat(res.getOrNull()).isEmpty()
         coVerify { connect.getCourses() }
     }
 
@@ -270,7 +219,7 @@ class GarminRepositoryTest {
         val res = repo.getCourses()
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreCourse>())
+        assertThat(res.getOrNull()).isEmpty()
         coVerify { connect.getCourses() }
     }
 
@@ -330,7 +279,7 @@ class GarminRepositoryTest {
         val res = repo.getGears()
 
         assertThat(res.isSuccess).isTrue()
-        assertThat(res.getOrNull()).isEqualTo(emptyList<CoreGear>())
+        assertThat(res.getOrNull()).isEmpty()
         coVerify { connect.getGears() }
     }
 
@@ -350,40 +299,34 @@ class GarminRepositoryTest {
         coEvery { connect.updateActivity(any(), any()) } returns Response.success(Unit)
         coEvery { connect.associateGears(any(), any()) } returns Response.success(Unit)
 
-
-        val activity = CoreActivity(
+        val activity = Activity(
             id = 1,
             name = "activity",
             distance = 17803.00,
-            type = CoreActivityType.Cycling
+            type = ActivityType.Cycling,
+            date = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
         )
-        val name = "newName"
-        val description = "newDescription"
-        val eventType = CoreEventType.Training
-        val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
-        val water = 2
-        val effort = 50f
-        val feel = 80f
+        val course = CoreCourse(1, "course", 10234.00, ActivityType.Cycling)
         val gear = CoreGear(id = "gear-1", name = "gear 1", type = GearType.Bike, distance = 1000)
 
         val expectedUpdateRequest = UpdateActivityDto(
             id = 1,
-            name = name,
-            description = description,
-            eventType = EventTypeDto(id = eventType.id, key = eventType.key),
+            name = "newName",
+            description = "newDescription",
+            eventType = EventTypeDto(id = CoreEventType.Training.id, key = CoreEventType.Training.key),
             metadata = MetadataDto(courseId = course.id),
-            summary = SummaryDto(water = water, feel = feel, effort = effort),
+            summary = SummaryDto(water = 2, feel = 80f, effort = 50f),
         )
 
         val res = repo.updateActivity(
             activity = activity,
-            name = name,
-            description = description,
-            eventType = eventType,
+            name = "newName",
+            description = "newDescription",
+            eventType = CoreEventType.Training,
             course = course,
-            water = water,
-            effort = effort,
-            feel = feel,
+            water = 2,
+            effort = 50f,
+            feel = 80f,
             gear = gear,
         )
 
@@ -396,11 +339,12 @@ class GarminRepositoryTest {
     fun `Update activity - no gear`() = runTest {
         coEvery { connect.updateActivity(any(), any()) } returns Response.success(Unit)
 
-        val activity = CoreActivity(
+        val activity = Activity(
             id = 1,
             name = "activity",
             distance = 17803.00,
-            type = CoreActivityType.Cycling
+            type = ActivityType.Cycling,
+            date = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
         )
 
         val expectedRequest = UpdateActivityDto(
@@ -417,7 +361,7 @@ class GarminRepositoryTest {
             name = "newName",
             description = "newDescription",
             eventType = CoreEventType.Training,
-            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
+            course = CoreCourse(1, "course", 10234.00, ActivityType.Cycling),
             water = 2,
             effort = 50f,
             feel = 80f,
@@ -431,16 +375,17 @@ class GarminRepositoryTest {
     @Test
     fun `Update activity - failure`() = runTest {
         coEvery { connect.updateActivity(any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
-        val activity = CoreActivity(
+        val activity = Activity(
             id = 1,
             name = "activity",
             distance = 17803.00,
-            type = CoreActivityType.Cycling
+            type = ActivityType.Cycling,
+            date = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
         )
         val name = "newName"
         val description = "newDescription"
         val eventType = CoreEventType.Training
-        val course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling)
+        val course = CoreCourse(1, "course", 10234.00, ActivityType.Cycling)
         val water = 2
 
         val expectedRequest = UpdateActivityDto(
@@ -474,11 +419,12 @@ class GarminRepositoryTest {
         coEvery { connect.updateActivity(any(), any()) } returns Response.success(Unit)
         coEvery { connect.associateGears(any(), any()) } returns Response.error(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
 
-        val activity = CoreActivity(
+        val activity = Activity(
             id = 1,
             name = "activity",
             distance = 17803.00,
-            type = CoreActivityType.Cycling
+            type = ActivityType.Cycling,
+            date = LocalDateTime.of(2022, 5, 2, 12, 15, 9),
         )
         val gear = CoreGear(id = "gear-1", name = "gear 1", type = GearType.Bike, distance = 1000)
 
@@ -487,7 +433,7 @@ class GarminRepositoryTest {
             name = "newName",
             description = "newDescription",
             eventType = CoreEventType.Training,
-            course = CoreCourse(1, "course", 10234.00, CoreActivityType.Cycling),
+            course = CoreCourse(1, "course", 10234.00, ActivityType.Cycling),
             water = 2,
             effort = 50f,
             feel = 80f,

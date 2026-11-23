@@ -12,6 +12,7 @@ import paufregi.connectfeed.core.utils.andThen
 import paufregi.connectfeed.core.utils.mapList
 import paufregi.connectfeed.core.utils.toResult
 import paufregi.connectfeed.data.api.garmin.GarminConnect
+import paufregi.connectfeed.data.api.garmin.models.ActivityDto
 import paufregi.connectfeed.data.api.garmin.models.GearDto
 import paufregi.connectfeed.data.api.garmin.models.MetadataDto
 import paufregi.connectfeed.data.api.garmin.models.SummaryDto
@@ -33,10 +34,9 @@ class GarminRepository @Inject constructor(private val garminConnect: GarminConn
             .toResult()
             .map { it.toCore() }
 
-    suspend fun getActivities(limit: Int, force: Boolean = false): Result<List<Activity>> =
+    suspend fun getActivities(limit: Int): Result<List<ActivityDto>> =
         garminConnect.getActivities(limit)
             .toResult(emptyList())
-            .mapList { it.toCore() }
 
     suspend fun getCourses(force: Boolean = false): Result<List<Course>> =
         courseCache.get(force) {
