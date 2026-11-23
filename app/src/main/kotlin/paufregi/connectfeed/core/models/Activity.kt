@@ -1,7 +1,6 @@
 package paufregi.connectfeed.core.models
 
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Instant
+import java.time.LocalDateTime
 
 data class Activity(
     val id: Long,
@@ -10,10 +9,11 @@ data class Activity(
     val eventType: EventType? = null,
     val distance: Double? = null,
     val trainingEffect: String? = null,
-    val date: Instant? = null,
+    val date: LocalDateTime,
     val workoutId: Long? = null,
+    val stravaId: Long? = null,
 ) {
-    fun match(other: Activity): Boolean =
-        this.type.compatible(other.type) &&
-                (this.date != null && other.date != null && (this.date - other.date).absoluteValue <= 1.minutes)
+    companion object{
+        val EMPTY = Activity(0, "NOPE", ActivityType.Any, EventType.Uncategorized, date = LocalDateTime.MIN)
+    }
 }
