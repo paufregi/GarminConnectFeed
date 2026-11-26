@@ -22,7 +22,6 @@ import paufregi.connectfeed.data.utils.Cache
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
-import paufregi.connectfeed.data.api.garmin.models.EventTypeDto as DataEventType
 
 @Singleton
 class GarminRepository @Inject constructor(private val garminConnect: GarminConnect) {
@@ -69,7 +68,7 @@ class GarminRepository @Inject constructor(private val garminConnect: GarminConn
             id = activity.id,
             name = name,
             description = description,
-            eventType = DataEventType(eventType?.id, eventType?.key),
+            eventType = eventType,
             metadata = MetadataDto(course?.id),
             summary = SummaryDto(water, feel, effort)
         )

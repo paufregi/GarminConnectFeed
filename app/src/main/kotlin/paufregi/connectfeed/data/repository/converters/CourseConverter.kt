@@ -8,5 +8,5 @@ fun CourseDto.toCore() = Course(
     id = id,
     name = name,
     distance = round(distance),
-    type = type.toCore()
+    type = type.type
 )

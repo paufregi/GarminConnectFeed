@@ -17,13 +17,14 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.MockServer
 import paufregi.connectfeed.activitiesJson
+import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.GearType
 import paufregi.connectfeed.coursesJson
 import paufregi.connectfeed.data.api.garmin.interceptors.AuthInterceptor
 import paufregi.connectfeed.data.api.garmin.models.ActivityDto
 import paufregi.connectfeed.data.api.garmin.models.ActivityTypeDto
 import paufregi.connectfeed.data.api.garmin.models.CourseDto
-import paufregi.connectfeed.data.api.garmin.models.EventTypeDto
 import paufregi.connectfeed.data.api.garmin.models.GearDto
 import paufregi.connectfeed.data.api.garmin.models.MetadataDto
 import paufregi.connectfeed.data.api.garmin.models.SummaryDto
@@ -34,6 +35,7 @@ import paufregi.connectfeed.gearsJson
 import paufregi.connectfeed.userProfileJson
 import paufregi.connectfeed.workoutJson
 import java.io.File
+import java.time.LocalDateTime
 
 class GarminConnectTest {
 
@@ -120,9 +122,9 @@ class GarminConnectTest {
                 name = "Activity 1",
                 distance = 17803.69921875,
                 trainingEffectLabel = "RECOVERY",
-                type = ActivityTypeDto(id = 10, key = "road_biking"),
-                eventType = EventTypeDto(id = 5, key = "transportation"),
-                beginTimestamp = 1729754100000,
+                type = ActivityTypeDto(id = 10, key = "road_biking", type = ActivityType.Cycling),
+                eventType = EventType.Transportation,
+                beginTimestamp = LocalDateTime.of(2024, 10, 24, 20, 25),
                 workoutId = 1
             ),
             ActivityDto(
@@ -130,9 +132,9 @@ class GarminConnectTest {
                 name = "Activity 2",
                 distance = 17759.779296875,
                 trainingEffectLabel = "RECOVERY",
-                type = ActivityTypeDto(id = 10, key = "road_biking"),
-                eventType = EventTypeDto(id = 5, key = "transportation"),
-                beginTimestamp = 1729705968000,
+                type = ActivityTypeDto(id = 10, key = "road_biking", type = ActivityType.Cycling),
+                eventType = EventType.Transportation,
+                beginTimestamp = LocalDateTime.of(2024, 10, 24, 6, 52, 48),
                 workoutId = 2
             )
         )
@@ -170,7 +172,7 @@ class GarminConnectTest {
             id = 1,
             name = "newName",
             description = "newDescription",
-            eventType = EventTypeDto(id = 1, key = "key"),
+            eventType = EventType.Training,
             metadata = MetadataDto(courseId = 1),
             summary = SummaryDto(500, null, null),
         )
@@ -187,7 +189,7 @@ class GarminConnectTest {
             id = 1,
             name = "newName",
             description = "newDescription",
-            eventType = EventTypeDto(id = 1, key = "key"),
+            eventType = EventType.Training,
             metadata = MetadataDto(courseId = 1),
             summary = SummaryDto(500, null, null),
         )
@@ -204,8 +206,8 @@ class GarminConnectTest {
         val res = api.getCourses()
 
         val expected = listOf(
-            CourseDto(id = 1, name = "Course 1", distance = 10234.81, type = ActivityTypeDto(id = 1, key = "running")),
-            CourseDto(id = 2, name = "Course 2", distance = 15007.59, type = ActivityTypeDto(id = 10, key = "road_biking"))
+            CourseDto(id = 1, name = "Course 1", distance = 10234.81, type = ActivityTypeDto(id = 1, key = "running", type = ActivityType.Running)),
+            CourseDto(id = 2, name = "Course 2", distance = 15007.59, type = ActivityTypeDto(id = 10, key = "road_biking", type = ActivityType.Cycling))
         )
 
         assertThat(res.isSuccessful).isTrue()
