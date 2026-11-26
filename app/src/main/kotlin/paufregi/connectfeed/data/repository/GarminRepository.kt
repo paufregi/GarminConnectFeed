@@ -28,6 +28,9 @@ class GarminRepository @Inject constructor(private val garminConnect: GarminConn
 
     private val courseCache: Cache<Result<List<Course>>> = Cache()
 
+    @Volatile
+    private var cacheActivities: Map<Long, ActivityDto> = emptyMap()
+
     suspend fun getUser(): Result<User> =
         garminConnect.getUserProfile()
             .toResult()
@@ -36,6 +39,9 @@ class GarminRepository @Inject constructor(private val garminConnect: GarminConn
     suspend fun getActivities(limit: Int): Result<List<ActivityDto>> =
         garminConnect.getActivities(limit)
             .toResult(emptyList())
+            .onSuccess { cacheActivities = it.associateBy { activity -> activity.id } }
+
+    fun getActivity(id: Long) = cacheActivities[id]
 
     suspend fun getCourses(force: Boolean = false): Result<List<Course>> =
         courseCache.get(force) {

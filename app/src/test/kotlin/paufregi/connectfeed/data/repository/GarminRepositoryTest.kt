@@ -141,6 +141,69 @@ class GarminRepositoryTest {
     }
 
     @Test
+    fun `Get activity`() = runTest {
+        val activities = listOf(
+            ActivityDto(
+                id = 1,
+                name = "activity_1",
+                distance = 10234.00,
+                trainingEffectLabel = "recovery",
+                type = ActivityTypeDto(id = 1, key = "running", type = ActivityType.Running),
+                eventType = EventType.Training,
+                beginTimestamp = LocalDateTime.of(2024, 10, 24, 20, 15),
+                workoutId = 1
+            ),
+            ActivityDto(
+                id = 2,
+                name = "activity_2",
+                distance = 17759.00,
+                trainingEffectLabel = "recovery",
+                type = ActivityTypeDto(id = 10, key = "road_biking", type = ActivityType.RoadBiking),
+                eventType = EventType.Training,
+                beginTimestamp = LocalDateTime.of(2024, 10, 24, 6, 52, 48),
+                workoutId = 2
+            )
+        )
+        coEvery { connect.getActivities(any()) } returns Response.success(activities)
+
+        repo.getActivities(limit = 5)
+        val res = repo.getActivity(2)
+
+        assertThat(res).isEqualTo(activities[1])
+        coVerify { connect.getActivities(5) }
+    }
+
+    @Test
+    fun `Get activity - not cached`() = runTest {
+        val res = repo.getActivity(1)
+
+        assertThat(res).isNull()
+    }
+
+    @Test
+    fun `Get activity - unknown id`() = runTest {
+        val activities = listOf(
+            ActivityDto(
+                id = 1,
+                name = "activity_1",
+                distance = 10234.00,
+                trainingEffectLabel = "recovery",
+                type = ActivityTypeDto(id = 1, key = "running", type = ActivityType.Running),
+                eventType = EventType.Training,
+                beginTimestamp = LocalDateTime.of(2024, 10, 24, 20, 15),
+                workoutId = 1
+            )
+        )
+        coEvery { connect.getActivities(any()) } returns Response.success(activities)
+
+        repo.getActivities(limit = 5)
+        val res = repo.getActivity(2)
+
+        assertThat(res).isNull()
+        coVerify { connect.getActivities(5) }
+    }
+
+    @Test
     fun `Get courses`() = runTest {
         val cours = listOf(
             CourseDto(id = 1, name = "course 1", distance = 10234.00, type = ActivityTypeDto(id = 1, key = "running", type = ActivityType.Running)),
