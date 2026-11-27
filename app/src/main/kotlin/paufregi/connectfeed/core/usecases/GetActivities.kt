@@ -1,10 +1,50 @@
 package paufregi.connectfeed.core.usecases
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.firstOrNull
 import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.utils.mapList
 import paufregi.connectfeed.data.repository.GarminRepository
+import paufregi.connectfeed.data.repository.StravaRepository
+import java.time.Duration
 import javax.inject.Inject
 
-class GetActivities @Inject constructor(private val garminRepo: GarminRepository) {
-    suspend operator fun invoke(force: Boolean = false): Result<List<Activity>> =
-        garminRepo.getActivities(limit = 5, force = force)
+class GetActivities @Inject constructor(
+    private val isStravaConnected: IsStravaConnected,
+    private val garminRepo: GarminRepository,
+    private val stravaRepo: StravaRepository,
+) {
+    suspend operator fun invoke(): Result<List<Activity>> = coroutineScope {
+        val garminDeferred = async { garminRepo.getActivities(10) }
+        val stravaDeferred = async {
+            if (isStravaConnected().firstOrNull() == true) {
+                stravaRepo.getActivities(15)
+            } else {
+                Result.success(emptyList())
+            }
+        }
+
+        val garminResult = garminDeferred.await()
+        val stravaActivities = stravaDeferred.await().getOrDefault(emptyList())
+
+        garminResult.mapList { garminActivity ->
+            val matchedStravaId = stravaActivities.find {
+                Duration.between(it.startDate, garminActivity.beginTimestamp).abs() <= Duration.ofMinutes(1) &&
+                        it.sportType.type.compatible(garminActivity.type.type)
+            }?.id
+
+            Activity(
+                id = garminActivity.id,
+                name = garminActivity.name,
+                type = garminActivity.type.type,
+                eventType = garminActivity.eventType,
+                distance = garminActivity.distance.takeIf { it > 0 },
+                trainingEffect = garminActivity.trainingEffectLabel,
+                date = garminActivity.beginTimestamp,
+                workoutId = garminActivity.workoutId,
+                stravaId = matchedStravaId,
+            )
+        }
+    }
 }
